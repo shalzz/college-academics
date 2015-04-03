@@ -29,7 +29,7 @@
     <string name="pref_version_summary" translatable="false">v2.2.4</string>
     
     <!--API keys-->
-    <string name="test_banner_ad_unit_id" translatable="false">ca-app-pub-3940256099942544/6300978111</string>
+    <string name="banner_ad_unit_id" translatable="false">ca-app-pub-4430276599804177/4801693846</string>
 
     <!--Network related strings-->
     <string name="UserAgent" translatable="false">Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.57 Safari/537.36</string>
