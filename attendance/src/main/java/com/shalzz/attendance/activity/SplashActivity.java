@@ -23,7 +23,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
-import android.support.v7.widget.Toolbar;
 
 import com.bugsnag.android.Bugsnag;
 import com.bugsnag.android.Severity;
