@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <CheckBoxPreference
+        android:key="@string/pref_key_use_proxy"
+        android:defaultValue="false"
+        android:title="@string/pref_proxy_enable"
+        android:summary="@string/pref_proxy_enable_summary"/>
+
+    <com.afollestad.materialdialogs.prefs.MaterialEditTextPreference
+        android:key="@string/pref_key_proxy_username"
+        android:title="@string/pref_proxy_username"
+        android:dependency="@string/pref_key_use_proxy" />
+    <com.afollestad.materialdialogs.prefs.MaterialEditTextPreference
+        android:key="@string/pref_key_proxy_password"
+        android:title="@string/pref_proxy_password"
+        android:dependency="@string/pref_key_use_proxy"
+        android:inputType="textPassword"/>
+
+</PreferenceScreen>

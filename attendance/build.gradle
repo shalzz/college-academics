@@ -1,0 +1,77 @@
+/*
+ * Copyright (c) 2014 Shaleen Jain <shaleen.jain95@gmail.com>
+ *
+ * This file is part of UPES Academics.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+
+
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 21
+    buildToolsVersion '21.1.2'
+    defaultConfig {
+        applicationId 'com.shalzz.attendance'
+        minSdkVersion 14
+        targetSdkVersion 21
+
+        resConfigs "en"
+        resConfigs "nodpi", "hdpi", "xhdpi", "xxhdpi"
+    }
+
+//  TODO: proguard the app
+    buildTypes {
+        debug {
+            applicationIdSuffix '.debug'
+        }
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+        }
+    }
+    sourceSets {
+        main { res.srcDirs = ['src/main/res', 'src/main/res/layouts-sw720dp-land'] }
+
+    }
+
+    lintOptions {
+        disable 'InvalidPackage'
+    }
+
+    dependencies {
+        compile fileTree(dir: 'libs', include: ['*.jar'])
+
+        // google support libraries
+        compile 'com.google.android.gms:play-services:7.+'
+        compile 'com.android.support:recyclerview-v7:21.0.+'
+        compile 'com.android.support:support-v4:22.+'
+        compile 'com.android.support:appcompat-v7:22.0.+'
+        compile 'com.android.support:support-v13:21.+'
+
+        // 3rd party library projects
+        compile 'com.afollestad:material-dialogs:0.6.4.7'
+        compile 'com.jakewharton:butterknife:6.0.0'
+        compile 'com.mcxiaoke.volley:library:1.0.+@aar'
+        compile 'com.github.amlcurran.showcaseview:library:5.1.1-SNAPSHOT@aar'
+        compile 'org.jsoup:jsoup:1.7.3'
+        compile 'com.squareup.okhttp:okhttp:2.2.0'
+        compile 'com.nispok:snackbar:2.7.3'
+        compile('de.psdev.licensesdialog:licensesdialog:1.6.0') {
+            exclude module: 'support-v4'
+        }
+    }
+}
