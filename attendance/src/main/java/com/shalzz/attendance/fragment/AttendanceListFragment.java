@@ -53,6 +53,8 @@ import android.widget.TextView;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.bugsnag.android.Bugsnag;
+import com.bugsnag.android.Severity;
 import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.ViewTarget;
 import com.shalzz.attendance.CircularIndeterminate;
@@ -138,6 +140,8 @@ public class AttendanceListFragment extends ListFragment implements
         mContext = getActivity();
         mTag = getActivity().getLocalClassName();
         prefs = new MyPreferencesManager(mContext.getApplicationContext());
+
+        Bugsnag.setContext("AttendanceList");
     }
 
     @Override
@@ -358,6 +362,7 @@ public class AttendanceListFragment extends ListFragment implements
                     new DataAssembler.ParseAttendance(mContext, parseListener()).execute(response);
                 }
                 catch (Exception e) {
+                    Bugsnag.notify(e, Severity.ERROR);
                     String msg = mResourses.getString(R.string.unexpected_error);
                     Miscellaneous.showSnackBar(mContext,msg);
                 }

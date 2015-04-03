@@ -25,6 +25,8 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 
+import com.bugsnag.android.Bugsnag;
+import com.bugsnag.android.Severity;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.wrapper.MyPreferencesManager;
 
@@ -35,12 +37,14 @@ public class SplashActivity extends ActionBarActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+        Bugsnag.setContext("SplashActivity");
 
         // Set all default values once for this application
         try {
             PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
             PreferenceManager.setDefaultValues(this, R.xml.pref_proxy, false);
         } catch (ClassCastException e) {
+            Bugsnag.notify(e, Severity.INFO);
             new MyPreferencesManager(this).removeDefaultSharedPreferences();
             PreferenceManager.setDefaultValues(this, R.xml.preferences, true);
             PreferenceManager.setDefaultValues(this, R.xml.pref_proxy, true);

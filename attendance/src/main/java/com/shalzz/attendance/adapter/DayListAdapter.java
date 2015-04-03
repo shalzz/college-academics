@@ -25,6 +25,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.bugsnag.android.Bugsnag;
+import com.bugsnag.android.Severity;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.model.Day;
 import com.shalzz.attendance.model.Period;
@@ -87,6 +89,7 @@ public class DayListAdapter extends RecyclerView.Adapter<DayListAdapter.ViewHold
         try {
             holder.tvTime.setText(period.getTimein12hr());
         } catch (ParseException e) {
+            Bugsnag.notify(e, Severity.WARNING);
             holder.tvTime.setText(period.getTime());
             e.printStackTrace();
         }

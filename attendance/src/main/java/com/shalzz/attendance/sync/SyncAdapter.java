@@ -30,6 +30,7 @@ import android.util.Log;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.bugsnag.android.Bugsnag;
 import com.shalzz.attendance.DataAPI;
 import com.shalzz.attendance.DataAssembler;
 import com.shalzz.attendance.wrapper.MyPreferencesManager;
@@ -74,6 +75,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 	@Override
 	public void onPerformSync(Account account, Bundle extras, String authority,
 			ContentProviderClient provider, SyncResult syncResult) {
+        Bugsnag.leaveBreadcrumb("Running sync adapter");
 
 		DataAPI.getAttendance(mContext, attendanceSuccessListener(), myErrorListener());
 		DataAPI.getTimeTable(mContext, timeTableSuccessListener(), myErrorListener());
@@ -90,6 +92,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                     pref.setLastSyncTime();
                 }
                 catch(Exception e) {
+                    Bugsnag.notify(e);
                     e.printStackTrace();
                 }
 			}
@@ -103,8 +106,10 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                 try
                 {
                     DataAssembler.parseTimetable(response, mContext);
+                    Bugsnag.leaveBreadcrumb("Sync complete");
                 }
                 catch(Exception e) {
+                    Bugsnag.notify(e);
                     e.printStackTrace();
                 }
 			}

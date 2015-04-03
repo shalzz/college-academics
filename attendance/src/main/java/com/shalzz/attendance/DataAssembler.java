@@ -23,6 +23,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.os.AsyncTask;
 
+import com.bugsnag.android.Bugsnag;
 import com.shalzz.attendance.model.Day;
 import com.shalzz.attendance.model.ListFooter;
 import com.shalzz.attendance.model.ListHeader;
@@ -62,6 +63,7 @@ public class DataAssembler {
 
             Document doc = Jsoup.parse(response[0]);
             Elements tddata = doc.select(mContext.getString(R.string.selector_table_data));
+            Bugsnag.leaveBreadcrumb("Parsing student details...");
 
             if(doc.getElementsByTag(http_tag_title).size()==0 ||
                     doc.getElementsByTag(http_tag_title).text().equals(session_error_identifier)) {
@@ -99,6 +101,7 @@ public class DataAssembler {
         protected void onPostExecute(Integer result) {
             if(mListener != null)
                 mListener.onParseComplete(result);
+            Bugsnag.leaveBreadcrumb("Got student details.");
         }
     }
 
@@ -122,6 +125,7 @@ public class DataAssembler {
         protected void onPostExecute(Integer result) {
             if(mListener != null)
                 mListener.onParseComplete(result);
+            Bugsnag.leaveBreadcrumb("Response parsing complete.");
         }
     }
 
@@ -142,6 +146,7 @@ public class DataAssembler {
         protected void onPostExecute(Integer result) {
             if(mListener != null)
                 mListener.onParseComplete(result);
+            Bugsnag.leaveBreadcrumb("Timetable parsing complete.");
         }
     }
 
@@ -163,6 +168,7 @@ public class DataAssembler {
         ArrayList<String> subjectName = new ArrayList<>();
         ArrayList<Float> percentage = new ArrayList<>();
 
+        Bugsnag.leaveBreadcrumb("Parsing response...");
         Document doc = Jsoup.parse(response);
 
         Elements tddata = doc.select(mContext.getString(R.string.selector_table_data));

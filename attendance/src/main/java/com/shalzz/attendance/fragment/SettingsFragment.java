@@ -31,6 +31,7 @@ import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
 
+import com.bugsnag.android.Bugsnag;
 import com.shalzz.attendance.DatabaseHandler;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.activity.MainActivity;
@@ -48,6 +49,7 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		mContext = getActivity();
+        Bugsnag.setContext("Settings");
 
 		addPreferencesFromResource(R.xml.preferences);
 

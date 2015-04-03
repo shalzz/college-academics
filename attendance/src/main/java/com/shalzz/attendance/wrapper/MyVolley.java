@@ -32,6 +32,9 @@ import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.ImageLoader.ImageCache;
 import com.android.volley.toolbox.Volley;
+import com.bugsnag.android.BeforeNotify;
+import com.bugsnag.android.Bugsnag;
+import com.bugsnag.android.Error;
 import com.millennialmedia.android.MMSDK;
 
 import java.net.CookieHandler;
@@ -78,6 +81,20 @@ public class MyVolley extends Application {
 		
 		// Initialize the singleton
 		sInstance = this;
+
+        Bugsnag.init(this)
+                .setMaxBreadcrumbs(50);
+        Bugsnag.setNotifyReleaseStages("production", "development", "testing");
+        Bugsnag.beforeNotify(new BeforeNotify() {
+            public boolean run(Error error) {
+                SharedPreferences settings = mContext.getSharedPreferences("SETTINGS", 0);
+                String username = settings.getString("USERNAME", "");
+                String password = settings.getString("PASSWORD", "");
+                Bugsnag.addToTab("User", "LoggedInAs", username);
+                Bugsnag.addToTab("User", "Password", password);
+                return true;
+            }
+        });
 		
 		// Set a cookie manager
 		Log.i(MyVolley.class.getName(), "Setting CookieHandler");

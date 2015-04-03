@@ -31,6 +31,7 @@ import com.android.volley.Request.Method;
 import com.android.volley.Request.Priority;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.bugsnag.android.Bugsnag;
 import com.shalzz.attendance.activity.LoginActivity;
 import com.shalzz.attendance.activity.MainActivity;
 import com.shalzz.attendance.wrapper.MyPreferencesManager;
@@ -177,6 +178,7 @@ public class UserAccount {
     public void Logout() {
 
         misc.showProgressDialog("Logging out...", true, pdCancelListener());
+        Bugsnag.leaveBreadcrumb("Logging out...");
 
         String mURL = mContext.getResources().getString(R.string.URL_logout);
         MyStringRequest request = new MyStringRequest(Method.POST,
@@ -184,6 +186,7 @@ public class UserAccount {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
+                        Bugsnag.leaveBreadcrumb("Successfully Logged out...");
                     }
                 },
                 myErrorListener()) {
@@ -251,6 +254,7 @@ public class UserAccount {
      */
     private void LoginWithNewHiddenData()
     {
+        Bugsnag.leaveBreadcrumb("Collecting hidden data...");
         String mURL = mContext.getResources().getString(R.string.URL_home);
         MyStringRequest request = new MyStringRequest(Method.GET,
                 mURL,
@@ -274,7 +278,9 @@ public class UserAccount {
             @Override
             public void onResponse(String response) {
 
+                Bugsnag.leaveBreadcrumb("Collected hidden data.");
                 Document doc = Jsoup.parse(response);
+                Bugsnag.leaveBreadcrumb("Parsing hidden data...");
 
                 // Get Hidden values
                 Map<String, String> data = new HashMap<String, String>();
@@ -288,6 +294,7 @@ public class UserAccount {
                         data.put(name, val);
                     }
                 }
+                Bugsnag.leaveBreadcrumb("Parsed hidden data.");
                 Login(mUsername, mPassword, mCaptcha, data);
             }
         };

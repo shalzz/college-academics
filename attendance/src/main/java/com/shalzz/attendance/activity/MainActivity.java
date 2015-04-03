@@ -45,6 +45,7 @@ import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.bugsnag.android.Bugsnag;
 import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.Target;
 import com.shalzz.attendance.DatabaseHandler;
@@ -132,6 +133,7 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.drawer);
         ButterKnife.inject(this);
+        Bugsnag.setContext("MainActivity");
 
         // set toolbar as actionbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -149,6 +151,7 @@ public class MainActivity extends ActionBarActivity {
             mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN, mDrawerList);
             mDrawerLayout.setScrimColor(Color.TRANSPARENT);
             isDrawerLocked = true;
+            Bugsnag.leaveBreadcrumb("Tablet layout applied");
         }
 
         // set Drawer header
@@ -207,6 +210,7 @@ public class MainActivity extends ActionBarActivity {
         else if(getIntent().getAction()!=null &&
                 getIntent().getAction().equals(Intent.ACTION_MANAGE_NETWORK_USAGE)) {
             displayView(Fragments.SETTINGS.getValue());
+            Bugsnag.leaveBreadcrumb("MANAGE_NETWORK_USAGE intent received");
         }
         else {
             displayView(mCurrentSelectedPosition);
@@ -265,6 +269,10 @@ public class MainActivity extends ActionBarActivity {
             TextView tv_course = (TextView) Drawerheader.findViewById(R.id.drawer_header_course);
             tv_name.setText(listheader.getName());
             tv_course.setText(listheader.getCourse());
+
+            if(listheader.getSAPId()!=0)
+                Bugsnag.setUserId("" + listheader.getSAPId());
+            Bugsnag.setUserName(listheader.getName());
         }
     }
 
@@ -384,13 +392,16 @@ public class MainActivity extends ActionBarActivity {
             if(mPopSettingsBackStack) {
                 mPopSettingsBackStack = false;
                 getFragmentManager().popBackStackImmediate();
+                Bugsnag.leaveBreadcrumb("Back: Popping from internal back stack");
             } else {
                 // Custom back stack
                 popFromBackStack();
+                Bugsnag.leaveBreadcrumb("Back: Popping from custom back stack");
             }
         }
         else {
             super.onBackPressed();
+            Bugsnag.leaveBreadcrumb("App closed");
         }
     }
 

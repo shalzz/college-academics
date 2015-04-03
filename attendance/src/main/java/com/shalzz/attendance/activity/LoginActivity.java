@@ -37,6 +37,7 @@ import com.android.volley.Request.Method;
 import com.android.volley.Request.Priority;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.bugsnag.android.Bugsnag;
 import com.shalzz.attendance.Miscellaneous;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.UserAccount;
@@ -73,6 +74,7 @@ public class LoginActivity extends ActionBarActivity implements CaptchaDialogFra
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.inject(this);
+        Bugsnag.setContext("LoginActivity");
 
         // set toolbar as actionbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -138,6 +140,7 @@ public class LoginActivity extends ActionBarActivity implements CaptchaDialogFra
     public void showCaptchaDialog() {
         DialogFragment dialog = new CaptchaDialogFragment();
         dialog.show(getSupportFragmentManager(), "CaptchaDialogFragment");
+        Bugsnag.addToTab("User","LoggingInAs",etSapid.getText().toString());
     }
 
     @Override
@@ -195,6 +198,7 @@ public class LoginActivity extends ActionBarActivity implements CaptchaDialogFra
             @Override
             public void onResponse(String response) {
 
+                Bugsnag.leaveBreadcrumb("Collected hidden data.");
                 Document doc = Jsoup.parse(response);
 
                 // Get Hidden values
@@ -208,6 +212,7 @@ public class LoginActivity extends ActionBarActivity implements CaptchaDialogFra
                         data.put(name, val);
                     }
                 }
+                Bugsnag.leaveBreadcrumb("Parsed hidden data.");
             }
         };
     }

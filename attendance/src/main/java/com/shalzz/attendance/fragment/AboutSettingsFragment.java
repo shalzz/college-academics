@@ -6,6 +6,7 @@ import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
 
+import com.bugsnag.android.Bugsnag;
 import com.shalzz.attendance.R;
 
 import de.psdev.licensesdialog.LicensesDialog;
@@ -21,6 +22,7 @@ public class AboutSettingsFragment extends PreferenceFragment{
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = getActivity();
+        Bugsnag.setContext("About");
 
         addPreferencesFromResource(R.xml.pref_about);
     }

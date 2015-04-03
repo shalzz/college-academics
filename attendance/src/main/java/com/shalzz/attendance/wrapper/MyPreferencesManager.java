@@ -24,6 +24,9 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.text.format.Time;
 import android.util.Log;
+
+import com.bugsnag.android.Bugsnag;
+import com.bugsnag.android.Severity;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.activity.MainActivity;
 
@@ -76,6 +79,7 @@ public class MyPreferencesManager {
 		Iterator<String> keyset = pcookies.getAll().keySet().iterator();
 		if(keyset.hasNext())
 		{
+            Bugsnag.leaveBreadcrumb("Persistent cookies found.");
 			while(keyset.hasNext())
 			{
 				String cookiename = keyset.next();
@@ -89,8 +93,13 @@ public class MyPreferencesManager {
 						cookie.setVersion(0);
 						cookieMan.getCookieStore().add(new URI(mContext.getResources().getString(R.string.URL_home)), cookie);
 					} catch (Exception e) {
+                        Bugsnag.notify(e, Severity.ERROR);
 						e.printStackTrace();
 					} 
+				}
+				else
+				{
+                    Bugsnag.leaveBreadcrumb("Persistent cookies not found.");
 				}
 			}
 		}

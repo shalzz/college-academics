@@ -64,6 +64,7 @@ android {
 
         // 3rd party library projects
         compile 'com.afollestad:material-dialogs:0.6.4.7'
+        compile 'com.bugsnag:bugsnag-android:3.+'
         compile 'com.jakewharton:butterknife:6.0.0'
         compile 'com.mcxiaoke.volley:library:1.0.+@aar'
         compile 'com.github.amlcurran.showcaseview:library:5.1.1-SNAPSHOT@aar'

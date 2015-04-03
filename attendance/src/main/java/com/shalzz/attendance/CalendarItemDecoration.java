@@ -17,6 +17,8 @@ import android.view.View;
 import android.widget.OverScroller;
 import android.widget.Scroller;
 
+import com.bugsnag.android.Bugsnag;
+import com.bugsnag.android.Severity;
 import com.shalzz.attendance.model.Day;
 import com.shalzz.attendance.model.Period;
 import com.shalzz.attendance.wrapper.DateHelper;
@@ -209,6 +211,7 @@ public class CalendarItemDecoration extends RecyclerView.ItemDecoration {
                         String dayName = sdf.format(date.getTime()).toUpperCase();
                         return String.format("%s %d/%02d", dayName, date.get(Calendar.MONTH) + 1, date.get(Calendar.DAY_OF_MONTH));
                     }catch (Exception e){
+                        Bugsnag.notify(e, Severity.WARNING);
                         e.printStackTrace();
                         return "";
                     }
@@ -248,6 +251,7 @@ public class CalendarItemDecoration extends RecyclerView.ItemDecoration {
                 diff = end.compareTo(start);
             } catch (ParseException e) {
                 e.printStackTrace();
+                Bugsnag.notify(e, Severity.ERROR);
             }
             if(diff !=0) {
                 Log.d("Calender decoration","Diff: "+diff);

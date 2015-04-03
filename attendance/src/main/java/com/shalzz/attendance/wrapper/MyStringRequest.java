@@ -26,6 +26,7 @@ import com.android.volley.Response.ErrorListener;
 import com.android.volley.Response.Listener;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.StringRequest;
+import com.bugsnag.android.Bugsnag;
 
 import java.io.UnsupportedEncodingException;
 
@@ -61,6 +62,7 @@ public class MyStringRequest extends StringRequest {
 		try {
 			parsed = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
 		} catch (UnsupportedEncodingException e) {
+            Bugsnag.notify(e);
 			parsed = new String(response.data);
 		}
 		return Response.success(parsed, ignoreCacheHeaders(response));

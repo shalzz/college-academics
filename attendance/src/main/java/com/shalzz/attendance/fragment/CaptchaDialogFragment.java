@@ -44,6 +44,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.ImageLoader.ImageContainer;
+import com.bugsnag.android.Bugsnag;
 import com.shalzz.attendance.CircularIndeterminate;
 import com.shalzz.attendance.Miscellaneous;
 import com.shalzz.attendance.R;
@@ -141,6 +142,7 @@ public class CaptchaDialogFragment extends DialogFragment{
 		bRefreshCaptcha.setOnClickListener(new View.OnClickListener() {			
 			@Override
 			public void onClick(View v) {
+                Bugsnag.leaveBreadcrumb("refreshing captcha");
 				getImg();
 				Captxt.setText("");
 			}
@@ -163,6 +165,7 @@ public class CaptchaDialogFragment extends DialogFragment{
 	 */
 	private void getImg() 
 	{
+        Bugsnag.leaveBreadcrumb("loading captcha image");
 		ImageLoader imageLoader = MyVolley.getInstance().getImageLoader();
 		imageLoader.setBatchedResponseDelay(0);
 		imageLoader.get(getString(R.string.URL_captcha), new ImageLoader.ImageListener() {
@@ -189,6 +192,7 @@ public class CaptchaDialogFragment extends DialogFragment{
 					view.setVisibility(View.VISIBLE);
 					view.setImageBitmap(response.getBitmap());
 					view.setScaleType(ImageView.ScaleType.FIT_XY);
+                    Bugsnag.leaveBreadcrumb("captcha loaded");
 				} else {
                     if(pbar!=null)
 					    pbar.setVisibility(ProgressBar.VISIBLE);
