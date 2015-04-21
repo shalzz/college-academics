@@ -45,7 +45,7 @@ import butterknife.InjectView;
 
 public class DayFragment extends Fragment {
 
-    @InjectView(R.id.my_recycler_view) RecyclerView mRecyclerView;
+    @InjectView(R.id.time_table_recycler_view) RecyclerView mRecyclerView;
     @InjectView(R.id.empty_view) View mEmptyView;
     private Context mContext;
     private Date mDate;
