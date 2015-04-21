@@ -94,10 +94,15 @@ public class AttendanceListFragment extends Fragment implements
     @InjectView(R.id.atten_recycler_view)
     RecyclerView mRecyclerView;
 
+    private boolean useGridLayout = false;
+
+    private final int GRID_LAYOUT_SPAN_COUNT = 2;
+
     private View mFooter;
     private View mHeader;
     private HeaderFooterViewHolder mHFViewHolder;
     private LinearLayoutManager mLinearLayoutManager;
+    private StaggeredGridLayoutManager mGridLayoutManager;
     private TextView mLastRefreshView;
     private Context mContext;
     private String mTag;
@@ -144,6 +149,10 @@ public class AttendanceListFragment extends Fragment implements
         mLinearLayoutManager = new LinearLayoutManager(mContext,
                 LinearLayoutManager.VERTICAL, false);
         mLinearLayoutManager.setSmoothScrollbarEnabled(true);
+        mGridLayoutManager = new StaggeredGridLayoutManager(GRID_LAYOUT_SPAN_COUNT,
+                StaggeredGridLayoutManager.VERTICAL);
+        mGridLayoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_NONE);
+        useGridLayout = getResources().getBoolean(R.bool.use_grid_layout);
     }
 
     @Override
@@ -175,8 +184,7 @@ public class AttendanceListFragment extends Fragment implements
 
         mRecyclerView.setHasFixedSize(true);
 
-        // use a linear layout manager
-        mRecyclerView.setLayoutManager(mLinearLayoutManager);
+        mRecyclerView.setLayoutManager(useGridLayout ? mGridLayoutManager : mLinearLayoutManager);
 
         RecyclerView.ItemDecoration itemDecoration =
                 new DividerItemDecoration(mContext, DividerItemDecoration.VERTICAL_LIST);
@@ -205,8 +213,7 @@ public class AttendanceListFragment extends Fragment implements
             }
             DataAPI.getAttendance(mContext, successListener(), errorListener());
             mProgress.setVisibility(View.VISIBLE);
-        }
-        else {
+        } else {
             setAttendance();
             updateLastRefresh();
         }
@@ -521,17 +528,38 @@ public class AttendanceListFragment extends Fragment implements
 
     @Override
     public View getViewForCallId(long callId) {
-        int firstPosition = mLinearLayoutManager.findFirstVisibleItemPosition();
-        int lastPosition = mLinearLayoutManager.findLastVisibleItemPosition();
+        if(!useGridLayout) {
+            int firstPosition = mLinearLayoutManager.findFirstVisibleItemPosition();
+            int lastPosition = mLinearLayoutManager.findLastVisibleItemPosition();
 
-        for (int position = 0; position <= lastPosition - firstPosition; position++) {
-            View view = mRecyclerView.getChildAt(position);
+            for (int position = 0; position <= lastPosition - firstPosition; position++) {
+                View view = mRecyclerView.getChildAt(position);
 
-            if (view != null) {
-                final ExpandableListAdapter.ViewHolder viewHolder =
-                        (ExpandableListAdapter.ViewHolder) view.getTag();
-                if (viewHolder != null && viewHolder.position == callId) {
-                    return view;
+                if (view != null) {
+                    final ExpandableListAdapter.ViewHolder viewHolder =
+                            (ExpandableListAdapter.ViewHolder) view.getTag();
+                    if (viewHolder != null && viewHolder.position == callId) {
+                        return view;
+                    }
+                }
+            }
+        } else {
+            int firstPosition[] = {0, 0};
+            int lastPosition[] = {0, 0} ;
+            mGridLayoutManager.findFirstVisibleItemPositions(firstPosition);
+            mGridLayoutManager.findLastVisibleItemPositions(lastPosition);
+
+            for (int i = 0 ; i< GRID_LAYOUT_SPAN_COUNT; i++) {
+                for (int position = 0; position <= lastPosition[i] - firstPosition[i] ; position++) {
+                    View view = mRecyclerView.getChildAt(position);
+
+                    if (view != null) {
+                        final ExpandableListAdapter.ViewHolder viewHolder =
+                                (ExpandableListAdapter.ViewHolder) view.getTag();
+                        if (viewHolder != null && viewHolder.position == callId) {
+                            return view;
+                        }
+                    }
                 }
             }
         }
