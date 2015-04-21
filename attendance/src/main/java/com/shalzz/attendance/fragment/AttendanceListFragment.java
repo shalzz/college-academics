@@ -23,12 +23,11 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.app.Activity;
-import android.app.ListFragment;
+import android.app.Fragment;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -36,7 +35,10 @@ import android.support.annotation.NonNull;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -45,7 +47,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.widget.AbsListView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -54,20 +55,18 @@ import android.widget.TextView;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.bugsnag.android.Bugsnag;
-import com.bugsnag.android.Severity;
 import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.ViewTarget;
 import com.shalzz.attendance.CircularIndeterminate;
 import com.shalzz.attendance.DataAPI;
 import com.shalzz.attendance.DataAssembler;
 import com.shalzz.attendance.DatabaseHandler;
+import com.shalzz.attendance.DividerItemDecoration;
 import com.shalzz.attendance.Miscellaneous;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.UserAccount;
 import com.shalzz.attendance.activity.MainActivity;
 import com.shalzz.attendance.adapter.ExpandableListAdapter;
-import com.shalzz.attendance.model.ListFooter;
-import com.shalzz.attendance.model.ListHeader;
 import com.shalzz.attendance.model.Subject;
 import com.shalzz.attendance.wrapper.ErrorHelper;
 import com.shalzz.attendance.wrapper.MultiSwipeRefreshLayout;
@@ -80,7 +79,7 @@ import java.util.List;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
-public class AttendanceListFragment extends ListFragment implements 
+public class AttendanceListFragment extends Fragment implements
         ExpandableListAdapter.SubjectItemExpandedListener {
 
     /**
@@ -93,10 +92,18 @@ public class AttendanceListFragment extends ListFragment implements
     @InjectView(R.id.circular_indet_atten)
     CircularIndeterminate mProgress;
 
+    @InjectView(R.id.atten_recycler_view)
+    RecyclerView mRecyclerView;
+
+    private boolean useGridLayout = false;
+
+    private final int GRID_LAYOUT_SPAN_COUNT = 2;
+
     private View mFooter;
     private View mHeader;
     private HeaderFooterViewHolder mHFViewHolder;
-    private ListView mListView;
+    private LinearLayoutManager mLinearLayoutManager;
+    private StaggeredGridLayoutManager mGridLayoutManager;
     private TextView mLastRefreshView;
     private Context mContext;
     private String mTag;
@@ -137,11 +144,17 @@ public class AttendanceListFragment extends ListFragment implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+		Bugsnag.setContext("AttendanceList");
         mContext = getActivity();
         mTag = getActivity().getLocalClassName();
         prefs = new MyPreferencesManager(mContext.getApplicationContext());
-
-        Bugsnag.setContext("AttendanceList");
+        mLinearLayoutManager = new LinearLayoutManager(mContext,
+                LinearLayoutManager.VERTICAL, false);
+        mLinearLayoutManager.setSmoothScrollbarEnabled(true);
+        mGridLayoutManager = new StaggeredGridLayoutManager(GRID_LAYOUT_SPAN_COUNT,
+                StaggeredGridLayoutManager.VERTICAL);
+        mGridLayoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_NONE);
+        useGridLayout = getResources().getBoolean(R.bool.use_grid_layout);
     }
 
     @Override
@@ -162,7 +175,7 @@ public class AttendanceListFragment extends ListFragment implements
         View mView = inflater.inflate(R.layout.attenview, container, false);
         ButterKnife.inject(this, mView);
 
-        mSwipeRefreshLayout.setSwipeableChildren(android.R.id.list);
+        mSwipeRefreshLayout.setSwipeableChildren(R.id.atten_recycler_view);
         mDropShadow = MainActivity.getInstance().dropShadow;
 
         // Set the color scheme of the SwipeRefreshLayout by providing 4 color resource ids
@@ -170,6 +183,14 @@ public class AttendanceListFragment extends ListFragment implements
                 R.color.swipe_color_1, R.color.swipe_color_2,
                 R.color.swipe_color_3, R.color.swipe_color_4);
         mSwipeRefreshLayout.setProgressViewOffset(true, 1, 92);
+
+        mRecyclerView.setHasFixedSize(true);
+
+        mRecyclerView.setLayoutManager(useGridLayout ? mGridLayoutManager : mLinearLayoutManager);
+
+        RecyclerView.ItemDecoration itemDecoration =
+                new DividerItemDecoration(mContext, DividerItemDecoration.VERTICAL_LIST);
+        mRecyclerView.addItemDecoration(itemDecoration);
 
         return mView;
     }
@@ -179,14 +200,12 @@ public class AttendanceListFragment extends ListFragment implements
         super.onViewCreated(view, savedInstanceState);
         LayoutInflater inflater = getActivity().getLayoutInflater();
 
-        mListView = getListView();
-        mHeader = inflater.inflate(R.layout.list_header, mListView, false);
-        mFooter = inflater.inflate(R.layout.list_footer, mListView, false);
+        mHeader = inflater.inflate(R.layout.list_header, mRecyclerView, false);
+        mFooter = inflater.inflate(R.layout.list_footer, mRecyclerView, false);
         mHFViewHolder = new HeaderFooterViewHolder(mHeader,mFooter);
         mLastRefreshView = (TextView) mHeader.findViewById(R.id.last_refreshed);
-        mListView.addHeaderView(mHeader);
-        mListView.addFooterView(mFooter);
-        mListView.setHeaderDividersEnabled(false);
+//        mLayoutManager.addView(mHeader, 0);
+//        mLayoutManager.addView(mFooter,mAdapter.getItemCount());
 
         DatabaseHandler db = new DatabaseHandler(mContext);
         if(db.getRowCount()<=0) {
@@ -196,8 +215,7 @@ public class AttendanceListFragment extends ListFragment implements
             }
             DataAPI.getAttendance(mContext, successListener(), errorListener());
             mProgress.setVisibility(View.VISIBLE);
-        }
-        else {
+        } else {
             setAttendance();
             updateLastRefresh();
         }
@@ -209,26 +227,21 @@ public class AttendanceListFragment extends ListFragment implements
             }
         });
 
-        mListView.setOnScrollListener(new AbsListView.OnScrollListener() {
-
+        mRecyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
-            public void onScrollStateChanged(AbsListView view, int scrollState) {
-            }
-
-            @Override
-            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount,
-                                 int totalItemCount) {
-                mDropShadow.setVisibility(mHeader.isShown() ? View.GONE : View.VISIBLE);
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+//                mDropShadow.setVisibility(mHeader.isShown() ? View.GONE : View.VISIBLE);
+                super.onScrolled(recyclerView, dx, dy);
             }
         });
     }
 
     public void showcaseView() {
         int firstElementPosition = 0;
-        firstElementPosition += mListView.getHeaderViewsCount();
-        View firstElementView = mListView.getChildAt(firstElementPosition);
+//        firstElementPosition += mListView.getHeaderViewsCount();
+        View firstElementView = mRecyclerView.getChildAt(firstElementPosition);
         ViewTarget target = firstElementView != null ? new ViewTarget(firstElementView)
-                : new ViewTarget(mListView);
+                : new ViewTarget(mRecyclerView);
 
         new ShowcaseView.Builder(getActivity())
                 .setStyle(R.style.ShowcaseTheme)
@@ -240,7 +253,7 @@ public class AttendanceListFragment extends ListFragment implements
     }
 
     protected void updateLastRefresh() {
-        mLastRefreshView.setText(getString(R.string.last_refresh, prefs.getLastSyncTime()));
+//        mLastRefreshView.setText(getString(R.string.last_refresh, prefs.getLastSyncTime()));
     }
 
     private void setAttendance() {
@@ -256,29 +269,29 @@ public class AttendanceListFragment extends ListFragment implements
 
             mAdapter = new ExpandableListAdapter(mContext,subjects,this);
             mAdapter.setLimit(expandLimit);
-            mListView.setAdapter(mAdapter);
+            mRecyclerView.setAdapter(mAdapter);
 
         }
     }
 
     private void updateHeaderNFooter() {
 
-        DatabaseHandler db = new DatabaseHandler(mContext);
-        ListFooter listfooter = db.getListFooter();
-        Float percent = listfooter.getPercentage();
-
-        mHFViewHolder.tvPercent.setText(listfooter.getPercentage()+"%");
-        mHFViewHolder.tvClasses.setText(listfooter.getAttended().intValue() + "/" + listfooter.getHeld().intValue());
-        mHFViewHolder.pbPercent.setProgress(percent.intValue());
-        Drawable d = mHFViewHolder.pbPercent.getProgressDrawable();
-        d.setLevel(percent.intValue() * 100);
-
-        ListHeader listheader = db.getListHeader();
-        mHFViewHolder.tvName.setText(listheader.getName());
-        mHFViewHolder.tvSap.setText(String.valueOf(listheader.getSAPId()));
-        mHFViewHolder.tvCourse.setText(listheader.getCourse());
-
-        MainActivity.getInstance().updateDrawerHeader();
+//        DatabaseHandler db = new DatabaseHandler(mContext);
+//        ListFooter listfooter = db.getListFooter();
+//        Float percent = listfooter.getPercentage();
+//
+//        mHFViewHolder.tvPercent.setText(listfooter.getPercentage()+"%");
+//        mHFViewHolder.tvClasses.setText(listfooter.getAttended().intValue() + "/" + listfooter.getHeld().intValue());
+//        mHFViewHolder.pbPercent.setProgress(percent.intValue());
+//        Drawable d = mHFViewHolder.pbPercent.getProgressDrawable();
+//        d.setLevel(percent.intValue() * 100);
+//
+//        ListHeader listheader = db.getListHeader();
+//        mHFViewHolder.tvName.setText(listheader.getName());
+//        mHFViewHolder.tvSap.setText(String.valueOf(listheader.getSAPId()));
+//        mHFViewHolder.tvCourse.setText(listheader.getCourse());
+//
+//        MainActivity.getInstance().updateDrawerHeader();
 
     }
 
@@ -291,7 +304,7 @@ public class AttendanceListFragment extends ListFragment implements
         final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
         searchView.setQueryHint(mResourses.getString(R.string.hint_search));
 
-        MenuItemCompat.setOnActionExpandListener(searchItem , new MenuItemCompat.OnActionExpandListener() {
+        MenuItemCompat.setOnActionExpandListener(searchItem, new MenuItemCompat.OnActionExpandListener() {
             @Override
             public boolean onMenuItemActionCollapse(MenuItem item) {
                 DatabaseHandler db = new DatabaseHandler(mContext);
@@ -319,7 +332,7 @@ public class AttendanceListFragment extends ListFragment implements
             public boolean onQueryTextChange(String arg0) {
                 DatabaseHandler db = new DatabaseHandler(mContext);
                 List<Subject> subjects = db.getAllSubjectsLike(arg0);
-                if(mAdapter != null)
+                if (mAdapter != null)
                     mAdapter.setDataSet(subjects);
                 return false;
             }
@@ -362,7 +375,6 @@ public class AttendanceListFragment extends ListFragment implements
                     new DataAssembler.ParseAttendance(mContext, parseListener()).execute(response);
                 }
                 catch (Exception e) {
-                    Bugsnag.notify(e, Severity.ERROR);
                     String msg = mResourses.getString(R.string.unexpected_error);
                     Miscellaneous.showSnackBar(mContext,msg);
                 }
@@ -402,7 +414,7 @@ public class AttendanceListFragment extends ListFragment implements
                 mSwipeRefreshLayout.setRefreshing(false);
 
                 String msg = MyVolleyErrorHelper.getMessage(error, mContext);
-                Miscellaneous.showSnackBar(mContext,msg);
+                Miscellaneous.showSnackBar(mContext, msg);
                 Log.e(mTag, msg);
             }
         };
@@ -415,7 +427,7 @@ public class AttendanceListFragment extends ListFragment implements
         final RelativeLayout childView = viewHolder.childView;
         childView.measure(spec, spec);
         final int startingHeight = view.getHeight();
-        final ViewTreeObserver observer = mListView.getViewTreeObserver();
+        final ViewTreeObserver observer = mRecyclerView.getViewTreeObserver();
         observer.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
             @Override
             public boolean onPreDraw() {
@@ -463,7 +475,6 @@ public class AttendanceListFragment extends ListFragment implements
                 view.getLocalVisibleRect(localVisibleRect);
                 final int scrollingNeeded = localVisibleRect.top > 0 ? -localVisibleRect.top
                         : endingHeight - localVisibleRect.height();
-                final ListView listView = getListView();
                 animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
 
                     private int mCurrentScroll = 0;
@@ -481,9 +492,9 @@ public class AttendanceListFragment extends ListFragment implements
                         view.requestLayout();
 
                         if (isExpanded) {
-                            if (listView != null) {
+                            if (mRecyclerView != null) {
                                 int scrollBy = (int) (value * scrollingNeeded) - mCurrentScroll;
-                                listView.smoothScrollBy(scrollBy, 0);
+                                mRecyclerView.smoothScrollBy(scrollBy, 0);
                                 mCurrentScroll += scrollBy;
                             }
                         }
@@ -519,20 +530,41 @@ public class AttendanceListFragment extends ListFragment implements
 
     @Override
     public View getViewForCallId(long callId) {
-        int firstPosition = mListView.getFirstVisiblePosition();
-        int lastPosition = mListView.getLastVisiblePosition();
+        if(!useGridLayout) {
+            int firstPosition = mLinearLayoutManager.findFirstVisibleItemPosition();
+            int lastPosition = mLinearLayoutManager.findLastVisibleItemPosition();
 
-        for (int position = 0; position <= lastPosition - firstPosition; position++) {
-            View view = mListView.getChildAt(position);
+            for (int position = 0; position <= lastPosition - firstPosition; position++) {
+                View view = mRecyclerView.getChildAt(position);
 
-            if (view != null) {
-                final ExpandableListAdapter.ViewHolder viewHolder = (ExpandableListAdapter.ViewHolder) view.getTag();
-                if (viewHolder != null && viewHolder.position == callId) {
-                    return view;
+                if (view != null) {
+                    final ExpandableListAdapter.ViewHolder viewHolder =
+                            (ExpandableListAdapter.ViewHolder) view.getTag();
+                    if (viewHolder != null && viewHolder.position == callId) {
+                        return view;
+                    }
+                }
+            }
+        } else {
+            int firstPosition[] = {0, 0};
+            int lastPosition[] = {0, 0} ;
+            mGridLayoutManager.findFirstVisibleItemPositions(firstPosition);
+            mGridLayoutManager.findLastVisibleItemPositions(lastPosition);
+
+            for (int i = 0 ; i< GRID_LAYOUT_SPAN_COUNT; i++) {
+                for (int position = 0; position <= lastPosition[i] - firstPosition[i] ; position++) {
+                    View view = mRecyclerView.getChildAt(position);
+
+                    if (view != null) {
+                        final ExpandableListAdapter.ViewHolder viewHolder =
+                                (ExpandableListAdapter.ViewHolder) view.getTag();
+                        if (viewHolder != null && viewHolder.position == callId) {
+                            return view;
+                        }
+                    }
                 }
             }
         }
-
         return null;
     }
 

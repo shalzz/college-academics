@@ -27,7 +27,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -42,7 +41,7 @@ import java.util.List;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
-public class ExpandableListAdapter extends BaseAdapter {
+public class ExpandableListAdapter extends RecyclerView.Adapter<ExpandableListAdapter.ViewHolder> {
 
     private Context mContext;
     private List<Subject> mSubjects;
@@ -68,7 +67,7 @@ public class ExpandableListAdapter extends BaseAdapter {
          * @param view The {@link View} that represents the item that was clicked
          *         on.
          */
-        public void onItemExpanded(View view);
+        void onItemExpanded(View view);
 
         /**
          * Retrieves the call log view for the specified call Id.  If the view is not currently
@@ -77,7 +76,7 @@ public class ExpandableListAdapter extends BaseAdapter {
          * @param callId The call Id.
          * @return The call log view.
          */
-        public View getViewForCallId(long callId);
+        View getViewForCallId(long callId);
     }
 
     public ExpandableListAdapter(Context context,List<Subject> subjects,
@@ -118,23 +117,6 @@ public class ExpandableListAdapter extends BaseAdapter {
 
     }
 
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-
-        View v = convertView;
-        ViewHolder vh;
-        if(v == null) {
-            v = LayoutInflater.from(parent.getContext()).inflate(R.layout.card, parent, false);
-            vh = new ViewHolder(v);
-        }
-        else
-            vh = (ViewHolder) convertView.getTag();
-
-        onBindViewHolder(vh,position);
-
-        return v;
-    }
-
     /**
      * The onClickListener used to expand or collapse the action buttons section for a call log
      * entry.
@@ -145,6 +127,12 @@ public class ExpandableListAdapter extends BaseAdapter {
             handleRowExpanded(v, true /* animate */, false /* forceExpand */);
         }
     };
+
+    @Override
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.card, parent, false);
+        return new ViewHolder(v);
+    }
 
     // Replace the contents of a view (invoked by the layout manager)
     public void onBindViewHolder(ViewHolder holder, int position) {
@@ -403,18 +391,13 @@ public class ExpandableListAdapter extends BaseAdapter {
     }
 
     @Override
-    public int getCount() {
-        return mSubjects.size();
-    }
-
-    @Override
-    public Object getItem(int position) {
-        return mSubjects.get(position);
-    }
-
-    @Override
     public long getItemId(int position) {
         return (long) position;
+    }
+
+    @Override
+    public int getItemCount() {
+        return mSubjects.size();
     }
 
 
