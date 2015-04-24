@@ -6,7 +6,10 @@ import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.shalzz.attendance.R;
+import com.shalzz.attendance.wrapper.MyVolley;
 
 import de.psdev.licensesdialog.LicensesDialog;
 import de.psdev.licensesdialog.licenses.GnuGeneralPublicLicense20;
@@ -23,6 +26,15 @@ public class AboutSettingsFragment extends PreferenceFragment{
         mContext = getActivity();
 
         addPreferencesFromResource(R.xml.pref_about);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Tracker t = ((MyVolley) getActivity().getApplication()).getTracker(
+                MyVolley.TrackerName.APP_TRACKER);
+
+        t.send(new HitBuilders.ScreenViewBuilder().build());
     }
 
     @Override

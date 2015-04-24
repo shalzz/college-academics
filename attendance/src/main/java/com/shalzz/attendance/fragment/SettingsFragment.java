@@ -31,10 +31,14 @@ import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
 
+import com.google.android.gms.analytics.GoogleAnalytics;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.shalzz.attendance.DatabaseHandler;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.activity.MainActivity;
 import com.shalzz.attendance.wrapper.MySyncManager;
+import com.shalzz.attendance.wrapper.MyVolley;
 
 public class SettingsFragment extends PreferenceFragment implements OnSharedPreferenceChangeListener{
 
@@ -68,6 +72,15 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
         list_pref_ring_mode.setSummary(list_pref_ring_mode.getEntry());
 	}
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        Tracker t = ((MyVolley) getActivity().getApplication()).getTracker(
+                MyVolley.TrackerName.APP_TRACKER);
+
+        t.send(new HitBuilders.ScreenViewBuilder().build());
+    }
+
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         if(key.equals(key_sub_limit)) {
             ListPreference connectionPref = (ListPreference) findPreference(key);
@@ -86,6 +99,10 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
         else if(key.equals(key_ring_mode)) {
             ListPreference list_pref_ring_mode = (ListPreference) findPreference(key_ring_mode);
             list_pref_ring_mode.setSummary(list_pref_ring_mode.getEntry());
+        }
+        else if(key.equals(getString(R.string.pref_key_ga_opt_in))) {
+            GoogleAnalytics.getInstance(mContext).setAppOptOut(
+                    !sharedPreferences.getBoolean(key, false));
         }
 	}
 
@@ -122,7 +139,7 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
 		});
 
         PreferenceCategory proxyPrefCategory = (PreferenceCategory) getPreferenceScreen().getPreference(2);
-        PreferenceScreen proxyPrefScreen =  (PreferenceScreen) proxyPrefCategory.getPreference(2);
+        PreferenceScreen proxyPrefScreen =  (PreferenceScreen) proxyPrefCategory.getPreference(3);
         proxyPrefScreen.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener(){
             @Override
             public boolean onPreferenceClick(Preference preference) {

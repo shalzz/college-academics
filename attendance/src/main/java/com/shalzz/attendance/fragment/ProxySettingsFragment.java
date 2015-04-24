@@ -7,7 +7,10 @@ import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.shalzz.attendance.R;
+import com.shalzz.attendance.wrapper.MyVolley;
 
 public class ProxySettingsFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
 
@@ -24,6 +27,15 @@ public class ProxySettingsFragment extends PreferenceFragment implements SharedP
         Preference connectionPref = findPreference(key_proxy_username);
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mContext);
         connectionPref.setSummary(sharedPref.getString(key_proxy_username, ""));
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Tracker t = ((MyVolley) getActivity().getApplication()).getTracker(
+                MyVolley.TrackerName.APP_TRACKER);
+
+        t.send(new HitBuilders.ScreenViewBuilder().build());
     }
 
     @Override

@@ -44,6 +44,8 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.ImageLoader.ImageContainer;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.shalzz.attendance.CircularIndeterminate;
 import com.shalzz.attendance.Miscellaneous;
 import com.shalzz.attendance.R;
@@ -130,6 +132,11 @@ public class CaptchaDialogFragment extends DialogFragment{
 	@Override
 	public void onStart() {
 		super.onStart();
+
+		Tracker t = ((MyVolley) getActivity().getApplication()).getTracker(
+				MyVolley.TrackerName.APP_TRACKER);
+
+		t.send(new HitBuilders.ScreenViewBuilder().build());
 		
 		AlertDialog alertDialog = (AlertDialog) getDialog();
 		final Button positiveButton = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);

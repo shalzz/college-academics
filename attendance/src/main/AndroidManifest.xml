@@ -34,8 +34,6 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
 
-    <!--TODO: add google analytics-->
-
     <!--TODO: support tablets-->
     <supports-screens
         android:smallScreens="true"

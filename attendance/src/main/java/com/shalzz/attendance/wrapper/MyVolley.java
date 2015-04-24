@@ -32,11 +32,15 @@ import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.ImageLoader.ImageCache;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.analytics.GoogleAnalytics;
+import com.google.android.gms.analytics.Tracker;
 import com.millennialmedia.android.MMSDK;
+import com.shalzz.attendance.R;
 
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
+import java.util.HashMap;
 
 /**
  * Wrapper class for Volley which provides a singleton instance.
@@ -70,6 +74,21 @@ public class MyVolley extends Application {
      */
     private static MyVolley sInstance;
 
+	/**
+	 * Enum used to identify the tracker that needs to be used for tracking.
+	 *
+	 * A single tracker is usually enough for most purposes. In case you do need multiple trackers,
+	 * storing them all in Application object helps ensure that they are created only once per
+	 * application instance.
+	 */
+	public enum TrackerName {
+		APP_TRACKER, // Tracker used only in this app.
+		GLOBAL_TRACKER, // Tracker used by all the apps from a company. eg: roll-up tracking.
+		ECOMMERCE_TRACKER, // Tracker used by all ecommerce transactions from a company.
+	}
+
+	HashMap<TrackerName, Tracker> mTrackers = new HashMap<TrackerName, Tracker>();
+
 	@Override
 	public void onCreate() {
 		super.onCreate();
@@ -96,6 +115,17 @@ public class MyVolley extends Application {
 	 public static Context getAppContext() {
 	        return MyVolley.mContext;
 	    }
+
+	public synchronized Tracker getTracker(TrackerName trackerId) {
+		if (!mTrackers.containsKey(trackerId)) {
+			GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);
+			if(trackerId == TrackerName.APP_TRACKER) {
+				Tracker t = analytics.newTracker(R.xml.app_tracker);
+				mTrackers.put(trackerId, t);
+			}
+		}
+		return mTrackers.get(trackerId);
+	}
 
 	/**
 	 * @return The Volley Request queue.

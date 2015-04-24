@@ -54,6 +54,11 @@
     </PreferenceCategory>
     <PreferenceCategory android:title="Network" >
         <CheckBoxPreference
+            android:key="@string/pref_key_ga_opt_in"
+            android:defaultValue="true"
+            android:title="@string/pref_ga_opt_in"
+            android:summary="@string/pref_ga_opt_in_summary" />
+        <CheckBoxPreference
             android:key="@string/pref_key_sync"
             android:defaultValue="true"
             android:title="@string/pref_sync"

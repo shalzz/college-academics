@@ -56,6 +56,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.ViewTarget;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.shalzz.attendance.CircularIndeterminate;
 import com.shalzz.attendance.DataAPI;
 import com.shalzz.attendance.DataAssembler;
@@ -71,6 +73,7 @@ import com.shalzz.attendance.wrapper.ErrorHelper;
 import com.shalzz.attendance.wrapper.MultiSwipeRefreshLayout;
 import com.shalzz.attendance.wrapper.MyPreferencesManager;
 import com.shalzz.attendance.wrapper.MySyncManager;
+import com.shalzz.attendance.wrapper.MyVolley;
 import com.shalzz.attendance.wrapper.MyVolleyErrorHelper;
 
 import java.util.List;
@@ -153,6 +156,15 @@ public class AttendanceListFragment extends Fragment implements
                 StaggeredGridLayoutManager.VERTICAL);
         mGridLayoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_NONE);
         useGridLayout = getResources().getBoolean(R.bool.use_grid_layout);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Tracker t = ((MyVolley) getActivity().getApplication()).getTracker(
+                MyVolley.TrackerName.APP_TRACKER);
+
+        t.send(new HitBuilders.ScreenViewBuilder().build());
     }
 
     @Override

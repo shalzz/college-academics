@@ -20,10 +20,12 @@
 package com.shalzz.attendance.activity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 
+import com.google.android.gms.analytics.GoogleAnalytics;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.wrapper.MyPreferencesManager;
 
@@ -34,6 +36,10 @@ public class SplashActivity extends ActionBarActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+		boolean optIn = sharedPref.getBoolean(getString(R.string.pref_key_ga_opt_in), true);
+		GoogleAnalytics.getInstance(this).setAppOptOut(!optIn);
 
         // Set all default values once for this application
         try {
