@@ -149,12 +149,6 @@ public class AttendanceListFragment extends Fragment implements
         mContext = getActivity();
         mTag = getActivity().getLocalClassName();
         prefs = new MyPreferencesManager(mContext.getApplicationContext());
-        mLinearLayoutManager = new LinearLayoutManager(mContext,
-                LinearLayoutManager.VERTICAL, false);
-        mLinearLayoutManager.setSmoothScrollbarEnabled(true);
-        mGridLayoutManager = new StaggeredGridLayoutManager(GRID_LAYOUT_SPAN_COUNT,
-                StaggeredGridLayoutManager.VERTICAL);
-        mGridLayoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_NONE);
         useGridLayout = getResources().getBoolean(R.bool.use_grid_layout);
     }
 
@@ -194,7 +188,12 @@ public class AttendanceListFragment extends Fragment implements
                 R.color.swipe_color_3, R.color.swipe_color_4);
         mSwipeRefreshLayout.setProgressViewOffset(true, 1, 92);
 
-        mRecyclerView.setHasFixedSize(true);
+        mLinearLayoutManager = new LinearLayoutManager(mContext,
+                LinearLayoutManager.VERTICAL, false);
+        mLinearLayoutManager.setSmoothScrollbarEnabled(true);
+        mGridLayoutManager = new StaggeredGridLayoutManager(GRID_LAYOUT_SPAN_COUNT,
+                StaggeredGridLayoutManager.VERTICAL);
+        mGridLayoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_NONE);
 
         mRecyclerView.setLayoutManager(useGridLayout ? mGridLayoutManager : mLinearLayoutManager);
 
