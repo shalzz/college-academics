@@ -28,6 +28,9 @@
     protected Object[][] getContents();
 }
 
+# Billing
+-keep class com.android.vending.billing.**
+
 -keep public class com.google.android.gms.common.internal.safeparcel.SafeParcelable {
     public static final *** NULL;
 }
