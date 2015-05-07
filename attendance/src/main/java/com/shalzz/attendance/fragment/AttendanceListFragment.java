@@ -391,12 +391,13 @@ public class AttendanceListFragment extends Fragment implements
         };
     }
 
-    private DataAssembler.Listener parseListener() {
-        return new DataAssembler.Listener() {
+    private DataAssembler.ParseListener parseListener() {
+        return new DataAssembler.ParseListener() {
+            private boolean canceled = false;
             @Override
             public void onParseComplete(int result) {
                 // Stop the refreshing indicator
-                if(mProgress == null || mSwipeRefreshLayout == null)
+                if(mProgress == null || mSwipeRefreshLayout == null || canceled)
                     return;
                 mProgress.setVisibility(View.GONE);
                 mSwipeRefreshLayout.setRefreshing(false);
@@ -408,6 +409,10 @@ public class AttendanceListFragment extends Fragment implements
                 else
                     MainActivity.getInstance().updateDrawerHeader();
                 ErrorHelper.handleError(result, mContext);
+            }
+
+            public void cancelListener() {
+                canceled = true;
             }
         };
     }
@@ -591,6 +596,7 @@ public class AttendanceListFragment extends Fragment implements
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        parseListener().cancelListener();
         ButterKnife.reset(this);
     }
 }

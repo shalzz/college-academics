@@ -38,18 +38,20 @@ import java.util.ArrayList;
 
 public class DataAssembler {
 
-    public static interface Listener {
+    public interface ParseListener {
+
         void onParseComplete(int result);
+        void cancelListener();
     }
 
     public static class ParseStudentDetails extends AsyncTask<String, Void, Integer> {
 
         private Context mContext;
-        private DataAssembler.Listener mListener;
+        private ParseListener mParseListener;
 
-        public ParseStudentDetails(Context context, DataAssembler.Listener parseListener) {
+        public ParseStudentDetails(Context context, ParseListener parseListener) {
             mContext = context;
-            mListener = parseListener;
+            mParseListener = parseListener;
         }
 
         protected Integer doInBackground(String... response) {
@@ -97,8 +99,8 @@ public class DataAssembler {
         }
 
         protected void onPostExecute(Integer result) {
-            if(mListener != null)
-                mListener.onParseComplete(result);
+            if(mParseListener != null)
+                mParseListener.onParseComplete(result);
         }
     }
 
@@ -108,11 +110,11 @@ public class DataAssembler {
     public static class ParseAttendance extends AsyncTask<String, Void, Integer> {
 
         private Context mContext;
-        private DataAssembler.Listener mListener;
+        private ParseListener mParseListener;
 
-        public ParseAttendance(Context context, DataAssembler.Listener parseListener) {
+        public ParseAttendance(Context context, ParseListener parseListener) {
             mContext = context;
-            mListener = parseListener;
+            mParseListener = parseListener;
         }
 
         protected Integer doInBackground(String... response) {
@@ -120,19 +122,19 @@ public class DataAssembler {
         }
 
         protected void onPostExecute(Integer result) {
-            if(mListener != null)
-                mListener.onParseComplete(result);
+            if(mParseListener != null)
+                mParseListener.onParseComplete(result);
         }
     }
 
     public static class ParseTimeTable extends AsyncTask<String, Void, Integer> {
 
         private Context mContext;
-        private DataAssembler.Listener mListener;
+        private ParseListener mParseListener;
 
-        public ParseTimeTable(Context context, DataAssembler.Listener parseListener) {
+        public ParseTimeTable(Context context, ParseListener parseListener) {
             mContext = context;
-            mListener = parseListener;
+            mParseListener = parseListener;
         }
 
         protected Integer doInBackground(String... response) {
@@ -140,8 +142,8 @@ public class DataAssembler {
         }
 
         protected void onPostExecute(Integer result) {
-            if(mListener != null)
-                mListener.onParseComplete(result);
+            if(mParseListener != null)
+                mParseListener.onParseComplete(result);
         }
     }
 

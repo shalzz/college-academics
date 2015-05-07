@@ -334,12 +334,13 @@ public class TimeTablePagerFragment extends Fragment {
         };
     }
 
-    private DataAssembler.Listener parseListener() {
-        return new DataAssembler.Listener() {
+    private DataAssembler.ParseListener parseListener() {
+        return new DataAssembler.ParseListener() {
+            private boolean canceled = false;
             @Override
             public void onParseComplete(int result) {
                 // Stop the refreshing indicator
-                if(mProgress == null || mSwipeRefreshLayout == null)
+                if(mProgress == null || mSwipeRefreshLayout == null || canceled)
                     return;
                 mProgress.setVisibility(View.GONE);
                 mViewPager.setVisibility(View.VISIBLE);
@@ -351,6 +352,10 @@ public class TimeTablePagerFragment extends Fragment {
                     updateTitle();
                 }
                 ErrorHelper.handleError(result, mContext);
+            }
+
+            public void cancelListener() {
+                canceled = true;
             }
         };
     }
@@ -374,6 +379,7 @@ public class TimeTablePagerFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        parseListener().cancelListener();
         ButterKnife.reset(this);
     }
 
