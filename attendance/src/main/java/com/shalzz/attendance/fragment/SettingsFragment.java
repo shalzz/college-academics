@@ -39,6 +39,7 @@ import com.shalzz.attendance.R;
 import com.shalzz.attendance.activity.MainActivity;
 import com.shalzz.attendance.wrapper.MySyncManager;
 import com.shalzz.attendance.wrapper.MyVolley;
+import com.squareup.leakcanary.RefWatcher;
 
 public class SettingsFragment extends PreferenceFragment implements OnSharedPreferenceChangeListener{
 
@@ -155,4 +156,11 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
             }
         });
 	}
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        RefWatcher refWatcher = MyVolley.getRefWatcher(getActivity());
+        refWatcher.watch(this);
+    }
 }

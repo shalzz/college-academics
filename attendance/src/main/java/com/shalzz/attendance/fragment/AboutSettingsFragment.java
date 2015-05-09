@@ -10,6 +10,7 @@ import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.wrapper.MyVolley;
+import com.squareup.leakcanary.RefWatcher;
 
 import de.psdev.licensesdialog.LicensesDialog;
 import de.psdev.licensesdialog.licenses.GnuGeneralPublicLicense20;
@@ -66,4 +67,10 @@ public class AboutSettingsFragment extends PreferenceFragment{
         });
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        RefWatcher refWatcher = MyVolley.getRefWatcher(getActivity());
+        refWatcher.watch(this);
+    }
 }

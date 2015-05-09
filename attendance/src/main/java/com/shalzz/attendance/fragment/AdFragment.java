@@ -10,6 +10,8 @@ import android.view.ViewGroup;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.shalzz.attendance.R;
+import com.shalzz.attendance.wrapper.MyVolley;
+import com.squareup.leakcanary.RefWatcher;
 
 public class AdFragment extends Fragment {
 

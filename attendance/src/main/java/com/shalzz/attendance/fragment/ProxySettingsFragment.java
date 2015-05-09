@@ -11,6 +11,7 @@ import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.wrapper.MyVolley;
+import com.squareup.leakcanary.RefWatcher;
 
 public class ProxySettingsFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
 
@@ -61,5 +62,12 @@ public class ProxySettingsFragment extends PreferenceFragment implements SharedP
         // Set up a listener whenever a key changes
         getPreferenceScreen().getSharedPreferences()
                 .registerOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        RefWatcher refWatcher = MyVolley.getRefWatcher(getActivity());
+        refWatcher.watch(this);
     }
 }

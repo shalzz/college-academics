@@ -62,6 +62,7 @@ import com.shalzz.attendance.wrapper.MultiSwipeRefreshLayout;
 import com.shalzz.attendance.wrapper.MyPreferencesManager;
 import com.shalzz.attendance.wrapper.MyVolley;
 import com.shalzz.attendance.wrapper.MyVolleyErrorHelper;
+import com.squareup.leakcanary.RefWatcher;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -381,6 +382,8 @@ public class TimeTablePagerFragment extends Fragment {
         super.onDestroyView();
         parseListener().cancelListener();
         ButterKnife.reset(this);
+        RefWatcher refWatcher = MyVolley.getRefWatcher(getActivity());
+        refWatcher.watch(this);
     }
 
 }

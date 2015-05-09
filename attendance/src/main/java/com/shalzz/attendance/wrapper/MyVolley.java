@@ -21,7 +21,6 @@ package com.shalzz.attendance.wrapper;
 
 import android.app.Application;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.text.TextUtils;
 import android.util.Log;
@@ -36,6 +35,8 @@ import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
 import com.millennialmedia.android.MMSDK;
 import com.shalzz.attendance.R;
+import com.squareup.leakcanary.LeakCanary;
+import com.squareup.leakcanary.RefWatcher;
 
 import java.net.CookieHandler;
 import java.net.CookieManager;
@@ -75,6 +76,11 @@ public class MyVolley extends Application {
     private static MyVolley sInstance;
 
 	/**
+	 * LeakCanary reference used to watch activities and fragments
+	 */
+	private RefWatcher refWatcher;
+
+	/**
 	 * Enum used to identify the tracker that needs to be used for tracking.
 	 *
 	 * A single tracker is usually enough for most purposes. In case you do need multiple trackers,
@@ -103,6 +109,8 @@ public class MyVolley extends Application {
 		CookieHandler.setDefault(new CookieManager(null, CookiePolicy.ACCEPT_ALL));
 		MyPreferencesManager settings = new MyPreferencesManager(mContext);
 		settings.getPersistentCookies();
+
+		refWatcher = LeakCanary.install(this);
 	}
 	
 	/**
@@ -125,6 +133,11 @@ public class MyVolley extends Application {
 			}
 		}
 		return mTrackers.get(trackerId);
+	}
+
+	public static RefWatcher getRefWatcher(Context context) {
+		MyVolley application = (MyVolley) context.getApplicationContext();
+		return application.refWatcher;
 	}
 
 	/**

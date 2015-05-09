@@ -55,6 +55,7 @@ import com.shalzz.attendance.fragment.TimeTablePagerFragment;
 import com.shalzz.attendance.model.ListHeader;
 import com.shalzz.attendance.wrapper.MyPreferencesManager;
 import com.shalzz.attendance.wrapper.MyVolley;
+import com.squareup.leakcanary.LeakCanary;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -132,6 +133,8 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.drawer);
         ButterKnife.inject(this);
+
+        LeakCanary.enableDisplayLeakActivity(this);
 
         // set toolbar as actionbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
