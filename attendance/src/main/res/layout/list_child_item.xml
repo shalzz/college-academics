@@ -23,23 +23,12 @@
     android:layout_height="wrap_content">
 
     <TextView
-        android:id="@+id/tvClass"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:paddingLeft="5dp"
-        android:paddingRight="5dp"
-        android:gravity="center"
-        android:text="You have attended 0 out of 0 classes"
-        android:textSize="15sp" />
-
-    <TextView
         android:id="@+id/tvAbsent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/tvClass"
         android:layout_toLeftOf="@+id/tvProjected"
         android:layout_toStartOf="@+id/tvProjected"
+        android:layout_marginTop="5dp"
         android:layout_marginRight="5dp"
         android:layout_marginEnd="5dp"
         android:text="Days Absent:"

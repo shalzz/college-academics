@@ -99,6 +99,14 @@
         click the jump to date in the top right corner.</string>
     <string name="last_refresh">Last refreshed <xliff:g id="time">%d</xliff:g> hour(s) ago</string>
     <string name="atten_list_footer_total">Total Attendance:</string>
+    <string name="tv_class_attended">You have attended <xliff:g id="attended">%d</xliff:g> out of <xliff:g id="held">%d</xliff:g> class</string>
+    <string name="tv_classes_attended">You have attended <xliff:g id="attended">%d</xliff:g> out of <xliff:g id="held">%d</xliff:g> classes</string>
+    <string name="tv_class_to_67">Attend <xliff:g id="no_of_classes">%d</xliff:g> more class to reach 67&#37;</string>
+    <string name="tv_classes_to_67">Attend <xliff:g id="no_of_classes">%d</xliff:g> more classes to reach 67&#37;</string>
+    <string name="tv_class_to_75">Attend <xliff:g id="no_of_classes">%d</xliff:g> more class to reach 75&#37;</string>
+    <string name="tv_classes_to_75">Attend <xliff:g id="no_of_classes">%d</xliff:g> more classes to reach 75&#37;</string>
+    <string name="tv_miss_class">You can safely miss <xliff:g id="no_of_classes">%d</xliff:g> class</string>
+    <string name="tv_miss_classes">You can safely miss <xliff:g id="no_of_classes">%d</xliff:g> classes</string>
 
     <!--Preferences-->
     <string name="pref_subject_limit">Limit Expanded Subjects</string>

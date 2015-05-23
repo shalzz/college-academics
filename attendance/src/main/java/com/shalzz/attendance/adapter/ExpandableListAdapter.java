@@ -20,6 +20,7 @@
 package com.shalzz.attendance.adapter;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.v7.widget.RecyclerView;
@@ -107,7 +108,6 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<ExpandableListAd
         public TextView tvAbsent;
         public TextView tvProjected;
         public TextView tvReach;
-        public TextView tvClass;
         public ImageView ivAlert;
 
         public ViewHolder(View itemView) {
@@ -183,7 +183,6 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<ExpandableListAd
         views.tvAbsent = (TextView) childView.findViewById(R.id.tvAbsent);
         views.tvProjected = (TextView) childView.findViewById(R.id.tvProjected);
         views.tvReach = (TextView) childView.findViewById(R.id.tvReach);
-        views.tvClass = (TextView) childView.findViewById(R.id.tvClass);
         views.ivAlert = (ImageView) childView.findViewById(R.id.imageView1);
 
         bindChildView(views,views.position);
@@ -308,84 +307,52 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<ExpandableListAd
         TextView tvAbsent = holder.tvAbsent;
         TextView tvProjected = holder.tvProjected;
         TextView tvReach = holder.tvReach;
-        TextView tvClass = holder.tvClass;
         ImageView ivAlert = holder.ivAlert;
+        Resources res = mContext.getResources();
 
         int held = mSubjects.get(position).getClassesHeld().intValue();
         int attend = mSubjects.get(position).getClassesAttended().intValue();
         int percent = Math.round(mSubjects.get(position).getPercentage());
 
-
-        if(held==1)
-            tvClass.setText("You have attended "+attend+ " out of "+held+ " class");
-        else
-            tvClass.setText("You have attended "+attend+ " out of "+held+ " classes");
         tvProjected.setText(mSubjects.get(position).getProjectedPercentage());
-        tvAbsent.setText("Days Absent: "+mSubjects.get(position).getAbsentDates());
+        tvAbsent.setText("Days Absent: " + mSubjects.get(position).getAbsentDates());
 
         if (percent<67 && held!=0) {
             int x = (2*held) - (3*attend);
-            switch(x)
-            {
-                case 0:
-                    tvReach.setVisibility(View.GONE);
-                    ivAlert.setVisibility(View.GONE);
-                    break;
-                case 1:
-                    tvReach.setText("Attend 1 more class to reach 67%");
-                    tvReach.setTextColor(mContext.getResources().getColor(R.color.holo_orange_light));
-                    tvReach.setVisibility(View.VISIBLE);
-                    ivAlert.setVisibility(View.VISIBLE);
-                    break;
-                default:
-                    tvReach.setText("Attend "+x+" more classes to reach 67%");
-                    tvReach.setTextColor(mContext.getResources().getColor(R.color.holo_orange_light));
-                    tvReach.setVisibility(View.VISIBLE);
-                    ivAlert.setVisibility(View.VISIBLE);
-                    break;
+            if(x == 0) {
+                tvReach.setVisibility(View.GONE);
+                ivAlert.setVisibility(View.GONE);
+            } else {
+                tvReach.setText(res.getString( x == 1 ? R.string.tv_class_to_67 :
+                        R.string.tv_classes_to_67, x));
+                tvReach.setTextColor(mContext.getResources().getColor(R.color.holo_orange_light));
+                tvReach.setVisibility(View.VISIBLE);
+                ivAlert.setVisibility(View.VISIBLE);
             }
         }
         else if(percent<75 && held!=0) {
             int x = (3*held) - (4*attend);
-            switch(x)
-            {
-                case 0:
-                    tvReach.setVisibility(View.GONE);
-                    ivAlert.setVisibility(View.GONE);
-                    break;
-                case 1:
-                    tvReach.setText("Attend 1 more class to reach 75%");
-                    tvReach.setTextColor(mContext.getResources().getColor(R.color.holo_orange_light));
-                    tvReach.setVisibility(View.VISIBLE);
-                    ivAlert.setVisibility(View.VISIBLE);
-                    break;
-                default:
-                    tvReach.setText("Attend "+x+" more classes to reach 75%");
-                    tvReach.setTextColor(mContext.getResources().getColor(R.color.holo_orange_light));
-                    tvReach.setVisibility(View.VISIBLE);
-                    ivAlert.setVisibility(View.VISIBLE);
-                    break;
+            if(x == 0) {
+                tvReach.setVisibility(View.GONE);
+                ivAlert.setVisibility(View.GONE);
+            } else {
+                tvReach.setText(res.getString( x == 1 ? R.string.tv_class_to_75 :
+                        R.string.tv_classes_to_75, x));
+                tvReach.setTextColor(mContext.getResources().getColor(R.color.holo_orange_light));
+                tvReach.setVisibility(View.VISIBLE);
+                ivAlert.setVisibility(View.VISIBLE);
             }
         } else {
             int x = ((4*attend)/3)-held;
-            switch(x)
-            {
-                case 0:
-                    tvReach.setVisibility(View.GONE);
-                    ivAlert.setVisibility(View.GONE);
-                    break;
-                case 1:
-                    tvReach.setText("You can safely miss 1 class");
-                    tvReach.setTextColor(mContext.getResources().getColor(R.color.holo_green_light));
-                    tvReach.setVisibility(View.VISIBLE);
-                    ivAlert.setVisibility(View.GONE);
-                    break;
-                default:
-                    tvReach.setText("You can safely miss "+x+" classes");
-                    tvReach.setTextColor(mContext.getResources().getColor(R.color.holo_green_light));
-                    tvReach.setVisibility(View.VISIBLE);
-                    ivAlert.setVisibility(View.GONE);
-                    break;
+            if(x == 0) {
+                tvReach.setVisibility(View.GONE);
+                ivAlert.setVisibility(View.GONE);
+            } else {
+                tvReach.setText(res.getString( x == 1 ? R.string.tv_miss_class :
+                        R.string.tv_miss_classes, x));
+                tvReach.setTextColor(mContext.getResources().getColor(R.color.holo_green_light));
+                tvReach.setVisibility(View.VISIBLE);
+                ivAlert.setVisibility(View.VISIBLE);
             }
         }
     }
