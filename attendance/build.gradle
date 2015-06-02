@@ -73,7 +73,5 @@ android {
         compile('de.psdev.licensesdialog:licensesdialog:1.6.0') {
             exclude module: 'support-v4'
         }
-        debugCompile 'com.squareup.leakcanary:leakcanary-android:1.3'
-        releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.3'
     }
 }

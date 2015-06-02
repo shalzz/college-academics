@@ -75,7 +75,6 @@ import com.shalzz.attendance.wrapper.MyPreferencesManager;
 import com.shalzz.attendance.wrapper.MySyncManager;
 import com.shalzz.attendance.wrapper.MyVolley;
 import com.shalzz.attendance.wrapper.MyVolleyErrorHelper;
-import com.squareup.leakcanary.RefWatcher;
 
 import java.util.List;
 
@@ -599,7 +598,5 @@ public class AttendanceListFragment extends Fragment implements
         super.onDestroyView();
         parseListener().cancelListener();
         ButterKnife.reset(this);
-        RefWatcher refWatcher = MyVolley.getRefWatcher(getActivity());
-        refWatcher.watch(this);
     }
 }

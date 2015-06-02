@@ -51,7 +51,6 @@ import com.shalzz.attendance.Miscellaneous;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.wrapper.MyVolley;
 import com.shalzz.attendance.wrapper.MyVolleyErrorHelper;
-import com.squareup.leakcanary.RefWatcher;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -70,7 +69,7 @@ public class CaptchaDialogFragment extends DialogFragment{
 
 	/** The activity that creates an instance of this dialog fragment must
 	 * implement this interface in order to receive event callbacks.
-	 * Each method passes the DialogFragment in case the host needs to query it.
+	 * Each method passes the DialogFragment in case the host needs to query it. 
 	 **/
 	public interface CaptchaDialogListener {
 		public void onDialogPositiveClick(DialogFragment dialog);
@@ -91,7 +90,7 @@ public class CaptchaDialogFragment extends DialogFragment{
 					+ " must implement CaptchaDialogListener");
 		}
 	}
-
+	
 	@NonNull
     @Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -138,15 +137,15 @@ public class CaptchaDialogFragment extends DialogFragment{
 				MyVolley.TrackerName.APP_TRACKER);
 
 		t.send(new HitBuilders.ScreenViewBuilder().build());
-
+		
 		AlertDialog alertDialog = (AlertDialog) getDialog();
 		final Button positiveButton = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
-
+		
 		// Get the Captcha Image
 		getImg();
 
 		// OnClickListener event for the Reload captcha Button
-		bRefreshCaptcha.setOnClickListener(new View.OnClickListener() {
+		bRefreshCaptcha.setOnClickListener(new View.OnClickListener() {			
 			@Override
 			public void onClick(View v) {
 				getImg();
@@ -158,8 +157,8 @@ public class CaptchaDialogFragment extends DialogFragment{
 		Captxt.setOnEditorActionListener(new TextView.OnEditorActionListener() {
 			@Override
 			public boolean onEditorAction(TextView view, int actionId, KeyEvent event) {
-				if (actionId == EditorInfo.IME_ACTION_DONE) {
-					positiveButton.performClick();
+				if (actionId == EditorInfo.IME_ACTION_DONE) {   
+					positiveButton.performClick(); 
 					return true;
 				}
 				return false;
@@ -169,7 +168,7 @@ public class CaptchaDialogFragment extends DialogFragment{
 	/**
 	 * Gets the captcha image.
 	 */
-	private void getImg()
+	private void getImg() 
 	{
 		ImageLoader imageLoader = MyVolley.getInstance().getImageLoader();
 		imageLoader.setBatchedResponseDelay(0);
@@ -210,7 +209,5 @@ public class CaptchaDialogFragment extends DialogFragment{
     public void onDestroyView() {
         super.onDestroyView();
         ButterKnife.reset(this);
-        RefWatcher refWatcher = MyVolley.getRefWatcher(getActivity());
-        refWatcher.watch(this);
     }
 }

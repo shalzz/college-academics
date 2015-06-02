@@ -37,8 +37,6 @@ import com.shalzz.attendance.R;
 import com.shalzz.attendance.adapter.DayListAdapter;
 import com.shalzz.attendance.model.Day;
 import com.shalzz.attendance.wrapper.DateHelper;
-import com.shalzz.attendance.wrapper.MyVolley;
-import com.squareup.leakcanary.RefWatcher;
 
 import java.util.Date;
 
@@ -140,7 +138,5 @@ public class DayFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         ButterKnife.reset(this);
-        RefWatcher refWatcher = MyVolley.getRefWatcher(getActivity());
-        refWatcher.watch(this);
     }
 }
