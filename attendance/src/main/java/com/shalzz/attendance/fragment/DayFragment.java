@@ -66,7 +66,7 @@ public class DayFragment extends Fragment {
                              Bundle savedInstanceState) {
         if(container==null)
             return null;
-        View mView = inflater.inflate(R.layout.timetable_view, container, false);
+        View mView = inflater.inflate(R.layout.fragment_day, container, false);
         ButterKnife.inject(this,mView);
 
         mDate = (Date) getArguments().getSerializable(ARG_DATE);

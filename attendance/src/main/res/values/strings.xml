@@ -97,16 +97,27 @@
     <string name="no_classes">You don\'t have any classes on this day :)</string>
     <string name="swipe_info">To switch to any other day, either swipe across the screen or
         click the jump to date in the top right corner.</string>
-    <string name="last_refresh">Last refreshed <xliff:g id="time">%d</xliff:g> hour(s) ago</string>
     <string name="atten_list_footer_total">Total Attendance:</string>
-    <string name="tv_class_attended">You have attended <xliff:g id="attended">%d</xliff:g> out of <xliff:g id="held">%d</xliff:g> class</string>
-    <string name="tv_classes_attended">You have attended <xliff:g id="attended">%d</xliff:g> out of <xliff:g id="held">%d</xliff:g> classes</string>
-    <string name="tv_class_to_67">Attend <xliff:g id="no_of_classes">%d</xliff:g> more class to reach 67&#37;</string>
-    <string name="tv_classes_to_67">Attend <xliff:g id="no_of_classes">%d</xliff:g> more classes to reach 67&#37;</string>
-    <string name="tv_class_to_75">Attend <xliff:g id="no_of_classes">%d</xliff:g> more class to reach 75&#37;</string>
-    <string name="tv_classes_to_75">Attend <xliff:g id="no_of_classes">%d</xliff:g> more classes to reach 75&#37;</string>
-    <string name="tv_miss_class">You can safely miss <xliff:g id="no_of_classes">%d</xliff:g> class</string>
-    <string name="tv_miss_classes">You can safely miss <xliff:g id="no_of_classes">%d</xliff:g> classes</string>
+
+    <!--Plurals-->
+    <plurals name="tv_last_refresh">
+        <item quantity="zero" >Last refreshed few moments ago</item>
+        <item quantity="one">Last refreshed <xliff:g id="time">%d</xliff:g> hour ago</item>
+        <item quantity="other">Last refreshed <xliff:g id="time">%d</xliff:g> hours ago</item>
+    </plurals>
+    <plurals name="tv_classes_to_67">
+        <!--escape the percentage sign by doubling it up-->
+        <item quantity="one">Attend <xliff:g id="no_of_classes">%d</xliff:g> more class to reach 67%%</item>
+        <item quantity="other">Attend <xliff:g id="no_of_classes">%d</xliff:g> more classes to reach 67%%</item>
+    </plurals>
+    <plurals name="tv_classes_to_75">
+        <item quantity="one">Attend <xliff:g id="no_of_classes">%d</xliff:g> more class to reach 75%%</item>
+        <item quantity="other">Attend <xliff:g id="no_of_classes">%d</xliff:g> more classes to reach 75%%</item>
+    </plurals>
+    <plurals name="tv_miss_classes">
+        <item quantity="one">You can safely miss <xliff:g id="no_of_classes">%d</xliff:g> class</item>
+        <item quantity="other">You can safely miss <xliff:g id="no_of_classes">%d</xliff:g> classes</item>
+    </plurals>
 
     <!--Preferences-->
     <string name="pref_subject_limit">Limit Expanded Subjects</string>
@@ -167,5 +178,8 @@
     <string name="menu_search">Search</string>
     <string name="menu_today">Scroll to today</string>
     <string name="menu_date">Scroll to date</string>
+    <string name="navigation_item_1">Attendance</string>
+    <string name="navigation_item_2">Timetable</string>
+    <string name="navigation_item_3">Settings</string>
 
 </resources>

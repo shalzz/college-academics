@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2014 Shaleen Jain <shaleen.jain95@gmail.com>
+  ~
+  ~ This file is part of UPES Academics.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<com.shalzz.attendance.wrapper.MultiSwipeRefreshLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/swipe_refresh_atten"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context=".fragment.AttendanceListFragment">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/atten_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:dividerHeight="1dp"
+        android:clipToPadding="false"
+        android:drawSelectorOnTop="true"
+        tools:context=".fragment.AttendanceListFragment"
+        tools:listitem="@layout/card"/>
+
+    <com.shalzz.attendance.CircularIndeterminate
+        android:id="@+id/circular_indet_atten"
+        android:visibility="gone"
+        android:layout_width="@dimen/material_progress_indeterminate"
+        android:layout_height="@dimen/material_progress_indeterminate"
+        android:layout_gravity="center" />
+
+    </FrameLayout>
+
+</com.shalzz.attendance.wrapper.MultiSwipeRefreshLayout>

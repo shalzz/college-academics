@@ -22,27 +22,20 @@ package com.shalzz.attendance.activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.graphics.Color;
 import android.graphics.Point;
 import android.os.Bundle;
+import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.FrameLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.github.amlcurran.showcaseview.ShowcaseView;
@@ -59,7 +52,7 @@ import com.shalzz.attendance.wrapper.MyVolley;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends AppCompatActivity {
 
     /**
      * Reference to fragment positions
@@ -111,8 +104,8 @@ public class MainActivity extends ActionBarActivity {
 
     // Views
     @InjectView(R.id.drawer_layout) DrawerLayout mDrawerLayout;
-    @InjectView(R.id.list_slidermenu) ListView mDrawerList;
-    @InjectView(R.id.drop_shadow) public View dropShadow;
+    @InjectView(R.id.list_slidermenu)
+    NavigationView mNavigationView;
 
     private int mCurrentSelectedPosition = Fragments.ATTENDANCE.getValue();
     private static MainActivity mActivity;
@@ -144,22 +137,14 @@ public class MainActivity extends ActionBarActivity {
         mActivity = this;
 
         // Check for tablet layout
-        FrameLayout frameLayout = (FrameLayout)findViewById(R.id.frame_container);
-        if(((ViewGroup.MarginLayoutParams)frameLayout.getLayoutParams()).leftMargin == (int)getResources().getDimension(R.dimen.drawer_size)) {
-            mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN, mDrawerList);
-            mDrawerLayout.setScrimColor(Color.TRANSPARENT);
-            isDrawerLocked = true;
-        }
+//        FrameLayout frameLayout = (FrameLayout)findViewById(R.id.frame_container);
+//        if(((ViewGroup.MarginLayoutParams)frameLayout.getLayoutParams()).leftMargin == (int)getResources().getDimension(R.dimen.drawer_size)) {
+//            mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN, mNavigationView);
+//            mDrawerLayout.setScrimColor(Color.TRANSPARENT);
+//            isDrawerLocked = true;
+//        }
 
-        // set Drawer header
-        LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        Drawerheader = inflater.inflate(R.layout.drawer_header, null);
-        if(mDrawerList.getHeaderViewsCount()==0)
-            mDrawerList.addHeaderView(Drawerheader);
-
-        // Set the adapter for the list view
-        mDrawerList.setAdapter(new ArrayAdapter<>(this,
-                R.layout.drawer_list_item,R.id.drawer_list_textView, mNavTitles));
+        Drawerheader = mNavigationView.inflateHeaderView(R.layout.drawer_header);
 
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar,
                 R.string.drawer_open, R.string.drawer_close) {
@@ -180,13 +165,14 @@ public class MainActivity extends ActionBarActivity {
         };
 
         // Set the list's click listener
-        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+        mNavigationView.setNavigationItemSelectedListener(new NavigationItemSelectedListener());
         mDrawerToggle.setDrawerIndicatorEnabled(true);
 
         // Set the drawer toggle as the DrawerListener
         if(!isDrawerLocked) {
             mDrawerLayout.setDrawerListener(mDrawerToggle);
         }
+        mDrawerLayout.setStatusBarBackgroundColor(getResources().getColor(R.color.primary));
 
         // Select either the default item (Fragments.ATTENDANCE) or the last selected item.
         mCurrentSelectedPosition = reloadCurrentFragment();
@@ -260,11 +246,15 @@ public class MainActivity extends ActionBarActivity {
         DatabaseHandler db = new DatabaseHandler(this);
         if(db.getHeaderRowCount()>0) {
             ListHeader listheader = db.getListHeader();
+            MyPreferencesManager prefs = new MyPreferencesManager(this);
 
             TextView tv_name = (TextView) Drawerheader.findViewById(R.id.drawer_header_name);
             TextView tv_course = (TextView) Drawerheader.findViewById(R.id.drawer_header_course);
+            TextView last_refresh = (TextView) Drawerheader.findViewById(R.id.last_refreshed);
             tv_name.setText(listheader.getName());
             tv_course.setText(listheader.getCourse());
+            int time = ((int) prefs.getLastSyncTime());
+            last_refresh.setText(getResources().getQuantityString(R.plurals.tv_last_refresh, time, time));
         }
     }
 
@@ -272,20 +262,21 @@ public class MainActivity extends ActionBarActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home)
         {
-            if (mDrawerLayout.isDrawerOpen(mDrawerList)) {
-                mDrawerLayout.closeDrawer(mDrawerList);
+            if (mDrawerLayout.isDrawerOpen(mNavigationView)) {
+                mDrawerLayout.closeDrawer(mNavigationView);
             } else {
-                mDrawerLayout.openDrawer(mDrawerList);
+                mDrawerLayout.openDrawer(mNavigationView);
             }
         }
         return super.onOptionsItemSelected(item);
     }
 
 
-    private class DrawerItemClickListener implements ListView.OnItemClickListener {
+    private class NavigationItemSelectedListener implements NavigationView.OnNavigationItemSelectedListener {
         @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            displayView(position);
+        public boolean onNavigationItemSelected(MenuItem menuItem) {
+            displayView(menuItem.getOrder());
+            return false;
         }
     }
 
@@ -322,12 +313,11 @@ public class MainActivity extends ActionBarActivity {
      */
     private void selectItem(int position) {
         mCurrentSelectedPosition = position;
-        mDrawerList.setItemChecked(position, true);
-        mDrawerList.setSelection(position);
+        mNavigationView.getMenu().getItem(position-1).setChecked(true);
         mDrawerTitle = mNavTitles[position-1];
         setTitle(mDrawerTitle);
-        if(!isDrawerLocked && mDrawerLayout.isDrawerOpen(mDrawerList))
-            mDrawerLayout.closeDrawer(mDrawerList);
+        if(!isDrawerLocked && mDrawerLayout.isDrawerOpen(mNavigationView))
+            mDrawerLayout.closeDrawer(mNavigationView);
     }
 
     /**
@@ -376,9 +366,9 @@ public class MainActivity extends ActionBarActivity {
     @Override
     public void onBackPressed() {
         // close drawer if it is open
-        if (mDrawerLayout.isDrawerOpen(mDrawerList) && !isDrawerLocked)
+        if (mDrawerLayout.isDrawerOpen(mNavigationView) && !isDrawerLocked)
         {
-            mDrawerLayout.closeDrawer(mDrawerList);
+            mDrawerLayout.closeDrawer(mNavigationView);
         }
         else if (shouldPopFromBackStack()) {
             if(mPopSettingsBackStack) {

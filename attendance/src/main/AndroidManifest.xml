@@ -100,7 +100,7 @@
         <activity
             android:name=".activity.MainActivity"
             android:label="Attendance"
-            android:theme="@style/AppTheme">
+            android:theme="@style/DrawerActivityTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MANAGE_NETWORK_USAGE" />
                 <category android:name="android.intent.category.DEFAULT" />

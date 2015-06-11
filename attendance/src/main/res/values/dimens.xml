@@ -59,7 +59,8 @@
     <dimen name="drawer_size">280dp</dimen>
     <dimen name="drawer_content_padding">0dp</dimen>
 
-    <dimen name="toolbar_elevation">3dp</dimen>
+    <dimen name="toolbar_elevation">5dp</dimen>
+    <dimen name="shadow_depth">3dp</dimen>
     <dimen name="atten_view_expanded_elevation">5dp</dimen>
     <dimen name="touch_raise">1dp</dimen>
 </resources>

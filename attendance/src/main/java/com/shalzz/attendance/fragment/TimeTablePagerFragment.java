@@ -24,12 +24,13 @@ import android.app.Fragment;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.design.widget.NavigationView;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -39,7 +40,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.DatePicker;
-import android.widget.ListView;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -79,7 +79,7 @@ public class TimeTablePagerFragment extends Fragment {
     @InjectView(R.id.circular_indet) CircularIndeterminate mProgress;
     @InjectView(R.id.pager) ViewPager mViewPager;
     private DrawerLayout mDrawerLayout;
-    private ListView mDrawerList;
+    private NavigationView mDrawerList;
 
     /**
      * Remember the position of the previous pager position.
@@ -119,13 +119,13 @@ public class TimeTablePagerFragment extends Fragment {
 
         setHasOptionsMenu(true);
         setRetainInstance(false);
-        actionbar= ((ActionBarActivity)getActivity()).getSupportActionBar();
-        final View view = inflater.inflate(R.layout.swipe_layout, container, false);
+        actionbar= ((AppCompatActivity)getActivity()).getSupportActionBar();
+        final View view = inflater.inflate(R.layout.fragment_viewpager, container, false);
         ButterKnife.inject(this,view);
 
         mSwipeRefreshLayout.setSwipeableChildren(R.id.pager);
         mDrawerLayout = (DrawerLayout) getActivity().findViewById(R.id.drawer_layout);
-        mDrawerList = (ListView) getActivity().findViewById(R.id.list_slidermenu);
+        mDrawerList = (NavigationView) getActivity().findViewById(R.id.list_slidermenu);
 
         // Set the color scheme of the SwipeRefreshLayout by providing 4 color resource ids
         mSwipeRefreshLayout.setColorSchemeResources(

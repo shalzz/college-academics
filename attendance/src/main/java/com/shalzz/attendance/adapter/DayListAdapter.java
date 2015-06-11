@@ -67,7 +67,7 @@ public class DayListAdapter extends RecyclerView.Adapter<DayListAdapter.ViewHold
                                                         int viewType) {
         // create a new view
         View v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.day_list_item, parent, false);
+                .inflate(R.layout.list_day_item, parent, false);
         return new ViewHolder(v);
     }
 

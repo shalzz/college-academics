@@ -130,7 +130,7 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<ExpandableListAd
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.card, parent, false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_attend_card, parent, false);
         return new ViewHolder(v);
     }
 
@@ -323,8 +323,7 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<ExpandableListAd
                 tvReach.setVisibility(View.GONE);
                 ivAlert.setVisibility(View.GONE);
             } else {
-                tvReach.setText(res.getString( x == 1 ? R.string.tv_class_to_67 :
-                        R.string.tv_classes_to_67, x));
+                tvReach.setText(res.getQuantityString(R.plurals.tv_classes_to_67,x,x));
                 tvReach.setTextColor(mContext.getResources().getColor(R.color.holo_orange_light));
                 tvReach.setVisibility(View.VISIBLE);
                 ivAlert.setVisibility(View.VISIBLE);
@@ -336,8 +335,7 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<ExpandableListAd
                 tvReach.setVisibility(View.GONE);
                 ivAlert.setVisibility(View.GONE);
             } else {
-                tvReach.setText(res.getString( x == 1 ? R.string.tv_class_to_75 :
-                        R.string.tv_classes_to_75, x));
+                tvReach.setText(res.getQuantityString(R.plurals.tv_classes_to_75, x, x));
                 tvReach.setTextColor(mContext.getResources().getColor(R.color.holo_orange_light));
                 tvReach.setVisibility(View.VISIBLE);
                 ivAlert.setVisibility(View.VISIBLE);
@@ -348,8 +346,7 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<ExpandableListAd
                 tvReach.setVisibility(View.GONE);
                 ivAlert.setVisibility(View.GONE);
             } else {
-                tvReach.setText(res.getString( x == 1 ? R.string.tv_miss_class :
-                        R.string.tv_miss_classes, x));
+                tvReach.setText(res.getQuantityString(R.plurals.tv_miss_classes, x, x));
                 tvReach.setTextColor(mContext.getResources().getColor(R.color.holo_green_light));
                 tvReach.setVisibility(View.VISIBLE);
                 ivAlert.setVisibility(View.VISIBLE);

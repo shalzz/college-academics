@@ -32,6 +32,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -47,7 +48,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -102,16 +102,13 @@ public class AttendanceListFragment extends Fragment implements
     private final int GRID_LAYOUT_SPAN_COUNT = 2;
 
     private View mFooter;
-    private View mHeader;
-    private HeaderFooterViewHolder mHFViewHolder;
+    private FooterViewHolder mFooterViewHolder;
     private LinearLayoutManager mLinearLayoutManager;
     private StaggeredGridLayoutManager mGridLayoutManager;
-    private TextView mLastRefreshView;
     private Context mContext;
     private String mTag;
     private ExpandableListAdapter mAdapter;
     private MyPreferencesManager prefs;
-    private View mDropShadow;
     private Resources mResourses;
 
     private float mExpandedItemTranslationZ;
@@ -123,20 +120,14 @@ public class AttendanceListFragment extends Fragment implements
     /**
      * View Holder for list view header and footer views.
      */
-    protected static class HeaderFooterViewHolder {
+    protected static class FooterViewHolder {
 
-        public TextView tvName;
-        public TextView tvSap;
-        public TextView tvCourse;
         public TextView tvPercent;
         public TextView tvClasses;
         public ProgressBar pbPercent;
 
-        public HeaderFooterViewHolder (View header, View footer) {
+        public FooterViewHolder(View footer) {
 
-            tvName = (TextView) header.findViewById(R.id.tvName);
-            tvSap = (TextView) header.findViewById(R.id.tvSAP);
-            tvCourse = (TextView) header.findViewById(R.id.tvCourse);
             tvPercent = (TextView) footer.findViewById(R.id.tvTotalPercent);
             tvClasses = (TextView) footer.findViewById(R.id.tvClass);
             pbPercent = (ProgressBar) footer.findViewById(R.id.pbTotalPercent);
@@ -176,11 +167,10 @@ public class AttendanceListFragment extends Fragment implements
             return null;
 
         setHasOptionsMenu(true);
-        View mView = inflater.inflate(R.layout.attenview, container, false);
+        View mView = inflater.inflate(R.layout.fragment_attendance, container, false);
         ButterKnife.inject(this, mView);
 
         mSwipeRefreshLayout.setSwipeableChildren(R.id.atten_recycler_view);
-        mDropShadow = MainActivity.getInstance().dropShadow;
 
         // Set the color scheme of the SwipeRefreshLayout by providing 4 color resource ids
         mSwipeRefreshLayout.setColorSchemeResources(
@@ -209,10 +199,8 @@ public class AttendanceListFragment extends Fragment implements
         super.onViewCreated(view, savedInstanceState);
         LayoutInflater inflater = getActivity().getLayoutInflater();
 
-        mHeader = inflater.inflate(R.layout.list_header, mRecyclerView, false);
         mFooter = inflater.inflate(R.layout.list_footer, mRecyclerView, false);
-        mHFViewHolder = new HeaderFooterViewHolder(mHeader,mFooter);
-        mLastRefreshView = (TextView) mHeader.findViewById(R.id.last_refreshed);
+        mFooterViewHolder = new FooterViewHolder(mFooter);
 //        mLayoutManager.addView(mHeader, 0);
 //        mLayoutManager.addView(mFooter,mAdapter.getItemCount());
 
@@ -226,7 +214,6 @@ public class AttendanceListFragment extends Fragment implements
             mProgress.setVisibility(View.VISIBLE);
         } else {
             setAttendance();
-            updateLastRefresh();
         }
 
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -236,19 +223,10 @@ public class AttendanceListFragment extends Fragment implements
             }
         });
 
-        mRecyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-//                mDropShadow.setVisibility(mHeader.isShown() ? View.GONE : View.VISIBLE);
-                super.onScrolled(recyclerView, dx, dy);
-            }
-        });
     }
 
     public void showcaseView() {
-        int firstElementPosition = 0;
-//        firstElementPosition += mListView.getHeaderViewsCount();
-        View firstElementView = mRecyclerView.getChildAt(firstElementPosition);
+        View firstElementView = mRecyclerView.getChildAt(0);
         ViewTarget target = firstElementView != null ? new ViewTarget(firstElementView)
                 : new ViewTarget(mRecyclerView);
 
@@ -259,10 +237,6 @@ public class AttendanceListFragment extends Fragment implements
                 .setContentText(getString(R.string.sv_attendance_content))
                 .build();
 
-    }
-
-    protected void updateLastRefresh() {
-//        mLastRefreshView.setText(getString(R.string.last_refresh, prefs.getLastSyncTime()));
     }
 
     private void setAttendance() {
@@ -289,18 +263,13 @@ public class AttendanceListFragment extends Fragment implements
 //        ListFooter listfooter = db.getListFooter();
 //        Float percent = listfooter.getPercentage();
 //
-//        mHFViewHolder.tvPercent.setText(listfooter.getPercentage()+"%");
-//        mHFViewHolder.tvClasses.setText(listfooter.getAttended().intValue() + "/" + listfooter.getHeld().intValue());
-//        mHFViewHolder.pbPercent.setProgress(percent.intValue());
-//        Drawable d = mHFViewHolder.pbPercent.getProgressDrawable();
+//        mFooterViewHolder.tvPercent.setText(listfooter.getPercentage()+"%");
+//        mFooterViewHolder.tvClasses.setText(listfooter.getAttended().intValue() + "/" + listfooter.getHeld().intValue());
+//        mFooterViewHolder.pbPercent.setProgress(percent.intValue());
+//        Drawable d = mFooterViewHolder.pbPercent.getProgressDrawable();
 //        d.setLevel(percent.intValue() * 100);
 //
-//        ListHeader listheader = db.getListHeader();
-//        mHFViewHolder.tvName.setText(listheader.getName());
-//        mHFViewHolder.tvSap.setText(String.valueOf(listheader.getSAPId()));
-//        mHFViewHolder.tvCourse.setText(listheader.getCourse());
-//
-//        MainActivity.getInstance().updateDrawerHeader();
+        MainActivity.getInstance().updateDrawerHeader();
 
     }
 
@@ -354,7 +323,7 @@ public class AttendanceListFragment extends Fragment implements
         // If the nav drawer is open, hide action items related to the content view
         Activity activity = (Activity) mContext;
         DrawerLayout mDrawerLayout = (DrawerLayout) activity.findViewById(R.id.drawer_layout);
-        ListView mDrawerList = (ListView) activity.findViewById(R.id.list_slidermenu);
+        NavigationView mDrawerList = (NavigationView) activity.findViewById(R.id.list_slidermenu);
         boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
         menu.findItem(R.id.menu_search).setVisible(!drawerOpen);
         menu.findItem(R.id.menu_refresh).setVisible(!drawerOpen);
@@ -403,7 +372,6 @@ public class AttendanceListFragment extends Fragment implements
                 mSwipeRefreshLayout.setRefreshing(false);
                 if(result == 0) {
                     prefs.setLastSyncTime();
-                    updateLastRefresh();
                     setAttendance();
                 }
                 else
@@ -580,17 +548,6 @@ public class AttendanceListFragment extends Fragment implements
             }
         }
         return null;
-    }
-
-    public void onResume() {
-        super.onResume();
-        mDropShadow.setVisibility(View.GONE);
-    }
-
-    @Override
-    public void onStop() {
-        mDropShadow.setVisibility(View.VISIBLE);
-        super.onStop();
     }
 
     @Override

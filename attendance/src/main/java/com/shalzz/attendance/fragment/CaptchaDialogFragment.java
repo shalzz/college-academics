@@ -26,6 +26,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -33,7 +34,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -59,7 +59,8 @@ public class CaptchaDialogFragment extends DialogFragment{
 
 	@InjectView(R.id.ivCapImg) ImageView ivCapImg;
     @InjectView(R.id.progressBar1) CircularIndeterminate pbar;
-    @InjectView(R.id.etCapTxt) EditText Captxt;
+    @InjectView(R.id.etCapTxt)
+	TextInputLayout Captxt;
     @InjectView(R.id.bRefresh) ImageButton bRefreshCaptcha;
 	private Context mContext;
 	private String mTag = "Captcha Dialog";
@@ -97,7 +98,7 @@ public class CaptchaDialogFragment extends DialogFragment{
 
         final Context context = getActivity();
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        View mView = inflater.inflate(R.layout.captcha_dialog, null);
+        View mView = inflater.inflate(R.layout.dialog_captcha, null);
         ButterKnife.inject(this,mView);
 
         MaterialDialog.Builder builder = new MaterialDialog.Builder(context)
@@ -119,7 +120,7 @@ public class CaptchaDialogFragment extends DialogFragment{
                 .showListener(new DialogInterface.OnShowListener() {
                     @Override
                     public void onShow(DialogInterface dialog) {
-                        Miscellaneous.showKeyboard(context, Captxt);
+                        Miscellaneous.showKeyboard(context, Captxt.getEditText());
                     }
                 });
 
@@ -149,12 +150,12 @@ public class CaptchaDialogFragment extends DialogFragment{
 			@Override
 			public void onClick(View v) {
 				getImg();
-				Captxt.setText("");
+				Captxt.getEditText().setText("");
 			}
 		});
 
 		// logs in when user press done on keyboard.
-		Captxt.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+		Captxt.getEditText().setOnEditorActionListener(new TextView.OnEditorActionListener() {
 			@Override
 			public boolean onEditorAction(TextView view, int actionId, KeyEvent event) {
 				if (actionId == EditorInfo.IME_ACTION_DONE) {   

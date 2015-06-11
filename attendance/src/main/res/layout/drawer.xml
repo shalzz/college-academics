@@ -18,60 +18,22 @@
   -->
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="fill_parent">
-
-    <include layout="@layout/toolbar"/>
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="fill_parent">
 
     <android.support.v4.widget.DrawerLayout
         android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/toolbar"
+        android:fitsSystemWindows="true"
         tools:context=".MainActivity">
 
         <!-- The main content view -->
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <FrameLayout
-                android:id="@+id/frame_container"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="@dimen/drawer_content_padding"
-                android:layout_marginStart="@dimen/drawer_content_padding"
-                android:layout_above="@+id/adFragment"/>
-
-            <View
-                android:id="@+id/drop_shadow"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/toolbar_elevation"
-                android:background="@drawable/toolbar_dropshadow" />
-
-            <fragment
-                android:id="@+id/adFragment"
-                android:name="com.shalzz.attendance.fragment.AdFragment"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                tools:layout="@layout/fragment_ad" />
-
-        </RelativeLayout>
+        <include layout="@layout/include_drawer_main_content"/>
 
         <!-- The navigation drawer -->
-        <ListView android:id="@+id/list_slidermenu"
-            android:layout_width="@dimen/drawer_size"
-            android:layout_height="match_parent"
-            android:layout_gravity="start"
-            android:choiceMode="singleChoice"
-            android:divider="@null"
-            android:listSelector="@drawable/drawer_selector"
-            android:soundEffectsEnabled="true"
-            android:hapticFeedbackEnabled="true"
-            android:background="@color/list_background"
-            android:layout_below="@+id/toolbar"/>
+        <include layout="@layout/include_drawer_list"/>
 
     </android.support.v4.widget.DrawerLayout>
 

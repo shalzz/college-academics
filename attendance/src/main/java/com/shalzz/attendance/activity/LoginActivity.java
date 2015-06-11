@@ -21,15 +21,15 @@ package com.shalzz.attendance.activity;
 
 import android.app.Dialog;
 import android.os.Bundle;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.DialogFragment;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import com.android.volley.DefaultRetryPolicy;
@@ -57,10 +57,10 @@ import java.util.Map;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
-public class LoginActivity extends ActionBarActivity implements CaptchaDialogFragment.CaptchaDialogListener{
+public class LoginActivity extends AppCompatActivity implements CaptchaDialogFragment.CaptchaDialogListener{
 
-    @InjectView(R.id.etSapid) EditText etSapid;
-    @InjectView(R.id.etPass) EditText etPass;
+    @InjectView(R.id.etSapid) TextInputLayout etSapid;
+    @InjectView(R.id.etPass) TextInputLayout etPass;
     @SuppressWarnings("FieldCanBeLocal")
     @InjectView(R.id.bLogin) Button bLogin;
 
@@ -71,7 +71,7 @@ public class LoginActivity extends ActionBarActivity implements CaptchaDialogFra
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_login);
         ButterKnife.inject(this);
 
         // set toolbar as actionbar
@@ -82,18 +82,18 @@ public class LoginActivity extends ActionBarActivity implements CaptchaDialogFra
         getHiddenData();
 
         // Shows the CaptchaDialog when user presses 'Done' on keyboard.
-        etPass.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        etPass.getEditText().setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView view, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    if(isValid())
-                    {
+                    if (isValid()) {
                         showCaptchaDialog();
                     }
                     return true;
                 }
                 return false;
-            }});
+            }
+        });
 
         // OnClickListener event for the Login Button
         bLogin.setOnClickListener(new View.OnClickListener() {
@@ -110,8 +110,8 @@ public class LoginActivity extends ActionBarActivity implements CaptchaDialogFra
      * @return true or false
      */
     public boolean isValid() {
-        String sapid = etSapid.getText().toString();
-        String password = etPass.getText().toString();
+        String sapid = etSapid.getEditText().getText().toString();
+        String password = etPass.getEditText().getText().toString();
 
         if(sapid.length()==0 || sapid.length()!=9) {
             // workaround for enrollment number.
@@ -120,13 +120,13 @@ public class LoginActivity extends ActionBarActivity implements CaptchaDialogFra
             }
             etSapid.requestFocus();
             etSapid.setError(getString(R.string.form_sapid_error));
-            Miscellaneous.showKeyboard(this,etSapid);
+            Miscellaneous.showKeyboard(this,etSapid.getEditText());
             return false;
         }
         else if (password.length()==0) {
             etPass.requestFocus();
             etPass.setError(getString(R.string.form_password_error));
-            Miscellaneous.showKeyboard(this,etPass);
+            Miscellaneous.showKeyboard(this,etPass.getEditText());
             return false;
         }
         return true;
@@ -144,11 +144,11 @@ public class LoginActivity extends ActionBarActivity implements CaptchaDialogFra
     public void onDialogPositiveClick(DialogFragment dialog) {
 
         Dialog dialogView = dialog.getDialog();
-        final EditText Captxt = (EditText) dialogView.findViewById(R.id.etCapTxt);
+        final TextInputLayout Captxt = (TextInputLayout) dialogView.findViewById(R.id.etCapTxt);
 
-        if (Captxt.getText().toString().length()!=6) {
+        if (Captxt.getEditText().getText().toString().length()!=6) {
             Captxt.setError(getString(R.string.form_captcha_error));
-            Miscellaneous.showKeyboard(this, Captxt);
+            Miscellaneous.showKeyboard(this, Captxt.getEditText());
             return;
         }
 
@@ -156,16 +156,16 @@ public class LoginActivity extends ActionBarActivity implements CaptchaDialogFra
             getHiddenData();
 
         // workaround for enrollment number.
-        String sapid = etSapid.getText().toString();
+        String sapid = etSapid.getEditText().getText().toString();
         if(sapid.length()==10 && sapid.charAt(0)=='#')
             sapid = sapid.replaceFirst("#","R");
 
         new UserAccount(LoginActivity.this)
                 .Login(sapid,
-                        etPass.getText().toString(),
-                        Captxt.getText().toString(),
+                        etPass.getEditText().getText().toString(),
+                        Captxt.getEditText().getText().toString(),
                         data);
-        Miscellaneous.closeKeyboard(this, Captxt);
+        Miscellaneous.closeKeyboard(this, Captxt.getEditText());
         dialog.dismiss();
     }
 

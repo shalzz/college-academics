@@ -16,14 +16,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-
-
 apply plugin: 'com.android.application'
-
 android {
     compileSdkVersion 22
-    buildToolsVersion '21.1.2'
+    buildToolsVersion '22.0.1'
     defaultConfig {
         applicationId 'com.shalzz.attendance'
         minSdkVersion 14
@@ -56,20 +52,22 @@ android {
         compile fileTree(dir: 'libs', include: ['*.jar'])
 
         // google support libraries
-        compile 'com.google.android.gms:play-services:7.+'
-        compile 'com.android.support:recyclerview-v7:22.0.+'
-        compile 'com.android.support:support-v4:22.+'
-        compile 'com.android.support:appcompat-v7:22.0.+'
+        compile 'com.google.android.gms:play-services-analytics:7.+'
+        compile 'com.google.android.gms:play-services-ads:7.+'
+        compile 'com.android.support:recyclerview-v7:22.2.+'
+        compile 'com.android.support:design:22.2.+'
+        compile 'com.android.support:support-v4:22.2.+'
+        compile 'com.android.support:appcompat-v7:22.2.+'
         compile 'com.android.support:support-v13:22.+'
 
         // 3rd party library projects
         compile 'com.afollestad:material-dialogs:0.6.4.7'
+        compile 'com.nispok:snackbar:2.7.3'
         compile 'com.jakewharton:butterknife:6.0.0'
         compile 'com.mcxiaoke.volley:library:1.0.+@aar'
         compile 'com.github.amlcurran.showcaseview:library:5.1.1-SNAPSHOT@aar'
         compile 'org.jsoup:jsoup:1.7.3'
         compile 'com.squareup.okhttp:okhttp:2.2.0'
-        compile 'com.nispok:snackbar:2.7.3'
         compile('de.psdev.licensesdialog:licensesdialog:1.6.0') {
             exclude module: 'support-v4'
         }
