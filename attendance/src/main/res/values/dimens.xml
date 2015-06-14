@@ -41,7 +41,6 @@
     
 
     <!-- Default screen margins, per the Android Design guidelines. -->
-    <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
 
     <dimen name="progress_bar_height">8dp</dimen>
@@ -62,5 +61,4 @@
     <dimen name="toolbar_elevation">5dp</dimen>
     <dimen name="shadow_depth">3dp</dimen>
     <dimen name="atten_view_expanded_elevation">5dp</dimen>
-    <dimen name="touch_raise">1dp</dimen>
 </resources>

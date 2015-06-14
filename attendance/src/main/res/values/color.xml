@@ -43,8 +43,6 @@
     <color name="white">#ffffff</color>
     <color name="list_item_title">#fff</color>
     <color name="list_background">#303030</color>
-    <color name="material_divider">#B6B6B6</color>
-    <color name="divider">#1e000000</color>
 
     <!-- Main theme colors -->
     <color name="primary_dark">#00796B</color>
@@ -53,8 +51,6 @@
     <color name="accent">#FF9800</color>
     <color name="accent_dark">#e28200</color>
     <color name="accent_32">#20FF9800</color>
-
-    <color name="last_refresh_tv">#a4b7dc</color>
 
     <color name="swipe_color_1">@color/holo_red_dark</color>
     <color name="swipe_color_2">@color/holo_green_dark</color>

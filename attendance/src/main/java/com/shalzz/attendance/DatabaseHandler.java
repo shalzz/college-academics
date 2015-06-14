@@ -228,6 +228,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		{
 			updateSubject(subject);
 		}
+		cursor.close();
 		db.close(); // Closing database connection
 	}
 
@@ -505,6 +506,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		else {
 			updateListHeader(header);
 		}
+		cursor.close();
 		db.close();
 	}
 
@@ -577,6 +579,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		else {
 			updateListFooter(footer);
 		}
+		cursor.close();
 		db.close(); // Closing database connection
 	}
 
@@ -621,6 +624,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		else {
 			updatePeriod(period);
 		}
+		cursor.close();
 		db.close(); // Closing database connection
 	}
 
