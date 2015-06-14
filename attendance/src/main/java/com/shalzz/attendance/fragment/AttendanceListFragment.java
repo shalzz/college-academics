@@ -176,7 +176,6 @@ public class AttendanceListFragment extends Fragment implements
         mSwipeRefreshLayout.setColorSchemeResources(
                 R.color.swipe_color_1, R.color.swipe_color_2,
                 R.color.swipe_color_3, R.color.swipe_color_4);
-        mSwipeRefreshLayout.setProgressViewOffset(true, 1, 92);
 
         mLinearLayoutManager = new LinearLayoutManager(mContext,
                 LinearLayoutManager.VERTICAL, false);

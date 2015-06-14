@@ -56,8 +56,8 @@
 
     <color name="last_refresh_tv">#a4b7dc</color>
 
-    <color name="swipe_color_1">@color/accent</color>
-    <color name="swipe_color_2">@color/primary</color>
-    <color name="swipe_color_3">@color/holo_green_dark</color>
-    <color name="swipe_color_4">@color/holo_red_dark</color>
+    <color name="swipe_color_1">@color/holo_red_dark</color>
+    <color name="swipe_color_2">@color/holo_green_dark</color>
+    <color name="swipe_color_3">@color/holo_blue_dark</color>
+    <color name="swipe_color_4">@color/holo_purple</color>
 </resources>
