@@ -90,6 +90,14 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
             ListPreference connectionPref = (ListPreference) findPreference(key);
             connectionPref.setSummary(connectionPref.getEntry());
         }
+        else if (key.equals(getString(R.string.pref_key_sync))) {
+            DatabaseHandler db = new DatabaseHandler(mContext);
+            String account_name =  "" + db.getListHeader().getSAPId();
+            if (sharedPreferences.getBoolean(key,true))
+                MySyncManager.enableAutomaticSync(mContext, account_name);
+            else
+                MySyncManager.disableAutomaticSync(mContext, account_name);
+        }
         else if(key.equals(key_sync_interval)) {
             DatabaseHandler db = new DatabaseHandler(mContext);
             ListPreference connectionPref = (ListPreference) findPreference(key);

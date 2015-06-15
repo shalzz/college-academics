@@ -77,14 +77,14 @@ public class MySyncManager {
 		AccountManager accountManager = AccountManager.get(mContext);
         Account account = getSyncAccount(mContext);
         if(account!=null)
-		    accountManager.removeAccount(account,null, null);
+		    accountManager.removeAccountExplicitly(account);
 
 	}	
 	
 	public static void addPeriodicSync(Context mContext,String accountName) {
 		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mContext);
 		final boolean sync = sharedPref.getBoolean(
-                mContext.getString(R.string.pref_key_sync), false);
+                mContext.getString(R.string.pref_key_sync), true);
 		Log.d(mTag,"Enable sync: "+sync);
 		final long SYNC_INTERVAL_IN_MINUTES = Long.parseLong(sharedPref.getString(
                 mContext.getString(R.string.pref_key_sync_interval), "360"));
@@ -110,5 +110,21 @@ public class MySyncManager {
 					settingsBundle,
 					SYNC_INTERVAL);
 		}
+	}
+
+	public static void enableAutomaticSync(Context mContext,String accountName) {
+        Account mAccount = getSyncAccount(mContext);
+        if(mAccount==null)
+            mAccount = CreateSyncAccount(mContext,accountName);
+
+        ContentResolver.setSyncAutomatically(mAccount, AUTHORITY, true);
+	}
+
+    public static void disableAutomaticSync(Context mContext,String accountName) {
+        Account mAccount = getSyncAccount(mContext);
+        if(mAccount==null)
+            mAccount = CreateSyncAccount(mContext,accountName);
+
+        ContentResolver.setSyncAutomatically(mAccount, AUTHORITY, false);
 	}
 }
