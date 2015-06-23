@@ -24,6 +24,7 @@ import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -244,6 +245,7 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<ExpandableListAd
             views.childView.setAlpha(1.0f);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 view.setTranslationZ(mExpandedTranslationZ);
+                Log.d("adapter", "elev:" + view.getElevation() + " trans:" + view.getTranslationZ());
             }
         } else {
 
@@ -255,6 +257,7 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<ExpandableListAd
             // TODO: fix elevation
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 view.setTranslationZ(0);
+                Log.d("adapter", "elev:" + view.getElevation() + " trans:" + view.getTranslationZ());
             }
         }
     }
@@ -344,13 +347,12 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<ExpandableListAd
             int x = ((4*attend)/3)-held;
             if(x == 0) {
                 tvReach.setVisibility(View.GONE);
-                ivAlert.setVisibility(View.GONE);
             } else {
                 tvReach.setText(res.getQuantityString(R.plurals.tv_miss_classes, x, x));
                 tvReach.setTextColor(mContext.getResources().getColor(R.color.holo_green_light));
                 tvReach.setVisibility(View.VISIBLE);
-                ivAlert.setVisibility(View.VISIBLE);
             }
+            ivAlert.setVisibility(View.GONE);
         }
     }
 
