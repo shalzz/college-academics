@@ -172,7 +172,7 @@ public class MainActivity extends AppCompatActivity {
         if(!isDrawerLocked) {
             mDrawerLayout.setDrawerListener(mDrawerToggle);
         }
-        mDrawerLayout.setStatusBarBackgroundColor(getResources().getColor(R.color.primary));
+        mDrawerLayout.setStatusBarBackgroundColor(getResources().getColor(R.color.primary_dark));
 
         // Select either the default item (Fragments.ATTENDANCE) or the last selected item.
         mCurrentSelectedPosition = reloadCurrentFragment();
