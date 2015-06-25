@@ -451,14 +451,10 @@ public class AttendanceListFragment extends Fragment implements
                 ValueAnimator animator = isExpanded ? ValueAnimator.ofFloat(0f, 1f)
                         : ValueAnimator.ofFloat(1f, 0f);
 
-                // Figure out how much scrolling is needed to make the view fully visible.
-                final Rect localVisibleRect = new Rect();
-                view.getLocalVisibleRect(localVisibleRect);
-                final int scrollingNeeded = localVisibleRect.top > 0 ? -localVisibleRect.top
-                        : endingHeight - localVisibleRect.height();
-                animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                // scroll to make the view fully visible.
+                mRecyclerView.smoothScrollToPosition(viewHolder.position);
 
-                    private int mCurrentScroll = 0;
+                animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
 
                     @Override
                     public void onAnimationUpdate(ValueAnimator animator) {
@@ -471,14 +467,6 @@ public class AttendanceListFragment extends Fragment implements
                             view.setTranslationZ(z);
                         }
                         view.requestLayout();
-
-                        if (isExpanded) {
-                            if (mRecyclerView != null) {
-                                int scrollBy = (int) (value * scrollingNeeded) - mCurrentScroll;
-                                mRecyclerView.smoothScrollBy(scrollBy, 0);
-                                mCurrentScroll += scrollBy;
-                            }
-                        }
                     }
                 });
 
