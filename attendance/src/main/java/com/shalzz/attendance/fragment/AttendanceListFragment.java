@@ -27,7 +27,6 @@ import android.app.Fragment;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
-import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -48,9 +47,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -101,8 +98,6 @@ public class AttendanceListFragment extends Fragment implements
 
     private final int GRID_LAYOUT_SPAN_COUNT = 2;
 
-    private View mFooter;
-    private FooterViewHolder mFooterViewHolder;
     private LinearLayoutManager mLinearLayoutManager;
     private StaggeredGridLayoutManager mGridLayoutManager;
     private Context mContext;
@@ -116,23 +111,6 @@ public class AttendanceListFragment extends Fragment implements
     private int mFadeInStartDelay = 150;
     private int mFadeOutDuration = 20;
     private int mExpandCollapseDuration = 200;
-
-    /**
-     * View Holder for list view header and footer views.
-     */
-    protected static class FooterViewHolder {
-
-        public TextView tvPercent;
-        public TextView tvClasses;
-        public ProgressBar pbPercent;
-
-        public FooterViewHolder(View footer) {
-
-            tvPercent = (TextView) footer.findViewById(R.id.tvTotalPercent);
-            tvClasses = (TextView) footer.findViewById(R.id.tvClass);
-            pbPercent = (ProgressBar) footer.findViewById(R.id.pbTotalPercent);
-        }
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -196,12 +174,6 @@ public class AttendanceListFragment extends Fragment implements
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        LayoutInflater inflater = getActivity().getLayoutInflater();
-
-        mFooter = inflater.inflate(R.layout.list_footer, mRecyclerView, false);
-        mFooterViewHolder = new FooterViewHolder(mFooter);
-//        mLayoutManager.addView(mHeader, 0);
-//        mLayoutManager.addView(mFooter,mAdapter.getItemCount());
 
         DatabaseHandler db = new DatabaseHandler(mContext);
         if(db.getRowCount()<=0) {
@@ -251,25 +223,16 @@ public class AttendanceListFragment extends Fragment implements
 
             mAdapter = new ExpandableListAdapter(mContext,subjects,this);
             mAdapter.setLimit(expandLimit);
+            LayoutInflater inflater = getActivity().getLayoutInflater();
+            View mFooter = inflater.inflate(R.layout.list_footer, mRecyclerView, false);
+            mAdapter.addFooter(mFooter);
             mRecyclerView.setAdapter(mAdapter);
 
         }
     }
 
     private void updateHeaderNFooter() {
-
-//        DatabaseHandler db = new DatabaseHandler(mContext);
-//        ListFooter listfooter = db.getListFooter();
-//        Float percent = listfooter.getPercentage();
-//
-//        mFooterViewHolder.tvPercent.setText(listfooter.getPercentage()+"%");
-//        mFooterViewHolder.tvClasses.setText(listfooter.getAttended().intValue() + "/" + listfooter.getHeld().intValue());
-//        mFooterViewHolder.pbPercent.setProgress(percent.intValue());
-//        Drawable d = mFooterViewHolder.pbPercent.getProgressDrawable();
-//        d.setLevel(percent.intValue() * 100);
-//
         MainActivity.getInstance().updateDrawerHeader();
-
     }
 
     @Override
@@ -404,7 +367,7 @@ public class AttendanceListFragment extends Fragment implements
     @Override
     public void onItemExpanded(final View view) {
         final int spec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
-        final ExpandableListAdapter.ViewHolder viewHolder = (ExpandableListAdapter.ViewHolder) view.getTag();
+        final ExpandableListAdapter.GenericViewHolder viewHolder = (ExpandableListAdapter.GenericViewHolder) view.getTag();
         final RelativeLayout childView = viewHolder.childView;
         childView.measure(spec, spec);
         final int startingHeight = view.getHeight();
@@ -507,8 +470,8 @@ public class AttendanceListFragment extends Fragment implements
                 View view = mRecyclerView.getChildAt(position);
 
                 if (view != null) {
-                    final ExpandableListAdapter.ViewHolder viewHolder =
-                            (ExpandableListAdapter.ViewHolder) view.getTag();
+                    final ExpandableListAdapter.GenericViewHolder viewHolder =
+                            (ExpandableListAdapter.GenericViewHolder) view.getTag();
                     if (viewHolder != null && viewHolder.position == callId) {
                         return view;
                     }
@@ -525,8 +488,8 @@ public class AttendanceListFragment extends Fragment implements
                     View view = mRecyclerView.getChildAt(position);
 
                     if (view != null) {
-                        final ExpandableListAdapter.ViewHolder viewHolder =
-                                (ExpandableListAdapter.ViewHolder) view.getTag();
+                        final ExpandableListAdapter.GenericViewHolder viewHolder =
+                                (ExpandableListAdapter.GenericViewHolder) view.getTag();
                         if (viewHolder != null && viewHolder.position == callId) {
                             return view;
                         }

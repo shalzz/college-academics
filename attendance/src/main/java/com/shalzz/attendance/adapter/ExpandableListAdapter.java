@@ -29,12 +29,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.shalzz.attendance.DatabaseHandler;
 import com.shalzz.attendance.R;
+import com.shalzz.attendance.model.ListFooter;
 import com.shalzz.attendance.model.Subject;
 
 import java.util.ArrayList;
@@ -43,13 +46,23 @@ import java.util.List;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
-public class ExpandableListAdapter extends RecyclerView.Adapter<ExpandableListAdapter.ViewHolder> {
+public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private Context mContext;
-    private List<Subject> mSubjects;
     private final List<Long> mExpandedIds = new ArrayList<>();
     private float mExpandedTranslationZ;
     private int mLimit = -1;
+
+    //our items
+    private List<Subject> mSubjects;
+    //headers
+    List<View> headers = new ArrayList<>();
+    //footers
+    List<View> footers = new ArrayList<>();
+
+    public static final int TYPE_HEADER = 111;
+    public static final int TYPE_FOOTER = 222;
+    public static final int TYPE_ITEM = 333;
 
     /** Constant used to indicate no row is expanded. */
     private static final long NONE_EXPANDED = -1;
@@ -96,7 +109,7 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<ExpandableListAd
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
     // you provide access to all the views for a data item in a view holder
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public static class GenericViewHolder extends RecyclerView.ViewHolder {
         public int position = -1;
 
         @InjectView(R.id.tvSubj) TextView subject;
@@ -111,7 +124,7 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<ExpandableListAd
         public TextView tvReach;
         public ImageView ivAlert;
 
-        public ViewHolder(View itemView) {
+        public GenericViewHolder(View itemView) {
             super(itemView);
             ButterKnife.inject(this,itemView);
         }
@@ -130,35 +143,37 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<ExpandableListAd
     };
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_attend_card, parent, false);
-        return new ViewHolder(v);
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+
+        //if our position is one of our items (this comes from getItemViewType(int position) below)
+        if(viewType == TYPE_ITEM) {
+            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_attend_card, parent, false);
+            return new GenericViewHolder(v);
+            //else we have a header/footer
+        }else{
+            //create a new framelayout, or inflate from a resource
+            FrameLayout frameLayout = new FrameLayout(parent.getContext());
+            //make sure it fills the space
+            frameLayout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            return new HeaderFooterViewHolder(frameLayout);
+        }
     }
 
     // Replace the contents of a view (invoked by the layout manager)
-    public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.position = position;
-        holder.itemView.setTag(holder);
-
-        // - get element from your dataset at this position
-        // - replace the contents of the view with that element
-        Float percent = mSubjects.get(position).getPercentage();
-        holder.subject.setText(mSubjects.get(position).getName());
-        holder.percentage.setText(mSubjects.get(position).getPercentage().toString()+"%");
-        holder.classes.setText(mSubjects.get(position).getClassesAttended().intValue() + "/"
-                + mSubjects.get(position).getClassesHeld().intValue());
-        Drawable d = holder.percent.getProgressDrawable();
-        d.setLevel(percent.intValue()*100);
-        holder.percent.setProgressDrawable(d);
-        holder.percent.setProgress(percent.intValue());
-
-        // In the call log, expand/collapse an actions section for the call log entry when
-        // the primary view is tapped.
-        holder.itemView.setOnClickListener(this.mExpandCollapseListener);
-
-        // Restore expansion state of the row on rebind.  Inflate the actions ViewStub if required,
-        // and set its visibility state accordingly.
-        expandOrCollapseChildView(holder.itemView, isExpanded(position));
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        //check what type of view our position is
+        if(position < headers.size()){
+            View v = headers.get(position);
+            //add our view to a header view and display it
+            prepareHeaderFooter((HeaderFooterViewHolder) holder, v);
+        }else if(position >= headers.size() + mSubjects.size()){
+            View v = footers.get(position-mSubjects.size()-headers.size());
+            //add our view to a footer view and display it
+            prepareHeaderFooter((HeaderFooterViewHolder) holder, v);
+        }else {
+            //it's one of our items, display as required
+            prepareGeneric((GenericViewHolder) holder , position-headers.size());
+        }
 
     }
 
@@ -170,7 +185,7 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<ExpandableListAd
      * @param view The call log list item view.
      */
     private void inflateChildView(final View view) {
-        final ViewHolder views = (ViewHolder) view.getTag();
+        final GenericViewHolder views = (GenericViewHolder) view.getTag();
 
         ViewStub stub = (ViewStub) view.findViewById(R.id.subject_details_stub);
         if (stub != null) {
@@ -235,7 +250,7 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<ExpandableListAd
      * @param isExpanded The new expansion state of the view.
      */
     private void expandOrCollapseChildView(View view, boolean isExpanded) {
-        final ViewHolder views = (ViewHolder) view.getTag();
+        final GenericViewHolder views = (GenericViewHolder) view.getTag();
 
         if (isExpanded) {
             // Inflate the view stub if necessary.
@@ -271,7 +286,7 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<ExpandableListAd
      *        of its previous state
      */
     private void handleRowExpanded(View view, boolean animate, boolean forceExpand) {
-        final ViewHolder views = (ViewHolder) view.getTag();
+        final GenericViewHolder views = (GenericViewHolder) view.getTag();
 
         if (forceExpand && isExpanded(views.position)) {
             return;
@@ -305,7 +320,7 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<ExpandableListAd
         }
     }
 
-    public void bindChildView(ViewHolder holder, int position) {
+    public void bindChildView(GenericViewHolder holder, int position) {
 
         TextView tvAbsent = holder.tvAbsent;
         TextView tvProjected = holder.tvProjected;
@@ -363,9 +378,112 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<ExpandableListAd
 
     @Override
     public int getItemCount() {
-        return mSubjects.size();
+        //make sure the adapter knows to look for all our items, headers, and footers
+        return headers.size() + mSubjects.size() + footers.size();
     }
 
+    private void prepareHeaderFooter(HeaderFooterViewHolder vh, View view){
+        //empty out our FrameLayout and replace with our header/footer
+        vh.base.removeAllViews();
+        vh.base.addView(view);
+
+        DatabaseHandler db = new DatabaseHandler(mContext);
+        ListFooter listfooter = db.getListFooter();
+        Float percent = listfooter.getPercentage();
+
+        /** --------footer-------- */
+        TextView tvPercent = (TextView) view.findViewById(R.id.tvTotalPercent);
+        TextView tvClasses = (TextView) view.findViewById(R.id.tvClass);
+        ProgressBar pbPercent = (ProgressBar) view.findViewById(R.id.pbTotalPercent);
+        tvPercent.setText(listfooter.getPercentage()+"%");
+        tvClasses.setText(listfooter.getAttended().intValue() + "/" + listfooter.getHeld().intValue());
+        pbPercent.setProgress(percent.intValue());
+        Drawable d = pbPercent.getProgressDrawable();
+        d.setLevel(percent.intValue() * 100);
+        /** ------------------------*/
+    }
+
+    private void prepareGeneric(GenericViewHolder holder, int position){
+        holder.position = position;
+        holder.itemView.setTag(holder);
+
+        // - get element from your dataset at this position
+        // - replace the contents of the view with that element
+        Float percent = mSubjects.get(position).getPercentage();
+        holder.subject.setText(mSubjects.get(position).getName());
+        holder.percentage.setText(mSubjects.get(position).getPercentage().toString()+"%");
+        holder.classes.setText(mSubjects.get(position).getClassesAttended().intValue() + "/"
+                + mSubjects.get(position).getClassesHeld().intValue());
+        Drawable d = holder.percent.getProgressDrawable();
+        d.setLevel(percent.intValue()*100);
+        holder.percent.setProgressDrawable(d);
+        holder.percent.setProgress(percent.intValue());
+
+        // In the call log, expand/collapse an actions section for the call log entry when
+        // the primary view is tapped.
+        holder.itemView.setOnClickListener(this.mExpandCollapseListener);
+
+        // Restore expansion state of the row on rebind.  Inflate the actions ViewStub if required,
+        // and set its visibility state accordingly.
+        expandOrCollapseChildView(holder.itemView, isExpanded(position));
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        //check what type our position is, based on the assumption that the order is headers > items > footers
+        if(position < headers.size()){
+            return TYPE_HEADER;
+        }else if(position >= headers.size() + mSubjects.size()){
+            return TYPE_FOOTER;
+        }
+        return TYPE_ITEM;
+    }
+
+    //add a header to the adapter
+    public void addHeader(View header){
+        if(!headers.contains(header)){
+            headers.add(header);
+            //animate
+            notifyItemInserted(headers.size()-1);
+        }
+    }
+
+    //remove a header from the adapter
+    public void removeHeader(View header){
+        if(headers.contains(header)){
+            //animate
+            notifyItemRemoved(headers.indexOf(header));
+            headers.remove(header);
+        }
+    }
+
+    //add a footer to the adapter
+    public void addFooter(View footer){
+        if(!footers.contains(footer)){
+            footers.add(footer);
+            //animate
+            notifyItemInserted(headers.size()+mSubjects.size()+footers.size()-1);
+        }
+    }
+
+    //remove a footer from the adapter
+    public void removeFooter(View footer){
+        if(footers.contains(footer)) {
+            //animate
+            notifyItemRemoved(headers.size()+mSubjects.size()+footers.indexOf(footer));
+            footers.remove(footer);
+        }
+    }
+
+    //our header/footer RecyclerView.ViewHolder is just a FrameLayout
+    public static class HeaderFooterViewHolder extends RecyclerView.ViewHolder{
+        FrameLayout base;
+
+        public HeaderFooterViewHolder(View itemView) {
+            super(itemView);
+            this.base = (FrameLayout) itemView;
+        }
+    }
 
     /**
      * Set the maximum number of items allowed to be expanded. When the
