@@ -40,8 +40,22 @@ import com.nispok.snackbar.SnackbarManager;
 import com.nispok.snackbar.enums.SnackbarType;
 import com.shalzz.attendance.wrapper.MyVolley;
 
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.Authenticator;
 import java.net.PasswordAuthentication;
+import java.security.KeyStore;
+import java.security.SecureRandom;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
+
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.ManagerFactoryParameters;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManagerFactory;
 
 public class Miscellaneous {
 
@@ -143,10 +157,10 @@ public class Miscellaneous {
      */
     public static void showSnackBar(Context context, String msg) {
         SnackbarManager.show(
-                Snackbar.with(context)
-                        .duration(Snackbar.SnackbarDuration.LENGTH_LONG)
-                        .textColor(context.getResources().getColor(R.color.accent))
-                        .text(msg), (Activity) context);
+				Snackbar.with(context)
+						.duration(Snackbar.SnackbarDuration.LENGTH_LONG)
+						.textColor(context.getResources().getColor(R.color.accent))
+						.text(msg), (Activity) context);
     }
 
     /**
@@ -175,6 +189,68 @@ public class Miscellaneous {
                         .textColor(context.getResources().getColor(R.color.accent))
                         .text(context.getString(msgRes)), (Activity) context);
     }
+
+    /**
+     * Creates a new SSL Socket Factory with the given KeyStore.
+     *
+     * @param keyStore A KeyStore to create the SSL Socket Factory in context of
+     */
+	public static javax.net.ssl.SSLSocketFactory getSSLSocketFactory(KeyStore keyStore) {
+		SSLSocketFactory factory = null;
+		try {
+			SSLContext sslContext = SSLContext.getInstance("SSL");
+			TrustManagerFactory trustManagerFactory =
+                    TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+			trustManagerFactory.init(keyStore);
+			KeyManagerFactory keyManagerFactory =
+                    KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+			keyManagerFactory.init(keyStore, "keystore_pass".toCharArray());
+			sslContext.init(keyManagerFactory.getKeyManagers(),
+                    trustManagerFactory.getTrustManagers(), new SecureRandom());
+			factory = sslContext.getSocketFactory();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return factory;
+	}
+
+	/**
+	 * Gets a KeyStore containing the Certificate
+	 *
+	 * @param cert InputStream of the Certificate
+	 * @return KeyStore
+	 */
+	public static KeyStore getKeystoreOfCA(InputStream cert) {
+
+		// Load CAs from an InputStream
+		InputStream caInput = null;
+		Certificate ca = null;
+		try {
+			CertificateFactory cf = CertificateFactory.getInstance("X.509");
+			caInput = new BufferedInputStream(cert);
+			ca = cf.generateCertificate(caInput);
+		} catch (CertificateException e1) {
+			e1.printStackTrace();
+		} finally {
+			try {
+				caInput.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+
+		// Create a KeyStore containing our trusted CAs
+		String keyStoreType = KeyStore.getDefaultType();
+		KeyStore keyStore = null;
+		try {
+			keyStore = KeyStore.getInstance(keyStoreType);
+			keyStore.load(null, null);
+			keyStore.setCertificateEntry("ca", ca);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return keyStore;
+	}
 
 	/**
 	 * Determines whether to use proxy settings or not.
