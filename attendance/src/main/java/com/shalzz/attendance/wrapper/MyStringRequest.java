@@ -29,6 +29,9 @@ import com.android.volley.toolbox.StringRequest;
 
 import java.io.UnsupportedEncodingException;
 
+/**
+ * Custom StringRequest with request priority and ignored cache headers.
+ */
 public class MyStringRequest extends StringRequest {
 
 	private Priority mPriority = Priority.NORMAL;
