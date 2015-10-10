@@ -52,6 +52,12 @@
         <item name="android:textSize">@dimen/action_bar_subtitle_text_size</item>
     </style>
 
+    <style name="DrawerActivityTheme" parent="AppTheme">
+
+        <!--Nothing for API's below 21-->
+
+    </style>
+
     <!-- Showcase View Styles -->
 
     <style name="ShowcaseTheme" parent="ShowcaseView">
