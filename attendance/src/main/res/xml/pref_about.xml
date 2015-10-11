@@ -23,7 +23,6 @@
     <Preference
         android:key="@string/pref_key_info_author"
         android:title="@string/pref_author"
-        android:summary="@string/pref_author_summary"
         android:persistent="false"/>
 	<Preference
         android:key="pref_info_this_license"
