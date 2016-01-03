@@ -20,59 +20,40 @@
 package com.shalzz.attendance.model;
 
 /**
- * Modal class for the ExpandableListView footer.
+ * Model class for the ExpandableListView footer.
  * @author shalzz
  *
  */
 public class ListFooter {
 
-	// private variables;
-	private int serialNo;
-	private Float classesHeld;
-	private Float classesAttend;
-	private Float percentage;
+	private Float held;
+	private Float attended;
 
-	// Empty constructor
-	public ListFooter(){
-
-	}
-
-	public ListFooter(int serialNo, Float classesHeld, Float classesAttend, float percentage){
-		this.serialNo = serialNo;
-		this.classesHeld = classesHeld;
-		this.classesAttend = classesAttend;
-		this.percentage = percentage;
-	}
-	
-	public int getSNo() {
-		return serialNo;
-	}
-	
 	public Float getHeld() {
-		return classesHeld;
+		return held;
 	}
 	
 	public Float getAttended() {
-		return classesAttend;
+		return attended;
 	}
 	
 	public Float getPercentage() {
-		return percentage;
-	}
-	
-	public void setSNo(int serialNo) {
-		this.serialNo = serialNo;
+		return (float) Math.round(attended / held * 100.0) ;
 	}
 	
 	public void setHeld(Float classesHeld) {
-		this.classesHeld = classesHeld;
+		this.held = classesHeld;
 	}
 	
 	public void setAttended(Float classesAttend) {
-		this.classesAttend = classesAttend;
+		this.attended = classesAttend;
 	}
-	
-	public void setPercentage(Float percentage) {
-		this.percentage = percentage;
+
+	@Override
+	public String toString() {
+		return "ListFooter{" +
+				"held=" + held +
+				", attended=" + attended +
+				'}';
 	}
 }

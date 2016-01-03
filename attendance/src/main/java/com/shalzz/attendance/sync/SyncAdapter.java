@@ -30,10 +30,14 @@ import android.util.Log;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.shalzz.attendance.DataAPI;
-import com.shalzz.attendance.DataAssembler;
+import com.shalzz.attendance.DatabaseHandler;
+import com.shalzz.attendance.model.Period;
+import com.shalzz.attendance.model.Subject;
+import com.shalzz.attendance.network.DataAPI;
 import com.shalzz.attendance.wrapper.MyPreferencesManager;
 import com.shalzz.attendance.wrapper.MyVolleyErrorHelper;
+
+import java.util.ArrayList;
 
 public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
@@ -79,13 +83,17 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 		DataAPI.getTimeTable(mContext, timeTableSuccessListener(), myErrorListener());
 	}   
 	
-	private Response.Listener<String> attendanceSuccessListener() {
-		return new Response.Listener<String>() {
+	private Response.Listener<ArrayList<Subject>> attendanceSuccessListener() {
+		return new Response.Listener<ArrayList<Subject>>() {
 			@Override
-			public void onResponse(String response) {
-                try
-                {
-                    DataAssembler.parseAttendance(response, mContext);
+			public void onResponse(ArrayList<Subject> response) {
+                try {
+					DatabaseHandler db = new DatabaseHandler(mContext);
+					db.deleteAllSubjects();
+					for(Subject subject : response) {
+						db.addSubject(subject);
+					}
+					db.close();
                     MyPreferencesManager pref = new MyPreferencesManager(mContext);
                     pref.setLastSyncTime();
                 }
@@ -96,13 +104,17 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 		};
 	}
 	
-	private Response.Listener<String> timeTableSuccessListener() {
-		return new Response.Listener<String>() {
+	private Response.Listener<ArrayList<Period>> timeTableSuccessListener() {
+		return new Response.Listener<ArrayList<Period>>() {
 			@Override
-			public void onResponse(String response) {
-                try
-                {
-                    DataAssembler.parseTimetable(response, mContext);
+			public void onResponse(ArrayList<Period> response) {
+                try {
+					DatabaseHandler db = new DatabaseHandler(mContext);
+					db.deleteAllPeriods();
+					for(Period period : response) {
+						db.addPeriod(period);
+					}
+					db.close();
                 }
                 catch(Exception e) {
                     e.printStackTrace();

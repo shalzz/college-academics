@@ -19,10 +19,8 @@
 
 package com.shalzz.attendance.activity;
 
-import android.app.Dialog;
 import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
-import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -30,42 +28,29 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
-import com.android.volley.DefaultRetryPolicy;
-import com.android.volley.Request.Method;
-import com.android.volley.Request.Priority;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.shalzz.attendance.Miscellaneous;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.UserAccount;
-import com.shalzz.attendance.fragment.CaptchaDialogFragment;
-import com.shalzz.attendance.wrapper.MyStringRequest;
 import com.shalzz.attendance.wrapper.MyVolley;
 import com.shalzz.attendance.wrapper.MyVolleyErrorHelper;
-
-import org.apache.http.protocol.HTTP;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
-public class LoginActivity extends AppCompatActivity implements CaptchaDialogFragment.CaptchaDialogListener{
+public class LoginActivity extends AppCompatActivity {
 
-    @InjectView(R.id.etSapid) TextInputLayout etSapid;
-    @InjectView(R.id.etPass) TextInputLayout etPass;
+    @InjectView(R.id.etSapid) TextInputLayout textInputSapid;
+    @InjectView(R.id.etPass) TextInputLayout textInputPass;
     @SuppressWarnings("FieldCanBeLocal")
     @InjectView(R.id.bLogin) Button bLogin;
+    private EditText etSapid;
+    private EditText etPass;
 
-    private String charset = HTTP.ISO_8859_1;
-    private Map<String, String> data = new HashMap<String, String>();
     private String myTag ;
 
     @Override
@@ -79,15 +64,16 @@ public class LoginActivity extends AppCompatActivity implements CaptchaDialogFra
         setSupportActionBar(toolbar);
         myTag = getLocalClassName();
 
-        getHiddenData();
+        etSapid = textInputSapid.getEditText();
+        etPass = textInputPass.getEditText();
 
         // Shows the CaptchaDialog when user presses 'Done' on keyboard.
-        etPass.getEditText().setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        etPass.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView view, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
                     if (isValid()) {
-                        showCaptchaDialog();
+                        Login();
                     }
                     return true;
                 }
@@ -100,9 +86,16 @@ public class LoginActivity extends AppCompatActivity implements CaptchaDialogFra
             @Override
             public void onClick(View v) {
                 if (isValid())
-                    showCaptchaDialog();
+                    Login();
             }
         });
+    }
+
+    public void Login() {
+
+        Miscellaneous.closeKeyboard(this, etPass);
+        new UserAccount(LoginActivity.this)
+                .Login(etSapid.getText().toString(), etPass.getText().toString());
     }
 
     /**
@@ -110,117 +103,22 @@ public class LoginActivity extends AppCompatActivity implements CaptchaDialogFra
      * @return true or false
      */
     public boolean isValid() {
-        String sapid = etSapid.getEditText().getText().toString();
-        String password = etPass.getEditText().getText().toString();
+        String sapid = etSapid.getText().toString();
+        String password = etPass.getText().toString();
 
         if(sapid.length()==0 || sapid.length()!=9) {
-            // workaround for enrollment number.
-            if(sapid.length()==10 && sapid.charAt(0)=='#') {
-                return true;
-            }
             etSapid.requestFocus();
             etSapid.setError(getString(R.string.form_sapid_error));
-            Miscellaneous.showKeyboard(this,etSapid.getEditText());
+            Miscellaneous.showKeyboard(this, etSapid);
             return false;
         }
         else if (password.length()==0) {
             etPass.requestFocus();
             etPass.setError(getString(R.string.form_password_error));
-            Miscellaneous.showKeyboard(this,etPass.getEditText());
+            Miscellaneous.showKeyboard(this,etPass);
             return false;
         }
         return true;
-    }
-
-    /**
-     * Creates an instance of the dialog fragment and shows it
-     */
-    public void showCaptchaDialog() {
-        DialogFragment dialog = new CaptchaDialogFragment();
-        dialog.show(getSupportFragmentManager(), "CaptchaDialogFragment");
-    }
-
-    @Override
-    public void onDialogPositiveClick(DialogFragment dialog) {
-
-        Dialog dialogView = dialog.getDialog();
-        final TextInputLayout Captxt = (TextInputLayout) dialogView.findViewById(R.id.etCapTxt);
-
-        if (Captxt.getEditText().getText().toString().length()!=6) {
-            Captxt.setError(getString(R.string.form_captcha_error));
-            Miscellaneous.showKeyboard(this, Captxt.getEditText());
-            return;
-        }
-
-        if(data.isEmpty())
-            getHiddenData();
-
-        // workaround for enrollment number.
-        String sapid = etSapid.getEditText().getText().toString();
-        if(sapid.length()==10 && sapid.charAt(0)=='#')
-            sapid = sapid.replaceFirst("#","R");
-
-        new UserAccount(LoginActivity.this)
-                .Login(sapid,
-                        etPass.getEditText().getText().toString(),
-                        Captxt.getEditText().getText().toString(),
-                        data);
-        Miscellaneous.closeKeyboard(this, Captxt.getEditText());
-        dialog.dismiss();
-    }
-
-    private void getHiddenData()
-    {
-        String mURL = getResources().getString(R.string.URL_home);
-        MyStringRequest request = new MyStringRequest(Method.GET,
-                mURL,
-                getHiddenDataSuccessListener(),
-                myErrorListener()) {
-
-            public Map<String, String> getHeaders() throws com.android.volley.AuthFailureError {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("Accept-Charset", charset);
-                headers.put("User-Agent", getString(R.string.UserAgent));
-                return headers;
-            }
-        };
-        request.setShouldCache(false);
-        request.setPriority(Priority.HIGH);
-        request.setRetryPolicy(new DefaultRetryPolicy(1500, 3, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        MyVolley.getInstance().addToRequestQueue(request,myTag);
-    }
-
-    private Response.Listener<String> getHiddenDataSuccessListener() {
-        return new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-
-                Document doc = Jsoup.parse(response);
-
-                // Get Hidden values
-                Elements hiddenvalues = doc.select(getString(R.string.selector_hidden_data));
-                for(Element hiddenvalue : hiddenvalues)
-                {
-                    String name = hiddenvalue.attr("name");
-                    String val = hiddenvalue.attr("value");
-                    if(name.length()!=0 && val.length()!=0)
-                    {
-                        data.put(name, val);
-                    }
-                }
-            }
-        };
-    }
-
-    private Response.ErrorListener myErrorListener() {
-        return new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                String msg = MyVolleyErrorHelper.getMessage(error, LoginActivity.this);
-                Miscellaneous.showSnackBar(LoginActivity.this, msg);
-                Log.e(getClass().getName(), msg+error);
-            }
-        };
     }
 
     @Override

@@ -46,6 +46,8 @@ import java.io.InputStream;
 import java.net.Authenticator;
 import java.net.PasswordAuthentication;
 import java.security.KeyStore;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
@@ -157,10 +159,10 @@ public class Miscellaneous {
      */
     public static void showSnackBar(Context context, String msg) {
         SnackbarManager.show(
-				Snackbar.with(context)
-						.duration(Snackbar.SnackbarDuration.LENGTH_LONG)
-						.textColor(context.getResources().getColor(R.color.accent))
-						.text(msg), (Activity) context);
+                Snackbar.with(context)
+                        .duration(Snackbar.SnackbarDuration.LENGTH_LONG)
+                        .textColor(context.getResources().getColor(R.color.accent))
+                        .text(msg), (Activity) context);
     }
 
     /**
@@ -189,6 +191,30 @@ public class Miscellaneous {
                         .textColor(context.getResources().getColor(R.color.accent))
                         .text(context.getString(msgRes)), (Activity) context);
     }
+
+    /**
+     * Calculate md5 for any given string
+     * @param s the string
+     * @return the hash of the string s
+     */
+	public static String md5(String s) {
+		try {
+			// Create MD5 Hash
+			MessageDigest digest = java.security.MessageDigest.getInstance("MD5");
+			digest.update(s.getBytes());
+			byte messageDigest[] = digest.digest();
+
+			// Create Hex String
+			StringBuilder hexString = new StringBuilder();
+            for (byte aMessageDigest : messageDigest)
+                hexString.append(Integer.toHexString(0xFF & aMessageDigest));
+			return hexString.toString();
+
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		}
+		return "";
+	}
 
     /**
      * Creates a new SSL Socket Factory with the given KeyStore.

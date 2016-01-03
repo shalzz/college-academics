@@ -26,40 +26,22 @@
     <string name="app_copyright" translatable="false">Shaleen Jain &#60;shaleen.jain95@gmail.com&#62;</string>
     <!--Semantic versioning: MAJOR.MINOR.PATCH-->
     <!-- DON'T update this for PATCH release -->
-    <string name="user_version" translatable="false">2.2</string>
-    <string name="pref_version_summary" translatable="false">v2.2.4</string>
+    <string name="user_version" translatable="false">2.3</string>
+    <string name="pref_version_summary" translatable="false">v2.3.0</string>
     
     <!--API keys-->
     <string name="test_banner_ad_unit_id" translatable="false">ca-app-pub-3940256099942544/6300978111</string>
 
     <!--Network related strings-->
     <string name="UserAgent" translatable="false">Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.57 Safari/537.36</string>
-    <string name="incorrect_captcha" translatable="false">alert(\'Please enter correct code.\'); window.history.go(-1);</string>
-    <string name="incorrect_user_or_pass" translatable="false">alert(\'Incorrect username or password.
-        Please try again.\'); window.history.go(-1);</string>
-    <string name="session_error_identifier" translatable="false">UPES - Home</string>
-    <string name="unavailable_data_identifier" translatable="false">Data not available.</string>
-    <string name="unavailable_timetable_identifier" translatable="false">No reports found for the given criteria.</string>
-    <string name="http_tag_title" translatable="false">title</string>
-    <string name="http_tag_div" translatable="false">infomessage</string>
-    <string name="expired_password" translatable="false">Your password has been expired.Please change password to continue.</string>
 
     <!--URL's-->
-    <string name="URL_login" translatable="false">https://academics.ddn.upes.ac.in/upes/index.php</string>
-    <string name="URL_logout" translatable="false">https://academics.ddn.upes.ac.in/upes/index.php?option=logout</string>
-    <string name="URL_home" translatable="false">https://academics.ddn.upes.ac.in/upes/</string>
-    <string name="URL_attendance" translatable="false">https://academics.ddn.upes.ac.in/upes/index.php?option=com_stuattendance&amp;task=\'view\'&amp;Itemid=7631</string>
-    <string name="URL_timetable" translatable="false">https://academics.ddn.upes.ac.in/upes/index.php?option=com_course_report&amp;Itemid=7794</string>
-    <string name="URL_captcha" translatable="false">https://academics.ddn.upes.ac.in/upes/modules/create_image.php</string>
-
-    <!--Selectors-->
-    <string name="selector_hidden_data" translatable="false">input[type=hidden]</string>
-    <string name="selector_table_data" translatable="false">td</string>
-    <string name="selector_table_header" translatable="false">th</string>
+    <string name="URL_user" translatable="false">http://192.168.1.107:3000/api/v1/me</string>
+    <string name="URL_attendance" translatable="false">http://192.168.1.107:3000/api/v1/me/attendance</string>
+    <string name="URL_timetable" translatable="false">http://192.168.1.107:3000/api/v1/me/timetable</string>
 
     <!--Preference Keys-->
     <string name="pref_key_sub_limit">subjects_expanded_limit</string>
-    <string name="pref_key_batch">pref_batch</string>
     <string name="pref_key_sync">data_sync</string>
     <string name="pref_key_sync_interval">data_sync_interval</string>
     <string name="pref_key_info_about">pref_info_about</string>
@@ -123,8 +105,6 @@
     <!--Preferences-->
     <string name="pref_subject_limit">Limit Expanded Subjects</string>
     <string name="pref_subject_limit_dialog">Limit expanded subjects to</string>
-    <string name="pref_batch">Batch</string>
-    <string name="pref_batch_dialog">Select your batch</string>
     <string name="pref_sync">Auto Refresh</string>
     <string name="pref_sync_summary">Periodically sync your attendance and timetable</string>
     <string name="pref_refresh">Refresh Interval</string>

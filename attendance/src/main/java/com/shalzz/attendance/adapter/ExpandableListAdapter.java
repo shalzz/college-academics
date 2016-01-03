@@ -120,7 +120,6 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         //child views
         public RelativeLayout childView;
         public TextView tvAbsent;
-        public TextView tvProjected;
         public TextView tvReach;
         public ImageView ivAlert;
 
@@ -197,7 +196,6 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         // child view
         View childView = views.childView;
         views.tvAbsent = (TextView) childView.findViewById(R.id.tvAbsent);
-        views.tvProjected = (TextView) childView.findViewById(R.id.tvProjected);
         views.tvReach = (TextView) childView.findViewById(R.id.tvReach);
         views.ivAlert = (ImageView) childView.findViewById(R.id.imageView1);
 
@@ -323,16 +321,14 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     public void bindChildView(GenericViewHolder holder, int position) {
 
         TextView tvAbsent = holder.tvAbsent;
-        TextView tvProjected = holder.tvProjected;
         TextView tvReach = holder.tvReach;
         ImageView ivAlert = holder.ivAlert;
         Resources res = mContext.getResources();
 
         int held = mSubjects.get(position).getClassesHeld().intValue();
         int attend = mSubjects.get(position).getClassesAttended().intValue();
-        int percent = Math.round(mSubjects.get(position).getPercentage());
+        float percent = mSubjects.get(position).getPercentage();
 
-        tvProjected.setText(mSubjects.get(position).getProjectedPercentage());
         tvAbsent.setText("Days Absent: " + mSubjects.get(position).getAbsentDates());
 
         if (percent<67 && held!=0) {

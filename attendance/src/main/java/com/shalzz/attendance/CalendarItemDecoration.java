@@ -20,13 +20,11 @@
 package com.shalzz.attendance;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.Rect;
-import android.preference.PreferenceManager;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -36,7 +34,6 @@ import android.view.View;
 import android.widget.OverScroller;
 import android.widget.Scroller;
 
-import com.shalzz.attendance.model.Day;
 import com.shalzz.attendance.model.Period;
 import com.shalzz.attendance.wrapper.DateHelper;
 
@@ -114,13 +111,8 @@ public class CalendarItemDecoration extends RecyclerView.ItemDecoration {
         setOrientation(orientation);
 
         DatabaseHandler db = new DatabaseHandler(context);
-        String weekday = DateHelper.getTechnicalWeekday(mDate);
-
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
-        String pref_batch = sharedPref.getString(context.getString(R.string.pref_batch), "");
-
-        Day day = pref_batch.equals("NULL") ? db.getDay(weekday): db.getDay(weekday,pref_batch);
-        mPeriods = day.getAllPeriods();
+        String weekday = DateHelper.getShortWeekday(mDate);
+        mPeriods = db.getAllPeriods(weekday);
         init();
     }
 

@@ -48,21 +48,21 @@ import com.github.amlcurran.showcaseview.targets.Target;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.shalzz.attendance.CircularIndeterminate;
-import com.shalzz.attendance.DataAPI;
-import com.shalzz.attendance.DataAssembler;
 import com.shalzz.attendance.DatabaseHandler;
 import com.shalzz.attendance.Miscellaneous;
 import com.shalzz.attendance.R;
-import com.shalzz.attendance.UserAccount;
 import com.shalzz.attendance.activity.MainActivity;
 import com.shalzz.attendance.adapter.TimeTablePagerAdapter;
+import com.shalzz.attendance.model.Period;
+import com.shalzz.attendance.network.DataAPI;
+import com.shalzz.attendance.UserAccount;
 import com.shalzz.attendance.wrapper.DateHelper;
-import com.shalzz.attendance.wrapper.ErrorHelper;
 import com.shalzz.attendance.wrapper.MultiSwipeRefreshLayout;
 import com.shalzz.attendance.wrapper.MyPreferencesManager;
 import com.shalzz.attendance.wrapper.MyVolley;
 import com.shalzz.attendance.wrapper.MyVolleyErrorHelper;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -138,9 +138,11 @@ public class TimeTablePagerFragment extends Fragment {
         mViewPager.setOffscreenPageLimit(3);
         mViewPager.setOnPageChangeListener(new OnPageChangeListener() {
 
-            public void onPageScrollStateChanged(int state) {}
+            public void onPageScrollStateChanged(int state) {
+            }
 
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            }
 
             public void onPageSelected(int position) {
                 mPreviousPosition = position;
@@ -155,7 +157,7 @@ public class TimeTablePagerFragment extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         DatabaseHandler db = new DatabaseHandler(mContext);
-        if(db.getRowCountofTimeTable()<=0) {
+        if(db.getTimetableCount()<=0) {
             DataAPI.getTimeTable(mContext, timeTableSuccessListener(), myErrorListener());
             mProgress.setVisibility(View.VISIBLE);
             mViewPager.setVisibility(View.GONE);
@@ -178,7 +180,7 @@ public class TimeTablePagerFragment extends Fragment {
         mViewPager.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if(mSwipeRefreshLayout != null) {
+                if (mSwipeRefreshLayout != null) {
                     mSwipeRefreshLayout.setEnabled(false);
                     switch (event.getAction()) {
                         case MotionEvent.ACTION_UP:
@@ -301,17 +303,30 @@ public class TimeTablePagerFragment extends Fragment {
         };
     }
 
-    private Response.Listener<String> timeTableSuccessListener() {
-        return new Response.Listener<String>() {
+    private Response.Listener<ArrayList<Period>> timeTableSuccessListener() {
+        return new Response.Listener<ArrayList<Period>>() {
             @Override
-            public void onResponse(String response) {
+            public void onResponse(ArrayList<Period> response) {
                 try {
-                    new DataAssembler.ParseTimeTable(mContext, parseListener()).execute(response);
+                    DatabaseHandler db = new DatabaseHandler(mContext);
+                    db.deleteAllPeriods();
+                    for(Period period : response) {
+                        db.addPeriod(period);
+                    }
+                    db.close();
+                    updateFragments();
+                    new MyPreferencesManager(mContext).setLastSyncTime();
                 }
                 catch (Exception e) {
                     e.printStackTrace();
                     String msg = getResources().getString(R.string.unexpected_error);
                     Miscellaneous.showSnackBar(mContext, msg);
+                } finally {
+                    // Stop the refreshing indicator
+                    if(mProgress != null || mSwipeRefreshLayout != null) {
+                        mProgress.setVisibility(View.GONE);
+                        mSwipeRefreshLayout.setRefreshing(false);
+                    }
                 }
             }
         };
@@ -330,32 +345,6 @@ public class TimeTablePagerFragment extends Fragment {
                 String msg = MyVolleyErrorHelper.getMessage(error, mContext);
                 Miscellaneous.showSnackBar(mContext, msg);
                 Log.e(myTag, msg);
-            }
-        };
-    }
-
-    private DataAssembler.ParseListener parseListener() {
-        return new DataAssembler.ParseListener() {
-            private boolean canceled = false;
-            @Override
-            public void onParseComplete(int result) {
-                // Stop the refreshing indicator
-                if(mProgress == null || mSwipeRefreshLayout == null || canceled)
-                    return;
-                mProgress.setVisibility(View.GONE);
-                mViewPager.setVisibility(View.VISIBLE);
-                mSwipeRefreshLayout.setRefreshing(false);
-                if(result == 0) {
-                    mTimeTablePagerAdapter.setDate(mToday);
-                    updateFragments();
-                    scrollToToday();
-                    updateTitle();
-                }
-                ErrorHelper.handleError(result, mContext);
-            }
-
-            public void cancelListener() {
-                canceled = true;
             }
         };
     }
@@ -379,7 +368,6 @@ public class TimeTablePagerFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        parseListener().cancelListener();
         ButterKnife.reset(this);
     }
 

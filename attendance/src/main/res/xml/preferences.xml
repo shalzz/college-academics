@@ -23,20 +23,13 @@
     <PreferenceCategory android:title="Attendance" >
         <com.afollestad.materialdialogs.prefs.MaterialListPreference
             android:key="@string/pref_key_sub_limit"
-            android:defaultValue="3"
+            android:defaultValue="0"
             android:title="@string/pref_subject_limit"
             android:dialogTitle="@string/pref_subject_limit_dialog"
             android:entries="@array/pref_subject_limit_entries"
             android:entryValues="@array/pref_subject_limit_values"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="Timetable" >
-        <com.afollestad.materialdialogs.prefs.MaterialListPreference
-            android:key="@string/pref_key_batch"
-            android:title="@string/pref_batch"
-            android:defaultValue="NULL"
-            android:dialogTitle="@string/pref_batch_dialog"
-            android:entries="@array/pref_batch_entries"
-            android:entryValues="@array/pref_batch_values"/>
 		<CheckBoxPreference
             android:key="@string/pref_key_mute"
             android:defaultValue="false"

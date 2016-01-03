@@ -30,7 +30,7 @@ import java.util.Locale;
 
 public class DateHelper {
 
-    private static DateFormat technicalDateFormat = new SimpleDateFormat("dd-MM-yyyy",Locale.US);
+    private static DateFormat technicalDateFormat = new SimpleDateFormat("yyyy-MM-dd",Locale.US);
     private static DateFormat properDateFormat = new SimpleDateFormat("dd/MM/yyyy",Locale.US);
 
     public interface DateTimeInterpreter {
@@ -38,18 +38,18 @@ public class DateHelper {
         String interpretTime(int hour);
     }
 
-    public static String getTechnicalWeekday(Date date) {
+    public static String getShortWeekday(Date date) {
         Calendar today = Calendar.getInstance();
         today.setTime(date);
         int weekday = today.get(Calendar.DAY_OF_WEEK);
-        return Week.getTechnical(weekday - 1);
+        return Week.getShortDay(weekday - 1);
     }
 
     public static String getProperWeekday(Date date) {
         Calendar today = Calendar.getInstance();
         today.setTime(date);
         int weekday = today.get(Calendar.DAY_OF_WEEK);
-        return Week.getProper(weekday-1);
+        return Week.getFullDay(weekday - 1);
     }
 
     public static Date getToDay() {
@@ -63,20 +63,23 @@ public class DateHelper {
         return c.getTime();
     }
 
+    public static Date parseDate(String datestr) {
+        Date date = null;
+        try {
+            date = technicalDateFormat.parse(datestr);
+            System.out.println(date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return date;
+    }
+
     public static String formatToTechnicalFormat(Date date) {
         return technicalDateFormat.format(date);
     }
 
     public static String formatToProperFormat(Date date) {
         return properDateFormat.format(date);
-    }
-
-    public static String getNetworkRequestDate(Date date) {
-        Calendar c = Calendar.getInstance();
-        c.setTime(date);
-        if(c.get(Calendar.DAY_OF_WEEK)==Calendar.SUNDAY)
-            date = addDays(date,1);
-        return technicalDateFormat.format(date);
     }
 
     public static String to12HrFormat(String time) throws ParseException {

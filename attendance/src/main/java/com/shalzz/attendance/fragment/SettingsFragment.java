@@ -44,7 +44,6 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
 
 	private Context mContext;
     private String key_sub_limit;
-    private String key_batch;
     private String key_sync_interval;
     private String key_ring_mode;
 
@@ -58,10 +57,6 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
         key_sub_limit = getString(R.string.pref_key_sub_limit);
 		ListPreference listPref = (ListPreference) findPreference(key_sub_limit);
 		listPref.setSummary(listPref.getEntry());
-
-        key_batch = getString(R.string.pref_key_batch);
-        ListPreference listPref_batch = (ListPreference) findPreference(key_batch);
-        listPref_batch.setSummary(listPref_batch.getEntry());
 
         key_sync_interval = getString(R.string.pref_key_sync_interval);
 		ListPreference synclistPref = (ListPreference) findPreference(key_sync_interval);
@@ -86,13 +81,9 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
             ListPreference connectionPref = (ListPreference) findPreference(key);
             connectionPref.setSummary(connectionPref.getEntry());
         }
-        else if(key.equals(key_batch)) {
-            ListPreference connectionPref = (ListPreference) findPreference(key);
-            connectionPref.setSummary(connectionPref.getEntry());
-        }
         else if (key.equals(getString(R.string.pref_key_sync))) {
             DatabaseHandler db = new DatabaseHandler(mContext);
-            String account_name =  "" + db.getListHeader().getSAPId();
+            String account_name =  "" + db.getUser().getSapid();
             if (sharedPreferences.getBoolean(key,true))
                 MySyncManager.enableAutomaticSync(mContext, account_name);
             else
@@ -102,7 +93,7 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
             DatabaseHandler db = new DatabaseHandler(mContext);
             ListPreference connectionPref = (ListPreference) findPreference(key);
             connectionPref.setSummary(connectionPref.getEntry());
-            MySyncManager.addPeriodicSync(mContext, "" + db.getListHeader().getSAPId());
+            MySyncManager.addPeriodicSync(mContext, "" + db.getUser().getSapid());
         }
         else if(key.equals(key_ring_mode)) {
             ListPreference list_pref_ring_mode = (ListPreference) findPreference(key_ring_mode);

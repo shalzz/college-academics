@@ -24,6 +24,8 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.text.format.Time;
 import android.util.Log;
+
+import com.shalzz.attendance.Miscellaneous;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.activity.MainActivity;
 
@@ -62,66 +64,8 @@ public class MyPreferencesManager {
         now.setToNow();
         Long now_L = now.toMillis(false);
 		SharedPreferences settings = mContext.getApplicationContext().getSharedPreferences("SETTINGS", Context.MODE_MULTI_PROCESS);
-		Long last_sync = settings.getLong("REFRESH_TIME", now_L );
+		Long last_sync = settings.getLong("REFRESH_TIME", now_L);
 		return (now_L-last_sync)/(1000*60*60); // convert milliseconds to hours
-	}
-
-	/**
-	 * Gets the cookies from the shared preferences and adds them to the default CookieManager.
-	 */
-	public void getPersistentCookies()
-	{
-		CookieManager cookieMan = (CookieManager) CookieHandler.getDefault();
-		SharedPreferences pcookies = mContext.getSharedPreferences("PERSISTCOOKIES", 0);	
-		Iterator<String> keyset = pcookies.getAll().keySet().iterator();
-		if(keyset.hasNext())
-		{
-			while(keyset.hasNext())
-			{
-				String cookiename = keyset.next();
-				String cookievalue = pcookies.getString(cookiename, "");
-				if(!cookievalue.isEmpty()) 
-				{
-					try {
-						HttpCookie cookie = new HttpCookie(cookiename,cookievalue);
-						cookie.setDomain("academics.ddn.upes.ac.in");
-						cookie.setPath("/");
-						cookie.setVersion(0);
-						cookieMan.getCookieStore().add(new URI(mContext.getResources().getString(R.string.URL_home)), cookie);
-					} catch (Exception e) {
-						e.printStackTrace();
-					} 
-				}
-			}
-		}
-	}
-
-	/**
-	 * Saves the cookies in shared preferences.
-	 */
-	public void savePersistentCookies() {
-		CookieManager cookieMan = (CookieManager) CookieHandler.getDefault();
-		SharedPreferences persistentcookies = mContext.getSharedPreferences("PERSISTCOOKIES", 0);
-		SharedPreferences.Editor editor = persistentcookies.edit();
-		for(HttpCookie cookie : cookieMan.getCookieStore().getCookies() ){
-			editor.putString(cookie.getName(), cookie.getValue());
-		}
-		editor.commit();
-	}
-
-	/**
-	 * Removes the cookies from the shared preferences and Cookie Manager
-	 */
-	public void removePersistenCookies() {
-		SharedPreferences pcookies = mContext.getSharedPreferences("PERSISTCOOKIES", 0);
-		SharedPreferences.Editor editor = pcookies.edit();
-        for (String cookiename : pcookies.getAll().keySet()) {
-            editor.remove(cookiename);
-        }
-		editor.apply();
-		
-		CookieManager cookieMan = (CookieManager) CookieHandler.getDefault();
-		cookieMan.getCookieStore().removeAll();
 	}
 
 	/**
@@ -132,9 +76,16 @@ public class MyPreferencesManager {
 
 		Log.i(mContext.getClass().getName(), "Getting Logged in state.");
 		SharedPreferences settings = mContext.getSharedPreferences("SETTINGS", 0);
-		boolean loggedin = settings.getBoolean("LOGGEDIN"+mContext.getResources().getString(R.string.user_version), false);
-		Log.d(mContext.getClass().getName(), "Logged in state: "+loggedin+ "");
+		boolean loggedin = settings.getBoolean("LOGGEDIN" + mContext.getResources().getString(R.string.user_version), false);
+		Log.d(mContext.getClass().getName(), "Logged in state: " + loggedin + "");
 		return loggedin;
+	}
+
+	public String getUser() {
+		SharedPreferences settings = mContext.getSharedPreferences("SETTINGS", 0);
+
+		return String.format("%s:%s", settings.getString("USERNAME", null)
+				, settings.getString("PASSWORD", null));
 	}
 
 	/**
@@ -171,7 +122,7 @@ public class MyPreferencesManager {
      * @return True or False
      */
     public boolean isFirstLaunch(String tag) {
-        SharedPreferences settings = mContext.getSharedPreferences("SETTINGS", 0);
+        SharedPreferences settings = mContext.getSharedPreferences("LAUNCH", 0);
         return settings.getBoolean("FIRSTLAUNCH"+tag, true);
     }
 
@@ -179,7 +130,7 @@ public class MyPreferencesManager {
      * Sets the first launch to false.
      */
     public void setFirstLaunch(String tag) {
-        SharedPreferences settings = mContext.getSharedPreferences("SETTINGS", 0);
+        SharedPreferences settings = mContext.getSharedPreferences("LAUNCH", 0);
         SharedPreferences.Editor editor = settings.edit();
         editor.putBoolean("FIRSTLAUNCH"+tag, false);
         editor.commit();

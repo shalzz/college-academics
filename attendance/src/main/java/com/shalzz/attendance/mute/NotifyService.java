@@ -150,7 +150,7 @@ public class NotifyService extends Service {
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0, intent, 0);
  
         // Set the info for the views that show in the notification panel.
-        notification.setLatestEventInfo(this, title, text, contentIntent);
+        //notification.setLatestEventInfo(this, title, text, contentIntent);
  
         // Clear the notification when it is pressed
         notification.flags |= Notification.FLAG_AUTO_CANCEL;

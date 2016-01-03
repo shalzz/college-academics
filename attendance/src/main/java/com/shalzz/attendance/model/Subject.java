@@ -19,8 +19,13 @@
 
 package com.shalzz.attendance.model;
 
+import com.shalzz.attendance.wrapper.DateHelper;
+
+import java.util.Arrays;
+import java.util.Date;
+
 /**
- * Modal class for subjects.
+ * Model class for subjects.
  * @author shalzz
  *
  */
@@ -29,48 +34,14 @@ public class Subject {
 	// private variables;
 	private int id;
 	private String name;
-	private Float classesHeld;
-	private Float classesAttended;
-	private String absentDates;
-	private Float percentage;
-	private String projectedPercentage;
+	private Float held;
+	private Float attended;
+	private Date absent_dates[];
 
-	// Empty constructor
-	public Subject(){
-
-	}
-
-	/**
-	 * Constructor with all values.
-	 * @param id Unique id
-	 * @param name subject name
-	 * @param classesHeld No of classes held
-	 * @param classesAttended No of classes attended
-	 * @param absentDates Dates absent on
-	 * @param percentage Percentage
-	 * @param projectedPercentage Projected percentage
-	 */
-	public Subject(int id, String name, Float classesHeld, Float classesAttended, String absentDates, Float percentage, String projectedPercentage){
-		this.id = id;
-		this.name = name;
-		this.classesHeld = classesHeld;
-		this.classesAttended = classesAttended;
-		this.absentDates = absentDates;
-		this.percentage = percentage;
-		this.projectedPercentage = projectedPercentage;
-	}
-
-	// constructor
-	public Subject(String name) {
-		this.name = name;
-	}
-
-	// getting ID
 	public int getID(){
 		return this.id;
 	}
 
-	// setting id
 	public void setID(int id){
 		this.id = id;
 	}
@@ -84,42 +55,51 @@ public class Subject {
 	}
 
 	public Float getClassesHeld() {
-		return this.classesHeld;
+		return this.held;
 	}
 
 	public void setClassesHeld(Float classesHeld) {
-		this.classesHeld = classesHeld;
+		this.held = classesHeld;
 	}
 
 	public Float getClassesAttended() {
-		return this.classesAttended;
+		return this.attended;
 	}
 
 	public void setClassesAttended(Float classesAttended) {
-		this.classesAttended = classesAttended;
+		this.attended = classesAttended;
 	}
 
 	public String getAbsentDates() {
-		return this.absentDates;
+		String dates = "";
+        for(int i=0; i < absent_dates.length ; i++) {
+			dates += DateHelper.formatToTechnicalFormat(absent_dates[i]);
+            if(i!=absent_dates.length-1)
+                dates += ",";
+		}
+		return dates;
 	}
 
-	public void setAbsentDates(String absentDates) {
-		this.absentDates = absentDates;
+	public void setAbsentDates(String absentDatesStr) {
+		String dates[] = absentDatesStr.split(",");
+        absent_dates = new Date[dates.length];
+		for(int i=0; i < dates.length ; i++) {
+			absent_dates[i] = DateHelper.parseDate(dates[i]);
+		}
 	}
 
 	public Float getPercentage() {
-		return this.percentage;
+		return (float) Math.round(attended / held * 100) ;
 	}
 
-	public void setPercentage(Float percentage) {
-		this.percentage = percentage;
-	}
-
-	public String getProjectedPercentage() {
-		return this.projectedPercentage;
-	}
-
-	public void setProjectedPercentage(String projectedPercentage) {
-		this.projectedPercentage = projectedPercentage;
-	}
+    @Override
+    public String toString() {
+        return "Subject{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", held=" + held +
+                ", attended=" + attended +
+                ", absent_dates=" + Arrays.toString(absent_dates) +
+                '}';
+    }
 }

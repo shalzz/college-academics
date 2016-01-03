@@ -21,9 +21,7 @@ package com.shalzz.attendance.fragment;
 
 import android.app.Fragment;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -35,9 +33,10 @@ import com.shalzz.attendance.DatabaseHandler;
 import com.shalzz.attendance.DividerItemDecoration;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.adapter.DayListAdapter;
-import com.shalzz.attendance.model.Day;
+import com.shalzz.attendance.model.Period;
 import com.shalzz.attendance.wrapper.DateHelper;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 import butterknife.ButterKnife;
@@ -51,7 +50,7 @@ public class DayFragment extends Fragment {
     private Date mDate;
     public static final String ARG_DATE = "date";
     private DayListAdapter mAdapter;
-    private Day mDay;
+    private ArrayList<Period> periods;
 
 
     @Override
@@ -96,7 +95,7 @@ public class DayFragment extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         reloadDataSet();
-        mAdapter = new DayListAdapter(mDay);
+        mAdapter = new DayListAdapter(periods);
         mAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
             public void onChanged() {
@@ -110,15 +109,12 @@ public class DayFragment extends Fragment {
 
     public void reloadDataSet() {
         DatabaseHandler db = new DatabaseHandler(getActivity());
-        String weekday = DateHelper.getTechnicalWeekday(mDate);
+        String weekday = DateHelper.getShortWeekday(mDate);
 
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mContext);
-        String pref_batch = sharedPref.getString(getString(R.string.pref_key_batch), "NULL");
-
-        mDay = pref_batch.equals("NULL") ? db.getDay(weekday): db.getDay(weekday,pref_batch);
+        periods = db.getAllPeriods(weekday);
 
         if(mAdapter!=null)
-            mAdapter.setDataSet(mDay);
+            mAdapter.setDataSet(periods);
     }
 
     private void checkAdapterIsEmpty () {

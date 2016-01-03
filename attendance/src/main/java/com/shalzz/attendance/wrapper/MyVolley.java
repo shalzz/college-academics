@@ -97,12 +97,8 @@ public class MyVolley extends Application {
 		
 		// Initialize the singleton
 		sInstance = this;
-		
-		// Set a cookie manager
-		Log.i(MyVolley.class.getName(), "Setting CookieHandler");
-		CookieHandler.setDefault(new CookieManager(null, CookiePolicy.ACCEPT_ALL));
-		MyPreferencesManager settings = new MyPreferencesManager(mContext);
-		settings.getPersistentCookies();
+
+		// TODO: create a singleton for DatabaseHandler?
 	}
 	
 	/**

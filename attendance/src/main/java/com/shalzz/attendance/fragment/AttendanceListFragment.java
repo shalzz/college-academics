@@ -56,23 +56,21 @@ import com.github.amlcurran.showcaseview.targets.ViewTarget;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.shalzz.attendance.CircularIndeterminate;
-import com.shalzz.attendance.DataAPI;
-import com.shalzz.attendance.DataAssembler;
 import com.shalzz.attendance.DatabaseHandler;
 import com.shalzz.attendance.DividerItemDecoration;
 import com.shalzz.attendance.Miscellaneous;
 import com.shalzz.attendance.R;
-import com.shalzz.attendance.UserAccount;
 import com.shalzz.attendance.activity.MainActivity;
 import com.shalzz.attendance.adapter.ExpandableListAdapter;
 import com.shalzz.attendance.model.Subject;
-import com.shalzz.attendance.wrapper.ErrorHelper;
+import com.shalzz.attendance.network.DataAPI;
+import com.shalzz.attendance.UserAccount;
 import com.shalzz.attendance.wrapper.MultiSwipeRefreshLayout;
 import com.shalzz.attendance.wrapper.MyPreferencesManager;
-import com.shalzz.attendance.wrapper.MySyncManager;
 import com.shalzz.attendance.wrapper.MyVolley;
 import com.shalzz.attendance.wrapper.MyVolleyErrorHelper;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.ButterKnife;
@@ -177,10 +175,6 @@ public class AttendanceListFragment extends Fragment implements
 
         DatabaseHandler db = new DatabaseHandler(mContext);
         if(db.getRowCount()<=0) {
-            if(getActivity().getIntent().hasExtra(UserAccount.INTENT_EXTRA_USERNAME)) {
-                String SAPID = getActivity().getIntent().getExtras().getString(UserAccount.INTENT_EXTRA_USERNAME);
-                MySyncManager.addPeriodicSync(mContext, SAPID);
-            }
             DataAPI.getAttendance(mContext, successListener(), errorListener());
             mProgress.setVisibility(View.VISIBLE);
         } else {
@@ -214,7 +208,6 @@ public class AttendanceListFragment extends Fragment implements
         DatabaseHandler db = new DatabaseHandler(getActivity());
         if(db.getRowCount()>0)
         {
-            updateHeaderNFooter();
             SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mContext);
             int expandLimit = Integer.parseInt(sharedPref.getString(
                     getString(R.string.pref_key_sub_limit), "3"));
@@ -229,10 +222,6 @@ public class AttendanceListFragment extends Fragment implements
             mRecyclerView.setAdapter(mAdapter);
 
         }
-    }
-
-    private void updateHeaderNFooter() {
-        MainActivity.getInstance().updateDrawerHeader();
     }
 
     @Override
@@ -306,43 +295,32 @@ public class AttendanceListFragment extends Fragment implements
         return super.onOptionsItemSelected(item);
     }
 
-    private Response.Listener<String> successListener() {
-        return new Response.Listener<String>() {
+    private Response.Listener<ArrayList<Subject>> successListener() {
+        return new Response.Listener<ArrayList<Subject>>() {
             @Override
-            public void onResponse(String response) {
+            public void onResponse(ArrayList<Subject> response) {
                 try {
-                    new DataAssembler.ParseStudentDetails(mContext, null).execute(response);
-                    new DataAssembler.ParseAttendance(mContext, parseListener()).execute(response);
+                    DatabaseHandler db = new DatabaseHandler(mContext);
+                    db.deleteAllSubjects();
+                    for(Subject subject : response) {
+                        db.addSubject(subject);
+                    }
+                    db.close();
+
+                    prefs.setLastSyncTime();
+                    setAttendance();
                 }
                 catch (Exception e) {
                     String msg = mResourses.getString(R.string.unexpected_error);
                     Miscellaneous.showSnackBar(mContext,msg);
+                    e.printStackTrace();
+                } finally {
+                    // Stop the refreshing indicator
+                    if(mProgress != null || mSwipeRefreshLayout != null) {
+                        mProgress.setVisibility(View.GONE);
+                        mSwipeRefreshLayout.setRefreshing(false);
+                    }
                 }
-            }
-        };
-    }
-
-    private DataAssembler.ParseListener parseListener() {
-        return new DataAssembler.ParseListener() {
-            private boolean canceled = false;
-            @Override
-            public void onParseComplete(int result) {
-                // Stop the refreshing indicator
-                if(mProgress == null || mSwipeRefreshLayout == null || canceled)
-                    return;
-                mProgress.setVisibility(View.GONE);
-                mSwipeRefreshLayout.setRefreshing(false);
-                if(result == 0) {
-                    prefs.setLastSyncTime();
-                    setAttendance();
-                }
-                else
-                    MainActivity.getInstance().updateDrawerHeader();
-                ErrorHelper.handleError(result, mContext);
-            }
-
-            public void cancelListener() {
-                canceled = true;
             }
         };
     }
@@ -503,7 +481,6 @@ public class AttendanceListFragment extends Fragment implements
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        parseListener().cancelListener();
         ButterKnife.reset(this);
     }
 }

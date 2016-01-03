@@ -21,35 +21,35 @@ package com.shalzz.attendance.model;
 
 public enum Week {
 
-    SUNDAY ("sun","Sunday"),
-    MONDAY ("mon","Monday"),
-    TUESDAY ("tue","Tuesday"),
-    WEDNESDAY ("wed","Wednesday"),
-    THURSDAY ("thur","Thursday"),
-    FRIDAY ("fri","Friday"),
-    SATURDAY ("sat","Saturday");
+    SUNDAY ("Sun","Sunday"),
+    MONDAY ("Mon","Monday"),
+    TUESDAY ("Tue","Tuesday"),
+    WEDNESDAY ("Wed","Wednesday"),
+    THURSDAY ("Thu","Thursday"),
+    FRIDAY ("Fri","Friday"),
+    SATURDAY ("Sat","Saturday");
 
-    private final String technical;
-    private final String proper;
+    private final String shortDay;
+    private final String fullDay;
 
     Week(String t, String p) {
-        technical = t;
-        proper = p;
+        shortDay = t;
+        fullDay = p;
     }
 
-    public String getTechnical() {
-        return technical;
+    public String getShortDay() {
+        return shortDay;
     }
 
-    public static String getTechnical(int i) {
-        return Week.values()[i].getTechnical();
+    public static String getShortDay(int i) {
+        return Week.values()[i].getShortDay();
     }
 
-    public String getProper() {
-        return proper;
+    public String getFullDay() {
+        return fullDay;
     }
 
-    public static String getProper(int i) {
-        return Week.values()[i].getProper();
+    public static String getFullDay(int i) {
+        return Week.values()[i].getFullDay();
     }
 }

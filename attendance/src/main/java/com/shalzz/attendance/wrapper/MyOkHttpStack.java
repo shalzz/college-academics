@@ -30,9 +30,7 @@ import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.toolbox.HttpStack;
 import com.shalzz.attendance.Miscellaneous;
-import com.shalzz.attendance.R;
 import com.squareup.okhttp.Call;
-import com.squareup.okhttp.CertificatePinner;
 import com.squareup.okhttp.Headers;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
@@ -53,7 +51,6 @@ import org.apache.http.message.BasicStatusLine;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
-import java.security.KeyStore;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 

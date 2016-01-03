@@ -43,9 +43,6 @@
     <screenName name="com.shalzz.attendance.fragment.ProxySettingsFragment">
         ProxyScreen
     </screenName>
-    <screenName name="com.shalzz.attendance.fragment.CaptchaDialogFragment">
-        CaptchaDialogScreen
-    </screenName>
     <screenName name="com.shalzz.attendance.activity.LoginActivity">
         LoginScreen
     </screenName>

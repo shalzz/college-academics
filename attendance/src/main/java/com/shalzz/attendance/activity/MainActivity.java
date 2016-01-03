@@ -45,7 +45,7 @@ import com.shalzz.attendance.R;
 import com.shalzz.attendance.fragment.AttendanceListFragment;
 import com.shalzz.attendance.fragment.SettingsFragment;
 import com.shalzz.attendance.fragment.TimeTablePagerFragment;
-import com.shalzz.attendance.model.ListHeader;
+import com.shalzz.attendance.model.User;
 import com.shalzz.attendance.wrapper.MyPreferencesManager;
 import com.shalzz.attendance.wrapper.MyVolley;
 
@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Reference to fragment positions
      */
-    public static enum Fragments {
+    public enum Fragments {
         ATTENDANCE(1),
         TIMETABLE(2),
         SETTINGS(3);
@@ -108,7 +108,6 @@ public class MainActivity extends AppCompatActivity {
     NavigationView mNavigationView;
 
     private int mCurrentSelectedPosition = Fragments.ATTENDANCE.getValue();
-    private static MainActivity mActivity;
     private String[] mNavTitles;
     private CharSequence mDrawerTitle;
     private CharSequence mTitle;
@@ -134,7 +133,6 @@ public class MainActivity extends AppCompatActivity {
         mFragmentManager = getFragmentManager();
         mTitle  = getTitle();
         actionbar = getSupportActionBar();
-        mActivity = this;
 
         // Check for tablet layout
 //        FrameLayout frameLayout = (FrameLayout)findViewById(R.id.frame_container);
@@ -238,21 +236,17 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public static MainActivity getInstance(){
-        return mActivity;
-    }
-
     public void updateDrawerHeader() {
         DatabaseHandler db = new DatabaseHandler(this);
-        if(db.getHeaderRowCount()>0) {
-            ListHeader listheader = db.getListHeader();
+        if(db.getUserCount()>0) {
+            User user = db.getUser();
             MyPreferencesManager prefs = new MyPreferencesManager(this);
 
             TextView tv_name = (TextView) Drawerheader.findViewById(R.id.drawer_header_name);
             TextView tv_course = (TextView) Drawerheader.findViewById(R.id.drawer_header_course);
             TextView last_refresh = (TextView) Drawerheader.findViewById(R.id.last_refreshed);
-            tv_name.setText(listheader.getName());
-            tv_course.setText(listheader.getCourse());
+            tv_name.setText(user.getName());
+            tv_course.setText(user.getCourse());
             int time = ((int) prefs.getLastSyncTime());
             last_refresh.setText(getResources().getQuantityString(R.plurals.tv_last_refresh, time, time));
         }
