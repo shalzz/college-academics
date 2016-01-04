@@ -42,10 +42,7 @@ import java.util.List;
 public class DatabaseHandler extends SQLiteOpenHelper {
 
     // TODO: do in background
-    /**
-     * Context
-     */
-    private static Context mContext;
+	// TODO: move to content providers
 
 	/**
 	 * Database Version
@@ -60,7 +57,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	/**
 	 *  Attendance table name
 	 */
-	private static final String TABLE_ATTENDENCE = "Attendance";
+	private static final String TABLE_ATTENDANCE = "Attendance";
 
 	/**
 	 *  Attendance table name
@@ -111,7 +108,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     /**
 	 * Attendance CREATE TABLE SQL query.
 	 */
-	private static final String CREATE_ATTENDANCE_TABLE = "CREATE TABLE " + TABLE_ATTENDENCE + " ( "
+	private static final String CREATE_ATTENDANCE_TABLE = "CREATE TABLE " + TABLE_ATTENDANCE + " ( "
 			+ KEY_ID + " INTEGER PRIMARY KEY, " + KEY_NAME + " TEXT, " 
 			+ KEY_CLASSES_HELD + " REAL, " + KEY_CLASSES_ATTENDED + " REAL, " 
 			+ KEY_DAYS_ABSENT + " TEXT "  + ");";
@@ -136,7 +133,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	 */
 	public DatabaseHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
-        mContext = context;
 	}
 
 	/**
@@ -155,7 +151,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		// Drop older table if existed
-		db.execSQL("DROP TABLE IF EXISTS " + TABLE_ATTENDENCE);
+		db.execSQL("DROP TABLE IF EXISTS " + TABLE_ATTENDANCE);
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_USER);
         // Clean up from previous versions.
         // TODO: remove in later releases
@@ -166,8 +162,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		onCreate(db);
 
         // remove conflicting shared preferences b/w versions
-        MyPreferencesManager pref = new MyPreferencesManager(mContext);
-        pref.removeSettings();
+        MyPreferencesManager.removeSettings();
 	}
 
 	/**
@@ -185,7 +180,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(KEY_DAYS_ABSENT, subject.getAbsentDates());
 
 		// Inserting Row
-        db.insert(TABLE_ATTENDENCE, null, values);
+        db.insert(TABLE_ATTENDANCE, null, values);
 		db.close(); // Closing database connection
 	}
 
@@ -194,9 +189,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	 * @return subjectList
 	 */
 	public List<Subject> getAllSubjects() {
-		List<Subject> subjectList = new ArrayList<Subject>();
+		List<Subject> subjectList = new ArrayList<>();
 		// Select All Query
-		String selectQuery = "SELECT  * FROM " + TABLE_ATTENDENCE + ";";
+		String selectQuery = "SELECT  * FROM " + TABLE_ATTENDANCE + ";";
 
 		SQLiteDatabase db = this.getReadableDatabase();
 		Cursor cursor = db.rawQuery(selectQuery, null);
@@ -228,9 +223,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	 * @return subjectList
 	 */
 	public List<Subject> getAllOrderedSubjects() {
-		List<Subject> subjectList = new ArrayList<Subject>();
+		List<Subject> subjectList = new ArrayList<>();
 		// Select All Query
-		String selectQuery = "SELECT  * FROM " + TABLE_ATTENDENCE + " ORDER BY " + KEY_NAME + ";";
+		String selectQuery = "SELECT  * FROM " + TABLE_ATTENDANCE + " ORDER BY " + KEY_NAME + ";";
 
 		SQLiteDatabase db = this.getReadableDatabase();
 		Cursor cursor = db.rawQuery(selectQuery, null);
@@ -262,9 +257,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	 * @return subjectList
 	 */
 	public List<Subject> getAllSubjectsLike(String wildcard) {
-		List<Subject> subjectList = new ArrayList<Subject>();
+		List<Subject> subjectList = new ArrayList<>();
 		SQLiteDatabase db = this.getReadableDatabase();
-		Cursor cursor = db.query(TABLE_ATTENDENCE, new String[]{KEY_ID, KEY_NAME, KEY_CLASSES_HELD,
+		Cursor cursor = db.query(TABLE_ATTENDANCE, new String[]{KEY_ID, KEY_NAME, KEY_CLASSES_HELD,
 						KEY_CLASSES_ATTENDED, KEY_DAYS_ABSENT}, KEY_NAME + " LIKE '%" + wildcard + "%'",
 				null, null, null, KEY_NAME, null);
 
@@ -358,7 +353,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 		String selectQuery = "SELECT  sum(" + KEY_CLASSES_ATTENDED+ ") as " + KEY_TOTAL_ATTEND
                                     + ",sum(" + KEY_CLASSES_HELD+ ") as " + KEY_TOTAL_HELD
-                                    + " FROM " + TABLE_ATTENDENCE + ";";
+                                    + " FROM " + TABLE_ATTENDANCE + ";";
 		Cursor cursor = db.rawQuery(selectQuery, null);
 
         ListFooter footer = new ListFooter();
@@ -424,7 +419,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	 * Check if the attendance data is in database.
 	 * */
 	public int getRowCount() {
-		String countQuery = "SELECT  * FROM " + TABLE_ATTENDENCE;
+		String countQuery = "SELECT  * FROM " + TABLE_ATTENDANCE;
 		SQLiteDatabase db = this.getReadableDatabase();
 		Cursor cursor = db.rawQuery(countQuery, null);
 		int rowCount = cursor.getCount();
@@ -465,7 +460,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	public void resetTables(){
 		SQLiteDatabase db = this.getWritableDatabase();
 		// Delete All Rows
-		db.delete(TABLE_ATTENDENCE, "1", null);
+		db.delete(TABLE_ATTENDANCE, "1", null);
 		db.delete(TABLE_TIMETABLE, "1", null);
 		db.delete(TABLE_USER, "1", null);
 		db.close();
@@ -474,7 +469,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public void deleteAllSubjects() {
         SQLiteDatabase db = this.getWritableDatabase();
         // Delete All Rows
-        db.delete(TABLE_ATTENDENCE, "1", null);
+        db.delete(TABLE_ATTENDANCE, "1", null);
         db.close();
     }
 

@@ -39,6 +39,7 @@ import com.shalzz.attendance.DatabaseHandler;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.model.ListFooter;
 import com.shalzz.attendance.model.Subject;
+import com.shalzz.attendance.wrapper.MyVolley;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,6 +50,7 @@ import butterknife.InjectView;
 public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private Context mContext;
+    private Resources mResources;
     private final List<Long> mExpandedIds = new ArrayList<>();
     private float mExpandedTranslationZ;
     private int mLimit = -1;
@@ -101,9 +103,10 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                     "Data set must not be null");
         }
         mContext = context;
+        mResources = MyVolley.getMyResources();
         mSubjects = subjects;
         mSubjectItemExpandedListener = subjectItemExpandedListener;
-        mExpandedTranslationZ = mContext.getResources().getDimension(R.dimen.atten_view_expanded_elevation);
+        mExpandedTranslationZ = mResources.getDimension(R.dimen.atten_view_expanded_elevation);
     }
 
     // Provide a reference to the views for each data item
@@ -322,8 +325,7 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
 
         TextView tvAbsent = holder.tvAbsent;
         TextView tvReach = holder.tvReach;
-        ImageView ivAlert = holder.ivAlert;
-        Resources res = mContext.getResources();
+        ImageView ivAlert = holder.ivAlert; // TODO: use a bitmap reference
 
         int held = mSubjects.get(position).getClassesHeld().intValue();
         int attend = mSubjects.get(position).getClassesAttended().intValue();
@@ -337,8 +339,8 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                 tvReach.setVisibility(View.GONE);
                 ivAlert.setVisibility(View.GONE);
             } else {
-                tvReach.setText(res.getQuantityString(R.plurals.tv_classes_to_67,x,x));
-                tvReach.setTextColor(mContext.getResources().getColor(R.color.holo_orange_light));
+                tvReach.setText(mResources.getQuantityString(R.plurals.tv_classes_to_67,x,x));
+                tvReach.setTextColor(mResources.getColor(R.color.holo_orange_light));
                 tvReach.setVisibility(View.VISIBLE);
                 ivAlert.setVisibility(View.VISIBLE);
             }
@@ -349,8 +351,8 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                 tvReach.setVisibility(View.GONE);
                 ivAlert.setVisibility(View.GONE);
             } else {
-                tvReach.setText(res.getQuantityString(R.plurals.tv_classes_to_75, x, x));
-                tvReach.setTextColor(mContext.getResources().getColor(R.color.holo_orange_light));
+                tvReach.setText(mResources.getQuantityString(R.plurals.tv_classes_to_75, x, x));
+                tvReach.setTextColor(mResources.getColor(R.color.holo_orange_light));
                 tvReach.setVisibility(View.VISIBLE);
                 ivAlert.setVisibility(View.VISIBLE);
             }
@@ -359,8 +361,8 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
             if(x == 0) {
                 tvReach.setVisibility(View.GONE);
             } else {
-                tvReach.setText(res.getQuantityString(R.plurals.tv_miss_classes, x, x));
-                tvReach.setTextColor(mContext.getResources().getColor(R.color.holo_green_light));
+                tvReach.setText(mResources.getQuantityString(R.plurals.tv_miss_classes, x, x));
+                tvReach.setTextColor(mResources.getColor(R.color.holo_green_light));
                 tvReach.setVisibility(View.VISIBLE);
             }
             ivAlert.setVisibility(View.GONE);
