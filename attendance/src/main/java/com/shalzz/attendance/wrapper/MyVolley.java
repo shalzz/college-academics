@@ -22,6 +22,7 @@ package com.shalzz.attendance.wrapper;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.text.TextUtils;
 import android.util.Log;
@@ -92,7 +93,7 @@ public class MyVolley extends Application {
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		MyVolley.mContext = getApplicationContext();
+		mContext = getApplicationContext();
         MMSDK.initialize(this);
 		
 		// Initialize the singleton
@@ -104,13 +105,17 @@ public class MyVolley extends Application {
 	/**
      * @return ApplicationController singleton instance
      */
-	 public static synchronized MyVolley getInstance() {
+	public static synchronized MyVolley getInstance() {
 	        return sInstance;
 	    }
 	 
-	 public static Context getAppContext() {
+	public static Context getAppContext() {
 	        return MyVolley.mContext;
 	    }
+
+	public static Resources getMyResources() {
+		return mContext.getResources();
+	}
 
 	public synchronized Tracker getTracker(TrackerName trackerId) {
 		if (!mTrackers.containsKey(trackerId)) {

@@ -19,10 +19,9 @@
 
 package com.shalzz.attendance.network;
 
-import android.content.Context;
+import android.content.res.Resources;
 import android.util.Base64;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Response;
 import com.google.gson.Gson;
@@ -45,25 +44,24 @@ public class DataAPI {
     public static final String TAG = "Gson_Request";
     public static final String USER_TAG = "USER_Gson_Request";
 
-    public static void getUser(final Context mContext,
-                               Response.Listener<User> successListener,
+    public static void getUser(Response.Listener<User> successListener,
                                Response.ErrorListener errorListener) {
 
-        String creds = new MyPreferencesManager(mContext).getUser();
-        getUser(mContext, successListener, errorListener, creds);
+        String creds = MyPreferencesManager.getUser();
+        getUser(successListener, errorListener, creds);
     }
 
-    public static void getUser(final Context mContext,
-                                     Response.Listener<User> successListener,
-                                     Response.ErrorListener errorListener,
-                                     final String credentials ) {
+    public static void getUser(Response.Listener<User> successListener,
+                               Response.ErrorListener errorListener,
+                               final String credentials ) {
 
+        Resources res = MyVolley.getMyResources();
         Map<String, String> headers = new HashMap<String, String>();
         String auth = "Basic " + Base64.encodeToString(credentials.getBytes(), Base64.NO_WRAP);
         headers.put("Authorization", auth);
-        headers.put("User-Agent", mContext.getString(R.string.UserAgent));
+        headers.put("User-Agent", res.getString(R.string.UserAgent));
 
-        String mURL = mContext.getString(R.string.URL_user);
+        String mURL = res.getString(R.string.URL_user);
         GsonRequest<User> gsonRequest = new GsonRequest<>(
                 mURL,
                 User.class,
@@ -77,17 +75,17 @@ public class DataAPI {
         MyVolley.getInstance().addToRequestQueue(gsonRequest ,USER_TAG);
     }
 
-    public static void getAttendance(final Context mContext,
-                                     Response.Listener<ArrayList<Subject>> successListener,
+    public static void getAttendance(Response.Listener<ArrayList<Subject>> successListener,
                                      Response.ErrorListener errorListener) {
 
+        Resources res = MyVolley.getMyResources();
         final Map<String, String> headers = new HashMap<String, String>();
-        String creds = new MyPreferencesManager(mContext).getUser();
+        String creds = MyPreferencesManager.getUser();
         String auth = "Basic " + Base64.encodeToString(creds.getBytes(), Base64.NO_WRAP);
         headers.put("Authorization", auth);
-        headers.put("User-Agent", mContext.getString(R.string.UserAgent));
+        headers.put("User-Agent", res.getString(R.string.UserAgent));
 
-        String mURL = mContext.getString(R.string.URL_attendance);
+        String mURL = res.getString(R.string.URL_attendance);
         Type collectionType = new TypeToken<ArrayList<Subject>>(){}.getType();
         Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
 
@@ -106,17 +104,17 @@ public class DataAPI {
         MyVolley.getInstance().addToRequestQueue(requestAttendance ,TAG);
     }
 
-    public static void getTimeTable(final Context mContext,
-                                    Response.Listener<ArrayList<Period>> successListener,
+    public static void getTimeTable(Response.Listener<ArrayList<Period>> successListener,
                                     Response.ErrorListener errorListener) {
 
+        Resources res = MyVolley.getMyResources();
         Map<String, String> headers = new HashMap<String, String>();
-        String creds = new MyPreferencesManager(mContext).getUser();
+        String creds = MyPreferencesManager.getUser();
         String auth = "Basic " + Base64.encodeToString(creds.getBytes(), Base64.NO_WRAP);
         headers.put("Authorization", auth);
-        headers.put("User-Agent", mContext.getString(R.string.UserAgent));
+        headers.put("User-Agent", res.getString(R.string.UserAgent));
 
-        String mURL = mContext.getString(R.string.URL_timetable);
+        String mURL = res.getString(R.string.URL_timetable);
         Type collectionType = new TypeToken<ArrayList<Period>>(){}.getType();
         GsonRequest<ArrayList<Period>> requestTimeTable = new GsonRequest<>(
                 mURL,

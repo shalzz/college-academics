@@ -31,8 +31,6 @@ import com.shalzz.attendance.R;
 import com.shalzz.attendance.wrapper.MyPreferencesManager;
 
 public class SplashActivity extends AppCompatActivity {
-	
-	MyPreferencesManager settings = new MyPreferencesManager(this);
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -47,12 +45,12 @@ public class SplashActivity extends AppCompatActivity {
             PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
             PreferenceManager.setDefaultValues(this, R.xml.pref_proxy, false);
         } catch (ClassCastException e) {
-            new MyPreferencesManager(this).removeDefaultSharedPreferences();
+			MyPreferencesManager.removeDefaultSharedPreferences();
             PreferenceManager.setDefaultValues(this, R.xml.preferences, true);
             PreferenceManager.setDefaultValues(this, R.xml.pref_proxy, true);
         }
 
-		boolean loggedin = settings.getLoginStatus();
+		boolean loggedin = MyPreferencesManager.getLoginStatus();
 		
 		if(!loggedin)
 			startActivity(new Intent(SplashActivity.this, LoginActivity.class));

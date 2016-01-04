@@ -201,8 +201,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void showcaseView() {
-        MyPreferencesManager prefs = new MyPreferencesManager(this);
-        if(prefs.isFirstLaunch(mTag)) {
+        if(MyPreferencesManager.isFirstLaunch(mTag)) {
 
             Target homeTarget = new Target() {
                 @Override
@@ -232,7 +231,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
             });
-            prefs.setFirstLaunch(mTag);
+            MyPreferencesManager.setFirstLaunch(mTag);
         }
     }
 
@@ -240,14 +239,13 @@ public class MainActivity extends AppCompatActivity {
         DatabaseHandler db = new DatabaseHandler(this);
         if(db.getUserCount()>0) {
             User user = db.getUser();
-            MyPreferencesManager prefs = new MyPreferencesManager(this);
 
             TextView tv_name = (TextView) Drawerheader.findViewById(R.id.drawer_header_name);
             TextView tv_course = (TextView) Drawerheader.findViewById(R.id.drawer_header_course);
             TextView last_refresh = (TextView) Drawerheader.findViewById(R.id.last_refreshed);
             tv_name.setText(user.getName());
             tv_course.setText(user.getCourse());
-            int time = ((int) prefs.getLastSyncTime());
+            int time = ((int) MyPreferencesManager.getLastSyncTime());
             last_refresh.setText(getResources().getQuantityString(R.plurals.tv_last_refresh, time, time));
         }
     }

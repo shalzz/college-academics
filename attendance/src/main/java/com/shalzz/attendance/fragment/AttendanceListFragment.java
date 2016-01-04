@@ -60,11 +60,11 @@ import com.shalzz.attendance.DatabaseHandler;
 import com.shalzz.attendance.DividerItemDecoration;
 import com.shalzz.attendance.Miscellaneous;
 import com.shalzz.attendance.R;
-import com.shalzz.attendance.activity.MainActivity;
 import com.shalzz.attendance.adapter.ExpandableListAdapter;
 import com.shalzz.attendance.model.Subject;
 import com.shalzz.attendance.network.DataAPI;
 import com.shalzz.attendance.UserAccount;
+import com.shalzz.attendance.network.VolleyListeners;
 import com.shalzz.attendance.wrapper.MultiSwipeRefreshLayout;
 import com.shalzz.attendance.wrapper.MyPreferencesManager;
 import com.shalzz.attendance.wrapper.MyVolley;
@@ -77,7 +77,7 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 
 public class AttendanceListFragment extends Fragment implements
-        ExpandableListAdapter.SubjectItemExpandedListener {
+        ExpandableListAdapter.SubjectItemExpandedListener, VolleyListeners<Subject> {
 
     /**
      * The {@link android.support.v4.widget.SwipeRefreshLayout} that detects swipe gestures and
@@ -101,7 +101,6 @@ public class AttendanceListFragment extends Fragment implements
     private Context mContext;
     private String mTag;
     private ExpandableListAdapter mAdapter;
-    private MyPreferencesManager prefs;
     private Resources mResourses;
 
     private float mExpandedItemTranslationZ;
@@ -115,7 +114,6 @@ public class AttendanceListFragment extends Fragment implements
         super.onCreate(savedInstanceState);
         mContext = getActivity();
         mTag = getActivity().getLocalClassName();
-        prefs = new MyPreferencesManager(mContext.getApplicationContext());
         useGridLayout = getResources().getBoolean(R.bool.use_grid_layout);
     }
 
@@ -175,7 +173,7 @@ public class AttendanceListFragment extends Fragment implements
 
         DatabaseHandler db = new DatabaseHandler(mContext);
         if(db.getRowCount()<=0) {
-            DataAPI.getAttendance(mContext, successListener(), errorListener());
+            DataAPI.getAttendance(successListener(), errorListener());
             mProgress.setVisibility(View.VISIBLE);
         } else {
             setAttendance();
@@ -184,7 +182,7 @@ public class AttendanceListFragment extends Fragment implements
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                DataAPI.getAttendance(mContext, successListener(), errorListener());
+                DataAPI.getAttendance(successListener(), errorListener());
             }
         });
 
@@ -289,13 +287,13 @@ public class AttendanceListFragment extends Fragment implements
             // We make sure that the SwipeRefreshLayout is displaying it's refreshing indicator
             if (!mSwipeRefreshLayout.isRefreshing()) {
                 mSwipeRefreshLayout.setRefreshing(true);
-                DataAPI.getAttendance(mContext, successListener(), errorListener());
+                DataAPI.getAttendance(successListener(), errorListener());
             }
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private Response.Listener<ArrayList<Subject>> successListener() {
+    public Response.Listener<ArrayList<Subject>> successListener() {
         return new Response.Listener<ArrayList<Subject>>() {
             @Override
             public void onResponse(ArrayList<Subject> response) {
@@ -307,7 +305,7 @@ public class AttendanceListFragment extends Fragment implements
                     }
                     db.close();
 
-                    prefs.setLastSyncTime();
+                    MyPreferencesManager.setLastSyncTime();
                     setAttendance();
                 }
                 catch (Exception e) {
@@ -325,7 +323,7 @@ public class AttendanceListFragment extends Fragment implements
         };
     }
 
-    private Response.ErrorListener errorListener() {
+    public Response.ErrorListener errorListener() {
         return new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {

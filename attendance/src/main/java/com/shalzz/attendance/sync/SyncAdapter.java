@@ -79,8 +79,8 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 	public void onPerformSync(Account account, Bundle extras, String authority,
 			ContentProviderClient provider, SyncResult syncResult) {
 
-		DataAPI.getAttendance(mContext, attendanceSuccessListener(), myErrorListener());
-		DataAPI.getTimeTable(mContext, timeTableSuccessListener(), myErrorListener());
+		DataAPI.getAttendance(attendanceSuccessListener(), myErrorListener());
+		DataAPI.getTimeTable(timeTableSuccessListener(), myErrorListener());
 	}   
 	
 	private Response.Listener<ArrayList<Subject>> attendanceSuccessListener() {
@@ -94,8 +94,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 						db.addSubject(subject);
 					}
 					db.close();
-                    MyPreferencesManager pref = new MyPreferencesManager(mContext);
-                    pref.setLastSyncTime();
+					MyPreferencesManager.setLastSyncTime();
                 }
                 catch(Exception e) {
                     e.printStackTrace();

@@ -27,8 +27,6 @@ import android.util.Log;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.shalzz.attendance.DatabaseHandler;
-import com.shalzz.attendance.Miscellaneous;
 import com.shalzz.attendance.activity.LoginActivity;
 import com.shalzz.attendance.activity.MainActivity;
 import com.shalzz.attendance.model.User;
@@ -64,10 +62,10 @@ public class UserAccount {
      */
     public void Login(final String username, final String password) {
 
-        // TODO: String creds = String.format("%s:%s",username,Miscellaneous.md5(password));
+        // TODO: String creds = String.format("%s:%s", username, Miscellaneous.md5(password));
         String creds = String.format("%s:%s",username,"52110207c1cf90b31972baf79f0c0a10");
         misc.showProgressDialog("Logging in...", false, pdCancelListener());
-        DataAPI.getUser(mContext, loginSuccessListener(), myErrorListener(), creds);
+        DataAPI.getUser( loginSuccessListener(), myErrorListener(), creds);
     }
 
     private Response.Listener<User> loginSuccessListener() {
@@ -75,8 +73,7 @@ public class UserAccount {
             @Override
             public void onResponse(User user) {
 
-                MyPreferencesManager settings = new MyPreferencesManager(mContext);
-                settings.saveUser(user.getSapid(), user.getPassword());
+                MyPreferencesManager.saveUser(user.getSapid(), user.getPassword());
                 MySyncManager.addPeriodicSync(mContext, user.getSapid());
                 DatabaseHandler db = new DatabaseHandler(mContext);
                 db.addOrUpdateUser(user);
@@ -125,8 +122,7 @@ public class UserAccount {
         MainActivity.LOGGED_OUT = true;
 
         // Remove User Details from Shared Preferences.
-        MyPreferencesManager settings = new MyPreferencesManager(mContext);
-        settings.removeUser();
+        MyPreferencesManager.removeUser();
 
         // Remove user Attendance data from database.
         DatabaseHandler db = new DatabaseHandler(mContext);

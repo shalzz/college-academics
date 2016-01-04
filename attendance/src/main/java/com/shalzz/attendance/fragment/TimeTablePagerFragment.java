@@ -56,6 +56,7 @@ import com.shalzz.attendance.adapter.TimeTablePagerAdapter;
 import com.shalzz.attendance.model.Period;
 import com.shalzz.attendance.network.DataAPI;
 import com.shalzz.attendance.UserAccount;
+import com.shalzz.attendance.network.VolleyListeners;
 import com.shalzz.attendance.wrapper.DateHelper;
 import com.shalzz.attendance.wrapper.MultiSwipeRefreshLayout;
 import com.shalzz.attendance.wrapper.MyPreferencesManager;
@@ -69,7 +70,7 @@ import java.util.Date;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
-public class TimeTablePagerFragment extends Fragment {
+public class TimeTablePagerFragment extends Fragment implements VolleyListeners<Period> {
 
     /**
      * The {@link android.support.v4.widget.SwipeRefreshLayout} that detects swipe gestures and
@@ -158,21 +159,20 @@ public class TimeTablePagerFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         DatabaseHandler db = new DatabaseHandler(mContext);
         if(db.getTimetableCount()<=0) {
-            DataAPI.getTimeTable(mContext, timeTableSuccessListener(), myErrorListener());
+            DataAPI.getTimeTable(successListener(), errorListener());
             mProgress.setVisibility(View.VISIBLE);
             mViewPager.setVisibility(View.GONE);
         }
         else
             mViewPager.setCurrentItem(mPreviousPosition, true);
 
-        MyPreferencesManager prefs = new MyPreferencesManager(mContext);
-        if(prefs.isFirstLaunch(myTag))
+        if(MyPreferencesManager.isFirstLaunch(myTag))
             showcaseView();
 
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                DataAPI.getTimeTable(mContext, timeTableSuccessListener(), myErrorListener());
+                DataAPI.getTimeTable(successListener(), errorListener());
             }
         });
 
@@ -194,7 +194,6 @@ public class TimeTablePagerFragment extends Fragment {
     }
 
     public void showcaseView() {
-        MyPreferencesManager prefs = new MyPreferencesManager(mContext);
         final ShowcaseView sv = new ShowcaseView.Builder(getActivity())
                 .setStyle(R.style.ShowcaseTheme)
                 .setTarget(Target.NONE)
@@ -202,7 +201,7 @@ public class TimeTablePagerFragment extends Fragment {
                 .setContentTitle(getString(R.string.sv_timetable_title))
                 .setContentText(getString(R.string.sv_timetable_content))
                 .build();
-        prefs.setFirstLaunch(myTag);
+        MyPreferencesManager.setFirstLaunch(myTag);
 
         sv.overrideButtonClick(new View.OnClickListener() {
             @Override
@@ -240,7 +239,7 @@ public class TimeTablePagerFragment extends Fragment {
             // We make sure that the SwipeRefreshLayout is displaying it's refreshing indicator
             if (!mSwipeRefreshLayout.isRefreshing()) {
                 mSwipeRefreshLayout.setRefreshing(true);
-                DataAPI.getTimeTable(mContext, timeTableSuccessListener(), myErrorListener());
+                DataAPI.getTimeTable(successListener(), errorListener());
             }
         }
         else if(item.getItemId() == R.id.menu_date) {
@@ -303,7 +302,7 @@ public class TimeTablePagerFragment extends Fragment {
         };
     }
 
-    private Response.Listener<ArrayList<Period>> timeTableSuccessListener() {
+    public Response.Listener<ArrayList<Period>> successListener() {
         return new Response.Listener<ArrayList<Period>>() {
             @Override
             public void onResponse(ArrayList<Period> response) {
@@ -315,7 +314,7 @@ public class TimeTablePagerFragment extends Fragment {
                     }
                     db.close();
                     updateFragments();
-                    new MyPreferencesManager(mContext).setLastSyncTime();
+                    MyPreferencesManager.setLastSyncTime();
                 }
                 catch (Exception e) {
                     e.printStackTrace();
@@ -332,7 +331,7 @@ public class TimeTablePagerFragment extends Fragment {
         };
     }
 
-    private Response.ErrorListener myErrorListener() {
+    public Response.ErrorListener errorListener() {
         return new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
