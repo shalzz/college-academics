@@ -67,7 +67,6 @@ public class DateHelper {
         Date date = null;
         try {
             date = technicalDateFormat.parse(datestr);
-            System.out.println(date);
         } catch (ParseException e) {
             e.printStackTrace();
         }

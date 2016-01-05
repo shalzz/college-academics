@@ -19,6 +19,8 @@
 
 package com.shalzz.attendance.model;
 
+import android.util.Log;
+
 import com.shalzz.attendance.wrapper.DateHelper;
 
 import java.util.Arrays;
@@ -73,6 +75,7 @@ public class Subject {
 	public String getAbsentDates() {
 		String dates = "";
         for(int i=0; i < absent_dates.length ; i++) {
+            if(absent_dates[i] == null) continue;
 			dates += DateHelper.formatToTechnicalFormat(absent_dates[i]);
             if(i!=absent_dates.length-1)
                 dates += ",";
