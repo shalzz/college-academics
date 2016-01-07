@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013-2015 Shaleen Jain <shaleen.jain95@gmail.com>
+ * Copyright (c) 2013-2016 Shaleen Jain <shaleen.jain95@gmail.com>
  *
  * This file is part of UPES Academics.
  *
@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.shalzz.attendance;
+package com.shalzz.attendance.controllers;
 
 import android.app.Activity;
 import android.content.Context;
@@ -27,9 +27,11 @@ import android.util.Log;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.shalzz.attendance.DatabaseHandler;
+import com.shalzz.attendance.Miscellaneous;
 import com.shalzz.attendance.activity.LoginActivity;
 import com.shalzz.attendance.activity.MainActivity;
-import com.shalzz.attendance.model.User;
+import com.shalzz.attendance.model.UserModel;
 import com.shalzz.attendance.network.DataAPI;
 import com.shalzz.attendance.wrapper.MyPreferencesManager;
 import com.shalzz.attendance.wrapper.MySyncManager;
@@ -68,10 +70,10 @@ public class UserAccount {
         DataAPI.getUser( loginSuccessListener(), myErrorListener(), creds);
     }
 
-    private Response.Listener<User> loginSuccessListener() {
-        return new Response.Listener<User>() {
+    private Response.Listener<UserModel> loginSuccessListener() {
+        return new Response.Listener<UserModel>() {
             @Override
-            public void onResponse(User user) {
+            public void onResponse(UserModel user) {
 
                 MyPreferencesManager.saveUser(user.getSapid(), user.getPassword());
                 MySyncManager.addPeriodicSync(mContext, user.getSapid());
@@ -121,7 +123,7 @@ public class UserAccount {
     public void Logout() {
         MainActivity.LOGGED_OUT = true;
 
-        // Remove User Details from Shared Preferences.
+        // Remove UserModel Details from Shared Preferences.
         MyPreferencesManager.removeUser();
 
         // Remove user Attendance data from database.

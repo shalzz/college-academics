@@ -45,7 +45,7 @@ import com.shalzz.attendance.R;
 import com.shalzz.attendance.fragment.AttendanceListFragment;
 import com.shalzz.attendance.fragment.SettingsFragment;
 import com.shalzz.attendance.fragment.TimeTablePagerFragment;
-import com.shalzz.attendance.model.User;
+import com.shalzz.attendance.model.UserModel;
 import com.shalzz.attendance.wrapper.MyPreferencesManager;
 import com.shalzz.attendance.wrapper.MyVolley;
 
@@ -238,14 +238,17 @@ public class MainActivity extends AppCompatActivity {
     public void updateDrawerHeader() {
         DatabaseHandler db = new DatabaseHandler(this);
         if(db.getUserCount()>0) {
-            User user = db.getUser();
+            UserModel user = db.getUser();
 
             TextView tv_name = (TextView) Drawerheader.findViewById(R.id.drawer_header_name);
             TextView tv_course = (TextView) Drawerheader.findViewById(R.id.drawer_header_course);
             TextView last_refresh = (TextView) Drawerheader.findViewById(R.id.last_refreshed);
             tv_name.setText(user.getName());
             tv_course.setText(user.getCourse());
-            int time = ((int) MyPreferencesManager.getLastSyncTime());
+
+            // TODO: separate sync and user
+            // TODO: use a view holder
+            int time = (int) db.getLastSync();
             last_refresh.setText(getResources().getQuantityString(R.plurals.tv_last_refresh, time, time));
         }
     }

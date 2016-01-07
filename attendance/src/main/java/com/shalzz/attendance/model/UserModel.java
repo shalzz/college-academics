@@ -19,7 +19,7 @@
 
 package com.shalzz.attendance.model;
 
-public class User {
+public class UserModel {
 
     private String sapid;
     private String password;
@@ -60,7 +60,7 @@ public class User {
 
     @Override
     public String toString() {
-        return "User{" +
+        return "UserModel{" +
                 "sapid='" + sapid + '\'' +
                 ", password='" + password + '\'' +
                 ", name='" + name + '\'' +

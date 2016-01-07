@@ -20,7 +20,6 @@
 
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
 
-    <string name="app_name" translatable="false">Upes Academics</string>
     <string name="app_url" translatable="false">http://www.github.com/shalzz/upes-academics</string>
     <string name="copyright_year" translatable="false">Copyright © 2013&#8211;2015</string>
     <string name="app_copyright" translatable="false">Shaleen Jain &#60;shaleen.jain95@gmail.com&#62;</string>

@@ -23,7 +23,6 @@ import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -31,13 +30,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.shalzz.attendance.Miscellaneous;
 import com.shalzz.attendance.R;
-import com.shalzz.attendance.UserAccount;
+import com.shalzz.attendance.controllers.UserAccount;
 import com.shalzz.attendance.wrapper.MyVolley;
-import com.shalzz.attendance.wrapper.MyVolleyErrorHelper;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;

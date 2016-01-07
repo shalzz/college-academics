@@ -34,7 +34,7 @@ import android.view.View;
 import android.widget.OverScroller;
 import android.widget.Scroller;
 
-import com.shalzz.attendance.model.Period;
+import com.shalzz.attendance.model.PeriodModel;
 import com.shalzz.attendance.wrapper.DateHelper;
 
 import java.text.DateFormat;
@@ -49,7 +49,7 @@ public class CalendarItemDecoration extends RecyclerView.ItemDecoration {
     public static final int HORIZONTAL_LIST = LinearLayoutManager.HORIZONTAL;
     public static final int VERTICAL_LIST = LinearLayoutManager.VERTICAL;
     private int mOrientation;
-    private List<Period> mPeriods;
+    private List<PeriodModel> mPeriods;
     private View mHeaderRow;
 
     private Calendar mToday;

@@ -33,7 +33,7 @@ import com.shalzz.attendance.DatabaseHandler;
 import com.shalzz.attendance.DividerItemDecoration;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.adapter.DayListAdapter;
-import com.shalzz.attendance.model.Period;
+import com.shalzz.attendance.model.PeriodModel;
 import com.shalzz.attendance.wrapper.DateHelper;
 
 import java.util.ArrayList;
@@ -50,7 +50,7 @@ public class DayFragment extends Fragment {
     private Date mDate;
     public static final String ARG_DATE = "date";
     private DayListAdapter mAdapter;
-    private ArrayList<Period> periods;
+    private ArrayList<PeriodModel> periods;
 
 
     @Override

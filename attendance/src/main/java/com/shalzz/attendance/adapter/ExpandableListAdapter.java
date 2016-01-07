@@ -19,11 +19,14 @@
 
 package com.shalzz.attendance.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.support.v7.util.SortedList;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.util.SortedListAdapterCallback;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,8 +40,8 @@ import android.widget.TextView;
 
 import com.shalzz.attendance.DatabaseHandler;
 import com.shalzz.attendance.R;
-import com.shalzz.attendance.model.ListFooter;
-import com.shalzz.attendance.model.Subject;
+import com.shalzz.attendance.model.ListFooterModel;
+import com.shalzz.attendance.model.SubjectModel;
 import com.shalzz.attendance.wrapper.MyVolley;
 
 import java.util.ArrayList;
@@ -56,11 +59,12 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     private int mLimit = -1;
 
     //our items
-    private List<Subject> mSubjects;
+    private final SortedList<SubjectModel> mSubjects;
+    private ListFooterModel mFooter;
     //headers
-    List<View> headers = new ArrayList<>();
+    private List<View> headers = new ArrayList<>();
     //footers
-    List<View> footers = new ArrayList<>();
+    private List<View> footers = new ArrayList<>();
 
     public static final int TYPE_HEADER = 111;
     public static final int TYPE_FOOTER = 222;
@@ -96,17 +100,68 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         View getViewForCallId(long callId);
     }
 
-    public ExpandableListAdapter(Context context,List<Subject> subjects,
+    public ExpandableListAdapter(Context context,
                                  SubjectItemExpandedListener subjectItemExpandedListener) {
-        if (subjects == null) {
-            throw new IllegalArgumentException(
-                    "Data set must not be null");
-        }
+
         mContext = context;
         mResources = MyVolley.getMyResources();
-        mSubjects = subjects;
         mSubjectItemExpandedListener = subjectItemExpandedListener;
         mExpandedTranslationZ = mResources.getDimension(R.dimen.atten_view_expanded_elevation);
+
+        mSubjects = new SortedList<>(SubjectModel.class,
+                new SortedListAdapterCallback<SubjectModel>(this) {
+                    @Override
+                    public int compare(SubjectModel o1, SubjectModel o2) {
+                        return o1.getName().compareTo(o2.getName());
+                    }
+
+                    @SuppressWarnings("SimplifiableIfStatement")
+                    @Override
+                    public boolean areContentsTheSame(SubjectModel oldItem, SubjectModel newItem) {
+                        if(oldItem.getID() != newItem.getID()) {
+                            return false;
+                        }
+                        if(!oldItem.getName().equals(newItem.getName())) {
+                            return false;
+                        }
+                        if(oldItem.getClassesAttended().equals(newItem.getClassesAttended())) {
+                            return false;
+                        }
+                        if(oldItem.getClassesHeld().equals(newItem.getClassesHeld())) {
+                            return false;
+                        }
+                        return oldItem.getAbsentDates().equals(newItem.getAbsentDates());
+                    }
+
+                    @Override
+                    public boolean areItemsTheSame(SubjectModel item1, SubjectModel item2) {
+                        return item1.getID() == item2.getID();
+                    }
+                });
+        DatabaseHandler db = new DatabaseHandler(mContext);
+        mSubjects.addAll(db.getAllSubjects());
+        mFooter = db.getListFooter();
+    }
+
+    public void addAll(List<SubjectModel> subjects) {
+        mSubjects.addAll(subjects);
+    }
+
+    public int getSubjectCount() {
+        return mSubjects.size();
+    }
+
+    public void clear() {
+        mSubjects.clear();
+    }
+
+    public void updateFooter() {
+        DatabaseHandler db = new DatabaseHandler(mContext);
+        ListFooterModel footer = db.getListFooter();
+        if(!footer.equals(mFooter)) {
+            mFooter = footer;
+            notifyItemChanged(getItemCount()-1);
+        }
     }
 
     // Provide a reference to the views for each data item
@@ -149,14 +204,16 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
 
         //if our position is one of our items (this comes from getItemViewType(int position) below)
         if(viewType == TYPE_ITEM) {
-            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_attend_card, parent, false);
+            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_attend_card,
+                    parent, false);
             return new GenericViewHolder(v);
             //else we have a header/footer
         }else{
             //create a new framelayout, or inflate from a resource
             FrameLayout frameLayout = new FrameLayout(parent.getContext());
             //make sure it fills the space
-            frameLayout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            frameLayout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT));
             return new HeaderFooterViewHolder(frameLayout);
         }
     }
@@ -186,6 +243,7 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
      *
      * @param view The call log list item view.
      */
+    @SuppressLint("WrongViewCast")
     private void inflateChildView(final View view) {
         final GenericViewHolder views = (GenericViewHolder) view.getTag();
 
@@ -383,18 +441,19 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     private void prepareHeaderFooter(HeaderFooterViewHolder vh, View view){
         //empty out our FrameLayout and replace with our header/footer
         vh.base.removeAllViews();
+        if(view.getParent() != null) {
+            ((ViewGroup) view.getParent()).removeView(view);
+        }
         vh.base.addView(view);
 
-        DatabaseHandler db = new DatabaseHandler(mContext);
-        ListFooter listfooter = db.getListFooter();
-        Float percent = listfooter.getPercentage();
+        Float percent = mFooter.getPercentage();
 
         /** --------footer-------- */
         TextView tvPercent = (TextView) view.findViewById(R.id.tvTotalPercent);
         TextView tvClasses = (TextView) view.findViewById(R.id.tvClass);
         ProgressBar pbPercent = (ProgressBar) view.findViewById(R.id.pbTotalPercent);
-        tvPercent.setText(listfooter.getPercentage()+"%");
-        tvClasses.setText(listfooter.getAttended().intValue() + "/" + listfooter.getHeld().intValue());
+        tvPercent.setText(mFooter.getPercentage()+"%");
+        tvClasses.setText(mFooter.getAttended().intValue() + "/" + mFooter.getHeld().intValue());
         pbPercent.setProgress(percent.intValue());
         Drawable d = pbPercent.getProgressDrawable();
         d.setLevel(percent.intValue() * 100);
@@ -493,13 +552,5 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     public void setLimit(final int limit) {
         mLimit = limit;
         mExpandedIds.clear();
-        notifyDataSetChanged();
-    }
-
-    public void setDataSet(List<Subject> subjects) {
-        if(subjects != null) {
-            mSubjects = subjects;
-            notifyDataSetChanged();
-        }
     }
 }

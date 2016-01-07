@@ -44,23 +44,6 @@ public class MyPreferencesManager {
 	private static Context mContext = MyVolley.getAppContext();
 
 	private static String mTag  = "MyPreferencesManager";
-	
-	public static void setLastSyncTime() {
-		Date now = new Date();
-		SharedPreferences settings = mContext.getSharedPreferences("SETTINGS", Context.MODE_MULTI_PROCESS);
-		SharedPreferences.Editor editor = settings.edit();
-		editor.putLong("REFRESH_TIME", now.getTime());
-		editor.commit();
-	}
-	
-	public static long getLastSyncTime() {
-        Time now = new Time();
-        now.setToNow();
-        Long now_L = now.toMillis(false);
-		SharedPreferences settings = mContext.getSharedPreferences("SETTINGS", Context.MODE_MULTI_PROCESS);
-		Long last_sync = settings.getLong("REFRESH_TIME", now_L);
-		return (now_L-last_sync)/(1000*60*60); // convert milliseconds to hours
-	}
 
 	/**
 	 * Gets the login status from the preferences

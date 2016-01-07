@@ -31,13 +31,14 @@ import android.util.Log;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.shalzz.attendance.DatabaseHandler;
-import com.shalzz.attendance.model.Period;
-import com.shalzz.attendance.model.Subject;
+import com.shalzz.attendance.model.PeriodModel;
+import com.shalzz.attendance.model.SubjectModel;
 import com.shalzz.attendance.network.DataAPI;
 import com.shalzz.attendance.wrapper.MyPreferencesManager;
 import com.shalzz.attendance.wrapper.MyVolleyErrorHelper;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
@@ -83,18 +84,17 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 		DataAPI.getTimeTable(timeTableSuccessListener(), myErrorListener());
 	}   
 	
-	private Response.Listener<ArrayList<Subject>> attendanceSuccessListener() {
-		return new Response.Listener<ArrayList<Subject>>() {
+	private Response.Listener<ArrayList<SubjectModel>> attendanceSuccessListener() {
+		return new Response.Listener<ArrayList<SubjectModel>>() {
 			@Override
-			public void onResponse(ArrayList<Subject> response) {
+			public void onResponse(ArrayList<SubjectModel> response) {
                 try {
 					DatabaseHandler db = new DatabaseHandler(mContext);
-					db.deleteAllSubjects();
-					for(Subject subject : response) {
-						db.addSubject(subject);
-					}
+                    long now = new Date().getTime();
+                    for (SubjectModel subject : response) {
+                        db.addOrUpdateSubject(subject, now);
+                    }
 					db.close();
-					MyPreferencesManager.setLastSyncTime();
                 }
                 catch(Exception e) {
                     e.printStackTrace();
@@ -103,14 +103,14 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 		};
 	}
 	
-	private Response.Listener<ArrayList<Period>> timeTableSuccessListener() {
-		return new Response.Listener<ArrayList<Period>>() {
+	private Response.Listener<ArrayList<PeriodModel>> timeTableSuccessListener() {
+		return new Response.Listener<ArrayList<PeriodModel>>() {
 			@Override
-			public void onResponse(ArrayList<Period> response) {
+			public void onResponse(ArrayList<PeriodModel> response) {
                 try {
 					DatabaseHandler db = new DatabaseHandler(mContext);
 					db.deleteAllPeriods();
-					for(Period period : response) {
+					for(PeriodModel period : response) {
 						db.addPeriod(period);
 					}
 					db.close();

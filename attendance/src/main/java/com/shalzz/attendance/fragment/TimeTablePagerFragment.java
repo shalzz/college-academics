@@ -53,9 +53,9 @@ import com.shalzz.attendance.Miscellaneous;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.activity.MainActivity;
 import com.shalzz.attendance.adapter.TimeTablePagerAdapter;
-import com.shalzz.attendance.model.Period;
+import com.shalzz.attendance.model.PeriodModel;
 import com.shalzz.attendance.network.DataAPI;
-import com.shalzz.attendance.UserAccount;
+import com.shalzz.attendance.controllers.UserAccount;
 import com.shalzz.attendance.network.VolleyListeners;
 import com.shalzz.attendance.wrapper.DateHelper;
 import com.shalzz.attendance.wrapper.MultiSwipeRefreshLayout;
@@ -70,7 +70,7 @@ import java.util.Date;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
-public class TimeTablePagerFragment extends Fragment implements VolleyListeners<Period> {
+public class TimeTablePagerFragment extends Fragment implements VolleyListeners<PeriodModel> {
 
     /**
      * The {@link android.support.v4.widget.SwipeRefreshLayout} that detects swipe gestures and
@@ -302,19 +302,18 @@ public class TimeTablePagerFragment extends Fragment implements VolleyListeners<
         };
     }
 
-    public Response.Listener<ArrayList<Period>> successListener() {
-        return new Response.Listener<ArrayList<Period>>() {
+    public Response.Listener<ArrayList<PeriodModel>> successListener() {
+        return new Response.Listener<ArrayList<PeriodModel>>() {
             @Override
-            public void onResponse(ArrayList<Period> response) {
+            public void onResponse(ArrayList<PeriodModel> response) {
                 try {
                     DatabaseHandler db = new DatabaseHandler(mContext);
                     db.deleteAllPeriods();
-                    for(Period period : response) {
+                    for(PeriodModel period : response) {
                         db.addPeriod(period);
                     }
                     db.close();
                     updateFragments();
-                    MyPreferencesManager.setLastSyncTime();
                 }
                 catch (Exception e) {
                     e.printStackTrace();

@@ -25,11 +25,9 @@ import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.MenuItemCompat;
@@ -39,7 +37,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -49,48 +46,38 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.RelativeLayout;
 
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.ViewTarget;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.shalzz.attendance.CircularIndeterminate;
-import com.shalzz.attendance.DatabaseHandler;
 import com.shalzz.attendance.DividerItemDecoration;
 import com.shalzz.attendance.Miscellaneous;
 import com.shalzz.attendance.R;
+import com.shalzz.attendance.controllers.UserAccount;
 import com.shalzz.attendance.adapter.ExpandableListAdapter;
-import com.shalzz.attendance.model.Subject;
-import com.shalzz.attendance.network.DataAPI;
-import com.shalzz.attendance.UserAccount;
-import com.shalzz.attendance.network.VolleyListeners;
+import com.shalzz.attendance.controllers.AttendanceController;
 import com.shalzz.attendance.wrapper.MultiSwipeRefreshLayout;
-import com.shalzz.attendance.wrapper.MyPreferencesManager;
 import com.shalzz.attendance.wrapper.MyVolley;
-import com.shalzz.attendance.wrapper.MyVolleyErrorHelper;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
 public class AttendanceListFragment extends Fragment implements
-        ExpandableListAdapter.SubjectItemExpandedListener, VolleyListeners<Subject> {
+        ExpandableListAdapter.SubjectItemExpandedListener {
 
     /**
      * The {@link android.support.v4.widget.SwipeRefreshLayout} that detects swipe gestures and
      * triggers callbacks in the app.
      */
     @InjectView(R.id.swipe_refresh_atten)
-    MultiSwipeRefreshLayout mSwipeRefreshLayout;
+    public MultiSwipeRefreshLayout mSwipeRefreshLayout;
 
     @InjectView(R.id.circular_indet_atten)
-    CircularIndeterminate mProgress;
+    public CircularIndeterminate mProgress;
 
     @InjectView(R.id.atten_recycler_view)
-    RecyclerView mRecyclerView;
+    public RecyclerView mRecyclerView;
 
     private boolean useGridLayout = false;
 
@@ -100,8 +87,8 @@ public class AttendanceListFragment extends Fragment implements
     private StaggeredGridLayoutManager mGridLayoutManager;
     private Context mContext;
     private String mTag;
-    private ExpandableListAdapter mAdapter;
-    private Resources mResourses;
+    private Resources mResources;
+    private AttendanceController controller;
 
     private float mExpandedItemTranslationZ;
     private int mFadeInDuration = 150;
@@ -129,9 +116,9 @@ public class AttendanceListFragment extends Fragment implements
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        mResourses = getResources();
+        mResources = getResources();
         mExpandedItemTranslationZ =
-                mResourses.getDimension(R.dimen.atten_view_expanded_elevation);
+                mResources.getDimension(R.dimen.atten_view_expanded_elevation);
     }
 
     @Override
@@ -171,18 +158,16 @@ public class AttendanceListFragment extends Fragment implements
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        DatabaseHandler db = new DatabaseHandler(mContext);
-        if(db.getRowCount()<=0) {
-            DataAPI.getAttendance(successListener(), errorListener());
-            mProgress.setVisibility(View.VISIBLE);
-        } else {
-            setAttendance();
+        controller = new AttendanceController(mContext, this);
+
+        if(!controller.hasSubjects()) {
+            controller.updateSubjects();
         }
 
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                DataAPI.getAttendance(successListener(), errorListener());
+                controller.updateSubjects();
             }
         });
 
@@ -202,26 +187,6 @@ public class AttendanceListFragment extends Fragment implements
 
     }
 
-    private void setAttendance() {
-        DatabaseHandler db = new DatabaseHandler(getActivity());
-        if(db.getRowCount()>0)
-        {
-            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mContext);
-            int expandLimit = Integer.parseInt(sharedPref.getString(
-                    getString(R.string.pref_key_sub_limit), "3"));
-
-            List<Subject> subjects = db.getAllOrderedSubjects();
-
-            mAdapter = new ExpandableListAdapter(mContext,subjects,this);
-            mAdapter.setLimit(expandLimit);
-            LayoutInflater inflater = getActivity().getLayoutInflater();
-            View mFooter = inflater.inflate(R.layout.list_footer, mRecyclerView, false);
-            mAdapter.addFooter(mFooter);
-            mRecyclerView.setAdapter(mAdapter);
-
-        }
-    }
-
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -229,14 +194,12 @@ public class AttendanceListFragment extends Fragment implements
         MenuItem searchItem = menu.findItem(R.id.menu_search);
 
         final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
-        searchView.setQueryHint(mResourses.getString(R.string.hint_search));
+        searchView.setQueryHint(mResources.getString(R.string.hint_search));
 
         MenuItemCompat.setOnActionExpandListener(searchItem, new MenuItemCompat.OnActionExpandListener() {
             @Override
             public boolean onMenuItemActionCollapse(MenuItem item) {
-                DatabaseHandler db = new DatabaseHandler(mContext);
-                List<Subject> subjects = db.getAllOrderedSubjects();
-                mAdapter.setDataSet(subjects);
+                controller.getSubjects();
                 return true;  // Return true to collapse action view
             }
 
@@ -257,10 +220,7 @@ public class AttendanceListFragment extends Fragment implements
 
             @Override
             public boolean onQueryTextChange(String arg0) {
-                DatabaseHandler db = new DatabaseHandler(mContext);
-                List<Subject> subjects = db.getAllSubjectsLike(arg0);
-                if (mAdapter != null)
-                    mAdapter.setDataSet(subjects);
+                controller.getSubjectsLike(arg0);
                 return false;
             }
         });
@@ -287,57 +247,10 @@ public class AttendanceListFragment extends Fragment implements
             // We make sure that the SwipeRefreshLayout is displaying it's refreshing indicator
             if (!mSwipeRefreshLayout.isRefreshing()) {
                 mSwipeRefreshLayout.setRefreshing(true);
-                DataAPI.getAttendance(successListener(), errorListener());
+                controller.updateSubjects();
             }
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    public Response.Listener<ArrayList<Subject>> successListener() {
-        return new Response.Listener<ArrayList<Subject>>() {
-            @Override
-            public void onResponse(ArrayList<Subject> response) {
-                try {
-                    DatabaseHandler db = new DatabaseHandler(mContext);
-                    db.deleteAllSubjects();
-                    for(Subject subject : response) {
-                        db.addSubject(subject);
-                    }
-                    db.close();
-
-                    MyPreferencesManager.setLastSyncTime();
-                    setAttendance();
-                }
-                catch (Exception e) {
-                    String msg = mResourses.getString(R.string.unexpected_error);
-                    Miscellaneous.showSnackBar(mContext,msg);
-                    e.printStackTrace();
-                } finally {
-                    // Stop the refreshing indicator
-                    if(mProgress != null || mSwipeRefreshLayout != null) {
-                        mProgress.setVisibility(View.GONE);
-                        mSwipeRefreshLayout.setRefreshing(false);
-                    }
-                }
-            }
-        };
-    }
-
-    public Response.ErrorListener errorListener() {
-        return new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                // Stop the refreshing indicator
-                if(mProgress == null || mSwipeRefreshLayout == null)
-                    return;
-                mProgress.setVisibility(View.GONE);
-                mSwipeRefreshLayout.setRefreshing(false);
-
-                String msg = MyVolleyErrorHelper.getMessage(error, mContext);
-                Miscellaneous.showSnackBar(mContext, msg);
-                Log.e(mTag, msg);
-            }
-        };
     }
 
     @Override

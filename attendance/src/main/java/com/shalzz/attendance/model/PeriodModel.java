@@ -23,7 +23,7 @@ import com.shalzz.attendance.wrapper.DateHelper;
 
 import java.text.ParseException;
 
-public class Period {
+public class PeriodModel {
 
 	// private variables;
 	private int id;
@@ -140,7 +140,7 @@ public class Period {
 
 	@Override
 	public String toString() {
-		return "Period{" +
+		return "PeriodModel{" +
 				"id=" + id +
 				", name='" + name + '\'' +
 				", teacher='" + teacher + '\'' +

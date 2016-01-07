@@ -26,7 +26,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.shalzz.attendance.R;
-import com.shalzz.attendance.model.Period;
+import com.shalzz.attendance.model.PeriodModel;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -36,7 +36,7 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 
 public class DayListAdapter extends RecyclerView.Adapter<DayListAdapter.ViewHolder>{
-    private List<Period> periods;
+    private List<PeriodModel> periods;
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
@@ -53,7 +53,7 @@ public class DayListAdapter extends RecyclerView.Adapter<DayListAdapter.ViewHold
         }
     }
 
-    public DayListAdapter(ArrayList<Period> periods){
+    public DayListAdapter(ArrayList<PeriodModel> periods){
         if (periods == null) {
             throw new IllegalArgumentException(
                     "Data set must not be null");
@@ -77,7 +77,7 @@ public class DayListAdapter extends RecyclerView.Adapter<DayListAdapter.ViewHold
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
 
-        Period period = periods.get(position);
+        PeriodModel period = periods.get(position);
         holder.tvSubjectName.setText(period.getSubjectName());
         holder.tvRoom.setText(period.getRoom());
         holder.tvTeacher.setText(period.getTeacher());
@@ -90,7 +90,7 @@ public class DayListAdapter extends RecyclerView.Adapter<DayListAdapter.ViewHold
 
     }
 
-    public void setDataSet(ArrayList<Period> periods) {
+    public void setDataSet(ArrayList<PeriodModel> periods) {
         this.periods = periods;
         notifyDataSetChanged();
     }
