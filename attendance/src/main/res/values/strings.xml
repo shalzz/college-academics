@@ -35,9 +35,9 @@
     <string name="UserAgent" translatable="false">Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.57 Safari/537.36</string>
 
     <!--URL's-->
-    <string name="URL_user" translatable="false">http://192.168.1.107:3000/api/v1/me</string>
-    <string name="URL_attendance" translatable="false">http://192.168.1.107:3000/api/v1/me/attendance</string>
-    <string name="URL_timetable" translatable="false">http://192.168.1.107:3000/api/v1/me/timetable</string>
+    <string name="URL_user" translatable="false">http://192.168.1.179:3000/api/v1/me</string>
+    <string name="URL_attendance" translatable="false">http://192.168.1.179:3000/api/v1/me/attendance</string>
+    <string name="URL_timetable" translatable="false">http://192.168.1.179:3000/api/v1/me/timetable</string>
 
     <!--Preference Keys-->
     <string name="pref_key_sub_limit">subjects_expanded_limit</string>
