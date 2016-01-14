@@ -22,7 +22,6 @@ package com.shalzz.attendance.fragment;
 import android.app.DatePickerDialog;
 import android.app.Fragment;
 import android.content.Context;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.ViewPager;
@@ -31,7 +30,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -41,53 +39,51 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.DatePicker;
 
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.Target;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.shalzz.attendance.CircularIndeterminate;
 import com.shalzz.attendance.DatabaseHandler;
-import com.shalzz.attendance.Miscellaneous;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.activity.MainActivity;
 import com.shalzz.attendance.adapter.TimeTablePagerAdapter;
-import com.shalzz.attendance.model.PeriodModel;
-import com.shalzz.attendance.network.DataAPI;
+import com.shalzz.attendance.controllers.PagerController;
 import com.shalzz.attendance.controllers.UserAccount;
-import com.shalzz.attendance.network.VolleyListeners;
 import com.shalzz.attendance.wrapper.DateHelper;
 import com.shalzz.attendance.wrapper.MultiSwipeRefreshLayout;
 import com.shalzz.attendance.wrapper.MyPreferencesManager;
 import com.shalzz.attendance.wrapper.MyVolley;
-import com.shalzz.attendance.wrapper.MyVolleyErrorHelper;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
-public class TimeTablePagerFragment extends Fragment implements VolleyListeners<PeriodModel> {
+public class TimeTablePagerFragment extends Fragment {
 
     /**
      * The {@link android.support.v4.widget.SwipeRefreshLayout} that detects swipe gestures and
      * triggers callbacks in the app.
      */
-    @InjectView(R.id.swiperefresh) MultiSwipeRefreshLayout mSwipeRefreshLayout;
-    @InjectView(R.id.circular_indet) CircularIndeterminate mProgress;
-    @InjectView(R.id.pager) ViewPager mViewPager;
+    @InjectView(R.id.swiperefresh)
+    public MultiSwipeRefreshLayout mSwipeRefreshLayout;
+    @InjectView(R.id.circular_indet)
+    public CircularIndeterminate mProgress;
+    @InjectView(R.id.pager)
+    public ViewPager mViewPager;
+
     private DrawerLayout mDrawerLayout;
     private NavigationView mDrawerList;
 
     /**
      * Remember the position of the previous pager position.
      */
-    private static final String STATE_PREVIOUSE_POSITION = "previous_pager_position";
+    private static final String STATE_PREVIOUS_POSITION = "previous_pager_position";
 
     private int mPreviousPosition = 15;
+    private PagerController mController;
     private TimeTablePagerAdapter mTimeTablePagerAdapter;
     private String myTag = "Pager Fragment";
     private Context mContext;
@@ -115,7 +111,7 @@ public class TimeTablePagerFragment extends Fragment implements VolleyListeners<
             return null;
 
         if (savedInstanceState != null) {
-            mPreviousPosition = savedInstanceState.getInt(STATE_PREVIOUSE_POSITION);
+            mPreviousPosition = savedInstanceState.getInt(STATE_PREVIOUS_POSITION);
         }
 
         setHasOptionsMenu(true);
@@ -133,9 +129,6 @@ public class TimeTablePagerFragment extends Fragment implements VolleyListeners<
                 R.color.swipe_color_1, R.color.swipe_color_2,
                 R.color.swipe_color_3, R.color.swipe_color_4);
 
-        mToday =  DateHelper.getToDay();
-        mTimeTablePagerAdapter = new TimeTablePagerAdapter(getActivity().getFragmentManager(), mToday);
-        mViewPager.setAdapter(mTimeTablePagerAdapter);
         mViewPager.setOffscreenPageLimit(3);
         mViewPager.setOnPageChangeListener(new OnPageChangeListener() {
 
@@ -157,9 +150,15 @@ public class TimeTablePagerFragment extends Fragment implements VolleyListeners<
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        mToday =  DateHelper.getToDay();
+        mTimeTablePagerAdapter = new TimeTablePagerAdapter(getActivity().getFragmentManager(), mToday);
+        mViewPager.setAdapter(mTimeTablePagerAdapter);
+
+        mController = new PagerController(mContext, this);
         DatabaseHandler db = new DatabaseHandler(mContext);
         if(db.getTimetableCount()<=0) {
-            DataAPI.getTimeTable(successListener(), errorListener());
+            mController.updatePeriods();
             mProgress.setVisibility(View.VISIBLE);
             mViewPager.setVisibility(View.GONE);
         }
@@ -172,7 +171,7 @@ public class TimeTablePagerFragment extends Fragment implements VolleyListeners<
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                DataAPI.getTimeTable(successListener(), errorListener());
+                mController.updatePeriods();
             }
         });
 
@@ -239,7 +238,7 @@ public class TimeTablePagerFragment extends Fragment implements VolleyListeners<
             // We make sure that the SwipeRefreshLayout is displaying it's refreshing indicator
             if (!mSwipeRefreshLayout.isRefreshing()) {
                 mSwipeRefreshLayout.setRefreshing(true);
-                DataAPI.getTimeTable(successListener(), errorListener());
+                mController.updatePeriods();
             }
         }
         else if(item.getItemId() == R.id.menu_date) {
@@ -260,11 +259,16 @@ public class TimeTablePagerFragment extends Fragment implements VolleyListeners<
         }
         return super.onOptionsItemSelected(item);
     }
+    public void clearFragmentsData() {
+        for (DayFragment fragment : mTimeTablePagerAdapter.getActiveFragments()) {
+            fragment.clear();
+        }
+    }
 
-    public void updateFragments() {
+    public void updateFragmentsData() {
         for (DayFragment fragment : mTimeTablePagerAdapter.getActiveFragments()) {
 //            Log.d("TimeTableActivity", "Update Fragment " + fragment.getDate() + " with new data.");
-            fragment.reloadDataSet();
+            fragment.update();
         }
         updateTitle();
     }
@@ -300,67 +304,6 @@ public class TimeTablePagerFragment extends Fragment implements VolleyListeners<
                 scrollToToday();
             }
         };
-    }
-
-    public Response.Listener<ArrayList<PeriodModel>> successListener() {
-        return new Response.Listener<ArrayList<PeriodModel>>() {
-            @Override
-            public void onResponse(ArrayList<PeriodModel> response) {
-                try {
-                    DatabaseHandler db = new DatabaseHandler(mContext);
-                    db.deleteAllPeriods();
-                    for(PeriodModel period : response) {
-                        db.addPeriod(period);
-                    }
-                    db.close();
-                    updateFragments();
-                }
-                catch (Exception e) {
-                    e.printStackTrace();
-                    String msg = getResources().getString(R.string.unexpected_error);
-                    Miscellaneous.showSnackBar(mContext, msg);
-                } finally {
-                    // Stop the refreshing indicator
-                    if(mProgress != null || mSwipeRefreshLayout != null) {
-                        mProgress.setVisibility(View.GONE);
-                        mSwipeRefreshLayout.setRefreshing(false);
-                    }
-                }
-            }
-        };
-    }
-
-    public Response.ErrorListener errorListener() {
-        return new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                // Stop the refreshing indicator
-                if(mProgress == null || mSwipeRefreshLayout == null)
-                    return;
-                mProgress.setVisibility(View.GONE);
-                mViewPager.setVisibility(View.VISIBLE);
-                mSwipeRefreshLayout.setRefreshing(false);
-                String msg = MyVolleyErrorHelper.getMessage(error, mContext);
-                Miscellaneous.showSnackBar(mContext, msg);
-                Log.e(myTag, msg);
-            }
-        };
-    }
-
-    public void notifyDataSetChanged() {
-        mTimeTablePagerAdapter.notifyDataSetChanged();
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putInt(STATE_PREVIOUSE_POSITION, mPreviousPosition);
-    }
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        notifyDataSetChanged();
     }
 
     @Override

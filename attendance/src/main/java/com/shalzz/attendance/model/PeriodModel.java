@@ -22,6 +22,7 @@ package com.shalzz.attendance.model;
 import com.shalzz.attendance.wrapper.DateHelper;
 
 import java.text.ParseException;
+import java.util.Date;
 
 public class PeriodModel {
 
@@ -55,13 +56,33 @@ public class PeriodModel {
 		return teacher;
 	}
 
-	public String getStartTime() {
-		return start;
+	public Date getStartDate() {
+        Date d = null;
+        try {
+            d = DateHelper.hr24Format.parse(start);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return d;
 	}
 
-	public String getEndTime() {
-		return end;
+	public Date getEndDate() {
+        Date d = null;
+        try {
+            d = DateHelper.hr24Format.parse(end);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return d;
 	}
+
+    public String getStartTime() {
+        return start;
+    }
+
+    public String getEndTime() {
+        return end;
+    }
 
 	public String getTime() {
 		return start + "-" + end ;

@@ -20,11 +20,8 @@
 package com.shalzz.attendance.controllers;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.res.Resources;
-import android.preference.PreferenceManager;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 
 import com.android.volley.Response;
@@ -33,9 +30,8 @@ import com.shalzz.attendance.BuildConfig;
 import com.shalzz.attendance.DatabaseHandler;
 import com.shalzz.attendance.Miscellaneous;
 import com.shalzz.attendance.R;
-import com.shalzz.attendance.adapter.ExpandableListAdapter;
-import com.shalzz.attendance.fragment.AttendanceListFragment;
-import com.shalzz.attendance.model.SubjectModel;
+import com.shalzz.attendance.fragment.TimeTablePagerFragment;
+import com.shalzz.attendance.model.PeriodModel;
 import com.shalzz.attendance.network.DataAPI;
 import com.shalzz.attendance.wrapper.MyVolley;
 import com.shalzz.attendance.wrapper.MyVolleyErrorHelper;
@@ -43,90 +39,55 @@ import com.shalzz.attendance.wrapper.MyVolleyErrorHelper;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class AttendanceController {
+public class PagerController {
 
-    private AttendanceListFragment mView;
-    private ExpandableListAdapter mAdapter;
+    private TimeTablePagerFragment mView;
     private DatabaseHandler db;
     private Context mContext;
     private Resources mResources;
-    private String mTag = "Attendance Controller";
-    private View mFooter;
+    private String mTag = "Pager Controller";
 
-    public AttendanceController(Context context, AttendanceListFragment view) {
+    public PagerController(Context context, TimeTablePagerFragment view) {
         mContext = context;
         mResources = MyVolley.getMyResources();
         mView = view;
         db = new DatabaseHandler(mContext);
-
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mContext);
-        int expandLimit = Integer.parseInt(sharedPref.getString(
-                mContext.getString(R.string.pref_key_sub_limit), "3"));
-
-        mAdapter = new ExpandableListAdapter(mContext, mView);
-        mAdapter.setLimit(expandLimit);
-        LayoutInflater inflater = mView.getActivity().getLayoutInflater();
-        mFooter = inflater.inflate(R.layout.list_footer, mView.mRecyclerView, false);
-        mAdapter.addFooter(mFooter);
-        mView.mRecyclerView.setAdapter(mAdapter);
     }
 
-    public void getSubjects() {
-        mAdapter.addAll(db.getAllSubjects());
-        db.close();
+    public void updatePeriods() {
+        DataAPI.getTimeTable(successListener(), errorListener());
     }
 
-    public void getSubjectsLike(String arg0) {
-        // remove the existing subjects so only
-        // the subjects matching the search criteria are shown.
-        mAdapter.clear();
-        mAdapter.addAll(db.getAllSubjectsLike(arg0));
-        db.close();
-    }
-
-    public boolean hasSubjects() {
-        return mAdapter.getSubjectCount() > 0;
-    }
-
-    public void updateSubjects() {
-        if(!hasSubjects()) {
-            mView.mProgress.setVisibility(View.VISIBLE);
-            mFooter.setVisibility(View.GONE);
-        }
-        DataAPI.getAttendance(successListener(), errorListener());
-    }
-
-    public Response.Listener<ArrayList<SubjectModel>> successListener() {
-        return new Response.Listener<ArrayList<SubjectModel>>() {
+    public Response.Listener<ArrayList<PeriodModel>> successListener() {
+        return new Response.Listener<ArrayList<PeriodModel>>() {
             @Override
-            public void onResponse(ArrayList<SubjectModel> response) {
+            public void onResponse(ArrayList<PeriodModel> response) {
                 try {
 
                     done();
                     if(response.size() > 0) {
                         long now = new Date().getTime();
-                        for (SubjectModel subject : response) {
-                            db.addOrUpdateSubject(subject, now);
+                        for (PeriodModel period : response) {
+                            db.addOrUpdatePeriod(period, now);
                         }
 
-                        if (db.purgeSubjects() == 1) {
+                        if (db.purgePeriods() == 1) {
                             if(BuildConfig.DEBUG)
-                                Log.d(mTag, "Purging Subjects...");
-                            mAdapter.clear();
+                                Log.d(mTag, "Purging Periods...");
+                            mView.clearFragmentsData();
                         }
 
-                        mAdapter.addAll(response);
-                        mFooter.setVisibility(View.VISIBLE);
-                        mAdapter.updateFooter();
+                        mView.updateFragmentsData();
+                        db.close();
                     } else {
-                        String msg = mResources.getString(R.string.unavailable_data_error_msg);
+                        String msg = mResources.getString(R.string.unavailable_timetable_error_msg);
                         Miscellaneous.showSnackBar(mContext,msg);
                     }
                     // TODO: update drawer header
                 }
                 catch (Exception e) {
                     String msg = mResources.getString(R.string.unexpected_error);
-                    Miscellaneous.showSnackBar(mContext,msg);
+                    Miscellaneous.showSnackBar(mContext, msg);
                     if(BuildConfig.DEBUG)
                         e.printStackTrace();
                 }
@@ -140,6 +101,7 @@ public class AttendanceController {
             public void onErrorResponse(VolleyError error) {
 
                 done();
+                mView.mViewPager.setVisibility(View.VISIBLE);
                 String msg = MyVolleyErrorHelper.getMessage(error, mContext);
                 Miscellaneous.showSnackBar(mContext, msg);
                 if(BuildConfig.DEBUG)

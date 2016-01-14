@@ -32,6 +32,8 @@ public class DateHelper {
 
     private static DateFormat technicalDateFormat = new SimpleDateFormat("yyyy-MM-dd",Locale.US);
     private static DateFormat properDateFormat = new SimpleDateFormat("dd/MM/yyyy",Locale.US);
+    public static DateFormat hr24Format = new SimpleDateFormat("HH:mm", Locale.US);
+    public static DateFormat hr12Format = new SimpleDateFormat("hh:mm aa", Locale.US);
 
     public interface DateTimeInterpreter {
         String interpretDate(Calendar date);
@@ -82,14 +84,11 @@ public class DateHelper {
     }
 
     public static String to12HrFormat(String time) throws ParseException {
-        DateFormat hr24Format = new SimpleDateFormat("HH:mm", Locale.US);
-        DateFormat hr12Format = new SimpleDateFormat("hh:mm aa", Locale.US);
         Date d = hr24Format.parse(time);
         return hr12Format.format(d);
     }
 
     public static String to24HrFormat(String time) throws ParseException {
-        DateFormat hr24Format = new SimpleDateFormat("HH:mm", Locale.US);
         Date d = hr24Format.parse(time);
         return hr24Format.format(d);
     }

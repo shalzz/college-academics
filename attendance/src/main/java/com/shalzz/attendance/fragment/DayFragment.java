@@ -33,25 +33,28 @@ import com.shalzz.attendance.DatabaseHandler;
 import com.shalzz.attendance.DividerItemDecoration;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.adapter.DayListAdapter;
+import com.shalzz.attendance.controllers.DayController;
 import com.shalzz.attendance.model.PeriodModel;
 import com.shalzz.attendance.wrapper.DateHelper;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
 public class DayFragment extends Fragment {
 
-    @InjectView(R.id.time_table_recycler_view) RecyclerView mRecyclerView;
-    @InjectView(R.id.empty_view) View mEmptyView;
+    @InjectView(R.id.time_table_recycler_view)
+    public RecyclerView mRecyclerView;
+    @InjectView(R.id.empty_view)
+    public View mEmptyView;
+
     private Context mContext;
     private Date mDate;
+    private DayController mController;
     public static final String ARG_DATE = "date";
-    private DayListAdapter mAdapter;
-    private ArrayList<PeriodModel> periods;
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -93,36 +96,15 @@ public class DayFragment extends Fragment {
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        reloadDataSet();
-        mAdapter = new DayListAdapter(periods);
-        mAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
-            @Override
-            public void onChanged() {
-                super.onChanged();
-                checkAdapterIsEmpty();
-            }
-        });
-        mRecyclerView.setAdapter(mAdapter);
-        checkAdapterIsEmpty();
+        mController = new DayController(mContext, DateHelper.getShortWeekday(mDate), this);
     }
 
-    public void reloadDataSet() {
-        DatabaseHandler db = new DatabaseHandler(getActivity());
-        String weekday = DateHelper.getShortWeekday(mDate);
-
-        periods = db.getAllPeriods(weekday);
-
-        if(mAdapter!=null)
-            mAdapter.setDataSet(periods);
+    public void update() {
+        mController.mAdapter.updatePeriods();
     }
 
-    private void checkAdapterIsEmpty () {
-        if (mAdapter.getItemCount() == 0) {
-            mEmptyView.setVisibility(View.VISIBLE);
-        } else {
-            mEmptyView.setVisibility(View.GONE);
-        }
+    public void clear() {
+        mController.mAdapter.clear();
     }
 
     @NonNull

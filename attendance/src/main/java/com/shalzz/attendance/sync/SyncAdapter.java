@@ -94,6 +94,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                     for (SubjectModel subject : response) {
                         db.addOrUpdateSubject(subject, now);
                     }
+                    db.purgeSubjects();
 					db.close();
                 }
                 catch(Exception e) {
@@ -109,10 +110,11 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 			public void onResponse(ArrayList<PeriodModel> response) {
                 try {
 					DatabaseHandler db = new DatabaseHandler(mContext);
-					db.deleteAllPeriods();
+                    long now = new Date().getTime();
 					for(PeriodModel period : response) {
-						db.addPeriod(period);
+						db.addOrUpdatePeriod(period, now);
 					}
+                    db.purgePeriods();
 					db.close();
                 }
                 catch(Exception e) {

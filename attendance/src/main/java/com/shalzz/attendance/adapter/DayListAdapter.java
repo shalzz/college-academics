@@ -19,14 +19,19 @@
 
 package com.shalzz.attendance.adapter;
 
+import android.content.Context;
+import android.support.v7.util.SortedList;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.util.SortedListAdapterCallback;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.shalzz.attendance.DatabaseHandler;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.model.PeriodModel;
+import com.shalzz.attendance.model.SubjectModel;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -36,7 +41,10 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 
 public class DayListAdapter extends RecyclerView.Adapter<DayListAdapter.ViewHolder>{
-    private List<PeriodModel> periods;
+
+    private Context mContext;
+    private String mDay;
+    private SortedList<PeriodModel> mPeriods;
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
@@ -53,13 +61,66 @@ public class DayListAdapter extends RecyclerView.Adapter<DayListAdapter.ViewHold
         }
     }
 
-    public DayListAdapter(ArrayList<PeriodModel> periods){
-        if (periods == null) {
-            throw new IllegalArgumentException(
-                    "Data set must not be null");
-        }
-        this.periods = periods;
+    public DayListAdapter(Context context, String day){
+        mContext = context;
+        mDay = day;
+        mPeriods = new SortedList<>(PeriodModel.class,
+                new SortedListAdapterCallback<PeriodModel>(this) {
+                    @Override
+                    public int compare(PeriodModel o1, PeriodModel o2) {
+                        return (int) (o1.getStartDate().getTime() - o2.getStartDate().getTime());
+                    }
+
+                    @SuppressWarnings("SimplifiableIfStatement")
+                    @Override
+                    public boolean areContentsTheSame(PeriodModel oldItem, PeriodModel newItem) {
+                        if(oldItem.getId() != newItem.getId()) {
+                            return false;
+                        }
+                        if(oldItem.getDay().equals(newItem.getDay())) {
+                            return false;
+                        }
+                        if(!oldItem.getSubjectName().equals(newItem.getSubjectName())) {
+                            return false;
+                        }
+                        if(oldItem.getTeacher().equals(newItem.getTeacher())) {
+                            return false;
+                        }
+                        if(oldItem.getTime().equals(newItem.getTime())) {
+                            return false;
+                        }
+                        if(oldItem.getRoom().equals(newItem.getRoom())) {
+                            return false;
+                        }
+                        return oldItem.getBatch().equals(newItem.getBatch());
+                    }
+
+                    @Override
+                    public boolean areItemsTheSame(PeriodModel item1, PeriodModel item2) {
+                        return item1.getId() == item2.getId();
+                    }
+                });
+        DatabaseHandler db = new DatabaseHandler(mContext);
+        mPeriods.addAll(db.getAllPeriods(mDay));
     }
+
+    public void addAll(List<PeriodModel> periods) {
+        mPeriods.addAll(periods);
+    }
+
+    public void updatePeriods() {
+        DatabaseHandler db = new DatabaseHandler(mContext);
+        mPeriods.addAll(db.getAllPeriods(mDay));
+    }
+
+    public int getPeriodCount() {
+        return mPeriods.size();
+    }
+
+    public void clear() {
+        mPeriods.clear();
+    }
+
 
     // Create new views (invoked by the layout manager)
     @Override
@@ -77,7 +138,7 @@ public class DayListAdapter extends RecyclerView.Adapter<DayListAdapter.ViewHold
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
 
-        PeriodModel period = periods.get(position);
+        PeriodModel period = mPeriods.get(position);
         holder.tvSubjectName.setText(period.getSubjectName());
         holder.tvRoom.setText(period.getRoom());
         holder.tvTeacher.setText(period.getTeacher());
@@ -90,15 +151,10 @@ public class DayListAdapter extends RecyclerView.Adapter<DayListAdapter.ViewHold
 
     }
 
-    public void setDataSet(ArrayList<PeriodModel> periods) {
-        this.periods = periods;
-        notifyDataSetChanged();
-    }
-
     // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
-        return periods.size();
+        return mPeriods.size();
     }
 
 }

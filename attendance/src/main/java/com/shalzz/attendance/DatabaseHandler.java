@@ -44,8 +44,6 @@ import javax.security.auth.Subject;
  */
 public class DatabaseHandler extends SQLiteOpenHelper {
 
-    // TODO: do in background
-
 	/**
 	 * Database Version
 	 */
@@ -125,7 +123,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	private static final String CREATE_TIME_TABLE = "CREATE TABLE " + TABLE_TIMETABLE + " ( "
             + KEY_ID + " INTEGER, " + KEY_DAY + " TEXT, " + KEY_SUBJECT_NAME + " TEXT , "
             + KEY_TEACHER + " TEXT , " + KEY_ROOM + " TEXT, " + KEY_BATCH + " TEXT, "
-            + KEY_START + " TEXT, " + KEY_END + " TEXT " + ");";
+            + KEY_LAST_UPDATED + " INTEGER, "+ KEY_START + " TEXT, "
+            + KEY_END + " TEXT, " + "PRIMARY KEY(" + KEY_ID + "," + KEY_DAY + ") " + ");";
 
 	/**
 	 * User CREATE TABLE SQL query.
@@ -159,8 +158,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		// Drop older table if existed
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_ATTENDANCE);
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_USER);
-        // Clean up from previous versions.
-        // TODO: remove in later releases
+        // TODO: Clean up from previous versions, remove in later releases.
 		db.execSQL("DROP TABLE IF EXISTS " + "ListFooter");
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_TIMETABLE);
 
@@ -169,6 +167,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         // remove conflicting shared preferences b/w versions
         MyPreferencesManager.removeSettings();
+        MyPreferencesManager.removeDefaultSharedPreferences();
 	}
 
 	/**
@@ -343,20 +342,18 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public int purgeSubjects() {
         int purged = 0;
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.query(TABLE_ATTENDANCE, new String[]{KEY_ID, KEY_LAST_UPDATED },
+        Cursor cursor = db.query(TABLE_ATTENDANCE, new String[]{KEY_ID },
                 KEY_LAST_UPDATED + " != (SELECT max("+ KEY_LAST_UPDATED +") FROM " +
                         TABLE_ATTENDANCE + ")",
                 null, null, null, null, null);
         if (cursor.moveToFirst()) {
             purged = 1;
             do {
-                SubjectModel subject = new SubjectModel();
-                subject.setID(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_ID)));
-
                 db.delete(TABLE_ATTENDANCE, KEY_ID + " = ?",
-                        new String[] { String.valueOf(subject.getID()) });
+                        new String[] { String.valueOf(cursor.getInt(0)) });
             } while (cursor.moveToNext());
         }
+        cursor.close();
         db.close();
         return purged;
     }
@@ -459,7 +456,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		return footer;
 	}
 
-    public void addPeriod(PeriodModel period) {
+    public void addPeriod(PeriodModel period, long timestamp) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -471,16 +468,55 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(KEY_START, period.getStartTime());
         values.put(KEY_END, period.getEndTime());
         values.put(KEY_BATCH, period.getBatch());
+        values.put(KEY_LAST_UPDATED, timestamp);
 
         // Inserting Row
         db.insert(TABLE_TIMETABLE, null, values);
         db.close(); // Closing database connection
     }
 
+    public int updatePeriod(PeriodModel period, long timestamp) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(KEY_SUBJECT_NAME, period.getSubjectName());
+        values.put(KEY_TEACHER, period.getTeacher());
+        values.put(KEY_ROOM, period.getRoom());
+        values.put(KEY_START, period.getStartTime());
+        values.put(KEY_END, period.getEndTime());
+        values.put(KEY_BATCH, period.getBatch());
+        values.put(KEY_LAST_UPDATED, timestamp);
+
+        // updating row
+        int rows_affected = db.update(TABLE_TIMETABLE, values, KEY_DAY + " = ? and " + KEY_ID + "" +
+                " = ?",
+                new String[] { String.valueOf(period.getDay()), String.valueOf(period.getId())} );
+        db.close(); // Closing database connection
+
+        return rows_affected;
+    }
+
+    public void addOrUpdatePeriod(PeriodModel period, long timestamp) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        Cursor cursor = db.query(TABLE_TIMETABLE, new String[] { KEY_SUBJECT_NAME},
+                KEY_DAY + " = ? and " + KEY_ID + " = ?",
+                new String[] { String.valueOf(period.getDay()), String.valueOf(period.getId()) },
+                null, null, KEY_SUBJECT_NAME, null);
+
+        if (cursor.getCount() == 0) {
+            addPeriod(period, timestamp);
+        }
+        else {
+            updatePeriod(period, timestamp);
+        }
+        cursor.close();
+        db.close(); // Closing database connection
+    }
+
 	public ArrayList<PeriodModel> getAllPeriods(String dayName) {
 		SQLiteDatabase db = this.getReadableDatabase();
 
-        // TODO: order by the time
 		Cursor cursor = db.query(TABLE_TIMETABLE, null, KEY_DAY + "=?",
 				new String[]{String.valueOf(dayName)}, null, null, KEY_START, null);
 
@@ -506,6 +542,29 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		return periods;
 	}
 
+    /**
+     * Checks for any obsolete data, based on the timestamp,
+     * and deletes if any.
+     * @return 1 if one or more Periods are purged else 0
+     */
+    public int purgePeriods() {
+        int purged = 0;
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.query(TABLE_TIMETABLE, new String[]{KEY_ID},
+                KEY_LAST_UPDATED + " != (SELECT max("+ KEY_LAST_UPDATED +") FROM " +
+                        TABLE_TIMETABLE + ")",
+                null, null, null, null, null);
+        if (cursor.moveToFirst()) {
+            purged = 1;
+            do {
+                db.delete(TABLE_TIMETABLE, KEY_ID + " = ?",
+                        new String[] { String.valueOf(cursor.getInt(0)) });
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+        return purged;
+    }
 
 	/**
 	 * Check if the attendance data is in database.

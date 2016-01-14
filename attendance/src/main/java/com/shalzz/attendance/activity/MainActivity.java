@@ -422,7 +422,7 @@ public class MainActivity extends AppCompatActivity {
             position = Fragments.ATTENDANCE.getValue();
         } else if (mPreviousFragment instanceof TimeTablePagerFragment) {
             position = Fragments.TIMETABLE.getValue();
-            //((TimeTablePagerFragment) mPreviousFragment).updateFragments();
+            //((TimeTablePagerFragment) mPreviousFragment).updateFragmentsData();
             // fixme: this is a crude hack for viewpager not redrawing itself
             showFragment(new TimeTablePagerFragment());
         }
