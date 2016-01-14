@@ -63,17 +63,10 @@
     <string name="generic_error">Network error occurred.</string>
     <string name="proxy_error">Proxy Authentication failed. Please check your credentials</string>
     <string name="unexpected_error">An unexpected error occurred</string>
-    <string name="general_try_again_error">Error! Please try again later</string>
-    <string name="session_error">It seems your session has expired. Please Login again.</string>
     <string name="unavailable_data_error_msg">No Data available at this time</string>
     <string name="unavailable_timetable_error_msg">No TimeTable available at this time</string>
-    <string name="expired_password_error_title">Password expired</string>
-    <string name="expired_password_error_msg">Your password has expired. Please visit the CORTAS website to change your password.</string>
-    <string name="form_sapid_error">SAP ID should be of 9 digits</string>
+    <string name="form_sapid_error">Invalid SAP ID</string>
     <string name="form_password_error">This field is required</string>
-    <string name="form_captcha_error">Captcha must be of 6 digits</string>
-    <string name="alert_incorrect_captcha">Incorrect Captcha. Please try again.</string>
-    <string name="alert_incorrect_password">Incorrect username or password. Please try again</string>
 
     <!--EditText's and TextView's-->
     <string name="no_classes">You don\'t have any classes on this day :)</string>

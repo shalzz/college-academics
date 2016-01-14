@@ -55,18 +55,6 @@
         <item>1440</item>
     </string-array>
 
-    <string-array name="pref_batch_entries">
-        <item>Show both batches</item>
-        <item>Batch 1</item>
-        <item>Batch 2</item>
-    </string-array>
-
-    <string-array name="pref_batch_values">
-        <item>NULL</item>
-        <item>B1</item>
-        <item>B2</item>
-    </string-array>
-
     <string-array name="pref_ring_entries">
         <item>Silent</item>
         <item>Vibrate</item>
