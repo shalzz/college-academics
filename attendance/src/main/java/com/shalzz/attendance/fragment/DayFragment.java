@@ -29,17 +29,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.shalzz.attendance.DatabaseHandler;
 import com.shalzz.attendance.DividerItemDecoration;
 import com.shalzz.attendance.R;
-import com.shalzz.attendance.adapter.DayListAdapter;
 import com.shalzz.attendance.controllers.DayController;
-import com.shalzz.attendance.model.PeriodModel;
 import com.shalzz.attendance.wrapper.DateHelper;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -85,11 +80,7 @@ public class DayFragment extends Fragment {
 
         RecyclerView.ItemDecoration itemDecoration =
                 new DividerItemDecoration(mContext, DividerItemDecoration.VERTICAL_LIST);
-//        RecyclerView.ItemDecoration calendarItemDecoration =
-//                new CalendarItemDecoration(mContext, mDate, CalendarItemDecoration.VERTICAL_LIST);
         mRecyclerView.addItemDecoration(itemDecoration);
-//        mRecyclerView.addItemDecoration(calendarItemDecoration);
-        // TODO: add calendar itemDecoration
 
         return mView;
     }
