@@ -76,11 +76,6 @@
     <PreferenceCategory
         android:title="Info" >
 
-        <Preference
-            android:key="@string/pref_key_info_donate"
-            android:title="@string/pref_donate"
-            android:summary="@string/pref_donate_summary"
-            android:persistent="false"/>
         <PreferenceScreen
             android:key="@string/pref_key_info_about"
             android:persistent="false"

@@ -47,7 +47,6 @@
     <string name="pref_key_info_author">pref_info_author</string>
     <string name="pref_key_info_notices">pref_info_notices</string>
     <string name="pref_key_info_version">pref_info_version</string>
-    <string name="pref_key_info_donate">pref_info_donate</string>
     <string name="pref_key_use_proxy">pref_key_use_proxy</string>
     <string name="pref_key_proxy_username">pref_key_proxy_username</string>
     <string name="pref_key_proxy_password">pref_key_proxy_password</string>
@@ -114,8 +113,6 @@
     <string name="pref_version">Build Version</string>
     <string name="pref_mute">Mute during lessons</string>
     <string name="pref_mute_summary">Automatically mute the phone during lessons</string>
-    <string name="pref_donate">Donate</string>
-    <string name="pref_donate_summary">Donate and remove ads from all your devices</string>
     <string name="pref_ringer">Ring Mode</string>
     <string name="pref_ga_opt_in">Google Analytics</string>
     <string name="pref_ga_opt_in_summary">Collect and send anonymous data to help improve the app</string>

@@ -121,7 +121,7 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
 		.registerOnSharedPreferenceChangeListener(this);
 
 		PreferenceCategory prefCategory = (PreferenceCategory) getPreferenceScreen().getPreference(3);
-		PreferenceScreen prefScreen =  (PreferenceScreen) prefCategory.getPreference(1);
+		PreferenceScreen prefScreen =  (PreferenceScreen) prefCategory.getPreference(0);
         prefScreen.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener(){
 			@Override
 			public boolean onPreferenceClick(Preference preference) {
