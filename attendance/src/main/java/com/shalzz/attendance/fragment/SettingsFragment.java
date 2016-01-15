@@ -45,7 +45,6 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
 	private Context mContext;
     private String key_sub_limit;
     private String key_sync_interval;
-    private String key_ring_mode;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -61,10 +60,6 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
         key_sync_interval = getString(R.string.pref_key_sync_interval);
 		ListPreference synclistPref = (ListPreference) findPreference(key_sync_interval);
 		synclistPref.setSummary(synclistPref.getEntry());
-
-        key_ring_mode = getString(R.string.pref_key_ring_mode);
-        ListPreference list_pref_ring_mode = (ListPreference) findPreference(key_ring_mode);
-        list_pref_ring_mode.setSummary(list_pref_ring_mode.getEntry());
 	}
 
     @Override
@@ -95,10 +90,6 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
             connectionPref.setSummary(connectionPref.getEntry());
             MySyncManager.addPeriodicSync(mContext, "" + db.getUser().getSapid());
         }
-        else if(key.equals(key_ring_mode)) {
-            ListPreference list_pref_ring_mode = (ListPreference) findPreference(key_ring_mode);
-            list_pref_ring_mode.setSummary(list_pref_ring_mode.getEntry());
-        }
         else if(key.equals(getString(R.string.pref_key_ga_opt_in))) {
             GoogleAnalytics.getInstance(mContext).setAppOptOut(
                     !sharedPreferences.getBoolean(key, false));
@@ -120,7 +111,8 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
 		getPreferenceScreen().getSharedPreferences()
 		.registerOnSharedPreferenceChangeListener(this);
 
-		PreferenceCategory prefCategory = (PreferenceCategory) getPreferenceScreen().getPreference(3);
+		PreferenceCategory prefCategory = (PreferenceCategory) getPreferenceScreen()
+                .getPreference(2);
 		PreferenceScreen prefScreen =  (PreferenceScreen) prefCategory.getPreference(0);
         prefScreen.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener(){
 			@Override
@@ -137,7 +129,8 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
 			}
 		});
 
-        PreferenceCategory proxyPrefCategory = (PreferenceCategory) getPreferenceScreen().getPreference(2);
+        PreferenceCategory proxyPrefCategory = (PreferenceCategory) getPreferenceScreen()
+                .getPreference(1);
         PreferenceScreen proxyPrefScreen =  (PreferenceScreen) proxyPrefCategory.getPreference(3);
         proxyPrefScreen.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener(){
             @Override

@@ -29,22 +29,6 @@
             android:entries="@array/pref_subject_limit_entries"
             android:entryValues="@array/pref_subject_limit_values"/>
     </PreferenceCategory>
-    <PreferenceCategory android:title="Timetable" >
-		<CheckBoxPreference
-            android:key="@string/pref_key_mute"
-            android:defaultValue="false"
-            android:title="@string/pref_mute"
-            android:summary="@string/pref_mute_summary" />
-
-        <com.afollestad.materialdialogs.prefs.MaterialListPreference
-            android:key="@string/pref_key_ring_mode"
-            android:defaultValue="1"
-            android:title="@string/pref_ringer"
-            android:dialogTitle="@string/pref_ringer"
-            android:dependency="@string/pref_key_mute"
-            android:entries="@array/pref_ring_entries"
-            android:entryValues="@array/pref_ring_values"/>
-    </PreferenceCategory>
     <PreferenceCategory android:title="Network" >
         <CheckBoxPreference
             android:key="@string/pref_key_ga_opt_in"
