@@ -40,8 +40,7 @@
         android:layout_toLeftOf="@+id/tvReach"
         android:layout_toStartOf="@+id/tvReach"
         android:layout_alignBottom="@+id/tvReach"
-        android:padding="5dp"
-        android:src="@drawable/alert" />
+        android:padding="5dp" />
 
     <TextView
         android:id="@+id/tvReach"

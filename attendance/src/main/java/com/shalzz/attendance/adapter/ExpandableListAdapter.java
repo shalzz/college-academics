@@ -22,6 +22,8 @@ package com.shalzz.attendance.adapter;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.v7.util.SortedList;
@@ -57,6 +59,7 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     private final List<Long> mExpandedIds = new ArrayList<>();
     private float mExpandedTranslationZ;
     private int mLimit = -1;
+    private Bitmap mBitmap;
 
     //our items
     private final SortedList<SubjectModel> mSubjects;
@@ -107,6 +110,7 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         mResources = MyVolley.getMyResources();
         mSubjectItemExpandedListener = subjectItemExpandedListener;
         mExpandedTranslationZ = mResources.getDimension(R.dimen.atten_view_expanded_elevation);
+        mBitmap = BitmapFactory.decodeResource(mResources,R.drawable.alert);
 
         mSubjects = new SortedList<>(SubjectModel.class,
                 new SortedListAdapterCallback<SubjectModel>(this) {
@@ -383,7 +387,7 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
 
         TextView tvAbsent = holder.tvAbsent;
         TextView tvReach = holder.tvReach;
-        ImageView ivAlert = holder.ivAlert; // TODO: use a bitmap reference
+        ImageView ivAlert = holder.ivAlert;
 
         int held = mSubjects.get(position).getClassesHeld().intValue();
         int attend = mSubjects.get(position).getClassesAttended().intValue();
@@ -396,11 +400,13 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
             if(x == 0) {
                 tvReach.setVisibility(View.GONE);
                 ivAlert.setVisibility(View.GONE);
+                ivAlert.setImageBitmap(null);
             } else {
                 tvReach.setText(mResources.getQuantityString(R.plurals.tv_classes_to_67,x,x));
                 tvReach.setTextColor(mResources.getColor(R.color.holo_orange_light));
                 tvReach.setVisibility(View.VISIBLE);
                 ivAlert.setVisibility(View.VISIBLE);
+                ivAlert.setImageBitmap(mBitmap);
             }
         }
         else if(percent<75 && held!=0) {
@@ -408,11 +414,13 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
             if(x == 0) {
                 tvReach.setVisibility(View.GONE);
                 ivAlert.setVisibility(View.GONE);
+                ivAlert.setImageBitmap(null);
             } else {
                 tvReach.setText(mResources.getQuantityString(R.plurals.tv_classes_to_75, x, x));
                 tvReach.setTextColor(mResources.getColor(R.color.holo_orange_light));
                 tvReach.setVisibility(View.VISIBLE);
                 ivAlert.setVisibility(View.VISIBLE);
+                ivAlert.setImageBitmap(mBitmap);
             }
         } else {
             int x = ((4*attend)/3)-held;
@@ -424,6 +432,7 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                 tvReach.setVisibility(View.VISIBLE);
             }
             ivAlert.setVisibility(View.GONE);
+            ivAlert.setImageBitmap(null);
         }
     }
 
