@@ -51,10 +51,6 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
     }
-    sourceSets {
-        main { res.srcDirs = ['src/main/res', 'src/main/res/layouts-sw720dp-land'] }
-
-    }
 
     lintOptions {
         disable 'InvalidPackage'

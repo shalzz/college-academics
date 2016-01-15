@@ -76,7 +76,7 @@ public class SubjectModel {
             if(absent_dates[i] == null) continue;
 			dates += DateHelper.formatToTechnicalFormat(absent_dates[i]);
             if(i!=absent_dates.length-1)
-                dates += ",";
+                dates += ", ";
 		}
 		return dates;
 	}
