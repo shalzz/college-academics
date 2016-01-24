@@ -40,6 +40,7 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.shalzz.attendance.BuildConfig;
 import com.shalzz.attendance.DatabaseHandler;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.model.ListFooterModel;
@@ -60,6 +61,7 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     private float mExpandedTranslationZ;
     private int mLimit = -1;
     private Bitmap mBitmap;
+    private String mTag = "ExpandableList Adapter";
 
     //our items
     private final SortedList<SubjectModel> mSubjects;
@@ -128,10 +130,11 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                         if(!oldItem.getName().equals(newItem.getName())) {
                             return false;
                         }
-                        if(oldItem.getClassesAttended().equals(newItem.getClassesAttended())) {
+                        if(oldItem.getClassesAttended().compareTo(newItem.getClassesAttended())
+                                != 0) {
                             return false;
                         }
-                        if(oldItem.getClassesHeld().equals(newItem.getClassesHeld())) {
+                        if(oldItem.getClassesHeld().compareTo(newItem.getClassesHeld()) != 0) {
                             return false;
                         }
                         return oldItem.getAbsentDates().equals(newItem.getAbsentDates());
@@ -156,6 +159,8 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     }
 
     public void clear() {
+        if(BuildConfig.DEBUG)
+            Log.i(mTag, "Data set cleared.");
         mSubjects.clear();
     }
 
@@ -323,7 +328,6 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
             views.childView.setAlpha(1.0f);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 view.setTranslationZ(mExpandedTranslationZ);
-                Log.d("adapter", "elev:" + view.getElevation() + " trans:" + view.getTranslationZ());
             }
         } else {
 
@@ -335,7 +339,6 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
             // TODO: fix elevation
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 view.setTranslationZ(0);
-                Log.d("adapter", "elev:" + view.getElevation() + " trans:" + view.getTranslationZ());
             }
         }
     }

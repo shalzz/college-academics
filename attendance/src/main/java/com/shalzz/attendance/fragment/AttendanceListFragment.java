@@ -392,6 +392,7 @@ public class AttendanceListFragment extends Fragment implements
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        MyVolley.getInstance().cancelPendingRequests(MyVolley.ACTIVITY_NETWORK_TAG);
         ButterKnife.reset(this);
     }
 }

@@ -33,6 +33,7 @@ import com.shalzz.attendance.BuildConfig;
 import com.shalzz.attendance.DatabaseHandler;
 import com.shalzz.attendance.Miscellaneous;
 import com.shalzz.attendance.R;
+import com.shalzz.attendance.activity.MainActivity;
 import com.shalzz.attendance.adapter.ExpandableListAdapter;
 import com.shalzz.attendance.fragment.AttendanceListFragment;
 import com.shalzz.attendance.model.SubjectModel;
@@ -111,7 +112,7 @@ public class AttendanceController {
 
                         if (db.purgeSubjects() == 1) {
                             if(BuildConfig.DEBUG)
-                                Log.d(mTag, "Purging Subjects...");
+                                Log.i(mTag, "Purging Subjects...");
                             mAdapter.clear();
                         }
 
@@ -122,7 +123,8 @@ public class AttendanceController {
                         String msg = mResources.getString(R.string.unavailable_data_error_msg);
                         Miscellaneous.showSnackBar(mContext,msg);
                     }
-                    // TODO: update drawer header
+                    // Update the drawer header
+                    ((MainActivity) mView.getActivity()).updateLastSync();
                 }
                 catch (Exception e) {
                     String msg = mResources.getString(R.string.unexpected_error);
@@ -149,8 +151,10 @@ public class AttendanceController {
     }
 
     public void done() {
-        if(mView.mProgress != null || mView.mSwipeRefreshLayout != null) {
+        if(mView.mProgress != null) {
             mView.mProgress.setVisibility(View.GONE);
+        }
+        if(mView.mSwipeRefreshLayout != null) {
             mView.mSwipeRefreshLayout.setRefreshing(false);
         }
     }

@@ -41,9 +41,6 @@ import java.util.Map;
 
 public class DataAPI {
 
-    public static final String TAG = "Gson_Request";
-    public static final String USER_TAG = "USER_Gson_Request";
-
     public static void getUser(Response.Listener<UserModel> successListener,
                                Response.ErrorListener errorListener) {
 
@@ -72,7 +69,7 @@ public class DataAPI {
         gsonRequest.setShouldCache(false);
         gsonRequest.setRetryPolicy(new DefaultRetryPolicy(
                 DefaultRetryPolicy.DEFAULT_TIMEOUT_MS, 3, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        MyVolley.getInstance().addToRequestQueue(gsonRequest ,USER_TAG);
+        MyVolley.getInstance().addToRequestQueue(gsonRequest, MyVolley.APPLICATION_NETWORK_TAG);
     }
 
     public static void getAttendance(Response.Listener<ArrayList<SubjectModel>> successListener,
@@ -101,7 +98,7 @@ public class DataAPI {
         requestAttendance.setShouldCache(false);
         requestAttendance.setRetryPolicy(new DefaultRetryPolicy(
                 DefaultRetryPolicy.DEFAULT_TIMEOUT_MS, 3, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        MyVolley.getInstance().addToRequestQueue(requestAttendance ,TAG);
+        MyVolley.getInstance().addToRequestQueue(requestAttendance, MyVolley.ACTIVITY_NETWORK_TAG);
     }
 
     public static void getTimeTable(Response.Listener<ArrayList<PeriodModel>> successListener,
@@ -126,6 +123,6 @@ public class DataAPI {
         requestTimeTable.setShouldCache(false);
         requestTimeTable.setRetryPolicy(new DefaultRetryPolicy(
                 DefaultRetryPolicy.DEFAULT_TIMEOUT_MS, 3, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        MyVolley.getInstance().addToRequestQueue(requestTimeTable ,TAG);
+        MyVolley.getInstance().addToRequestQueue(requestTimeTable, MyVolley.ACTIVITY_NETWORK_TAG);
     }
 }

@@ -32,6 +32,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
@@ -112,12 +113,23 @@ public class MainActivity extends AppCompatActivity {
     private CharSequence mDrawerTitle;
     private CharSequence mTitle;
     private ActionBarDrawerToggle mDrawerToggle;
-    private View Drawerheader;
+    private DrawerHeaderViewHolder DrawerheaderVH;
     private FragmentManager mFragmentManager;
     private Fragment fragment = null;
     private ActionBar actionbar;
     // Our custom poor-man's back stack which has only one entry at maximum.
     private Fragment mPreviousFragment;
+
+    public static class DrawerHeaderViewHolder extends RecyclerView.ViewHolder {
+        @InjectView(R.id.drawer_header_name) TextView tv_name;
+        @InjectView(R.id.drawer_header_course) TextView tv_course;
+        @InjectView(R.id.last_refreshed) TextView last_refresh;
+
+        public DrawerHeaderViewHolder(View itemView) {
+            super(itemView);
+            ButterKnife.inject(this,itemView);
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -142,7 +154,8 @@ public class MainActivity extends AppCompatActivity {
 //            isDrawerLocked = true;
 //        }
 
-        Drawerheader = mNavigationView.inflateHeaderView(R.layout.drawer_header);
+        View Drawerheader = mNavigationView.inflateHeaderView(R.layout.drawer_header);
+        DrawerheaderVH = new DrawerHeaderViewHolder(Drawerheader);
 
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar,
                 R.string.drawer_open, R.string.drawer_close) {
@@ -236,20 +249,26 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void updateDrawerHeader() {
+        updateUserDetails();
+        updateLastSync();
+    }
+
+    public void updateUserDetails() {
         DatabaseHandler db = new DatabaseHandler(this);
         if(db.getUserCount()>0) {
             UserModel user = db.getUser();
 
-            TextView tv_name = (TextView) Drawerheader.findViewById(R.id.drawer_header_name);
-            TextView tv_course = (TextView) Drawerheader.findViewById(R.id.drawer_header_course);
-            TextView last_refresh = (TextView) Drawerheader.findViewById(R.id.last_refreshed);
-            tv_name.setText(user.getName());
-            tv_course.setText(user.getCourse());
+            DrawerheaderVH.tv_name.setText(user.getName());
+            DrawerheaderVH.tv_course.setText(user.getCourse());
+        }
+    }
 
-            // TODO: separate sync and user
-            // TODO: use a view holder
+    public void updateLastSync() {
+        DatabaseHandler db = new DatabaseHandler(this);
+        if(db.getRowCount()>0) {
             int time = (int) db.getLastSync();
-            last_refresh.setText(getResources().getQuantityString(R.plurals.tv_last_refresh, time, time));
+            DrawerheaderVH.last_refresh.setText(
+                    getResources().getQuantityString(R.plurals.tv_last_refresh, time, time));
         }
     }
 
@@ -504,7 +523,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onDestroy() {
-        MyVolley.getInstance().cancelPendingRequests("com.shalzz.attendance.activity.MainActivity");
+        MyVolley.getInstance().cancelAllPendingRequests();
         super.onDestroy();
     }
 

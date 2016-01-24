@@ -55,6 +55,9 @@ public class MyVolley extends Application {
 	 */
 	public static final String TAG = "VOLLEY";
 
+    public static final String ACTIVITY_NETWORK_TAG = "activity";
+
+    public static final String APPLICATION_NETWORK_TAG = "application";
 	/**
 	 * Global request queue for Volley
 	 */
@@ -183,6 +186,18 @@ public class MyVolley extends Application {
 		// add to the requestQueue
 		getRequestQueue().add(req);
 	}
+
+    /**
+     * Cancels all pending requests.
+     */
+    public void cancelAllPendingRequests() {
+        if (mRequestQueue != null) {
+            mRequestQueue.cancelAll(TAG);
+            mRequestQueue.cancelAll(ACTIVITY_NETWORK_TAG);
+            mRequestQueue.cancelAll(APPLICATION_NETWORK_TAG);
+        }
+        Log.d(MyVolley.class.getName(),"Cancelling all requests");
+    }
 
 	/**
 	 * Cancels all pending requests registered by the default {@link MyVolley#TAG}.
