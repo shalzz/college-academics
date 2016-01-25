@@ -22,16 +22,13 @@ package com.shalzz.attendance.fragment;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
-import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.NavigationView;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -54,9 +51,9 @@ import com.shalzz.attendance.CircularIndeterminate;
 import com.shalzz.attendance.DividerItemDecoration;
 import com.shalzz.attendance.Miscellaneous;
 import com.shalzz.attendance.R;
-import com.shalzz.attendance.controllers.UserAccount;
 import com.shalzz.attendance.adapter.ExpandableListAdapter;
 import com.shalzz.attendance.controllers.AttendanceController;
+import com.shalzz.attendance.controllers.UserAccount;
 import com.shalzz.attendance.wrapper.MultiSwipeRefreshLayout;
 import com.shalzz.attendance.wrapper.MyVolley;
 
@@ -86,7 +83,7 @@ public class AttendanceListFragment extends Fragment implements
     private LinearLayoutManager mLinearLayoutManager;
     private StaggeredGridLayoutManager mGridLayoutManager;
     private Context mContext;
-    private String mTag;
+    private String mTag = "Attendance List Fragment";
     private Resources mResources;
     private AttendanceController controller;
 
@@ -100,8 +97,10 @@ public class AttendanceListFragment extends Fragment implements
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = getActivity();
-        mTag = getActivity().getLocalClassName();
-        useGridLayout = getResources().getBoolean(R.bool.use_grid_layout);
+        mResources = getResources();
+        mExpandedItemTranslationZ =
+                mResources.getDimension(R.dimen.atten_view_expanded_elevation);
+        useGridLayout = mResources.getBoolean(R.bool.use_grid_layout);
     }
 
     @Override
@@ -111,14 +110,6 @@ public class AttendanceListFragment extends Fragment implements
                 MyVolley.TrackerName.APP_TRACKER);
 
         t.send(new HitBuilders.ScreenViewBuilder().build());
-    }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        mResources = getResources();
-        mExpandedItemTranslationZ =
-                mResources.getDimension(R.dimen.atten_view_expanded_elevation);
     }
 
     @Override
@@ -224,18 +215,6 @@ public class AttendanceListFragment extends Fragment implements
                 return false;
             }
         });
-    }
-
-    /* Called whenever we call invalidateOptionsMenu() */
-    @Override
-    public void onPrepareOptionsMenu(Menu menu) {
-        // If the nav drawer is open, hide action items related to the content view
-        Activity activity = (Activity) mContext;
-        DrawerLayout mDrawerLayout = (DrawerLayout) activity.findViewById(R.id.drawer_layout);
-        NavigationView mDrawerList = (NavigationView) activity.findViewById(R.id.list_slidermenu);
-        boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
-        menu.findItem(R.id.menu_search).setVisible(!drawerOpen);
-        menu.findItem(R.id.menu_refresh).setVisible(!drawerOpen);
     }
 
     @Override

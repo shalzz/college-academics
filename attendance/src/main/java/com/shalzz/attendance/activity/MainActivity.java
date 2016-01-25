@@ -26,6 +26,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Point;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
@@ -41,6 +42,7 @@ import android.widget.TextView;
 
 import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.Target;
+import com.shalzz.attendance.BuildConfig;
 import com.shalzz.attendance.DatabaseHandler;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.fragment.AttendanceListFragment;
@@ -65,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
 
         private final int value;
 
-        private Fragments(int value) {
+        Fragments(int value) {
             this.value = value;
         }
 
@@ -97,10 +99,6 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String mTag = "MainActivity";
 
-    /**
-     * Debug flag
-     */
-    private final boolean DEBUG_FRAGMENTS = true;
     public boolean mPopSettingsBackStack =  false;
 
     // Views
@@ -183,7 +181,14 @@ public class MainActivity extends AppCompatActivity {
         if(!isDrawerLocked) {
             mDrawerLayout.setDrawerListener(mDrawerToggle);
         }
-        mDrawerLayout.setStatusBarBackgroundColor(getResources().getColor(R.color.primary_dark));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            mDrawerLayout.setStatusBarBackgroundColor(getResources().getColor(R.color.primary_dark,
+                    null));
+        } else {
+            //noinspection deprecation
+            mDrawerLayout.setStatusBarBackgroundColor(getResources().getColor(
+                    R.color.primary_dark));
+        }
 
         // Select either the default item (Fragments.ATTENDANCE) or the last selected item.
         mCurrentSelectedPosition = reloadCurrentFragment();
@@ -194,8 +199,8 @@ public class MainActivity extends AppCompatActivity {
             mPreviousFragment = getFragmentManager().getFragment(savedInstanceState, PREVIOUS_FRAGMENT_TAG);
             Log.d(mTag, "current fag found: " + fragment );
             Log.d(mTag, "previous fag found: " + mPreviousFragment );
-            showFragment(fragment);
             selectItem(mCurrentSelectedPosition);
+            showFragment(fragment);
         }
         else if(getIntent().hasExtra(LAUNCH_FRAGMENT_EXTRA)) {
             displayView(getIntent().getIntExtra(LAUNCH_FRAGMENT_EXTRA,
@@ -226,6 +231,8 @@ public class MainActivity extends AppCompatActivity {
                     return new Point(x, y);
                 }
             };
+
+            // TODO: ActionItemTarget target = new ActionItemTarget(this, R.id.home);
 
             final ShowcaseView sv = new ShowcaseView.Builder(this)
                     .setTarget(homeTarget)
@@ -313,8 +320,8 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (fragment != null) {
-            showFragment(fragment);
             selectItem(position);
+            showFragment(fragment);
             mPopSettingsBackStack = false;
         } else {
             Log.e(mTag, "Error in creating fragment");
@@ -353,7 +360,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (mPreviousFragment != null) {
-            if (DEBUG_FRAGMENTS) {
+            if (BuildConfig.DEBUG) {
                 Log.d(mTag, this + " showFragment: destroying previous fragment "
                         + mPreviousFragment.getClass().getSimpleName());
             }
@@ -454,7 +461,7 @@ public class MainActivity extends AppCompatActivity {
             SharedPreferences.Editor editor = getSharedPreferences("SETTINGS", 0).edit();
             mCurrentSelectedPosition = mCurrentSelectedPosition == Fragments.SETTINGS.getValue() ?
                     Fragments.ATTENDANCE.getValue() : mCurrentSelectedPosition;
-            editor.putInt(PREFERENCE_ACTIVATED_FRAGMENT, mCurrentSelectedPosition).commit();
+            editor.putInt(PREFERENCE_ACTIVATED_FRAGMENT, mCurrentSelectedPosition).apply();
         }
     }
 
@@ -512,7 +519,6 @@ public class MainActivity extends AppCompatActivity {
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         mDrawerToggle.onConfigurationChanged(newConfig);
-        actionbar.setTitle(mTitle);
     }
 
     @Override

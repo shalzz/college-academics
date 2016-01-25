@@ -23,10 +23,8 @@ import android.app.DatePickerDialog;
 import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.design.widget.NavigationView;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -46,7 +44,6 @@ import com.google.android.gms.analytics.Tracker;
 import com.shalzz.attendance.CircularIndeterminate;
 import com.shalzz.attendance.DatabaseHandler;
 import com.shalzz.attendance.R;
-import com.shalzz.attendance.activity.MainActivity;
 import com.shalzz.attendance.adapter.TimeTablePagerAdapter;
 import com.shalzz.attendance.controllers.PagerController;
 import com.shalzz.attendance.controllers.UserAccount;
@@ -73,9 +70,6 @@ public class TimeTablePagerFragment extends Fragment {
     public CircularIndeterminate mProgress;
     @InjectView(R.id.pager)
     public ViewPager mViewPager;
-
-    private DrawerLayout mDrawerLayout;
-    private NavigationView mDrawerList;
 
     /**
      * Remember the position of the previous pager position.
@@ -121,8 +115,6 @@ public class TimeTablePagerFragment extends Fragment {
         ButterKnife.inject(this,view);
 
         mSwipeRefreshLayout.setSwipeableChildren(R.id.pager);
-        mDrawerLayout = (DrawerLayout) getActivity().findViewById(R.id.drawer_layout);
-        mDrawerList = (NavigationView) getActivity().findViewById(R.id.list_slidermenu);
 
         // Set the color scheme of the SwipeRefreshLayout by providing 4 color resource ids
         mSwipeRefreshLayout.setColorSchemeResources(
@@ -219,14 +211,7 @@ public class TimeTablePagerFragment extends Fragment {
     /* Called whenever we call invalidateOptionsMenu() */
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
-        // If the nav drawer is open, hide action items related to the content view
-        boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
-        menu.findItem(R.id.menu_refresh).setVisible(!drawerOpen);
-        menu.findItem(R.id.menu_date).setVisible(!drawerOpen);
-        menu.findItem(R.id.menu_today).setVisible(!drawerOpen);
-
         updateTitle();
-
     }
 
     @Override
@@ -276,13 +261,7 @@ public class TimeTablePagerFragment extends Fragment {
     private void updateTitle() {
         DayFragment fragment = mTimeTablePagerAdapter.getFragment(mPreviousPosition);
 //        Log.d(myTag,"Dayfragment: " + fragment);
-        boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
-        if(drawerOpen) {
-            String mNavTitles[] = getResources().getStringArray(R.array.drawer_array);
-            actionbar.setTitle(mNavTitles[MainActivity.Fragments.TIMETABLE.getValue()-1]);
-            actionbar.setSubtitle("");
-        }
-        else if(fragment!=null) {
+        if(fragment!=null) {
             Date mDate = fragment.getDate();
             actionbar.setTitle(DateHelper.getProperWeekday(mDate));
             actionbar.setSubtitle(DateHelper.formatToProperFormat(mDate));
