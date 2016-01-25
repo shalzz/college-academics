@@ -405,9 +405,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     public long getLastSync() {
         SQLiteDatabase db = this.getReadableDatabase();
-        String selectQuery = "SELECT max( " + TABLE_ATTENDANCE +"."+ KEY_LAST_UPDATED + ","
-                + TABLE_TIMETABLE +"."+ KEY_LAST_UPDATED +" ) "
-                + " FROM " + TABLE_ATTENDANCE + ", " + TABLE_TIMETABLE + ";";
+        String selectQuery = "SELECT max( " + KEY_LAST_UPDATED + " ) from ( SELECT " +
+                KEY_LAST_UPDATED + " from " + TABLE_ATTENDANCE + " union all SELECT " +
+                KEY_LAST_UPDATED + " from " + TABLE_TIMETABLE + " ) t;";
+
         Cursor cursor = db.rawQuery(selectQuery, null);
         if(cursor.moveToFirst()) {
             long now = new Date().getTime();
