@@ -339,7 +339,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
      * and deletes if any.
      * @return 1 if one or more subjects are purged else 0
      */
-    public int purgeSubjects() {
+    public int purgeOldSubjects() {
         int purged = 0;
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.query(TABLE_ATTENDANCE, new String[]{KEY_ID },
@@ -549,7 +549,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
      * and deletes if any.
      * @return 1 if one or more Periods are purged else 0
      */
-    public int purgePeriods() {
+    public int purgeOldPeriods() {
         int purged = 0;
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.query(TABLE_TIMETABLE, new String[]{KEY_ID},

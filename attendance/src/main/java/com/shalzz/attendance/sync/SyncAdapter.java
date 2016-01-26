@@ -33,6 +33,7 @@ import com.android.volley.VolleyError;
 import com.shalzz.attendance.DatabaseHandler;
 import com.shalzz.attendance.model.PeriodModel;
 import com.shalzz.attendance.model.SubjectModel;
+import com.shalzz.attendance.model.UserModel;
 import com.shalzz.attendance.network.DataAPI;
 import com.shalzz.attendance.wrapper.MyPreferencesManager;
 import com.shalzz.attendance.wrapper.MyVolleyErrorHelper;
@@ -80,10 +81,26 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 	public void onPerformSync(Account account, Bundle extras, String authority,
 			ContentProviderClient provider, SyncResult syncResult) {
 
+        UserModel user = new DatabaseHandler(mContext).getUser();
+        String creds = String.format("%s:%s",user.getName(), user.getPassword());
+		DataAPI.getUser(userSuccessListener(), myErrorListener(), creds);
 		DataAPI.getAttendance(attendanceSuccessListener(), myErrorListener());
 		DataAPI.getTimeTable(timeTableSuccessListener(), myErrorListener());
-	}   
-	
+	}
+
+    private Response.Listener<UserModel> userSuccessListener() {
+        return new Response.Listener<UserModel>() {
+            @Override
+            public void onResponse(UserModel user) {
+
+                MyPreferencesManager.saveUser(user.getSapid(), user.getPassword());
+                DatabaseHandler db = new DatabaseHandler(mContext);
+                db.addOrUpdateUser(user);
+                db.close();
+            }
+        };
+    }
+
 	private Response.Listener<ArrayList<SubjectModel>> attendanceSuccessListener() {
 		return new Response.Listener<ArrayList<SubjectModel>>() {
 			@Override
@@ -94,7 +111,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                     for (SubjectModel subject : response) {
                         db.addOrUpdateSubject(subject, now);
                     }
-                    db.purgeSubjects();
+                    db.purgeOldSubjects();
 					db.close();
                 }
                 catch(Exception e) {
@@ -114,7 +131,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 					for(PeriodModel period : response) {
 						db.addOrUpdatePeriod(period, now);
 					}
-                    db.purgePeriods();
+                    db.purgeOldPeriods();
 					db.close();
                 }
                 catch(Exception e) {

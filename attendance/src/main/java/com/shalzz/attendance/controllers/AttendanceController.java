@@ -110,7 +110,7 @@ public class AttendanceController {
                             db.addOrUpdateSubject(subject, now);
                         }
 
-                        if (db.purgeSubjects() == 1) {
+                        if (db.purgeOldSubjects() == 1) {
                             if(BuildConfig.DEBUG)
                                 Log.i(mTag, "Purging Subjects...");
                             mAdapter.clear();

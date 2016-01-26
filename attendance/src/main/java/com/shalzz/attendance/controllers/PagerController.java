@@ -72,7 +72,7 @@ public class PagerController {
                             db.addOrUpdatePeriod(period, now);
                         }
 
-                        if (db.purgePeriods() == 1) {
+                        if (db.purgeOldPeriods() == 1) {
                             if(BuildConfig.DEBUG)
                                 Log.d(mTag, "Purging Periods...");
                             mView.clearFragmentsData();
