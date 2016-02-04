@@ -119,8 +119,7 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        MyVolley.getInstance().cancelPendingRequests(myTag);
-        MyVolley.getInstance().cancelPendingRequests();
+        MyVolley.getInstance().cancelPendingRequests(MyVolley.APPLICATION_NETWORK_TAG);
         super.onDestroy();
     }
 }
