@@ -82,7 +82,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 			ContentProviderClient provider, SyncResult syncResult) {
 
         UserModel user = new DatabaseHandler(mContext).getUser();
-        String creds = String.format("%s:%s",user.getName(), user.getPassword());
+        String creds = String.format("%s:%s", user.getSapid(), user.getPassword());
 		DataAPI.getUser(userSuccessListener(), myErrorListener(), creds);
 		DataAPI.getAttendance(attendanceSuccessListener(), myErrorListener());
 		DataAPI.getTimeTable(timeTableSuccessListener(), myErrorListener());
