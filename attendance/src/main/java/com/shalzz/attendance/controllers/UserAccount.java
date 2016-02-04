@@ -64,8 +64,7 @@ public class UserAccount {
      */
     public void Login(final String username, final String password) {
 
-        // TODO: String creds = String.format("%s:%s", username, Miscellaneous.md5(password));
-        String creds = String.format("%s:%s",username,"52110207c1cf90b31972baf79f0c0a10");
+        String creds = String.format("%s:%s", username, Miscellaneous.md5(password));
         misc.showProgressDialog("Logging in...", false, pdCancelListener());
         DataAPI.getUser( loginSuccessListener(), myErrorListener(), creds);
     }
