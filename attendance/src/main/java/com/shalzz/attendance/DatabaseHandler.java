@@ -207,6 +207,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(KEY_CLASSES_HELD, subject.getClassesHeld());
         values.put(KEY_CLASSES_ATTENDED, subject.getClassesAttended());
         values.put(KEY_LAST_UPDATED, timestamp);
+        db.insert(TABLE_ATTENDANCE, null, values);
 
         // Store the dates in another table corresponding to the same id
         ContentValues dates = new ContentValues();
@@ -216,8 +217,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             db.insert(TABLE_DAYS_ABSENT, null, dates);
         }
 
-        // Inserting Row
-        db.insert(TABLE_ATTENDANCE, null, values);
         db.close(); // Closing database connection
     }
 
