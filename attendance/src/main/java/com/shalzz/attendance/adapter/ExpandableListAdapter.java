@@ -137,7 +137,7 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                         if(oldItem.getClassesHeld().compareTo(newItem.getClassesHeld()) != 0) {
                             return false;
                         }
-                        return oldItem.getAbsentDates().equals(newItem.getAbsentDates());
+                        return oldItem.getAbsentDatesAsString().equals(newItem.getAbsentDatesAsString());
                     }
 
                     @Override
@@ -396,7 +396,7 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         int attend = mSubjects.get(position).getClassesAttended().intValue();
         float percent = mSubjects.get(position).getPercentage();
 
-        tvAbsent.setText("Days Absent: " + mSubjects.get(position).getAbsentDates());
+        tvAbsent.setText("Days Absent: " + mSubjects.get(position).getAbsentDatesAsString());
 
         if (percent<67 && held!=0) {
             int x = (2*held) - (3*attend);

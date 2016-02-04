@@ -70,7 +70,15 @@ public class SubjectModel {
 		this.attended = classesAttended;
 	}
 
-	public String getAbsentDates() {
+    public Date[] getAbsentDates() {
+        return absent_dates;
+    }
+
+    public void setAbsentDates(Date[] dates) {
+        absent_dates = dates;
+    }
+
+	public String getAbsentDatesAsString() {
 		String dates = "";
         for(int i=0; i < absent_dates.length ; i++) {
             if(absent_dates[i] == null) continue;
@@ -81,7 +89,7 @@ public class SubjectModel {
 		return dates;
 	}
 
-	public void setAbsentDates(String absentDatesStr) {
+	public void setAbsentDatesfromString(String absentDatesStr) {
 		String dates[] = absentDatesStr.split(",");
         absent_dates = new Date[dates.length];
 		for(int i=0; i < dates.length ; i++) {

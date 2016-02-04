@@ -29,6 +29,7 @@ import com.shalzz.attendance.model.ListFooterModel;
 import com.shalzz.attendance.model.PeriodModel;
 import com.shalzz.attendance.model.SubjectModel;
 import com.shalzz.attendance.model.UserModel;
+import com.shalzz.attendance.wrapper.DateHelper;
 import com.shalzz.attendance.wrapper.MyPreferencesManager;
 
 import java.util.ArrayList;
@@ -59,8 +60,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	 */
 	private static final String TABLE_ATTENDANCE = "Attendance";
 
+    /**
+     *  Table for storing the days
+     *  marked as absent for a subject
+     */
+    private static final String TABLE_DAYS_ABSENT = "days_absent";
+
 	/**
-	 *  Attendance table name
+	 *  Timetable table name
 	 */
 	private static final String TABLE_TIMETABLE = "TimeTable";
 
@@ -113,9 +120,18 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	 * Attendance CREATE TABLE SQL query.
 	 */
 	private static final String CREATE_ATTENDANCE_TABLE = "CREATE TABLE " + TABLE_ATTENDANCE + " ( "
-			+ KEY_ID + " INTEGER PRIMARY KEY, " + KEY_NAME + " TEXT, " 
+			+ KEY_ID + " INTEGER PRIMARY KEY, " + KEY_NAME + " TEXT, "
 			+ KEY_CLASSES_HELD + " REAL, " + KEY_CLASSES_ATTENDED + " REAL, "
 			+ KEY_LAST_UPDATED + " INTEGER, " + KEY_DAYS_ABSENT + " TEXT "  + ");";
+
+    /**
+     * Days Absent CREATE TABLE SQL query.
+     */
+    private static final String CREATE_DAYS_ABSENT_TABLE = "CREATE TABLE " + TABLE_DAYS_ABSENT +
+            " ( " + KEY_ID + " INTEGER, " + KEY_DAYS_ABSENT + " TEXT, " +
+            " UNIQUE ( " + KEY_ID + "," + KEY_DAYS_ABSENT + " )," +
+            " FOREIGN KEY(" + KEY_ID + " ) REFERENCES " + TABLE_ATTENDANCE + " ( " + KEY_ID +
+            " ) ON DELETE CASCADE ); ";
 
     /**
      * Timetable CREATE TABLE SQL query.
@@ -148,9 +164,16 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		db.execSQL(CREATE_ATTENDANCE_TABLE);
 		db.execSQL(CREATE_USER_TABLE);
 		db.execSQL(CREATE_TIME_TABLE);
+		db.execSQL(CREATE_DAYS_ABSENT_TABLE);
 	}
 
-	/**
+    @Override
+    public void onConfigure(SQLiteDatabase db) {
+        super.onConfigure(db);
+        db.setForeignKeyConstraintsEnabled(true);
+    }
+
+    /**
 	 * Drop the table if it exist and create a new table.
 	 */
 	@Override
@@ -161,6 +184,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         // TODO: Clean up from previous versions, remove in later releases.
 		db.execSQL("DROP TABLE IF EXISTS " + "ListFooter");
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_TIMETABLE);
+		db.execSQL("DROP TABLE IF EXISTS " + CREATE_DAYS_ABSENT_TABLE);
 
 		// Create tables again
 		onCreate(db);
@@ -182,8 +206,15 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(KEY_NAME, subject.getName());
         values.put(KEY_CLASSES_HELD, subject.getClassesHeld());
         values.put(KEY_CLASSES_ATTENDED, subject.getClassesAttended());
-        values.put(KEY_DAYS_ABSENT, subject.getAbsentDates());
         values.put(KEY_LAST_UPDATED, timestamp);
+
+        // Store the dates in another table corresponding to the same id
+        ContentValues dates = new ContentValues();
+        dates.put(KEY_ID, subject.getID());
+        for(Date date : subject.getAbsentDates()) {
+            dates.put(KEY_DAYS_ABSENT, DateHelper.formatToTechnicalFormat(date));
+            db.insert(TABLE_DAYS_ABSENT, null, dates);
+        }
 
 		// Inserting Row
         db.insert(TABLE_ATTENDANCE, null, values);
@@ -202,8 +233,15 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(KEY_NAME, subject.getName());
         values.put(KEY_CLASSES_HELD, subject.getClassesHeld());
         values.put(KEY_CLASSES_ATTENDED, subject.getClassesAttended());
-        values.put(KEY_DAYS_ABSENT, subject.getAbsentDates());
         values.put(KEY_LAST_UPDATED, timestamp);
+
+        // Store the dates in another table corresponding to the same id
+        ContentValues dates = new ContentValues();
+        dates.put(KEY_ID, subject.getID());
+        for(Date date : subject.getAbsentDates()) {
+            dates.put(KEY_DAYS_ABSENT, DateHelper.formatToTechnicalFormat(date));
+            db.insertWithOnConflict(TABLE_DAYS_ABSENT, null, dates, SQLiteDatabase.CONFLICT_IGNORE);
+        }
 
         // updating row
         int rows_affected = db.update(TABLE_ATTENDANCE, values, KEY_ID + " = ?",
@@ -247,19 +285,32 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		Cursor cursor = db.rawQuery(selectQuery, null);
 
 		// looping through all rows and adding to list
-		if (cursor.moveToFirst()) {
-			do {
+        if (cursor.moveToFirst()) {
+            do {
 
-				SubjectModel subject = new SubjectModel();
-				subject.setID(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_ID)));
-				subject.setName(cursor.getString(cursor.getColumnIndexOrThrow(KEY_NAME)));
-				subject.setClassesHeld(cursor.getFloat(cursor.getColumnIndexOrThrow(KEY_CLASSES_HELD)));
-				subject.setClassesAttended(cursor.getFloat(cursor.getColumnIndexOrThrow(KEY_CLASSES_ATTENDED)));
-				subject.setAbsentDates(cursor.getString(cursor.getColumnIndexOrThrow(KEY_DAYS_ABSENT)));
+                SubjectModel subject = new SubjectModel();
+                subject.setID(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_ID)));
+                subject.setName(cursor.getString(cursor.getColumnIndexOrThrow(KEY_NAME)));
+                subject.setClassesHeld(cursor.getFloat(cursor.getColumnIndexOrThrow(KEY_CLASSES_HELD)));
+                subject.setClassesAttended(cursor.getFloat(cursor.getColumnIndexOrThrow(KEY_CLASSES_ATTENDED)));
 
-				// Adding contact to list
-				subjectList.add(subject);
-			} while (cursor.moveToNext());
+                String datesQuery = "SELECT " + KEY_DAYS_ABSENT + " FROM " + TABLE_DAYS_ABSENT +
+                        " WHERE " + KEY_ID + " = " + subject.getID() + ";";
+
+                Cursor dateCursor = db.rawQuery(datesQuery, null);
+                ArrayList<Date> dates = new ArrayList<>();
+                if (dateCursor.moveToFirst()) {
+                    do {
+                        Date date = DateHelper.parseDate(dateCursor.getString(0));
+                        dates.add(date);
+                    } while (dateCursor.moveToNext());
+                }
+                dateCursor.close();
+                Date dateArray[] = new Date[dates.size()];
+                subject.setAbsentDates(dates.toArray(dateArray));
+
+                subjectList.add(subject);
+            } while (cursor.moveToNext());
         }
 
 		db.close();
@@ -289,9 +340,22 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 				subject.setName(cursor.getString(cursor.getColumnIndexOrThrow(KEY_NAME)));
 				subject.setClassesHeld(cursor.getFloat(cursor.getColumnIndexOrThrow(KEY_CLASSES_HELD)));
 				subject.setClassesAttended(cursor.getFloat(cursor.getColumnIndexOrThrow(KEY_CLASSES_ATTENDED)));
-				subject.setAbsentDates(cursor.getString(cursor.getColumnIndexOrThrow(KEY_DAYS_ABSENT)));
 
-				// Adding contact to list
+                String datesQuery = "SELECT " + KEY_DAYS_ABSENT + " FROM " + TABLE_DAYS_ABSENT +
+                        " WHERE " + KEY_ID + " = " + subject.getID() + ";";
+
+                Cursor dateCursor = db.rawQuery(datesQuery, null);
+                ArrayList<Date> dates = new ArrayList<>();
+                if (dateCursor.moveToFirst()) {
+                    do {
+                        Date date = DateHelper.parseDate(dateCursor.getString(0));
+                        dates.add(date);
+                    } while (dateCursor.moveToNext());
+                }
+                dateCursor.close();
+                Date dateArray[] = new Date[dates.size()];
+                subject.setAbsentDates(dates.toArray(dateArray));
+
 				subjectList.add(subject);
 			} while (cursor.moveToNext());
 		}
@@ -321,9 +385,22 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 				subject.setName(cursor.getString(cursor.getColumnIndexOrThrow(KEY_NAME)));
 				subject.setClassesHeld(cursor.getFloat(cursor.getColumnIndexOrThrow(KEY_CLASSES_HELD)));
 				subject.setClassesAttended(cursor.getFloat(cursor.getColumnIndexOrThrow(KEY_CLASSES_ATTENDED)));
-				subject.setAbsentDates(cursor.getString(cursor.getColumnIndexOrThrow(KEY_DAYS_ABSENT)));
 
-				// Adding contact to list
+                String datesQuery = "SELECT " + KEY_DAYS_ABSENT + " FROM " + TABLE_DAYS_ABSENT +
+                        " WHERE " + KEY_ID + " = " + subject.getID() + ";";
+
+                Cursor dateCursor = db.rawQuery(datesQuery, null);
+                ArrayList<Date> dates = new ArrayList<>();
+                if (dateCursor.moveToFirst()) {
+                    do {
+                        Date date = DateHelper.parseDate(dateCursor.getString(0));
+                        dates.add(date);
+                    } while (dateCursor.moveToNext());
+                }
+                dateCursor.close();
+                Date dateArray[] = new Date[dates.size()];
+                subject.setAbsentDates(dates.toArray(dateArray));
+
 				subjectList.add(subject);
 			} while (cursor.moveToNext());
 		}
@@ -616,6 +693,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		db.delete(TABLE_ATTENDANCE, "1", null);
 		db.delete(TABLE_TIMETABLE, "1", null);
 		db.delete(TABLE_USER, "1", null);
+		db.delete(TABLE_DAYS_ABSENT, "1", null);
 		db.close();
 	}
 
