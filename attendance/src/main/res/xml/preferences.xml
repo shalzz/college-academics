@@ -43,7 +43,7 @@
 
         <com.afollestad.materialdialogs.prefs.MaterialListPreference
             android:key="@string/pref_key_sync_interval"
-            android:defaultValue="360"
+            android:defaultValue="720"
             android:title="@string/pref_refresh"
             android:dialogTitle="@string/pref_refresh"
             android:dependency="@string/pref_key_sync"
