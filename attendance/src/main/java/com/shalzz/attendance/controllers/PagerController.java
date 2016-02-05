@@ -79,6 +79,7 @@ public class PagerController {
                         }
 
                         mView.updateFragmentsData();
+                        mView.scrollToToday();
                         db.close();
                     } else {
                         String msg = mResources.getString(R.string.unavailable_timetable_error_msg);
@@ -103,7 +104,6 @@ public class PagerController {
             public void onErrorResponse(VolleyError error) {
 
                 done();
-                mView.mViewPager.setVisibility(View.VISIBLE);
                 String msg = MyVolleyErrorHelper.getMessage(error, mContext);
                 Miscellaneous.showSnackBar(mContext, msg);
                 if(BuildConfig.DEBUG)
@@ -118,6 +118,9 @@ public class PagerController {
         }
         if(mView.mSwipeRefreshLayout != null) {
             mView.mSwipeRefreshLayout.setRefreshing(false);
+        }
+        if(mView.mViewPager != null) {
+            mView.mViewPager.setVisibility(View.VISIBLE);
         }
     }
 }

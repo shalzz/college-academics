@@ -268,7 +268,7 @@ public class TimeTablePagerFragment extends Fragment {
         }
     }
 
-    private void scrollToToday() {
+    public void scrollToToday() {
         mViewPager.setCurrentItem(15, true);
     }
 
