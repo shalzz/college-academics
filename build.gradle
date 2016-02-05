@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Shaleen Jain <shaleen.jain95@gmail.com>
+ * Copyright (c) 2013-2016 Shaleen Jain <shaleen.jain95@gmail.com>
  *
  * This file is part of UPES Academics.
  *
@@ -23,13 +23,13 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.0.0'
+        classpath 'com.android.tools.build:gradle:2.0.0-beta2'
     }
 }
 
 allprojects {
     repositories {
         jcenter()
-        maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+        maven{ url 'https://jitpack.io' }
     }
 }

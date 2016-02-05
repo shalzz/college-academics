@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Shaleen Jain <shaleen.jain95@gmail.com>
+ * Copyright (c) 2013-2016 Shaleen Jain <shaleen.jain95@gmail.com>
  *
  * This file is part of UPES Academics.
  *
@@ -36,6 +36,7 @@ public class TimeTablePagerAdapter extends FragmentStatePagerAdapter {
 
 	@SuppressLint("UseSparseArrays")
 	private final HashMap<Integer, DayFragment> activeFragments = new HashMap<Integer, DayFragment>();
+	private final HashMap<Integer, Date> dates = new HashMap<>();
     private Date mDate;
 	
 	public TimeTablePagerAdapter(FragmentManager fm, Date date) {
@@ -45,12 +46,11 @@ public class TimeTablePagerAdapter extends FragmentStatePagerAdapter {
 
 	@Override
 	public DayFragment getItem(int position) {
-		DayFragment fragment = new DayFragment();
-		Bundle args = new Bundle();
-		args.putSerializable(DayFragment.ARG_DATE, DateHelper.addDays(mDate, -15+position));
-		fragment.setArguments(args);
+        Date date = DateHelper.addDays(mDate, -15+position);
+        DayFragment fragment = DayFragment.newInstance(date);
 		
 		activeFragments.put(position, fragment);
+        dates.put(position, date);
 		
 		return fragment;
 	}
@@ -70,6 +70,10 @@ public class TimeTablePagerAdapter extends FragmentStatePagerAdapter {
 
     public Date getDate() {
         return mDate;
+    }
+
+    public Date getDateForPosition(int position) {
+        return dates.get(position);
     }
 
     public void setDate(Date date) {

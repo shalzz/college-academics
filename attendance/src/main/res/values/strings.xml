@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ Copyright (c) 2014 Shaleen Jain <shaleen.jain95@gmail.com>
+  ~ Copyright (c) 2013-2016 Shaleen Jain <shaleen.jain95@gmail.com>
   ~
   ~ This file is part of UPES Academics.
   ~
@@ -20,57 +20,37 @@
 
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
 
-    <string name="app_name" translatable="false">Upes Academics</string>
     <string name="app_url" translatable="false">http://www.github.com/shalzz/upes-academics</string>
-    <string name="app_copyright" translatable="false">Copyright © 2013&#8211;2015 Shaleen Jain &#60;shaleen.jain95@gmail.com&#62;</string>
+    <string name="copyright_year" translatable="false">Copyright © 2013&#8211;2016</string>
+    <string name="app_copyright" translatable="false">Shaleen Jain &#60;shaleen.jain95@gmail.com&#62;</string>
     <!--Semantic versioning: MAJOR.MINOR.PATCH-->
     <!-- DON'T update this for PATCH release -->
-    <string name="user_version" translatable="false">2.2</string>
-    <string name="pref_version_summary" translatable="false">v2.2.4</string>
+    <string name="user_version" translatable="false">2.3</string>
+    <string name="pref_version_summary" translatable="false">v2.3.0</string>
     
     <!--API keys-->
     <string name="test_banner_ad_unit_id" translatable="false">ca-app-pub-3940256099942544/6300978111</string>
 
     <!--Network related strings-->
     <string name="UserAgent" translatable="false">Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.57 Safari/537.36</string>
-    <string name="incorrect_captcha" translatable="false">alert(\'Please enter correct code.\'); window.history.go(-1);</string>
-    <string name="incorrect_user_or_pass" translatable="false">alert(\'Incorrect username or password.
-        Please try again.\'); window.history.go(-1);</string>
-    <string name="session_error_identifier" translatable="false">UPES - Home</string>
-    <string name="unavailable_data_identifier" translatable="false">Data not available.</string>
-    <string name="unavailable_timetable_identifier" translatable="false">No reports found for the given criteria.</string>
-    <string name="http_tag_title" translatable="false">title</string>
-    <string name="http_tag_div" translatable="false">infomessage</string>
-    <string name="expired_password" translatable="false">Your password has been expired.Please change password to continue.</string>
 
     <!--URL's-->
-    <string name="URL_login" translatable="false">https://academics.ddn.upes.ac.in/upes/index.php</string>
-    <string name="URL_logout" translatable="false">https://academics.ddn.upes.ac.in/upes/index.php?option=logout</string>
-    <string name="URL_home" translatable="false">https://academics.ddn.upes.ac.in/upes/</string>
-    <string name="URL_attendance" translatable="false">https://academics.ddn.upes.ac.in/upes/index.php?option=com_stuattendance&amp;task=\'view\'&amp;Itemid=7631</string>
-    <string name="URL_timetable" translatable="false">https://academics.ddn.upes.ac.in/upes/index.php?option=com_course_report&amp;Itemid=7794</string>
-    <string name="URL_captcha" translatable="false">https://academics.ddn.upes.ac.in/upes/modules/create_image.php</string>
-
-    <!--Selectors-->
-    <string name="selector_hidden_data" translatable="false">input[type=hidden]</string>
-    <string name="selector_table_data" translatable="false">td</string>
-    <string name="selector_table_header" translatable="false">th</string>
+    <string name="URL_user" translatable="false">https://upes.winnou.net/api/v1/me</string>
+    <string name="URL_attendance" translatable="false">https://upes.winnou.net/api/v1/me/attendance</string>
+    <string name="URL_timetable" translatable="false">https://upes.winnou.net/api/v1/me/timetable</string>
 
     <!--Preference Keys-->
     <string name="pref_key_sub_limit">subjects_expanded_limit</string>
-    <string name="pref_key_batch">pref_batch</string>
     <string name="pref_key_sync">data_sync</string>
     <string name="pref_key_sync_interval">data_sync_interval</string>
     <string name="pref_key_info_about">pref_info_about</string>
     <string name="pref_key_info_author">pref_info_author</string>
     <string name="pref_key_info_notices">pref_info_notices</string>
     <string name="pref_key_info_version">pref_info_version</string>
-    <string name="pref_key_info_donate">pref_info_donate</string>
     <string name="pref_key_use_proxy">pref_key_use_proxy</string>
     <string name="pref_key_proxy_username">pref_key_proxy_username</string>
     <string name="pref_key_proxy_password">pref_key_proxy_password</string>
-    <string name="pref_key_mute">mute_lessons</string>
-    <string name="pref_key_ring_mode">ringer_mode</string>
+    <string name="pref_key_ga_opt_in">ga_opt_in</string>
 
     <!--////  Actual user visible text ////-->
 
@@ -80,30 +60,40 @@
     <string name="generic_error">Network error occurred.</string>
     <string name="proxy_error">Proxy Authentication failed. Please check your credentials</string>
     <string name="unexpected_error">An unexpected error occurred</string>
-    <string name="general_try_again_error">Error! Please try again later</string>
-    <string name="session_error">It seems your session has expired. Please Login again.</string>
     <string name="unavailable_data_error_msg">No Data available at this time</string>
     <string name="unavailable_timetable_error_msg">No TimeTable available at this time</string>
-    <string name="expired_password_error_title">Password expired</string>
-    <string name="expired_password_error_msg">Your password has expired. Please visit the CORTAS website to change your password.</string>
-    <string name="form_sapid_error">SAP ID should be of 9 digits</string>
+    <string name="form_sapid_error">Invalid SAP ID</string>
     <string name="form_password_error">This field is required</string>
-    <string name="form_captcha_error">Captcha must be of 6 digits</string>
-    <string name="alert_incorrect_captcha">Incorrect Captcha. Please try again.</string>
-    <string name="alert_incorrect_password">Incorrect username or password. Please try again</string>
 
     <!--EditText's and TextView's-->
     <string name="no_classes">You don\'t have any classes on this day :)</string>
     <string name="swipe_info">To switch to any other day, either swipe across the screen or
         click the jump to date in the top right corner.</string>
-    <string name="last_refresh">Last refreshed <xliff:g id="time">%d</xliff:g> hour(s) ago</string>
     <string name="atten_list_footer_total">Total Attendance:</string>
+
+    <!--Plurals-->
+    <plurals name="tv_last_refresh">
+        <item quantity="zero" >Last refreshed few moments ago</item>
+        <item quantity="one">Last refreshed <xliff:g id="time">%d</xliff:g> hour ago</item>
+        <item quantity="other">Last refreshed <xliff:g id="time">%d</xliff:g> hours ago</item>
+    </plurals>
+    <plurals name="tv_classes_to_67">
+        <!--escape the percentage sign by doubling it up-->
+        <item quantity="one">Attend <xliff:g id="no_of_classes">%d</xliff:g> more class to reach 67%%</item>
+        <item quantity="other">Attend <xliff:g id="no_of_classes">%d</xliff:g> more classes to reach 67%%</item>
+    </plurals>
+    <plurals name="tv_classes_to_75">
+        <item quantity="one">Attend <xliff:g id="no_of_classes">%d</xliff:g> more class to reach 75%%</item>
+        <item quantity="other">Attend <xliff:g id="no_of_classes">%d</xliff:g> more classes to reach 75%%</item>
+    </plurals>
+    <plurals name="tv_miss_classes">
+        <item quantity="one">You can safely miss <xliff:g id="no_of_classes">%d</xliff:g> class</item>
+        <item quantity="other">You can safely miss <xliff:g id="no_of_classes">%d</xliff:g> classes</item>
+    </plurals>
 
     <!--Preferences-->
     <string name="pref_subject_limit">Limit Expanded Subjects</string>
     <string name="pref_subject_limit_dialog">Limit expanded subjects to</string>
-    <string name="pref_batch">Batch</string>
-    <string name="pref_batch_dialog">Select your batch</string>
     <string name="pref_sync">Auto Refresh</string>
     <string name="pref_sync_summary">Periodically sync your attendance and timetable</string>
     <string name="pref_refresh">Refresh Interval</string>
@@ -116,15 +106,11 @@
     <string name="pref_about">About</string>
     <string name="pref_about_summary">Details about the app and its author</string>
     <string name="pref_author">Author</string>
-    <string name="pref_author_summary">Copyright © 2013&#8211;2015  Shaleen Jain</string>
     <string name="pref_notice">Open Source License</string>
     <string name="pref_notice_summary">License details for open source software\'s</string>
     <string name="pref_version">Build Version</string>
-    <string name="pref_mute">Mute during lessons</string>
-    <string name="pref_mute_summary">Automatically mute the phone during lessons</string>
-    <string name="pref_donate">Donate</string>
-    <string name="pref_donate_summary">Donate and remove ads from all your devices</string>
-    <string name="pref_ringer">Ring Mode</string>
+    <string name="pref_ga_opt_in">Google Analytics</string>
+    <string name="pref_ga_opt_in_summary">Collect and send anonymous data to help improve the app</string>
 
     <!--Showcase View-->
     <string name="sv_attendance_title">Expandable item</string>
@@ -151,10 +137,12 @@
 
     <!--Options Menu-->
     <string name="menu_logout">Log Out</string>
-    <string name="menu_settings">Settings</string>
     <string name="menu_refresh">Refresh</string>
     <string name="menu_search">Search</string>
     <string name="menu_today">Scroll to today</string>
     <string name="menu_date">Scroll to date</string>
+    <string name="navigation_item_1">Attendance</string>
+    <string name="navigation_item_2">Timetable</string>
+    <string name="navigation_item_3">Settings</string>
 
 </resources>

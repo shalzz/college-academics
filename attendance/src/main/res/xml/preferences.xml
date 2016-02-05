@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ Copyright (c) 2014 Shaleen Jain <shaleen.jain95@gmail.com>
+  ~ Copyright (c) 2013-2016 Shaleen Jain <shaleen.jain95@gmail.com>
   ~
   ~ This file is part of UPES Academics.
   ~
@@ -23,37 +23,19 @@
     <PreferenceCategory android:title="Attendance" >
         <com.afollestad.materialdialogs.prefs.MaterialListPreference
             android:key="@string/pref_key_sub_limit"
-            android:defaultValue="3"
+            android:defaultValue="0"
             android:title="@string/pref_subject_limit"
             android:dialogTitle="@string/pref_subject_limit_dialog"
             android:entries="@array/pref_subject_limit_entries"
             android:entryValues="@array/pref_subject_limit_values"/>
     </PreferenceCategory>
-    <PreferenceCategory android:title="Timetable" >
-        <com.afollestad.materialdialogs.prefs.MaterialListPreference
-            android:key="@string/pref_key_batch"
-            android:title="@string/pref_batch"
-            android:defaultValue="NULL"
-            android:dialogTitle="@string/pref_batch_dialog"
-            android:entries="@array/pref_batch_entries"
-            android:entryValues="@array/pref_batch_values"/>
-		<CheckBoxPreference
-            android:key="@string/pref_key_mute"
-            android:defaultValue="false"
-            android:title="@string/pref_mute"
-            android:summary="@string/pref_mute_summary" />
-
-        <com.afollestad.materialdialogs.prefs.MaterialListPreference
-            android:key="@string/pref_key_ring_mode"
-            android:defaultValue="1"
-            android:title="@string/pref_ringer"
-            android:dialogTitle="@string/pref_ringer"
-            android:dependency="@string/pref_key_mute"
-            android:entries="@array/pref_ring_entries"
-            android:entryValues="@array/pref_ring_values"/>
-    </PreferenceCategory>
     <PreferenceCategory android:title="Network" >
-        <CheckBoxPreference
+        <SwitchPreference
+            android:key="@string/pref_key_ga_opt_in"
+            android:defaultValue="true"
+            android:title="@string/pref_ga_opt_in"
+            android:summary="@string/pref_ga_opt_in_summary" />
+        <SwitchPreference
             android:key="@string/pref_key_sync"
             android:defaultValue="true"
             android:title="@string/pref_sync"
@@ -61,7 +43,7 @@
 
         <com.afollestad.materialdialogs.prefs.MaterialListPreference
             android:key="@string/pref_key_sync_interval"
-            android:defaultValue="360"
+            android:defaultValue="720"
             android:title="@string/pref_refresh"
             android:dialogTitle="@string/pref_refresh"
             android:dependency="@string/pref_key_sync"
@@ -78,11 +60,6 @@
     <PreferenceCategory
         android:title="Info" >
 
-        <Preference
-            android:key="@string/pref_key_info_donate"
-            android:title="@string/pref_donate"
-            android:summary="@string/pref_donate_summary"
-            android:persistent="false"/>
         <PreferenceScreen
             android:key="@string/pref_key_info_about"
             android:persistent="false"

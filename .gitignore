@@ -7,4 +7,5 @@ attendance/attendance-release.apk
 */*.iml
 *.iml
 *~
+*.patch
 local.properties
