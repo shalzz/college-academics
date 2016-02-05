@@ -78,6 +78,7 @@ public class TimeTablePagerFragment extends Fragment {
 
     private int mPreviousPosition = 15;
     private PagerController mController;
+    private OnPageChangeListener mPageChangeListener;
     private TimeTablePagerAdapter mTimeTablePagerAdapter;
     private String myTag = "Pager Fragment";
     private Context mContext;
@@ -122,7 +123,7 @@ public class TimeTablePagerFragment extends Fragment {
                 R.color.swipe_color_3, R.color.swipe_color_4);
 
         mViewPager.setOffscreenPageLimit(3);
-        mViewPager.setOnPageChangeListener(new OnPageChangeListener() {
+        mPageChangeListener = new OnPageChangeListener() {
 
             public void onPageScrollStateChanged(int state) {
             }
@@ -134,7 +135,8 @@ public class TimeTablePagerFragment extends Fragment {
                 mPreviousPosition = position;
                 updateTitle();
             }
-        });
+        };
+        mViewPager.addOnPageChangeListener(mPageChangeListener);
 
         return view;
     }
@@ -283,6 +285,12 @@ public class TimeTablePagerFragment extends Fragment {
                 scrollToToday();
             }
         };
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mViewPager.removeOnPageChangeListener(mPageChangeListener);
     }
 
     @Override
