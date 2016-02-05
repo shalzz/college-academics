@@ -46,11 +46,8 @@ public class TimeTablePagerAdapter extends FragmentStatePagerAdapter {
 
 	@Override
 	public DayFragment getItem(int position) {
-		DayFragment fragment = new DayFragment();
-		Bundle args = new Bundle();
         Date date = DateHelper.addDays(mDate, -15+position);
-		args.putSerializable(DayFragment.ARG_DATE, date);
-		fragment.setArguments(args);
+        DayFragment fragment = DayFragment.newInstance(date);
 		
 		activeFragments.put(position, fragment);
         dates.put(position, date);

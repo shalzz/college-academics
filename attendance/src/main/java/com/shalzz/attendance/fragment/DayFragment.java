@@ -51,11 +51,27 @@ public class DayFragment extends Fragment {
     private DayController mController;
     public static final String ARG_DATE = "date";
 
+    /**
+     * Create a new instance of DayFragment, providing "Date"
+     * as an argument.
+     */
+    public static DayFragment newInstance(Date date) {
+        DayFragment f = new DayFragment();
+
+        // Supply num input as an argument.
+        Bundle args = new Bundle();
+        args.putSerializable(ARG_DATE, date);
+        f.setArguments(args);
+
+        return f;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = getActivity();
-        mDate = new Date();
+        mDate = getArguments() != null ? (Date) getArguments()
+                .getSerializable(ARG_DATE) : new Date();
     }
 
     @Override
@@ -65,8 +81,6 @@ public class DayFragment extends Fragment {
             return null;
         View mView = inflater.inflate(R.layout.fragment_day, container, false);
         ButterKnife.inject(this,mView);
-
-        mDate = (Date) getArguments().getSerializable(ARG_DATE);
 
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
