@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ Copyright (c) 2013-2015 Shaleen Jain <shaleen.jain95@gmail.com>
+  ~ Copyright (c) 2013-2016 Shaleen Jain <shaleen.jain95@gmail.com>
   ~
   ~ This file is part of UPES Academics.
   ~
@@ -21,7 +21,7 @@
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
 
     <string name="app_url" translatable="false">http://www.github.com/shalzz/upes-academics</string>
-    <string name="copyright_year" translatable="false">Copyright © 2013&#8211;2015</string>
+    <string name="copyright_year" translatable="false">Copyright © 2013&#8211;2016</string>
     <string name="app_copyright" translatable="false">Shaleen Jain &#60;shaleen.jain95@gmail.com&#62;</string>
     <!--Semantic versioning: MAJOR.MINOR.PATCH-->
     <!-- DON'T update this for PATCH release -->
