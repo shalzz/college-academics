@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ Copyright (c) 2014 Shaleen Jain <shaleen.jain95@gmail.com>
+  ~ Copyright (c) 2013-2016 Shaleen Jain <shaleen.jain95@gmail.com>
   ~
   ~ This file is part of UPES Academics.
   ~
@@ -20,26 +20,33 @@
 
 <com.shalzz.attendance.wrapper.MultiSwipeRefreshLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/swiperefresh"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/swipe_refresh_atten"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context=".fragment.AttendanceListFragment">
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <android.support.v4.view.ViewPager
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/pager"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/atten_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:dividerHeight="1dp"
+        android:clipToPadding="false"
+        android:drawSelectorOnTop="true"
+        tools:context=".fragment.AttendanceListFragment"
+        tools:listitem="@layout/card"/>
 
-        <com.shalzz.attendance.CircularIndeterminate
-            android:id="@+id/circular_indet"
-            android:visibility="gone"
-            android:layout_width="@dimen/material_progress_indeterminate"
-            android:layout_height="@dimen/material_progress_indeterminate"
-            android:layout_gravity="center" />
+    <com.shalzz.attendance.CircularIndeterminate
+        android:id="@+id/circular_indet_atten"
+        android:visibility="gone"
+        android:layout_width="@dimen/material_progress_indeterminate"
+        android:layout_height="@dimen/material_progress_indeterminate"
+        android:layout_gravity="center" />
 
     </FrameLayout>
 

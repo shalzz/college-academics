@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Shaleen Jain <shaleen.jain95@gmail.com>
+ * Copyright (c) 2013-2016 Shaleen Jain <shaleen.jain95@gmail.com>
  *
  * This file is part of UPES Academics.
  *
@@ -22,15 +22,12 @@ package com.shalzz.attendance.fragment;
 import android.app.DatePickerDialog;
 import android.app.Fragment;
 import android.content.Context;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -39,28 +36,22 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.DatePicker;
-import android.widget.ListView;
 
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.bugsnag.android.Bugsnag;
-import com.bugsnag.android.Severity;
 import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.Target;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.shalzz.attendance.CircularIndeterminate;
-import com.shalzz.attendance.DataAPI;
-import com.shalzz.attendance.DataAssembler;
 import com.shalzz.attendance.DatabaseHandler;
-import com.shalzz.attendance.Miscellaneous;
 import com.shalzz.attendance.R;
-import com.shalzz.attendance.UserAccount;
-import com.shalzz.attendance.activity.MainActivity;
 import com.shalzz.attendance.adapter.TimeTablePagerAdapter;
+import com.shalzz.attendance.controllers.PagerController;
+import com.shalzz.attendance.controllers.UserAccount;
 import com.shalzz.attendance.wrapper.DateHelper;
-import com.shalzz.attendance.wrapper.ErrorHelper;
 import com.shalzz.attendance.wrapper.MultiSwipeRefreshLayout;
 import com.shalzz.attendance.wrapper.MyPreferencesManager;
-import com.shalzz.attendance.wrapper.MyVolleyErrorHelper;
+import com.shalzz.attendance.wrapper.MyVolley;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -74,18 +65,21 @@ public class TimeTablePagerFragment extends Fragment {
      * The {@link android.support.v4.widget.SwipeRefreshLayout} that detects swipe gestures and
      * triggers callbacks in the app.
      */
-    @InjectView(R.id.swiperefresh) MultiSwipeRefreshLayout mSwipeRefreshLayout;
-    @InjectView(R.id.circular_indet) CircularIndeterminate mProgress;
-    @InjectView(R.id.pager) ViewPager mViewPager;
-    private DrawerLayout mDrawerLayout;
-    private ListView mDrawerList;
+    @InjectView(R.id.swiperefresh)
+    public MultiSwipeRefreshLayout mSwipeRefreshLayout;
+    @InjectView(R.id.circular_indet)
+    public CircularIndeterminate mProgress;
+    @InjectView(R.id.pager)
+    public ViewPager mViewPager;
 
     /**
      * Remember the position of the previous pager position.
      */
-    private static final String STATE_PREVIOUSE_POSITION = "previous_pager_position";
+    private static final String STATE_PREVIOUS_POSITION = "previous_pager_position";
 
     private int mPreviousPosition = 15;
+    private PagerController mController;
+    private OnPageChangeListener mPageChangeListener;
     private TimeTablePagerAdapter mTimeTablePagerAdapter;
     private String myTag = "Pager Fragment";
     private Context mContext;
@@ -99,45 +93,52 @@ public class TimeTablePagerFragment extends Fragment {
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        Tracker t = ((MyVolley) getActivity().getApplication()).getTracker(
+                MyVolley.TrackerName.APP_TRACKER);
+
+        t.send(new HitBuilders.ScreenViewBuilder().build());
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         if(container==null)
             return null;
 
         if (savedInstanceState != null) {
-            mPreviousPosition = savedInstanceState.getInt(STATE_PREVIOUSE_POSITION);
+            mPreviousPosition = savedInstanceState.getInt(STATE_PREVIOUS_POSITION);
         }
 
         setHasOptionsMenu(true);
         setRetainInstance(false);
-        actionbar= ((ActionBarActivity)getActivity()).getSupportActionBar();
-        final View view = inflater.inflate(R.layout.swipe_layout, container, false);
+        actionbar= ((AppCompatActivity)getActivity()).getSupportActionBar();
+        final View view = inflater.inflate(R.layout.fragment_viewpager, container, false);
         ButterKnife.inject(this,view);
 
         mSwipeRefreshLayout.setSwipeableChildren(R.id.pager);
-        mDrawerLayout = (DrawerLayout) getActivity().findViewById(R.id.drawer_layout);
-        mDrawerList = (ListView) getActivity().findViewById(R.id.list_slidermenu);
 
         // Set the color scheme of the SwipeRefreshLayout by providing 4 color resource ids
         mSwipeRefreshLayout.setColorSchemeResources(
                 R.color.swipe_color_1, R.color.swipe_color_2,
                 R.color.swipe_color_3, R.color.swipe_color_4);
 
-        mToday =  DateHelper.getToDay();
-        mTimeTablePagerAdapter = new TimeTablePagerAdapter(getActivity().getFragmentManager(), mToday);
-        mViewPager.setAdapter(mTimeTablePagerAdapter);
         mViewPager.setOffscreenPageLimit(3);
-        mViewPager.setOnPageChangeListener(new OnPageChangeListener() {
+        mPageChangeListener = new OnPageChangeListener() {
 
-            public void onPageScrollStateChanged(int state) {}
+            public void onPageScrollStateChanged(int state) {
+            }
 
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            }
 
             public void onPageSelected(int position) {
                 mPreviousPosition = position;
                 updateTitle();
             }
-        });
+        };
+        mViewPager.addOnPageChangeListener(mPageChangeListener);
 
         return view;
     }
@@ -145,23 +146,28 @@ public class TimeTablePagerFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        mToday =  DateHelper.getToDay();
+        mTimeTablePagerAdapter = new TimeTablePagerAdapter(getActivity().getFragmentManager(), mToday);
+        mViewPager.setAdapter(mTimeTablePagerAdapter);
+
+        mController = new PagerController(mContext, this);
         DatabaseHandler db = new DatabaseHandler(mContext);
-        if(db.getRowCountofTimeTable()<=0) {
-            DataAPI.getTimeTable(mContext, timeTableSuccessListener(), myErrorListener());
+        if(db.getTimetableCount()<=0) {
+            mController.updatePeriods();
             mProgress.setVisibility(View.VISIBLE);
             mViewPager.setVisibility(View.GONE);
         }
         else
             mViewPager.setCurrentItem(mPreviousPosition, true);
 
-        MyPreferencesManager prefs = new MyPreferencesManager(mContext);
-        if(prefs.isFirstLaunch(myTag))
+        if(MyPreferencesManager.isFirstLaunch(myTag))
             showcaseView();
 
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                DataAPI.getTimeTable(mContext, timeTableSuccessListener(), myErrorListener());
+                mController.updatePeriods();
             }
         });
 
@@ -169,7 +175,7 @@ public class TimeTablePagerFragment extends Fragment {
         mViewPager.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if(mSwipeRefreshLayout != null) {
+                if (mSwipeRefreshLayout != null) {
                     mSwipeRefreshLayout.setEnabled(false);
                     switch (event.getAction()) {
                         case MotionEvent.ACTION_UP:
@@ -183,7 +189,6 @@ public class TimeTablePagerFragment extends Fragment {
     }
 
     public void showcaseView() {
-        MyPreferencesManager prefs = new MyPreferencesManager(mContext);
         final ShowcaseView sv = new ShowcaseView.Builder(getActivity())
                 .setStyle(R.style.ShowcaseTheme)
                 .setTarget(Target.NONE)
@@ -191,7 +196,7 @@ public class TimeTablePagerFragment extends Fragment {
                 .setContentTitle(getString(R.string.sv_timetable_title))
                 .setContentText(getString(R.string.sv_timetable_content))
                 .build();
-        prefs.setFirstLaunch(myTag);
+        MyPreferencesManager.setFirstLaunch(myTag);
 
         sv.overrideButtonClick(new View.OnClickListener() {
             @Override
@@ -210,14 +215,7 @@ public class TimeTablePagerFragment extends Fragment {
     /* Called whenever we call invalidateOptionsMenu() */
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
-        // If the nav drawer is open, hide action items related to the content view
-        boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
-        menu.findItem(R.id.menu_refresh).setVisible(!drawerOpen);
-        menu.findItem(R.id.menu_date).setVisible(!drawerOpen);
-        menu.findItem(R.id.menu_today).setVisible(!drawerOpen);
-
         updateTitle();
-
     }
 
     @Override
@@ -229,7 +227,7 @@ public class TimeTablePagerFragment extends Fragment {
             // We make sure that the SwipeRefreshLayout is displaying it's refreshing indicator
             if (!mSwipeRefreshLayout.isRefreshing()) {
                 mSwipeRefreshLayout.setRefreshing(true);
-                DataAPI.getTimeTable(mContext, timeTableSuccessListener(), myErrorListener());
+                mController.updatePeriods();
             }
         }
         else if(item.getItemId() == R.id.menu_date) {
@@ -250,11 +248,16 @@ public class TimeTablePagerFragment extends Fragment {
         }
         return super.onOptionsItemSelected(item);
     }
+    public void clearFragmentsData() {
+        for (DayFragment fragment : mTimeTablePagerAdapter.getActiveFragments()) {
+            fragment.clear();
+        }
+    }
 
-    public void updateFragments() {
+    public void updateFragmentsData() {
         for (DayFragment fragment : mTimeTablePagerAdapter.getActiveFragments()) {
 //            Log.d("TimeTableActivity", "Update Fragment " + fragment.getDate() + " with new data.");
-            fragment.reloadDataSet();
+            fragment.update();
         }
         updateTitle();
     }
@@ -262,20 +265,14 @@ public class TimeTablePagerFragment extends Fragment {
     private void updateTitle() {
         DayFragment fragment = mTimeTablePagerAdapter.getFragment(mPreviousPosition);
 //        Log.d(myTag,"Dayfragment: " + fragment);
-        boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
-        if(drawerOpen) {
-            String mNavTitles[] = getResources().getStringArray(R.array.drawer_array);
-            actionbar.setTitle(mNavTitles[MainActivity.Fragments.TIMETABLE.getValue()-1]);
-            actionbar.setSubtitle("");
-        }
-        else if(fragment!=null) {
+        if(fragment!=null) {
             Date mDate = fragment.getDate();
             actionbar.setTitle(DateHelper.getProperWeekday(mDate));
             actionbar.setSubtitle(DateHelper.formatToProperFormat(mDate));
         }
     }
 
-    private void scrollToToday() {
+    public void scrollToToday() {
         mViewPager.setCurrentItem(15, true);
     }
 
@@ -292,80 +289,16 @@ public class TimeTablePagerFragment extends Fragment {
         };
     }
 
-    private Response.Listener<String> timeTableSuccessListener() {
-        return new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                try {
-                    new DataAssembler.ParseTimeTable(mContext, parseListener()).execute(response);
-                }
-                catch (Exception e) {
-                    e.printStackTrace();
-                    Bugsnag.notify(e, Severity.ERROR);
-                    String msg = getResources().getString(R.string.unexpected_error);
-                    Miscellaneous.showSnackBar(mContext, msg);
-                }
-            }
-        };
-    }
-
-    private Response.ErrorListener myErrorListener() {
-        return new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                // Stop the refreshing indicator
-                if(mProgress == null || mSwipeRefreshLayout == null)
-                    return;
-                mProgress.setVisibility(View.GONE);
-                mViewPager.setVisibility(View.VISIBLE);
-                mSwipeRefreshLayout.setRefreshing(false);
-                String msg = MyVolleyErrorHelper.getMessage(error, mContext);
-                Miscellaneous.showSnackBar(mContext, msg);
-                Log.e(myTag, msg);
-            }
-        };
-    }
-
-    private DataAssembler.Listener parseListener() {
-        return new DataAssembler.Listener() {
-            @Override
-            public void onParseComplete(int result) {
-                // Stop the refreshing indicator
-                if(mProgress == null || mSwipeRefreshLayout == null)
-                    return;
-                mProgress.setVisibility(View.GONE);
-                mViewPager.setVisibility(View.VISIBLE);
-                mSwipeRefreshLayout.setRefreshing(false);
-                if(result == 0) {
-                    mTimeTablePagerAdapter.setDate(mToday);
-                    updateFragments();
-                    scrollToToday();
-                    updateTitle();
-                }
-                ErrorHelper.handleError(result, mContext);
-            }
-        };
-    }
-
-    public void notifyDataSetChanged() {
-        mTimeTablePagerAdapter.notifyDataSetChanged();
-    }
-
     @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putInt(STATE_PREVIOUSE_POSITION, mPreviousPosition);
-    }
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        notifyDataSetChanged();
+    public void onPause() {
+        super.onPause();
+        mViewPager.removeOnPageChangeListener(mPageChangeListener);
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        MyVolley.getInstance().cancelPendingRequests(MyVolley.ACTIVITY_NETWORK_TAG);
         ButterKnife.reset(this);
     }
 

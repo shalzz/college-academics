@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Shaleen Jain <shaleen.jain95@gmail.com>
+ * Copyright (c) 2013-2016 Shaleen Jain <shaleen.jain95@gmail.com>
  *
  * This file is part of UPES Academics.
  *
@@ -30,26 +30,28 @@ import java.util.Locale;
 
 public class DateHelper {
 
-    private static DateFormat technicalDateFormat = new SimpleDateFormat("dd-MM-yyyy",Locale.US);
+    private static DateFormat technicalDateFormat = new SimpleDateFormat("yyyy-MM-dd",Locale.US);
     private static DateFormat properDateFormat = new SimpleDateFormat("dd/MM/yyyy",Locale.US);
+    public static DateFormat hr24Format = new SimpleDateFormat("HH:mm", Locale.US);
+    public static DateFormat hr12Format = new SimpleDateFormat("hh:mm aa", Locale.US);
 
     public interface DateTimeInterpreter {
         String interpretDate(Calendar date);
         String interpretTime(int hour);
     }
 
-    public static String getTechnicalWeekday(Date date) {
+    public static String getShortWeekday(Date date) {
         Calendar today = Calendar.getInstance();
         today.setTime(date);
         int weekday = today.get(Calendar.DAY_OF_WEEK);
-        return Week.getTechnical(weekday - 1);
+        return Week.getShortDay(weekday - 1);
     }
 
     public static String getProperWeekday(Date date) {
         Calendar today = Calendar.getInstance();
         today.setTime(date);
         int weekday = today.get(Calendar.DAY_OF_WEEK);
-        return Week.getProper(weekday-1);
+        return Week.getFullDay(weekday - 1);
     }
 
     public static Date getToDay() {
@@ -63,6 +65,16 @@ public class DateHelper {
         return c.getTime();
     }
 
+    public static Date parseDate(String datestr) {
+        Date date = null;
+        try {
+            date = technicalDateFormat.parse(datestr);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return date;
+    }
+
     public static String formatToTechnicalFormat(Date date) {
         return technicalDateFormat.format(date);
     }
@@ -71,23 +83,12 @@ public class DateHelper {
         return properDateFormat.format(date);
     }
 
-    public static String getNetworkRequestDate(Date date) {
-        Calendar c = Calendar.getInstance();
-        c.setTime(date);
-        if(c.get(Calendar.DAY_OF_WEEK)==Calendar.SUNDAY)
-            date = addDays(date,1);
-        return technicalDateFormat.format(date);
-    }
-
     public static String to12HrFormat(String time) throws ParseException {
-        DateFormat hr24Format = new SimpleDateFormat("HH:mm");
-        DateFormat hr12Format = new SimpleDateFormat("hh:mm aa");
         Date d = hr24Format.parse(time);
         return hr12Format.format(d);
     }
 
     public static String to24HrFormat(String time) throws ParseException {
-        DateFormat hr24Format = new SimpleDateFormat("HH:mm");
         Date d = hr24Format.parse(time);
         return hr24Format.format(d);
     }

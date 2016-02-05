@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ Copyright (c) 2014 Shaleen Jain <shaleen.jain95@gmail.com>
+  ~ Copyright (c) 2013-2016 Shaleen Jain <shaleen.jain95@gmail.com>
   ~
   ~ This file is part of UPES Academics.
   ~
@@ -50,6 +50,12 @@
 
     <style name="MyActionBarSubTitleText" parent="TextAppearance.AppCompat.Widget.ActionBar.Subtitle">
         <item name="android:textSize">@dimen/action_bar_subtitle_text_size</item>
+    </style>
+
+    <style name="DrawerActivityTheme" parent="AppTheme">
+
+        <!--Nothing for API's below 21-->
+
     </style>
 
     <!-- Showcase View Styles -->

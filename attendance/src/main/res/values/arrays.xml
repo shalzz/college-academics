@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ Copyright (c) 2014 Shaleen Jain <shaleen.jain95@gmail.com>
+  ~ Copyright (c) 2013-2016 Shaleen Jain <shaleen.jain95@gmail.com>
   ~
   ~ This file is part of UPES Academics.
   ~
@@ -55,25 +55,4 @@
         <item>1440</item>
     </string-array>
 
-    <string-array name="pref_batch_entries">
-        <item>Show both batches</item>
-        <item>Batch 1</item>
-        <item>Batch 2</item>
-    </string-array>
-
-    <string-array name="pref_batch_values">
-        <item>NULL</item>
-        <item>B1</item>
-        <item>B2</item>
-    </string-array>
-
-    <string-array name="pref_ring_entries">
-        <item>Silent</item>
-        <item>Vibrate</item>
-    </string-array>
-
-    <string-array name="pref_ring_values">
-        <item>0</item>
-        <item>1</item>
-    </string-array>
 </resources>

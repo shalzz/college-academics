@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Shaleen Jain <shaleen.jain95@gmail.com>
+ * Copyright (c) 2013-2016 Shaleen Jain <shaleen.jain95@gmail.com>
  *
  * This file is part of UPES Academics.
  *
@@ -22,57 +22,53 @@ package com.shalzz.attendance.activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.graphics.Color;
 import android.graphics.Point;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.FrameLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.bugsnag.android.Bugsnag;
 import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.Target;
+import com.shalzz.attendance.BuildConfig;
 import com.shalzz.attendance.DatabaseHandler;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.fragment.AttendanceListFragment;
 import com.shalzz.attendance.fragment.SettingsFragment;
 import com.shalzz.attendance.fragment.TimeTablePagerFragment;
-import com.shalzz.attendance.model.ListHeader;
+import com.shalzz.attendance.model.UserModel;
 import com.shalzz.attendance.wrapper.MyPreferencesManager;
 import com.shalzz.attendance.wrapper.MyVolley;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends AppCompatActivity {
 
     /**
      * Reference to fragment positions
      */
-    public static enum Fragments {
+    public enum Fragments {
         ATTENDANCE(1),
         TIMETABLE(2),
         SETTINGS(3);
 
         private final int value;
 
-        private Fragments(int value) {
+        Fragments(int value) {
             this.value = value;
         }
 
@@ -104,29 +100,35 @@ public class MainActivity extends ActionBarActivity {
 
     private static final String mTag = "MainActivity";
 
-    /**
-     * Debug flag
-     */
-    private final boolean DEBUG_FRAGMENTS = true;
     public boolean mPopSettingsBackStack =  false;
 
     // Views
     @InjectView(R.id.drawer_layout) DrawerLayout mDrawerLayout;
-    @InjectView(R.id.list_slidermenu) ListView mDrawerList;
-    @InjectView(R.id.drop_shadow) public View dropShadow;
+    @InjectView(R.id.list_slidermenu)
+    NavigationView mNavigationView;
 
     private int mCurrentSelectedPosition = Fragments.ATTENDANCE.getValue();
-    private static MainActivity mActivity;
     private String[] mNavTitles;
     private CharSequence mDrawerTitle;
     private CharSequence mTitle;
     private ActionBarDrawerToggle mDrawerToggle;
-    private View Drawerheader;
+    private DrawerHeaderViewHolder DrawerheaderVH;
     private FragmentManager mFragmentManager;
     private Fragment fragment = null;
     private ActionBar actionbar;
     // Our custom poor-man's back stack which has only one entry at maximum.
     private Fragment mPreviousFragment;
+
+    public static class DrawerHeaderViewHolder extends RecyclerView.ViewHolder {
+        @InjectView(R.id.drawer_header_name) TextView tv_name;
+        @InjectView(R.id.drawer_header_course) TextView tv_course;
+        @InjectView(R.id.last_refreshed) TextView last_refresh;
+
+        public DrawerHeaderViewHolder(View itemView) {
+            super(itemView);
+            ButterKnife.inject(this,itemView);
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -143,26 +145,17 @@ public class MainActivity extends ActionBarActivity {
         mFragmentManager = getFragmentManager();
         mTitle  = getTitle();
         actionbar = getSupportActionBar();
-        mActivity = this;
 
-        // Check for tablet layout
-        FrameLayout frameLayout = (FrameLayout)findViewById(R.id.frame_container);
-        if(((ViewGroup.MarginLayoutParams)frameLayout.getLayoutParams()).leftMargin == (int)getResources().getDimension(R.dimen.drawer_size)) {
-            mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN, mDrawerList);
-            mDrawerLayout.setScrimColor(Color.TRANSPARENT);
-            isDrawerLocked = true;
-            Bugsnag.leaveBreadcrumb("Tablet layout applied");
-        }
+//        // Check for tablet layout
+//        FrameLayout frameLayout = (FrameLayout)findViewById(R.id.frame_container);
+//        if(((ViewGroup.MarginLayoutParams)frameLayout.getLayoutParams()).leftMargin == (int)getResources().getDimension(R.dimen.drawer_size)) {
+//            mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN, mDrawerList);
+//            mDrawerLayout.setScrimColor(Color.TRANSPARENT);
+//            isDrawerLocked = true;
+//        }
 
-        // set Drawer header
-        LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        Drawerheader = inflater.inflate(R.layout.drawer_header, null);
-        if(mDrawerList.getHeaderViewsCount()==0)
-            mDrawerList.addHeaderView(Drawerheader);
-
-        // Set the adapter for the list view
-        mDrawerList.setAdapter(new ArrayAdapter<>(this,
-                R.layout.drawer_list_item,R.id.drawer_list_textView, mNavTitles));
+        View Drawerheader = mNavigationView.inflateHeaderView(R.layout.drawer_header);
+        DrawerheaderVH = new DrawerHeaderViewHolder(Drawerheader);
 
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar,
                 R.string.drawer_open, R.string.drawer_close) {
@@ -183,12 +176,20 @@ public class MainActivity extends ActionBarActivity {
         };
 
         // Set the list's click listener
-        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+        mNavigationView.setNavigationItemSelectedListener(new NavigationItemSelectedListener());
         mDrawerToggle.setDrawerIndicatorEnabled(true);
 
         // Set the drawer toggle as the DrawerListener
         if(!isDrawerLocked) {
             mDrawerLayout.setDrawerListener(mDrawerToggle);
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            mDrawerLayout.setStatusBarBackgroundColor(getResources().getColor(R.color.primary_dark,
+                    null));
+        } else {
+            //noinspection deprecation
+            mDrawerLayout.setStatusBarBackgroundColor(getResources().getColor(
+                    R.color.primary_dark));
         }
 
         // Select either the default item (Fragments.ATTENDANCE) or the last selected item.
@@ -200,8 +201,8 @@ public class MainActivity extends ActionBarActivity {
             mPreviousFragment = getFragmentManager().getFragment(savedInstanceState, PREVIOUS_FRAGMENT_TAG);
             Log.d(mTag, "current fag found: " + fragment );
             Log.d(mTag, "previous fag found: " + mPreviousFragment );
-            showFragment(fragment);
             selectItem(mCurrentSelectedPosition);
+            showFragment(fragment);
         }
         else if(getIntent().hasExtra(LAUNCH_FRAGMENT_EXTRA)) {
             displayView(getIntent().getIntExtra(LAUNCH_FRAGMENT_EXTRA,
@@ -221,8 +222,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     void showcaseView() {
-        MyPreferencesManager prefs = new MyPreferencesManager(this);
-        if(prefs.isFirstLaunch(mTag)) {
+        if(MyPreferencesManager.isFirstLaunch(mTag)) {
 
             Target homeTarget = new Target() {
                 @Override
@@ -234,6 +234,8 @@ public class MainActivity extends ActionBarActivity {
                     return new Point(x, y);
                 }
             };
+
+            // TODO: ActionItemTarget target = new ActionItemTarget(this, R.id.home);
 
             final ShowcaseView sv = new ShowcaseView.Builder(this)
                     .setTarget(homeTarget)
@@ -252,27 +254,33 @@ public class MainActivity extends ActionBarActivity {
                     }
                 }
             });
-            prefs.setFirstLaunch(mTag);
+            MyPreferencesManager.setFirstLaunch(mTag);
         }
     }
 
-    public static MainActivity getInstance(){
-        return mActivity;
+    public void updateDrawerHeader() {
+        updateUserDetails();
+        updateLastSync();
     }
 
-    public void updateDrawerHeader() {
+    public void updateUserDetails() {
         DatabaseHandler db = new DatabaseHandler(this);
-        if(db.getHeaderRowCount()>0) {
-            ListHeader listheader = db.getListHeader();
+        if(db.getUserCount()>0) {
+            UserModel user = db.getUser();
 
-            TextView tv_name = (TextView) Drawerheader.findViewById(R.id.drawer_header_name);
-            TextView tv_course = (TextView) Drawerheader.findViewById(R.id.drawer_header_course);
-            tv_name.setText(listheader.getName());
-            tv_course.setText(listheader.getCourse());
+            DrawerheaderVH.tv_name.setText(user.getName());
+            DrawerheaderVH.tv_course.setText(user.getCourse());
+	    Bugsnag.setUserId(user.getSapid());
+	    Bugsnag.setUserName(user.getName());
+        }
+    }
 
-            if(listheader.getSAPId()!=0)
-                Bugsnag.setUserId("" + listheader.getSAPId());
-            Bugsnag.setUserName(listheader.getName());
+    public void updateLastSync() {
+        DatabaseHandler db = new DatabaseHandler(this);
+        if(db.getRowCount()>0) {
+            int time = (int) db.getLastSync();
+            DrawerheaderVH.last_refresh.setText(
+                    getResources().getQuantityString(R.plurals.tv_last_refresh, time, time));
         }
     }
 
@@ -280,20 +288,21 @@ public class MainActivity extends ActionBarActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home)
         {
-            if (mDrawerLayout.isDrawerOpen(mDrawerList)) {
-                mDrawerLayout.closeDrawer(mDrawerList);
+            if (mDrawerLayout.isDrawerOpen(mNavigationView)) {
+                mDrawerLayout.closeDrawer(mNavigationView);
             } else {
-                mDrawerLayout.openDrawer(mDrawerList);
+                mDrawerLayout.openDrawer(mNavigationView);
             }
         }
         return super.onOptionsItemSelected(item);
     }
 
 
-    private class DrawerItemClickListener implements ListView.OnItemClickListener {
+    private class NavigationItemSelectedListener implements NavigationView.OnNavigationItemSelectedListener {
         @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            displayView(position);
+        public boolean onNavigationItemSelected(MenuItem menuItem) {
+            displayView(menuItem.getOrder());
+            return false;
         }
     }
 
@@ -316,8 +325,8 @@ public class MainActivity extends ActionBarActivity {
         }
 
         if (fragment != null) {
-            showFragment(fragment);
             selectItem(position);
+            showFragment(fragment);
             mPopSettingsBackStack = false;
         } else {
             Log.e(mTag, "Error in creating fragment");
@@ -330,12 +339,11 @@ public class MainActivity extends ActionBarActivity {
      */
     private void selectItem(int position) {
         mCurrentSelectedPosition = position;
-        mDrawerList.setItemChecked(position, true);
-        mDrawerList.setSelection(position);
+        mNavigationView.getMenu().getItem(position-1).setChecked(true);
         mDrawerTitle = mNavTitles[position-1];
         setTitle(mDrawerTitle);
-        if(!isDrawerLocked && mDrawerLayout.isDrawerOpen(mDrawerList))
-            mDrawerLayout.closeDrawer(mDrawerList);
+        if(!isDrawerLocked && mDrawerLayout.isDrawerOpen(mNavigationView))
+            mDrawerLayout.closeDrawer(mNavigationView);
     }
 
     /**
@@ -357,7 +365,7 @@ public class MainActivity extends ActionBarActivity {
         }
 
         if (mPreviousFragment != null) {
-            if (DEBUG_FRAGMENTS) {
+            if (BuildConfig.DEBUG) {
                 Log.d(mTag, this + " showFragment: destroying previous fragment "
                         + mPreviousFragment.getClass().getSimpleName());
             }
@@ -384,9 +392,9 @@ public class MainActivity extends ActionBarActivity {
     @Override
     public void onBackPressed() {
         // close drawer if it is open
-        if (mDrawerLayout.isDrawerOpen(mDrawerList) && !isDrawerLocked)
+        if (mDrawerLayout.isDrawerOpen(mNavigationView) && !isDrawerLocked)
         {
-            mDrawerLayout.closeDrawer(mDrawerList);
+            mDrawerLayout.closeDrawer(mNavigationView);
         }
         else if (shouldPopFromBackStack()) {
             if(mPopSettingsBackStack) {
@@ -448,7 +456,7 @@ public class MainActivity extends ActionBarActivity {
             position = Fragments.ATTENDANCE.getValue();
         } else if (mPreviousFragment instanceof TimeTablePagerFragment) {
             position = Fragments.TIMETABLE.getValue();
-            //((TimeTablePagerFragment) mPreviousFragment).updateFragments();
+            //((TimeTablePagerFragment) mPreviousFragment).updateFragmentsData();
             // fixme: this is a crude hack for viewpager not redrawing itself
             showFragment(new TimeTablePagerFragment());
         }
@@ -461,7 +469,7 @@ public class MainActivity extends ActionBarActivity {
             SharedPreferences.Editor editor = getSharedPreferences("SETTINGS", 0).edit();
             mCurrentSelectedPosition = mCurrentSelectedPosition == Fragments.SETTINGS.getValue() ?
                     Fragments.ATTENDANCE.getValue() : mCurrentSelectedPosition;
-            editor.putInt(PREFERENCE_ACTIVATED_FRAGMENT, mCurrentSelectedPosition).commit();
+            editor.putInt(PREFERENCE_ACTIVATED_FRAGMENT, mCurrentSelectedPosition).apply();
         }
     }
 
@@ -519,7 +527,6 @@ public class MainActivity extends ActionBarActivity {
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         mDrawerToggle.onConfigurationChanged(newConfig);
-        actionbar.setTitle(mTitle);
     }
 
     @Override
@@ -530,7 +537,7 @@ public class MainActivity extends ActionBarActivity {
 
     @Override
     public void onDestroy() {
-        MyVolley.getInstance().cancelPendingRequests("com.shalzz.attendance.activity.MainActivity");
+        MyVolley.getInstance().cancelAllPendingRequests();
         super.onDestroy();
     }
 

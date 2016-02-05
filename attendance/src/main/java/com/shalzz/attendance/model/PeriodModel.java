@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Shaleen Jain <shaleen.jain95@gmail.com>
+ * Copyright (c) 2013-2016 Shaleen Jain <shaleen.jain95@gmail.com>
  *
  * This file is part of UPES Academics.
  *
@@ -23,36 +23,29 @@ import com.bugsnag.android.Bugsnag;
 import com.shalzz.attendance.wrapper.DateHelper;
 
 import java.text.ParseException;
+import java.util.Date;
 
-public class Period {
+public class PeriodModel {
 
 	// private variables;
-	private String name = "";
-	private String teacher = "";
-	private String room = "";
+	private int id;
+	private String name;
+	private String teacher;
+	private String room;
 	private String start;
 	private String end;
 	private String day;
-    private String batch = "NULL";
+    private String batch;
 
-	public Period() {
-
-	}
-
-    public Period(String day) {
-        this.day = day;
+    public int getId() {
+        return id;
     }
 
-	Period (String name, String room, String teacher, String start, String end, String day) {
-		this.name = name;
-		this.room = room;
-		this.teacher = teacher;
-		this.start = start;
-		this.end = end;
-		this.day = day;
-	}
+    public void setId(int id) {
+        this.id = id;
+    }
 
-	public String getSubjectName() {
+    public String getSubjectName() {
 		return name;
 	}
 
@@ -64,13 +57,33 @@ public class Period {
 		return teacher;
 	}
 
-	public String getStartTime() {
-		return start;
+	public Date getStartDate() {
+        Date d = null;
+        try {
+            d = DateHelper.hr24Format.parse(start);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return d;
 	}
 
-	public String getEndTime() {
-		return end;
+	public Date getEndDate() {
+        Date d = null;
+        try {
+            d = DateHelper.hr24Format.parse(end);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return d;
 	}
+
+    public String getStartTime() {
+        return start;
+    }
+
+    public String getEndTime() {
+        return end;
+    }
 
 	public String getTime() {
 		return start + "-" + end ;
@@ -104,8 +117,6 @@ public class Period {
     }
 
 	public void setSubjectName(String name) {
-		if(name.equals("***"))
-			name = "";
 		this.name = name;
 	}
 
@@ -132,14 +143,6 @@ public class Period {
 		this.day = day;
 	}
 
-    public boolean isEqual(Period period) {
-        return this.name.equals(period.getSubjectName()) &&
-                this.room.equals(period.getRoom()) &&
-                this.teacher.equals(period.getTeacher()) &&
-                this.start.equals(period.getEndTime()) &&
-                this.day.equals(period.getDay());
-    }
-
     public void setBatch(String batch) {
         this.batch =  batch;
     }
@@ -157,4 +160,18 @@ public class Period {
         }
         return String.valueOf(chars);
     }
+
+	@Override
+	public String toString() {
+		return "PeriodModel{" +
+				"id=" + id +
+				", name='" + name + '\'' +
+				", teacher='" + teacher + '\'' +
+				", room='" + room + '\'' +
+				", start='" + start + '\'' +
+				", end='" + end + '\'' +
+				", day='" + day + '\'' +
+				", batch='" + batch + '\'' +
+				'}';
+	}
 }

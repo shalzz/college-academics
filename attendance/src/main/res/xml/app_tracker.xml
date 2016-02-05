@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2013-2016 Shaleen Jain <shaleen.jain95@gmail.com>
+  ~
+  ~ This file is part of UPES Academics.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<resources xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="TypographyDashes">
+
+    <integer name="ga_sessionTimeout">300</integer>
+
+    <!-- Enable automatic Activity measurement -->
+    <bool name="ga_autoActivityTracking">true</bool>
+    <bool name="ga_reportUncaughtExceptions">true</bool>
+
+    <!-- The screen names that will appear in reports -->
+    <screenName name="com.shalzz.attendance.fragment.AttendanceListFragment">
+        AttendanceScreen
+    </screenName>
+    <screenName name="com.shalzz.attendance.fragment.TimeTablePagerFragment">
+        TimeTableScreen
+    </screenName>
+    <screenName name="com.shalzz.attendance.fragment.SettingsFragment">
+        SettingsScreen
+    </screenName>
+    <screenName name="com.shalzz.attendance.fragment.AboutSettingsFragment">
+        AboutScreen
+    </screenName>
+    <screenName name="com.shalzz.attendance.fragment.ProxySettingsFragment">
+        ProxyScreen
+    </screenName>
+    <screenName name="com.shalzz.attendance.activity.LoginActivity">
+        LoginScreen
+    </screenName>
+    <!--  The following value should be replaced with correct property id. -->
+    <string name="ga_trackingId">UA-XXXXXXX-Y</string>
+    <string name="ga_appName">UPES Academics</string>
+    <string name="ga_appVersion">2.2.4</string>
+</resources>

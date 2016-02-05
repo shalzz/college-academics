@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Shaleen Jain <shaleen.jain95@gmail.com>
+ * Copyright (c) 2013-2016 Shaleen Jain <shaleen.jain95@gmail.com>
  *
  * This file is part of UPES Academics.
  *
@@ -22,26 +22,19 @@ package com.shalzz.attendance.wrapper;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.text.format.Time;
 import android.util.Log;
 
-import com.bugsnag.android.Bugsnag;
-import com.bugsnag.android.Severity;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.activity.MainActivity;
-
-import java.net.CookieHandler;
-import java.net.CookieManager;
-import java.net.HttpCookie;
-import java.net.URI;
-import java.util.Iterator;
 
 public class MyPreferencesManager {
 
 	/**
 	 * The activity context.
 	 */
-	private Context mContext;
+	private static Context mContext = MyVolley.getAppContext();
+
+    private static String mTag  = "MyPreferencesManager";
 
 	/**
 	 * Constructor to set the Activity context.
@@ -50,100 +43,25 @@ public class MyPreferencesManager {
 	public MyPreferencesManager(Context context) {
 		mContext = context;
 	}
-	
-	public void setLastSyncTime() {
-		Time now = new Time();
-		now.setToNow();
-		SharedPreferences settings = mContext.getApplicationContext().getSharedPreferences("SETTINGS", Context.MODE_MULTI_PROCESS);
-		SharedPreferences.Editor editor = settings.edit();
-		editor.putLong("REFRESH_TIME", now.toMillis(false));
-		editor.commit();
-	}
-	
-	public long getLastSyncTime() {
-        Time now = new Time();
-        now.setToNow();
-        Long now_L = now.toMillis(false);
-		SharedPreferences settings = mContext.getApplicationContext().getSharedPreferences("SETTINGS", Context.MODE_MULTI_PROCESS);
-		Long last_sync = settings.getLong("REFRESH_TIME", now_L );
-		return (now_L-last_sync)/(1000*60*60); // convert milliseconds to hours
-	}
-
-	/**
-	 * Gets the cookies from the shared preferences and adds them to the default CookieManager.
-	 */
-	public void getPersistentCookies()
-	{
-		CookieManager cookieMan = (CookieManager) CookieHandler.getDefault();
-		SharedPreferences pcookies = mContext.getSharedPreferences("PERSISTCOOKIES", 0);	
-		Iterator<String> keyset = pcookies.getAll().keySet().iterator();
-		if(keyset.hasNext())
-		{
-            Bugsnag.leaveBreadcrumb("Persistent cookies found.");
-			while(keyset.hasNext())
-			{
-				String cookiename = keyset.next();
-				String cookievalue = pcookies.getString(cookiename, "");
-				if(!cookievalue.isEmpty()) 
-				{
-					try {
-						HttpCookie cookie = new HttpCookie(cookiename,cookievalue);
-						cookie.setDomain("academics.ddn.upes.ac.in");
-						cookie.setPath("/");
-						cookie.setVersion(0);
-						cookieMan.getCookieStore().add(new URI(mContext.getResources().getString(R.string.URL_home)), cookie);
-					} catch (Exception e) {
-                        Bugsnag.notify(e, Severity.ERROR);
-						e.printStackTrace();
-					} 
-				}
-				else
-				{
-                    Bugsnag.leaveBreadcrumb("Persistent cookies not found.");
-				}
-			}
-		}
-	}
-
-	/**
-	 * Saves the cookies in shared preferences.
-	 */
-	public void savePersistentCookies() {
-		CookieManager cookieMan = (CookieManager) CookieHandler.getDefault();
-		SharedPreferences persistentcookies = mContext.getSharedPreferences("PERSISTCOOKIES", 0);
-		SharedPreferences.Editor editor = persistentcookies.edit();
-		for(HttpCookie cookie : cookieMan.getCookieStore().getCookies() ){
-			editor.putString(cookie.getName(), cookie.getValue());
-		}
-		editor.commit();
-	}
-
-	/**
-	 * Removes the cookies from the shared preferences and Cookie Manager
-	 */
-	public void removePersistenCookies() {
-		SharedPreferences pcookies = mContext.getSharedPreferences("PERSISTCOOKIES", 0);
-		SharedPreferences.Editor editor = pcookies.edit();
-        for (String cookiename : pcookies.getAll().keySet()) {
-            editor.remove(cookiename);
-        }
-		editor.apply();
-		
-		CookieManager cookieMan = (CookieManager) CookieHandler.getDefault();
-		cookieMan.getCookieStore().removeAll();
-	}
 
 	/**
 	 * Gets the login status from the preferences
 	 * @return true if logged in else false
 	 */
-	public boolean getLoginStatus() {
+	public static boolean getLoginStatus() {
 
-		Log.i(mContext.getClass().getName(), "Getting Logged in state.");
+		Log.i(mTag, "Getting Logged in state.");
 		SharedPreferences settings = mContext.getSharedPreferences("SETTINGS", 0);
-		boolean loggedin = settings.getBoolean("LOGGEDIN"+mContext.getResources().getString(R.string.user_version), false);
-		Log.d(mContext.getClass().getName(), "Logged in state: "+loggedin+ "");
+		boolean loggedin = settings.getBoolean("LOGGEDIN" + mContext.getResources().getString(R.string.user_version), false);
+		Log.d(mTag, "Logged in state: " + loggedin);
 		return loggedin;
+	}
+
+	public static String getUser() {
+		SharedPreferences settings = mContext.getSharedPreferences("SETTINGS", 0);
+
+		return String.format("%s:%s", settings.getString("USERNAME", null)
+				, settings.getString("PASSWORD", null));
 	}
 
 	/**
@@ -151,8 +69,8 @@ public class MyPreferencesManager {
 	 * @param username Username
 	 * @param password Password
 	 */
-	public void saveUser(String username, String password) {
-		Log.i(mContext.getClass().getName(), "Setting LOGGEDIN pref to true");
+	public static void saveUser(String username, String password) {
+		Log.i(mTag, "Setting LOGGEDIN pref to true");
 		SharedPreferences settings = mContext.getSharedPreferences("SETTINGS", 0);
 		SharedPreferences.Editor editor = settings.edit();
 		editor.putBoolean("LOGGEDIN"+mContext.getResources().getString(R.string.user_version), true);
@@ -164,8 +82,8 @@ public class MyPreferencesManager {
 	/**
 	 * Removes the user details from the shared preferences and sets login status to false.
 	 */
-	public void removeUser() {	
-		Log.i(mContext.getClass().getName(), "Setting LOGGEDIN pref to false");
+	public static void removeUser() {
+		Log.i(mTag, "Setting LOGGEDIN pref to false");
 		SharedPreferences settings = mContext.getSharedPreferences("SETTINGS", 0);
 		SharedPreferences.Editor editor = settings.edit();
         editor.remove(MainActivity.PREFERENCE_ACTIVATED_FRAGMENT);
@@ -179,22 +97,22 @@ public class MyPreferencesManager {
      * Checks weather this is the first time the app is launched or not.
      * @return True or False
      */
-    public boolean isFirstLaunch(String tag) {
-        SharedPreferences settings = mContext.getSharedPreferences("SETTINGS", 0);
+    public static boolean isFirstLaunch(String tag) {
+        SharedPreferences settings = mContext.getSharedPreferences("LAUNCH", 0);
         return settings.getBoolean("FIRSTLAUNCH"+tag, true);
     }
 
     /**
      * Sets the first launch to false.
      */
-    public void setFirstLaunch(String tag) {
-        SharedPreferences settings = mContext.getSharedPreferences("SETTINGS", 0);
+    public static void setFirstLaunch(String tag) {
+        SharedPreferences settings = mContext.getSharedPreferences("LAUNCH", 0);
         SharedPreferences.Editor editor = settings.edit();
         editor.putBoolean("FIRSTLAUNCH"+tag, false);
         editor.commit();
     }
 
-    public void removeSettings() {
+    public static void removeSettings() {
         removeDefaultSharedPreferences();
         SharedPreferences settings = mContext.getSharedPreferences("SETTINGS", 0);
         SharedPreferences.Editor editor = settings.edit();
@@ -202,7 +120,7 @@ public class MyPreferencesManager {
         editor.commit();
     }
     
-    public void removeDefaultSharedPreferences() {
+    public static void removeDefaultSharedPreferences() {
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(mContext);
         SharedPreferences.Editor editor = settings.edit();
         editor.clear();

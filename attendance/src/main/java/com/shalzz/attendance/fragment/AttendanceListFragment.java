@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Shaleen Jain <shaleen.jain95@gmail.com>
+ * Copyright (c) 2013-2016 Shaleen Jain <shaleen.jain95@gmail.com>
  *
  * This file is part of UPES Academics.
  *
@@ -22,24 +22,18 @@ package com.shalzz.attendance.fragment;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
-import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.res.Resources;
-import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -47,34 +41,22 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.bugsnag.android.Bugsnag;
 import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.ViewTarget;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.shalzz.attendance.CircularIndeterminate;
-import com.shalzz.attendance.DataAPI;
-import com.shalzz.attendance.DataAssembler;
-import com.shalzz.attendance.DatabaseHandler;
 import com.shalzz.attendance.DividerItemDecoration;
 import com.shalzz.attendance.Miscellaneous;
 import com.shalzz.attendance.R;
-import com.shalzz.attendance.UserAccount;
-import com.shalzz.attendance.activity.MainActivity;
 import com.shalzz.attendance.adapter.ExpandableListAdapter;
-import com.shalzz.attendance.model.Subject;
-import com.shalzz.attendance.wrapper.ErrorHelper;
+import com.shalzz.attendance.controllers.AttendanceController;
+import com.shalzz.attendance.controllers.UserAccount;
 import com.shalzz.attendance.wrapper.MultiSwipeRefreshLayout;
-import com.shalzz.attendance.wrapper.MyPreferencesManager;
-import com.shalzz.attendance.wrapper.MySyncManager;
-import com.shalzz.attendance.wrapper.MyVolleyErrorHelper;
-
-import java.util.List;
+import com.shalzz.attendance.wrapper.MyVolley;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -87,30 +69,24 @@ public class AttendanceListFragment extends Fragment implements
      * triggers callbacks in the app.
      */
     @InjectView(R.id.swipe_refresh_atten)
-    MultiSwipeRefreshLayout mSwipeRefreshLayout;
+    public MultiSwipeRefreshLayout mSwipeRefreshLayout;
 
     @InjectView(R.id.circular_indet_atten)
-    CircularIndeterminate mProgress;
+    public CircularIndeterminate mProgress;
 
     @InjectView(R.id.atten_recycler_view)
-    RecyclerView mRecyclerView;
+    public RecyclerView mRecyclerView;
 
     private boolean useGridLayout = false;
 
     private final int GRID_LAYOUT_SPAN_COUNT = 2;
 
-    private View mFooter;
-    private View mHeader;
-    private HeaderFooterViewHolder mHFViewHolder;
     private LinearLayoutManager mLinearLayoutManager;
     private StaggeredGridLayoutManager mGridLayoutManager;
-    private TextView mLastRefreshView;
     private Context mContext;
-    private String mTag;
-    private ExpandableListAdapter mAdapter;
-    private MyPreferencesManager prefs;
-    private View mDropShadow;
-    private Resources mResourses;
+    private String mTag = "Attendance List Fragment";
+    private Resources mResources;
+    private AttendanceController controller;
 
     private float mExpandedItemTranslationZ;
     private int mFadeInDuration = 150;
@@ -118,51 +94,24 @@ public class AttendanceListFragment extends Fragment implements
     private int mFadeOutDuration = 20;
     private int mExpandCollapseDuration = 200;
 
-    /**
-     * View Holder for list view header and footer views.
-     */
-    protected static class HeaderFooterViewHolder {
-
-        public TextView tvName;
-        public TextView tvSap;
-        public TextView tvCourse;
-        public TextView tvPercent;
-        public TextView tvClasses;
-        public ProgressBar pbPercent;
-
-        public HeaderFooterViewHolder (View header, View footer) {
-
-            tvName = (TextView) header.findViewById(R.id.tvName);
-            tvSap = (TextView) header.findViewById(R.id.tvSAP);
-            tvCourse = (TextView) header.findViewById(R.id.tvCourse);
-            tvPercent = (TextView) footer.findViewById(R.id.tvTotalPercent);
-            tvClasses = (TextView) footer.findViewById(R.id.tvClass);
-            pbPercent = (ProgressBar) footer.findViewById(R.id.pbTotalPercent);
-        }
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-		Bugsnag.setContext("AttendanceList");
+	Bugsnag.setContext("AttendanceList");
         mContext = getActivity();
-        mTag = getActivity().getLocalClassName();
-        prefs = new MyPreferencesManager(mContext.getApplicationContext());
-        mLinearLayoutManager = new LinearLayoutManager(mContext,
-                LinearLayoutManager.VERTICAL, false);
-        mLinearLayoutManager.setSmoothScrollbarEnabled(true);
-        mGridLayoutManager = new StaggeredGridLayoutManager(GRID_LAYOUT_SPAN_COUNT,
-                StaggeredGridLayoutManager.VERTICAL);
-        mGridLayoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_NONE);
-        useGridLayout = getResources().getBoolean(R.bool.use_grid_layout);
+        mResources = getResources();
+        mExpandedItemTranslationZ =
+                mResources.getDimension(R.dimen.atten_view_expanded_elevation);
+        useGridLayout = mResources.getBoolean(R.bool.use_grid_layout);
     }
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        mResourses = getResources();
-        mExpandedItemTranslationZ =
-                mResourses.getDimension(R.dimen.atten_view_expanded_elevation);
+    public void onStart() {
+        super.onStart();
+        Tracker t = ((MyVolley) getActivity().getApplication()).getTracker(
+                MyVolley.TrackerName.APP_TRACKER);
+
+        t.send(new HitBuilders.ScreenViewBuilder().build());
     }
 
     @Override
@@ -172,19 +121,22 @@ public class AttendanceListFragment extends Fragment implements
             return null;
 
         setHasOptionsMenu(true);
-        View mView = inflater.inflate(R.layout.attenview, container, false);
+        View mView = inflater.inflate(R.layout.fragment_attendance, container, false);
         ButterKnife.inject(this, mView);
 
         mSwipeRefreshLayout.setSwipeableChildren(R.id.atten_recycler_view);
-        mDropShadow = MainActivity.getInstance().dropShadow;
 
         // Set the color scheme of the SwipeRefreshLayout by providing 4 color resource ids
         mSwipeRefreshLayout.setColorSchemeResources(
                 R.color.swipe_color_1, R.color.swipe_color_2,
                 R.color.swipe_color_3, R.color.swipe_color_4);
-        mSwipeRefreshLayout.setProgressViewOffset(true, 1, 92);
 
-        mRecyclerView.setHasFixedSize(true);
+        mLinearLayoutManager = new LinearLayoutManager(mContext,
+                LinearLayoutManager.VERTICAL, false);
+        mLinearLayoutManager.setSmoothScrollbarEnabled(true);
+        mGridLayoutManager = new StaggeredGridLayoutManager(GRID_LAYOUT_SPAN_COUNT,
+                StaggeredGridLayoutManager.VERTICAL);
+        mGridLayoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_NONE);
 
         mRecyclerView.setLayoutManager(useGridLayout ? mGridLayoutManager : mLinearLayoutManager);
 
@@ -198,48 +150,24 @@ public class AttendanceListFragment extends Fragment implements
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        LayoutInflater inflater = getActivity().getLayoutInflater();
 
-        mHeader = inflater.inflate(R.layout.list_header, mRecyclerView, false);
-        mFooter = inflater.inflate(R.layout.list_footer, mRecyclerView, false);
-        mHFViewHolder = new HeaderFooterViewHolder(mHeader,mFooter);
-        mLastRefreshView = (TextView) mHeader.findViewById(R.id.last_refreshed);
-//        mLayoutManager.addView(mHeader, 0);
-//        mLayoutManager.addView(mFooter,mAdapter.getItemCount());
+        controller = new AttendanceController(mContext, this);
 
-        DatabaseHandler db = new DatabaseHandler(mContext);
-        if(db.getRowCount()<=0) {
-            if(getActivity().getIntent().hasExtra(UserAccount.INTENT_EXTRA_USERNAME)) {
-                String SAPID = getActivity().getIntent().getExtras().getString(UserAccount.INTENT_EXTRA_USERNAME);
-                MySyncManager.addPeriodicSync(mContext, SAPID);
-            }
-            DataAPI.getAttendance(mContext, successListener(), errorListener());
-            mProgress.setVisibility(View.VISIBLE);
-        } else {
-            setAttendance();
-            updateLastRefresh();
+        if(!controller.hasSubjects()) {
+            controller.updateSubjects();
         }
 
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                DataAPI.getAttendance(mContext, successListener(), errorListener());
+                controller.updateSubjects();
             }
         });
 
-        mRecyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-//                mDropShadow.setVisibility(mHeader.isShown() ? View.GONE : View.VISIBLE);
-                super.onScrolled(recyclerView, dx, dy);
-            }
-        });
     }
 
     public void showcaseView() {
-        int firstElementPosition = 0;
-//        firstElementPosition += mListView.getHeaderViewsCount();
-        View firstElementView = mRecyclerView.getChildAt(firstElementPosition);
+        View firstElementView = mRecyclerView.getChildAt(0);
         ViewTarget target = firstElementView != null ? new ViewTarget(firstElementView)
                 : new ViewTarget(mRecyclerView);
 
@@ -252,49 +180,6 @@ public class AttendanceListFragment extends Fragment implements
 
     }
 
-    protected void updateLastRefresh() {
-//        mLastRefreshView.setText(getString(R.string.last_refresh, prefs.getLastSyncTime()));
-    }
-
-    private void setAttendance() {
-        DatabaseHandler db = new DatabaseHandler(getActivity());
-        if(db.getRowCount()>0)
-        {
-            updateHeaderNFooter();
-            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mContext);
-            int expandLimit = Integer.parseInt(sharedPref.getString(
-                    getString(R.string.pref_key_sub_limit), "3"));
-
-            List<Subject> subjects = db.getAllOrderedSubjects();
-
-            mAdapter = new ExpandableListAdapter(mContext,subjects,this);
-            mAdapter.setLimit(expandLimit);
-            mRecyclerView.setAdapter(mAdapter);
-
-        }
-    }
-
-    private void updateHeaderNFooter() {
-
-//        DatabaseHandler db = new DatabaseHandler(mContext);
-//        ListFooter listfooter = db.getListFooter();
-//        Float percent = listfooter.getPercentage();
-//
-//        mHFViewHolder.tvPercent.setText(listfooter.getPercentage()+"%");
-//        mHFViewHolder.tvClasses.setText(listfooter.getAttended().intValue() + "/" + listfooter.getHeld().intValue());
-//        mHFViewHolder.pbPercent.setProgress(percent.intValue());
-//        Drawable d = mHFViewHolder.pbPercent.getProgressDrawable();
-//        d.setLevel(percent.intValue() * 100);
-//
-//        ListHeader listheader = db.getListHeader();
-//        mHFViewHolder.tvName.setText(listheader.getName());
-//        mHFViewHolder.tvSap.setText(String.valueOf(listheader.getSAPId()));
-//        mHFViewHolder.tvCourse.setText(listheader.getCourse());
-//
-//        MainActivity.getInstance().updateDrawerHeader();
-
-    }
-
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -302,14 +187,12 @@ public class AttendanceListFragment extends Fragment implements
         MenuItem searchItem = menu.findItem(R.id.menu_search);
 
         final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
-        searchView.setQueryHint(mResourses.getString(R.string.hint_search));
+        searchView.setQueryHint(mResources.getString(R.string.hint_search));
 
         MenuItemCompat.setOnActionExpandListener(searchItem, new MenuItemCompat.OnActionExpandListener() {
             @Override
             public boolean onMenuItemActionCollapse(MenuItem item) {
-                DatabaseHandler db = new DatabaseHandler(mContext);
-                List<Subject> subjects = db.getAllOrderedSubjects();
-                mAdapter.setDataSet(subjects);
+                controller.getSubjects();
                 return true;  // Return true to collapse action view
             }
 
@@ -330,25 +213,10 @@ public class AttendanceListFragment extends Fragment implements
 
             @Override
             public boolean onQueryTextChange(String arg0) {
-                DatabaseHandler db = new DatabaseHandler(mContext);
-                List<Subject> subjects = db.getAllSubjectsLike(arg0);
-                if (mAdapter != null)
-                    mAdapter.setDataSet(subjects);
+                controller.getSubjectsLike(arg0);
                 return false;
             }
         });
-    }
-
-    /* Called whenever we call invalidateOptionsMenu() */
-    @Override
-    public void onPrepareOptionsMenu(Menu menu) {
-        // If the nav drawer is open, hide action items related to the content view
-        Activity activity = (Activity) mContext;
-        DrawerLayout mDrawerLayout = (DrawerLayout) activity.findViewById(R.id.drawer_layout);
-        ListView mDrawerList = (ListView) activity.findViewById(R.id.list_slidermenu);
-        boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
-        menu.findItem(R.id.menu_search).setVisible(!drawerOpen);
-        menu.findItem(R.id.menu_refresh).setVisible(!drawerOpen);
     }
 
     @Override
@@ -360,70 +228,16 @@ public class AttendanceListFragment extends Fragment implements
             // We make sure that the SwipeRefreshLayout is displaying it's refreshing indicator
             if (!mSwipeRefreshLayout.isRefreshing()) {
                 mSwipeRefreshLayout.setRefreshing(true);
-                DataAPI.getAttendance(mContext, successListener(), errorListener());
+                controller.updateSubjects();
             }
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private Response.Listener<String> successListener() {
-        return new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                try {
-                    new DataAssembler.ParseStudentDetails(mContext, null).execute(response);
-                    new DataAssembler.ParseAttendance(mContext, parseListener()).execute(response);
-                }
-                catch (Exception e) {
-                    String msg = mResourses.getString(R.string.unexpected_error);
-                    Miscellaneous.showSnackBar(mContext,msg);
-                }
-            }
-        };
-    }
-
-    private DataAssembler.Listener parseListener() {
-        return new DataAssembler.Listener() {
-            @Override
-            public void onParseComplete(int result) {
-                // Stop the refreshing indicator
-                if(mProgress == null || mSwipeRefreshLayout == null)
-                    return;
-                mProgress.setVisibility(View.GONE);
-                mSwipeRefreshLayout.setRefreshing(false);
-                if(result == 0) {
-                    prefs.setLastSyncTime();
-                    updateLastRefresh();
-                    setAttendance();
-                }
-                else
-                    MainActivity.getInstance().updateDrawerHeader();
-                ErrorHelper.handleError(result, mContext);
-            }
-        };
-    }
-
-    private Response.ErrorListener errorListener() {
-        return new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                // Stop the refreshing indicator
-                if(mProgress == null || mSwipeRefreshLayout == null)
-                    return;
-                mProgress.setVisibility(View.GONE);
-                mSwipeRefreshLayout.setRefreshing(false);
-
-                String msg = MyVolleyErrorHelper.getMessage(error, mContext);
-                Miscellaneous.showSnackBar(mContext, msg);
-                Log.e(mTag, msg);
-            }
-        };
-    }
-
     @Override
     public void onItemExpanded(final View view) {
         final int spec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
-        final ExpandableListAdapter.ViewHolder viewHolder = (ExpandableListAdapter.ViewHolder) view.getTag();
+        final ExpandableListAdapter.GenericViewHolder viewHolder = (ExpandableListAdapter.GenericViewHolder) view.getTag();
         final RelativeLayout childView = viewHolder.childView;
         childView.measure(spec, spec);
         final int startingHeight = view.getHeight();
@@ -470,14 +284,10 @@ public class AttendanceListFragment extends Fragment implements
                 ValueAnimator animator = isExpanded ? ValueAnimator.ofFloat(0f, 1f)
                         : ValueAnimator.ofFloat(1f, 0f);
 
-                // Figure out how much scrolling is needed to make the view fully visible.
-                final Rect localVisibleRect = new Rect();
-                view.getLocalVisibleRect(localVisibleRect);
-                final int scrollingNeeded = localVisibleRect.top > 0 ? -localVisibleRect.top
-                        : endingHeight - localVisibleRect.height();
-                animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                // scroll to make the view fully visible.
+                mRecyclerView.smoothScrollToPosition(viewHolder.position);
 
-                    private int mCurrentScroll = 0;
+                animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
 
                     @Override
                     public void onAnimationUpdate(ValueAnimator animator) {
@@ -490,14 +300,6 @@ public class AttendanceListFragment extends Fragment implements
                             view.setTranslationZ(z);
                         }
                         view.requestLayout();
-
-                        if (isExpanded) {
-                            if (mRecyclerView != null) {
-                                int scrollBy = (int) (value * scrollingNeeded) - mCurrentScroll;
-                                mRecyclerView.smoothScrollBy(scrollBy, 0);
-                                mCurrentScroll += scrollBy;
-                            }
-                        }
                     }
                 });
 
@@ -538,8 +340,8 @@ public class AttendanceListFragment extends Fragment implements
                 View view = mRecyclerView.getChildAt(position);
 
                 if (view != null) {
-                    final ExpandableListAdapter.ViewHolder viewHolder =
-                            (ExpandableListAdapter.ViewHolder) view.getTag();
+                    final ExpandableListAdapter.GenericViewHolder viewHolder =
+                            (ExpandableListAdapter.GenericViewHolder) view.getTag();
                     if (viewHolder != null && viewHolder.position == callId) {
                         return view;
                     }
@@ -556,8 +358,8 @@ public class AttendanceListFragment extends Fragment implements
                     View view = mRecyclerView.getChildAt(position);
 
                     if (view != null) {
-                        final ExpandableListAdapter.ViewHolder viewHolder =
-                                (ExpandableListAdapter.ViewHolder) view.getTag();
+                        final ExpandableListAdapter.GenericViewHolder viewHolder =
+                                (ExpandableListAdapter.GenericViewHolder) view.getTag();
                         if (viewHolder != null && viewHolder.position == callId) {
                             return view;
                         }
@@ -568,20 +370,10 @@ public class AttendanceListFragment extends Fragment implements
         return null;
     }
 
-    public void onResume() {
-        super.onResume();
-        mDropShadow.setVisibility(View.GONE);
-    }
-
-    @Override
-    public void onStop() {
-        mDropShadow.setVisibility(View.VISIBLE);
-        super.onStop();
-    }
-
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        MyVolley.getInstance().cancelPendingRequests(MyVolley.ACTIVITY_NETWORK_TAG);
         ButterKnife.reset(this);
     }
 }

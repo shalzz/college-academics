@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Shaleen Jain <shaleen.jain95@gmail.com>
+ * Copyright (c) 2013-2016 Shaleen Jain <shaleen.jain95@gmail.com>
  *
  * This file is part of UPES Academics.
  *
@@ -31,10 +31,16 @@ import android.util.Log;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.bugsnag.android.Bugsnag;
-import com.shalzz.attendance.DataAPI;
-import com.shalzz.attendance.DataAssembler;
+import com.shalzz.attendance.DatabaseHandler;
+import com.shalzz.attendance.model.PeriodModel;
+import com.shalzz.attendance.model.SubjectModel;
+import com.shalzz.attendance.model.UserModel;
+import com.shalzz.attendance.network.DataAPI;
 import com.shalzz.attendance.wrapper.MyPreferencesManager;
 import com.shalzz.attendance.wrapper.MyVolleyErrorHelper;
+
+import java.util.ArrayList;
+import java.util.Date;
 
 public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
@@ -77,19 +83,38 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 			ContentProviderClient provider, SyncResult syncResult) {
         Bugsnag.leaveBreadcrumb("Running sync adapter");
 
-		DataAPI.getAttendance(mContext, attendanceSuccessListener(), myErrorListener());
-		DataAPI.getTimeTable(mContext, timeTableSuccessListener(), myErrorListener());
-	}   
-	
-	private Response.Listener<String> attendanceSuccessListener() {
-		return new Response.Listener<String>() {
+        UserModel user = new DatabaseHandler(mContext).getUser();
+        String creds = String.format("%s:%s", user.getSapid(), user.getPassword());
+		DataAPI.getUser(userSuccessListener(), myErrorListener(), creds);
+		DataAPI.getAttendance(attendanceSuccessListener(), myErrorListener());
+		DataAPI.getTimeTable(timeTableSuccessListener(), myErrorListener());
+	}
+
+    private Response.Listener<UserModel> userSuccessListener() {
+        return new Response.Listener<UserModel>() {
+            @Override
+            public void onResponse(UserModel user) {
+
+                MyPreferencesManager.saveUser(user.getSapid(), user.getPassword());
+                DatabaseHandler db = new DatabaseHandler(mContext);
+                db.addOrUpdateUser(user);
+                db.close();
+            }
+        };
+    }
+
+	private Response.Listener<ArrayList<SubjectModel>> attendanceSuccessListener() {
+		return new Response.Listener<ArrayList<SubjectModel>>() {
 			@Override
-			public void onResponse(String response) {
-                try
-                {
-                    DataAssembler.parseAttendance(response, mContext);
-                    MyPreferencesManager pref = new MyPreferencesManager(mContext);
-                    pref.setLastSyncTime();
+			public void onResponse(ArrayList<SubjectModel> response) {
+                try {
+					DatabaseHandler db = new DatabaseHandler(mContext);
+                    long now = new Date().getTime();
+                    for (SubjectModel subject : response) {
+                        db.addOrUpdateSubject(subject, now);
+                    }
+                    db.purgeOldSubjects();
+					db.close();
                 }
                 catch(Exception e) {
                     Bugsnag.notify(e);
@@ -99,14 +124,18 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 		};
 	}
 	
-	private Response.Listener<String> timeTableSuccessListener() {
-		return new Response.Listener<String>() {
+	private Response.Listener<ArrayList<PeriodModel>> timeTableSuccessListener() {
+		return new Response.Listener<ArrayList<PeriodModel>>() {
 			@Override
-			public void onResponse(String response) {
-                try
-                {
-                    DataAssembler.parseTimetable(response, mContext);
-                    Bugsnag.leaveBreadcrumb("Sync complete");
+			public void onResponse(ArrayList<PeriodModel> response) {
+                try {
+					DatabaseHandler db = new DatabaseHandler(mContext);
+                    long now = new Date().getTime();
+					for(PeriodModel period : response) {
+						db.addOrUpdatePeriod(period, now);
+					}
+                    db.purgeOldPeriods();
+					db.close();
                 }
                 catch(Exception e) {
                     Bugsnag.notify(e);

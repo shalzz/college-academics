@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ Copyright (c) 2014 Shaleen Jain <shaleen.jain95@gmail.com>
+  ~ Copyright (c) 2013-2016 Shaleen Jain <shaleen.jain95@gmail.com>
   ~
   ~ This file is part of UPES Academics.
   ~
@@ -20,8 +20,8 @@
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.shalzz.attendance"
-    android:versionCode="224"
-    android:versionName="2.2.4" >
+    android:versionCode="230"
+    android:versionName="2.3.0" >
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -31,10 +31,7 @@
     <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
     <uses-permission android:name="android.permission.MANAGE_ACCOUNTS"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
-
-    <!--TODO: add google analytics-->
 
     <!--TODO: support tablets-->
     <supports-screens
@@ -62,7 +59,7 @@
 
         <provider
         android:name=".sync.StubProvider"
-        android:authorities="com.shalzz.attendance.provider"
+        android:authorities="${applicationId}.provider"
         android:exported="false"
         android:syncable="true"/>
         <service
@@ -105,7 +102,7 @@
         <activity
             android:name=".activity.MainActivity"
             android:label="Attendance"
-            android:theme="@style/AppTheme">
+            android:theme="@style/DrawerActivityTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MANAGE_NETWORK_USAGE" />
                 <category android:name="android.intent.category.DEFAULT" />

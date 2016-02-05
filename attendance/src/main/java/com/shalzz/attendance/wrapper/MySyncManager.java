@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Shaleen Jain <shaleen.jain95@gmail.com>
+ * Copyright (c) 2013-2016 Shaleen Jain <shaleen.jain95@gmail.com>
  *
  * This file is part of UPES Academics.
  *
@@ -24,18 +24,20 @@ import android.accounts.AccountManager;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.shalzz.attendance.BuildConfig;
 import com.shalzz.attendance.R;
 
 public class MySyncManager {
 
 	// Sync interval constants
 	public static final long SECONDS_PER_MINUTE = 60L;
-	public static final String AUTHORITY = "com.shalzz.attendance.provider";
-	public static final String ACCOUNT_TYPE = "com.shalzz";
+	public static final String AUTHORITY = BuildConfig.APPLICATION_ID + ".provider";
+	public static final String ACCOUNT_TYPE = BuildConfig.ACCOUNT_TYPE;
 	@SuppressWarnings("FieldCanBeLocal")
     private static String mTag = "Sync Manager";
 
@@ -77,14 +79,18 @@ public class MySyncManager {
 		AccountManager accountManager = AccountManager.get(mContext);
         Account account = getSyncAccount(mContext);
         if(account!=null)
-		    accountManager.removeAccount(account,null, null);
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+				accountManager.removeAccountExplicitly(account);
+			} else {
+				accountManager.removeAccount(account,null,null);
+			}
 
 	}	
 	
 	public static void addPeriodicSync(Context mContext,String accountName) {
 		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mContext);
 		final boolean sync = sharedPref.getBoolean(
-                mContext.getString(R.string.pref_key_sync), false);
+                mContext.getString(R.string.pref_key_sync), true);
 		Log.d(mTag,"Enable sync: "+sync);
 		final long SYNC_INTERVAL_IN_MINUTES = Long.parseLong(sharedPref.getString(
                 mContext.getString(R.string.pref_key_sync_interval), "360"));
@@ -110,5 +116,21 @@ public class MySyncManager {
 					settingsBundle,
 					SYNC_INTERVAL);
 		}
+	}
+
+	public static void enableAutomaticSync(Context mContext,String accountName) {
+        Account mAccount = getSyncAccount(mContext);
+        if(mAccount==null)
+            mAccount = CreateSyncAccount(mContext,accountName);
+
+        ContentResolver.setSyncAutomatically(mAccount, AUTHORITY, true);
+	}
+
+    public static void disableAutomaticSync(Context mContext,String accountName) {
+        Account mAccount = getSyncAccount(mContext);
+        if(mAccount==null)
+            mAccount = CreateSyncAccount(mContext,accountName);
+
+        ContentResolver.setSyncAutomatically(mAccount, AUTHORITY, false);
 	}
 }
