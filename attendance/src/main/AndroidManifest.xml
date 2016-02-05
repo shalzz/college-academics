@@ -56,7 +56,7 @@
 
         <provider
         android:name=".sync.StubProvider"
-        android:authorities="com.shalzz.attendance.provider"
+        android:authorities="${applicationId}.provider"
         android:exported="false"
         android:syncable="true"/>
         <service

@@ -29,14 +29,15 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.shalzz.attendance.BuildConfig;
 import com.shalzz.attendance.R;
 
 public class MySyncManager {
 
 	// Sync interval constants
 	public static final long SECONDS_PER_MINUTE = 60L;
-	public static final String AUTHORITY = "com.shalzz.attendance.provider";
-	public static final String ACCOUNT_TYPE = "com.shalzz";
+	public static final String AUTHORITY = BuildConfig.APPLICATION_ID + ".provider";
+	public static final String ACCOUNT_TYPE = BuildConfig.ACCOUNT_TYPE;
 	@SuppressWarnings("FieldCanBeLocal")
     private static String mTag = "Sync Manager";
 
