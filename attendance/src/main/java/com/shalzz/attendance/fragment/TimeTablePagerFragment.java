@@ -49,7 +49,6 @@ import com.shalzz.attendance.controllers.PagerController;
 import com.shalzz.attendance.controllers.UserAccount;
 import com.shalzz.attendance.wrapper.DateHelper;
 import com.shalzz.attendance.wrapper.MultiSwipeRefreshLayout;
-import com.shalzz.attendance.wrapper.MyPreferencesManager;
 import com.shalzz.attendance.wrapper.MyVolley;
 
 import java.util.Calendar;
@@ -159,9 +158,6 @@ public class TimeTablePagerFragment extends Fragment {
         else
             mViewPager.setCurrentItem(mPreviousPosition, true);
 
-        if(MyPreferencesManager.isFirstLaunch(myTag))
-            showcaseView();
-
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -184,17 +180,19 @@ public class TimeTablePagerFragment extends Fragment {
                 return false;
             }
         });
+
+        showcaseView();
     }
 
     public void showcaseView() {
         final ShowcaseView sv = new ShowcaseView.Builder(getActivity())
                 .setStyle(R.style.ShowcaseTheme)
                 .setTarget(Target.NONE)
+                .singleShot(3333)
                 .doNotBlockTouches()
                 .setContentTitle(getString(R.string.sv_timetable_title))
                 .setContentText(getString(R.string.sv_timetable_content))
                 .build();
-        MyPreferencesManager.setFirstLaunch(myTag);
 
         sv.overrideButtonClick(new View.OnClickListener() {
             @Override

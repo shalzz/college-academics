@@ -119,6 +119,7 @@ public class AttendanceController {
                         mAdapter.addAll(response);
                         mFooter.setVisibility(View.VISIBLE);
                         mAdapter.updateFooter();
+                        mView.showcaseView();
                     } else {
                         String msg = mResources.getString(R.string.unavailable_data_error_msg);
                         Miscellaneous.showSnackBar(mView.mSwipeRefreshLayout, msg);

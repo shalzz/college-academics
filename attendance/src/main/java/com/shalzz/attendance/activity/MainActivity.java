@@ -49,7 +49,6 @@ import com.shalzz.attendance.fragment.AttendanceListFragment;
 import com.shalzz.attendance.fragment.SettingsFragment;
 import com.shalzz.attendance.fragment.TimeTablePagerFragment;
 import com.shalzz.attendance.model.UserModel;
-import com.shalzz.attendance.wrapper.MyPreferencesManager;
 import com.shalzz.attendance.wrapper.MyVolley;
 
 import butterknife.ButterKnife;
@@ -219,40 +218,36 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void showcaseView() {
-        if(MyPreferencesManager.isFirstLaunch(mTag)) {
 
-            Target homeTarget = new Target() {
-                @Override
-                public Point getPoint() {
-                    // Get approximate position of home icon's center
-                    int actionBarSize = getSupportActionBar().getHeight();
-                    int x = actionBarSize / 2;
-                    int y = actionBarSize / 2;
-                    return new Point(x, y);
+        Target homeTarget = new Target() {
+            @Override
+            public Point getPoint() {
+                // Get approximate position of home icon's center
+                int actionBarSize = actionbar.getHeight();
+                int x = actionBarSize / 2;
+                int y = actionBarSize / 2;
+                return new Point(x, y);
+            }
+        };
+
+        final ShowcaseView sv = new ShowcaseView.Builder(this)
+                .setTarget(homeTarget)
+                .setStyle(R.style.ShowcaseTheme)
+                .singleShot(1111)
+                .setContentTitle(getString(R.string.sv_main_activity_title))
+                .setContentText(getString(R.string.sv_main_activity_content))
+                .build();
+
+        sv.overrideButtonClick(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDrawerLayout.closeDrawer(mNavigationView);
+                sv.hide();
+                if(fragment instanceof AttendanceListFragment) {
+                    ((AttendanceListFragment) fragment).showcaseView();
                 }
-            };
-
-            // TODO: ActionItemTarget target = new ActionItemTarget(this, R.id.home);
-
-            final ShowcaseView sv = new ShowcaseView.Builder(this)
-                    .setTarget(homeTarget)
-                    .setStyle(R.style.ShowcaseTheme)
-                    .setContentTitle(getString(R.string.sv_main_activity_title))
-                    .setContentText(getString(R.string.sv_main_activity_content))
-                    .build();
-
-            sv.overrideButtonClick(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    sv.hide();
-                    if(fragment instanceof AttendanceListFragment)
-                    {
-                        ((AttendanceListFragment) fragment).showcaseView();
-                    }
-                }
-            });
-            MyPreferencesManager.setFirstLaunch(mTag);
-        }
+            }
+        });
     }
 
     public void updateDrawerHeader() {

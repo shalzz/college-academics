@@ -85,25 +85,6 @@ public class MyPreferencesManager {
 		editor.commit();
 	}
 
-    /**
-     * Checks weather this is the first time the app is launched or not.
-     * @return True or False
-     */
-    public static boolean isFirstLaunch(String tag) {
-        SharedPreferences settings = mContext.getSharedPreferences("LAUNCH", 0);
-        return settings.getBoolean("FIRSTLAUNCH"+tag, true);
-    }
-
-    /**
-     * Sets the first launch to false.
-     */
-    public static void setFirstLaunch(String tag) {
-        SharedPreferences settings = mContext.getSharedPreferences("LAUNCH", 0);
-        SharedPreferences.Editor editor = settings.edit();
-        editor.putBoolean("FIRSTLAUNCH"+tag, false);
-        editor.commit();
-    }
-
     public static void removeSettings() {
         removeDefaultSharedPreferences();
         SharedPreferences settings = mContext.getSharedPreferences("SETTINGS", 0);
