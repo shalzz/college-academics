@@ -92,9 +92,10 @@ public class MainActivity extends AppCompatActivity {
 
     public static final String FRAGMENT_TAG = "MainActivity.FRAGMENT";
 
-    public static final String LAUNCH_FRAGMENT_EXTRA = "MainActivity.LAUNCH_FRAGMENT";
+    public static final String LAUNCH_FRAGMENT_EXTRA = BuildConfig.APPLICATION_ID +
+            ".MainActivity.LAUNCH_FRAGMENT";
 
-    private static final String PREVIOUS_FRAGMENT_TAG = "MainActivity.PREVOIUS_FRAGMENT";
+    private static final String PREVIOUS_FRAGMENT_TAG = "MainActivity.PREVIOUS_FRAGMENT";
 
     private static final String mTag = "MainActivity";
 

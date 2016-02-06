@@ -21,16 +21,26 @@ package com.shalzz.attendance.sync;
 
 import android.accounts.Account;
 import android.annotation.SuppressLint;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SyncResult;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.shalzz.attendance.BuildConfig;
 import com.shalzz.attendance.DatabaseHandler;
+import com.shalzz.attendance.R;
+import com.shalzz.attendance.activity.MainActivity;
 import com.shalzz.attendance.model.PeriodModel;
 import com.shalzz.attendance.model.SubjectModel;
 import com.shalzz.attendance.model.UserModel;
@@ -93,7 +103,6 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
             @Override
             public void onResponse(UserModel user) {
 
-                MyPreferencesManager.saveUser(user.getSapid(), user.getPassword());
                 DatabaseHandler db = new DatabaseHandler(mContext);
                 db.addOrUpdateUser(user);
                 db.close();
@@ -131,7 +140,34 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 					for(PeriodModel period : response) {
 						db.addOrUpdatePeriod(period, now);
 					}
-                    db.purgeOldPeriods();
+                    // Show a notification since our timetable has changed.
+                    if (BuildConfig.DEBUG || db.purgeOldPeriods() == 1) {
+                        NotificationCompat.Builder mBuilder =
+                                (NotificationCompat.Builder) new NotificationCompat.Builder(mContext)
+                                        .setSmallIcon(R.mipmap.ic_launcher)
+                                        .setLargeIcon(BitmapFactory.decodeResource(
+                                                        mContext.getResources(),
+                                                        R.mipmap.ic_launcher))
+                                        .setAutoCancel(true)
+                                        .setPriority(Notification.PRIORITY_LOW)
+                                        .setCategory(Notification.CATEGORY_RECOMMENDATION)
+                                        .setContentTitle(mContext.getString(
+                                                R.string.notify_timetable_changed_title))
+                                        .setContentText(mContext.getString(
+                                                R.string.notify_timetable_changed_text));
+
+                        Intent resultIntent = new Intent(mContext, MainActivity.class);
+                        resultIntent.putExtra(MainActivity.LAUNCH_FRAGMENT_EXTRA, MainActivity
+                                .Fragments.TIMETABLE.getValue());
+                        resultIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        PendingIntent resultPendingIntent = PendingIntent.getActivity(mContext,
+                                0, resultIntent,PendingIntent.FLAG_UPDATE_CURRENT);
+                        mBuilder.setContentIntent(resultPendingIntent);
+                        NotificationManager mNotificationManager =
+                                (NotificationManager) mContext.getSystemService(
+                                        Context.NOTIFICATION_SERVICE);
+                        mNotificationManager.notify(0, mBuilder.build());
+                    }
 					db.close();
                 }
                 catch(Exception e) {

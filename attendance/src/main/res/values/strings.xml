@@ -145,4 +145,9 @@
     <string name="navigation_item_2">Timetable</string>
     <string name="navigation_item_3">Settings</string>
 
+    <!--Notifications-->
+    <string name="notify_timetable_changed_title">Your timetable has changed</string>
+    <string name="notify_timetable_changed_text">Touch to see
+        the changes.</string>
+
 </resources>
