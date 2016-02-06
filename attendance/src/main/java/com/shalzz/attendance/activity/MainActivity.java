@@ -271,7 +271,6 @@ public class MainActivity extends AppCompatActivity {
             DrawerheaderVH.tv_name.setText(user.getName());
             DrawerheaderVH.tv_course.setText(user.getCourse());
 	    Bugsnag.setUserId(user.getSapid());
-	    Bugsnag.setUserName(user.getName());
         }
     }
 

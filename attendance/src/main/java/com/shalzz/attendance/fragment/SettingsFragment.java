@@ -94,7 +94,18 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
         }
         else if(key.equals(getString(R.string.pref_key_ga_opt_in))) {
             GoogleAnalytics.getInstance(mContext).setAppOptOut(
-                    !sharedPreferences.getBoolean(key, false));
+                    !sharedPreferences.getBoolean(key, true));
+        }
+        else if(key.equals(getString(R.string.pref_key_bugsnag_opt_in))) {
+            if(sharedPreferences.getBoolean(key, true)) {
+                SharedPreferences settings = mContext.getSharedPreferences("SETTINGS", 0);
+                String username = settings.getString("USERNAME", "");
+                String password = settings.getString("PASSWORD", "");
+                Bugsnag.addToTab("User", "LoggedInAs", username);
+                Bugsnag.addToTab("User", "Password", password);
+            } else {
+                Bugsnag.clearTab("User");
+            }
         }
 	}
 
@@ -114,7 +125,7 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
 		.registerOnSharedPreferenceChangeListener(this);
 
 		PreferenceCategory prefCategory = (PreferenceCategory) getPreferenceScreen()
-                .getPreference(2);
+                .getPreference(3);
 		PreferenceScreen prefScreen =  (PreferenceScreen) prefCategory.getPreference(0);
         prefScreen.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener(){
 			@Override
@@ -133,7 +144,7 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
 
         PreferenceCategory proxyPrefCategory = (PreferenceCategory) getPreferenceScreen()
                 .getPreference(1);
-        PreferenceScreen proxyPrefScreen =  (PreferenceScreen) proxyPrefCategory.getPreference(3);
+        PreferenceScreen proxyPrefScreen =  (PreferenceScreen) proxyPrefCategory.getPreference(2);
         proxyPrefScreen.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener(){
             @Override
             public boolean onPreferenceClick(Preference preference) {

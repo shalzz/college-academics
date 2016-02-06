@@ -24,6 +24,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -105,16 +106,20 @@ public class MyVolley extends Application {
 	    Bugsnag.init(this)
                 .setMaxBreadcrumbs(50);
         Bugsnag.setNotifyReleaseStages("production", "development", "testing");
-	    Bugsnag.beforeNotify(new BeforeNotify() {
-            public boolean run(Error error) {
-                SharedPreferences settings = mContext.getSharedPreferences("SETTINGS", 0);
-                String username = settings.getString("USERNAME", "");
-                String password = settings.getString("PASSWORD", "");
-                Bugsnag.addToTab("User", "LoggedInAs", username);
-                Bugsnag.addToTab("User", "Password", password);
-                return true;
-            }
-        });
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean optIn = sharedPref.getBoolean(getString(R.string.pref_key_bugsnag_opt_in), true);
+        if(optIn) {
+            Bugsnag.beforeNotify(new BeforeNotify() {
+                public boolean run(Error error) {
+                    SharedPreferences settings = mContext.getSharedPreferences("SETTINGS", 0);
+                    String username = settings.getString("USERNAME", "");
+                    String password = settings.getString("PASSWORD", "");
+                    Bugsnag.addToTab("User", "LoggedInAs", username);
+                    Bugsnag.addToTab("User", "Password", password);
+                    return true;
+                }
+            });
+        }
 
         // TODO: create a singleton for DatabaseHandler?
     }

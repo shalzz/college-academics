@@ -31,11 +31,6 @@
     </PreferenceCategory>
     <PreferenceCategory android:title="Network" >
         <SwitchPreference
-            android:key="@string/pref_key_ga_opt_in"
-            android:defaultValue="true"
-            android:title="@string/pref_ga_opt_in"
-            android:summary="@string/pref_ga_opt_in_summary" />
-        <SwitchPreference
             android:key="@string/pref_key_sync"
             android:defaultValue="true"
             android:title="@string/pref_sync"
@@ -56,6 +51,18 @@
             android:title="@string/pref_proxy"
             android:summary="@string/pref_proxy_summary" >
         </PreferenceScreen>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Privacy" >
+        <SwitchPreference
+            android:key="@string/pref_key_ga_opt_in"
+            android:defaultValue="true"
+            android:title="@string/pref_ga_opt_in"
+            android:summary="@string/pref_ga_opt_in_summary" />
+        <SwitchPreference
+            android:key="@string/pref_key_bugsnag_opt_in"
+            android:defaultValue="true"
+            android:title="@string/pref_bugsnag_opt_in"
+            android:summary="@string/pref_bugsnag_opt_in_summary" />
     </PreferenceCategory>
     <PreferenceCategory
         android:title="Info" >

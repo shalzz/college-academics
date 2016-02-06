@@ -52,6 +52,7 @@
     <string name="pref_key_proxy_username">pref_key_proxy_username</string>
     <string name="pref_key_proxy_password">pref_key_proxy_password</string>
     <string name="pref_key_ga_opt_in">ga_opt_in</string>
+    <string name="pref_key_bugsnag_opt_in">bugsnag_opt_in</string>
 
     <!--////  Actual user visible text ////-->
 
@@ -112,6 +113,9 @@
     <string name="pref_version">Build Version</string>
     <string name="pref_ga_opt_in">Google Analytics</string>
     <string name="pref_ga_opt_in_summary">Collect and send anonymous data to help improve the app</string>
+    <string name="pref_bugsnag_opt_in">Crash Reports</string>
+    <string name="pref_bugsnag_opt_in_summary">Send crash reports with diagnostic
+        information to help debug and improve the app</string>
 
     <!--Showcase View-->
     <string name="sv_attendance_title">Expandable item</string>
