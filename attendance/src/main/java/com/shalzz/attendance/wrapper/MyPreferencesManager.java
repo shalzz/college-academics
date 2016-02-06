@@ -21,20 +21,11 @@ package com.shalzz.attendance.wrapper;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
-import android.text.format.Time;
+import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
 
-import com.shalzz.attendance.Miscellaneous;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.activity.MainActivity;
-
-import java.net.CookieHandler;
-import java.net.CookieManager;
-import java.net.HttpCookie;
-import java.net.URI;
-import java.util.Date;
-import java.util.Iterator;
 
 public class MyPreferencesManager {
 

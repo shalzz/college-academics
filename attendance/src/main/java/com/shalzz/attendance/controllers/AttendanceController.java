@@ -22,7 +22,7 @@ package com.shalzz.attendance.controllers;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
-import android.preference.PreferenceManager;
+import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -121,14 +121,14 @@ public class AttendanceController {
                         mAdapter.updateFooter();
                     } else {
                         String msg = mResources.getString(R.string.unavailable_data_error_msg);
-                        Miscellaneous.showSnackBar(mContext,msg);
+                        Miscellaneous.showSnackBar(mView.mSwipeRefreshLayout, msg);
                     }
                     // Update the drawer header
                     ((MainActivity) mView.getActivity()).updateLastSync();
                 }
                 catch (Exception e) {
                     String msg = mResources.getString(R.string.unexpected_error);
-                    Miscellaneous.showSnackBar(mContext,msg);
+                    Miscellaneous.showSnackBar(mView.mSwipeRefreshLayout, msg);
                     if(BuildConfig.DEBUG)
                         e.printStackTrace();
                 }
@@ -143,7 +143,7 @@ public class AttendanceController {
 
                 done();
                 String msg = MyVolleyErrorHelper.getMessage(error, mContext);
-                Miscellaneous.showSnackBar(mContext, msg);
+                Miscellaneous.showSnackBar(mView.mSwipeRefreshLayout, msg);
                 if(BuildConfig.DEBUG)
                     error.printStackTrace();
             }

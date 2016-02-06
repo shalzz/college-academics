@@ -18,30 +18,30 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+<android.support.v7.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
 
-    <PreferenceCategory android:title="Attendance" >
-        <com.afollestad.materialdialogs.prefs.MaterialListPreference
+    <android.support.v7.preference.PreferenceCategory android:title="Attendance" >
+        <android.support.v7.preference.ListPreference
             android:key="@string/pref_key_sub_limit"
             android:defaultValue="0"
             android:title="@string/pref_subject_limit"
             android:dialogTitle="@string/pref_subject_limit_dialog"
             android:entries="@array/pref_subject_limit_entries"
             android:entryValues="@array/pref_subject_limit_values"/>
-    </PreferenceCategory>
-    <PreferenceCategory android:title="Network" >
-        <SwitchPreference
+    </android.support.v7.preference.PreferenceCategory>
+    <android.support.v7.preference.PreferenceCategory android:title="Network" >
+        <android.support.v14.preference.SwitchPreference
             android:key="@string/pref_key_ga_opt_in"
             android:defaultValue="true"
             android:title="@string/pref_ga_opt_in"
             android:summary="@string/pref_ga_opt_in_summary" />
-        <SwitchPreference
+        <android.support.v14.preference.SwitchPreference
             android:key="@string/pref_key_sync"
             android:defaultValue="true"
             android:title="@string/pref_sync"
             android:summary="@string/pref_sync_summary" />
 
-        <com.afollestad.materialdialogs.prefs.MaterialListPreference
+        <android.support.v7.preference.ListPreference
             android:key="@string/pref_key_sync_interval"
             android:defaultValue="720"
             android:title="@string/pref_refresh"
@@ -51,20 +51,20 @@
             android:entryValues="@array/pref_data_sync_interval_values"/>
 
         <!-- opens another nested subscreen -->
-        <PreferenceScreen
+        <android.support.v7.preference.PreferenceScreen
             android:persistent="false"
             android:title="@string/pref_proxy"
             android:summary="@string/pref_proxy_summary" >
-        </PreferenceScreen>
-    </PreferenceCategory>
-    <PreferenceCategory
+        </android.support.v7.preference.PreferenceScreen>
+    </android.support.v7.preference.PreferenceCategory>
+    <android.support.v7.preference.PreferenceCategory
         android:title="Info" >
 
-        <PreferenceScreen
+        <android.support.v7.preference.PreferenceScreen
             android:key="@string/pref_key_info_about"
             android:persistent="false"
             android:title="@string/pref_about"
             android:summary="@string/pref_about_summary"/>
-    </PreferenceCategory>
+    </android.support.v7.preference.PreferenceCategory>
 
-</PreferenceScreen>
+</android.support.v7.preference.PreferenceScreen>

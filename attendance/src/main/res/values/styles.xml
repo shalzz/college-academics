@@ -46,6 +46,8 @@
         <item name="colorPrimaryDark">@color/primary_dark</item>
         <!--   theme UI controls like checkboxes and text fields -->
         <item name="colorAccent">@color/accent</item>
+
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
     </style>
 
     <style name="MyActionBarSubTitleText" parent="TextAppearance.AppCompat.Widget.ActionBar.Subtitle">

@@ -22,7 +22,7 @@ android {
     buildToolsVersion '23.0.2'
     defaultConfig {
         applicationId 'com.shalzz.attendance'
-        minSdkVersion 13
+        minSdkVersion 14
         targetSdkVersion 23
 
         resConfigs "en"
@@ -34,7 +34,7 @@ android {
         }
         prod {
             // The actual minSdkVersion for the application.
-            minSdkVersion 13
+            minSdkVersion 14
         }
     }
 
@@ -74,6 +74,7 @@ android {
         compile 'com.android.support:support-v4:23.1.+'
         compile 'com.android.support:appcompat-v7:23.1.+'
         compile 'com.android.support:support-v13:23.1.+'
+        compile 'com.android.support:preference-v14:23.1.+'
 
         // 3rd party library projects
         compile 'com.jakewharton:butterknife:6.0.0'
@@ -82,9 +83,6 @@ android {
         compile 'com.github.amlcurran.showcaseview:library:5.4.0'
         compile 'com.google.code.gson:gson:2.5'
         compile('com.github.afollestad.material-dialogs:core:0.8.5.3@aar') {
-            transitive = true
-        }
-        compile('com.github.afollestad.material-dialogs:commons:0.8.5.3@aar') {
             transitive = true
         }
         compile('de.psdev.licensesdialog:licensesdialog:1.6.0') {

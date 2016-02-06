@@ -22,9 +22,9 @@ package com.shalzz.attendance.fragment;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.Preference;
-import android.preference.PreferenceFragment;
-import android.preference.PreferenceManager;
+import android.support.v14.preference.PreferenceFragment;
+import android.support.v7.preference.Preference;
+import android.support.v7.preference.PreferenceManager;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
@@ -36,8 +36,7 @@ public class ProxySettingsFragment extends PreferenceFragment implements SharedP
     private String key_proxy_username;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onCreatePreferences(Bundle bundle, String s) {
         Context mContext = getActivity();
 
         addPreferencesFromResource(R.xml.pref_proxy);
