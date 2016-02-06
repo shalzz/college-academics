@@ -91,9 +91,9 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
         }
         else if(key.equals(getString(R.string.pref_key_ga_opt_in))) {
             GoogleAnalytics.getInstance(mContext).setAppOptOut(
-                    !sharedPreferences.getBoolean(key, false));
+                    !sharedPreferences.getBoolean(key, true));
         }
-	}
+    }
 
 	@Override
 	public void onPause() {
@@ -110,12 +110,12 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
 		getPreferenceScreen().getSharedPreferences()
 		.registerOnSharedPreferenceChangeListener(this);
 
-		PreferenceCategory prefCategory = (PreferenceCategory) getPreferenceScreen()
-                .getPreference(2);
-		PreferenceScreen prefScreen =  (PreferenceScreen) prefCategory.getPreference(0);
+        PreferenceCategory prefCategory = (PreferenceCategory) getPreferenceScreen()
+                .getPreference(3);
+        PreferenceScreen prefScreen =  (PreferenceScreen) prefCategory.getPreference(0);
         prefScreen.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener(){
-			@Override
-			public boolean onPreferenceClick(Preference preference) {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
                 Fragment mFragment = new AboutSettingsFragment();
                 FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
@@ -124,13 +124,13 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
                 ((MainActivity)getActivity()).mPopSettingsBackStack = true;
 
                 transaction.commit();
-				return true;
-			}
-		});
+                return true;
+            }
+        });
 
         PreferenceCategory proxyPrefCategory = (PreferenceCategory) getPreferenceScreen()
                 .getPreference(1);
-        PreferenceScreen proxyPrefScreen =  (PreferenceScreen) proxyPrefCategory.getPreference(3);
+        PreferenceScreen proxyPrefScreen =  (PreferenceScreen) proxyPrefCategory.getPreference(2);
         proxyPrefScreen.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener(){
             @Override
             public boolean onPreferenceClick(Preference preference) {
@@ -145,5 +145,5 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
                 return true;
             }
         });
-	}
+    }
 }
