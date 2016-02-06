@@ -19,7 +19,6 @@
 
 package com.shalzz.attendance;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -27,17 +26,16 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
-import android.preference.PreferenceManager;
+import android.support.design.widget.Snackbar;
+import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
+import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.nispok.snackbar.Snackbar;
-import com.nispok.snackbar.SnackbarManager;
-import com.nispok.snackbar.enums.SnackbarType;
 import com.shalzz.attendance.wrapper.MyVolley;
 
 import java.io.BufferedInputStream;
@@ -54,7 +52,6 @@ import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 
 import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.ManagerFactoryParameters;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManagerFactory;
@@ -154,42 +151,12 @@ public class Miscellaneous {
 
     /**
      * Material design snack bar
-     * @param context activity context
+     * @param view the parent view
      * @param msg message to be displayed
      */
-    public static void showSnackBar(Context context, String msg) {
-        SnackbarManager.show(
-                Snackbar.with(context)
-                        .duration(Snackbar.SnackbarDuration.LENGTH_LONG)
-                        .textColor(context.getResources().getColor(R.color.accent))
-                        .text(msg), (Activity) context);
-    }
-
-    /**
-     * Material design snack bar
-     * @param context activity context
-     * @param msgRes Resource id of the message to be displayed
-     */
-    public static void showSnackBar(Context context, int msgRes) {
-        SnackbarManager.show(
-                Snackbar.with(context)
-                        .duration(Snackbar.SnackbarDuration.LENGTH_LONG)
-                        .textColor(context.getResources().getColor(R.color.accent))
-                        .text(context.getString(msgRes)), (Activity) context);
-    }
-
-    /**
-     * Material design snack bar
-     * @param context activity context
-     * @param msgRes Resourse id of the message to be displayed
-     */
-    public static void showMultilineSnackBar(Context context, int msgRes) {
-        SnackbarManager.show(
-                Snackbar.with(context)
-                        .type(SnackbarType.MULTI_LINE)
-                        .duration(Snackbar.SnackbarDuration.LENGTH_LONG)
-                        .textColor(context.getResources().getColor(R.color.accent))
-                        .text(context.getString(msgRes)), (Activity) context);
+    public static void showSnackBar(View view, String msg) {
+        Snackbar.make(view, msg, Snackbar.LENGTH_LONG)
+                .show();
     }
 
     /**
