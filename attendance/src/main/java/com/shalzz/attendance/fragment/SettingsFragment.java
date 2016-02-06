@@ -42,7 +42,7 @@ import com.shalzz.attendance.wrapper.MyVolley;
 
 public class SettingsFragment extends PreferenceFragment implements OnSharedPreferenceChangeListener{
 
-	private Context mContext;
+    private Context mContext;
     private String key_sub_limit;
     private String key_sync_interval;
 
@@ -70,7 +70,7 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
         t.send(new HitBuilders.ScreenViewBuilder().build());
     }
 
-	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         if(key.equals(key_sub_limit)) {
             ListPreference connectionPref = (ListPreference) findPreference(key);
             connectionPref.setSummary(connectionPref.getEntry());
@@ -95,20 +95,20 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
         }
     }
 
-	@Override
-	public void onPause() {
-		super.onPause();
-		// Unregister the listener whenever a key changes
-		getPreferenceScreen().getSharedPreferences()
-		.unregisterOnSharedPreferenceChangeListener(this);
-	}
+    @Override
+    public void onPause() {
+        super.onPause();
+        // Unregister the listener whenever a key changes
+        getPreferenceScreen().getSharedPreferences()
+                .unregisterOnSharedPreferenceChangeListener(this);
+    }
 
-	@Override
-	public void onResume() {
-		super.onResume();
-		// Set up a listener whenever a key changes
-		getPreferenceScreen().getSharedPreferences()
-		.registerOnSharedPreferenceChangeListener(this);
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Set up a listener whenever a key changes
+        getPreferenceScreen().getSharedPreferences()
+                .registerOnSharedPreferenceChangeListener(this);
 
         PreferenceCategory prefCategory = (PreferenceCategory) getPreferenceScreen()
                 .getPreference(3);
