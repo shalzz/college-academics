@@ -68,7 +68,7 @@ public class MyPreferencesManager {
 		editor.putBoolean("LOGGEDIN"+mContext.getResources().getString(R.string.user_version), true);
 		editor.putString("USERNAME", username);
 		editor.putString("PASSWORD", password);
-		editor.apply();
+		editor.commit();
 	}
 
 	/**
@@ -82,7 +82,7 @@ public class MyPreferencesManager {
 		editor.putBoolean("LOGGEDIN"+mContext.getResources().getString(R.string.user_version), false);
 		editor.remove("USERNAME");
 		editor.remove("PASSWORD");
-		editor.apply();
+		editor.commit();
 	}
 
     public static void removeSettings() {
@@ -90,13 +90,13 @@ public class MyPreferencesManager {
         SharedPreferences settings = mContext.getSharedPreferences("SETTINGS", 0);
         SharedPreferences.Editor editor = settings.edit();
         editor.clear();
-        editor.apply();
+        editor.commit();
     }
     
     public static void removeDefaultSharedPreferences() {
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(mContext);
         SharedPreferences.Editor editor = settings.edit();
         editor.clear();
-        editor.apply();
+        editor.commit();
     }
 }
