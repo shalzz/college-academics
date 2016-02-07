@@ -20,6 +20,7 @@
 package com.shalzz.attendance.controllers;
 
 import android.app.Activity;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -133,6 +134,12 @@ public class UserAccount {
 
         // Remove Sync Account
         MySyncManager.removeSyncAccount(mContext);
+
+        // Cancel a notification if it is shown.
+        NotificationManager mNotificationManager =
+                (NotificationManager) mContext.getSystemService(
+                        Context.NOTIFICATION_SERVICE);
+        mNotificationManager.cancel(0 /** timetable changed notification id */);
 
         // Destroy current activity and start Login Activity
         Intent ourIntent = new Intent(mContext, LoginActivity.class);

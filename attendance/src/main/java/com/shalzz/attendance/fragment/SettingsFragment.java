@@ -21,6 +21,7 @@ package com.shalzz.attendance.fragment;
 
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
@@ -93,6 +94,15 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
             GoogleAnalytics.getInstance(mContext).setAppOptOut(
                     !sharedPreferences.getBoolean(key, true));
         }
+        else if(key.equals(getString(R.string.pref_key_notify_timetable_changed))) {
+            if(!sharedPreferences.getBoolean(key, true)) {
+                // Cancel a notification if it is shown.
+                NotificationManager mNotificationManager =
+                        (NotificationManager) mContext.getSystemService(
+                                Context.NOTIFICATION_SERVICE);
+                mNotificationManager.cancel(0 /** timetable changed notification id */);
+            }
+        }
     }
 
     @Override
@@ -111,7 +121,7 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
                 .registerOnSharedPreferenceChangeListener(this);
 
         PreferenceCategory prefCategory = (PreferenceCategory) getPreferenceScreen()
-                .getPreference(3);
+                .getPreference(4);
         PreferenceScreen prefScreen =  (PreferenceScreen) prefCategory.getPreference(0);
         prefScreen.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener(){
             @Override
@@ -129,7 +139,7 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
         });
 
         PreferenceCategory proxyPrefCategory = (PreferenceCategory) getPreferenceScreen()
-                .getPreference(1);
+                .getPreference(2);
         PreferenceScreen proxyPrefScreen =  (PreferenceScreen) proxyPrefCategory.getPreference(2);
         proxyPrefScreen.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener(){
             @Override

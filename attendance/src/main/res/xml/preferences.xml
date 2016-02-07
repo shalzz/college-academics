@@ -29,6 +29,15 @@
             android:entries="@array/pref_subject_limit_entries"
             android:entryValues="@array/pref_subject_limit_values"/>
     </android.support.v7.preference.PreferenceCategory>
+
+    <android.support.v7.preference.PreferenceCategory android:title="Timetable" >
+        <android.support.v14.preference.SwitchPreference
+            android:key="@string/pref_key_notify_timetable_changed"
+            android:defaultValue="true"
+            android:title="@string/pref_notify_timetable_changed"
+            android:summary="@string/pref_notify_timetable_changed_summary"/>
+    </android.support.v7.preference.PreferenceCategory>
+
     <android.support.v7.preference.PreferenceCategory android:title="Network" >
         <android.support.v14.preference.SwitchPreference
             android:key="@string/pref_key_sync"

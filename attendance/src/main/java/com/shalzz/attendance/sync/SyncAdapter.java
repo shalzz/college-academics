@@ -28,11 +28,13 @@ import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.SyncResult;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v7.app.NotificationCompat;
+import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
 
 import com.android.volley.Response;
@@ -140,11 +142,19 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 					for(PeriodModel period : response) {
 						db.addOrUpdatePeriod(period, now);
 					}
+                    SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences
+                            (mContext);
+                    boolean notify = sharedPref.getBoolean(mContext.getString(
+                            R.string.pref_key_notify_timetable_changed),
+                            true);
+
+                    notify = db.purgeOldPeriods() == 1 && notify;
+
                     // Show a notification since our timetable has changed.
-                    if (BuildConfig.DEBUG || db.purgeOldPeriods() == 1) {
+                    if (notify) {
                         NotificationCompat.Builder mBuilder =
                                 (NotificationCompat.Builder) new NotificationCompat.Builder(mContext)
-                                        .setSmallIcon(R.mipmap.ic_launcher)
+                                        .setSmallIcon(R.drawable.human)
                                         .setLargeIcon(BitmapFactory.decodeResource(
                                                         mContext.getResources(),
                                                         R.mipmap.ic_launcher))
