@@ -286,14 +286,9 @@ public class TimeTablePagerFragment extends Fragment {
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-        mViewPager.removeOnPageChangeListener(mPageChangeListener);
-    }
-
-    @Override
     public void onDestroyView() {
         super.onDestroyView();
+        mViewPager.removeOnPageChangeListener(mPageChangeListener);
         MyVolley.getInstance().cancelPendingRequests(MyVolley.ACTIVITY_NETWORK_TAG);
         ButterKnife.reset(this);
     }
