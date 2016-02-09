@@ -21,21 +21,29 @@ package com.shalzz.attendance.sync;
 
 import android.accounts.Account;
 import android.annotation.SuppressLint;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.SyncResult;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.support.v7.app.NotificationCompat;
+import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.shalzz.attendance.DatabaseHandler;
+import com.shalzz.attendance.R;
+import com.shalzz.attendance.activity.MainActivity;
 import com.shalzz.attendance.model.PeriodModel;
 import com.shalzz.attendance.model.SubjectModel;
-import com.shalzz.attendance.model.UserModel;
 import com.shalzz.attendance.network.DataAPI;
-import com.shalzz.attendance.wrapper.MyPreferencesManager;
 import com.shalzz.attendance.wrapper.MyVolleyErrorHelper;
 
 import java.util.ArrayList;
@@ -81,25 +89,9 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 	public void onPerformSync(Account account, Bundle extras, String authority,
 			ContentProviderClient provider, SyncResult syncResult) {
 
-        UserModel user = new DatabaseHandler(mContext).getUser();
-        String creds = String.format("%s:%s", user.getSapid(), user.getPassword());
-		DataAPI.getUser(userSuccessListener(), myErrorListener(), creds);
 		DataAPI.getAttendance(attendanceSuccessListener(), myErrorListener());
 		DataAPI.getTimeTable(timeTableSuccessListener(), myErrorListener());
 	}
-
-    private Response.Listener<UserModel> userSuccessListener() {
-        return new Response.Listener<UserModel>() {
-            @Override
-            public void onResponse(UserModel user) {
-
-                MyPreferencesManager.saveUser(user.getSapid(), user.getPassword());
-                DatabaseHandler db = new DatabaseHandler(mContext);
-                db.addOrUpdateUser(user);
-                db.close();
-            }
-        };
-    }
 
 	private Response.Listener<ArrayList<SubjectModel>> attendanceSuccessListener() {
 		return new Response.Listener<ArrayList<SubjectModel>>() {
@@ -131,7 +123,42 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 					for(PeriodModel period : response) {
 						db.addOrUpdatePeriod(period, now);
 					}
-                    db.purgeOldPeriods();
+                    SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences
+                            (mContext);
+                    boolean notify = sharedPref.getBoolean(mContext.getString(
+                            R.string.pref_key_notify_timetable_changed),
+                            true);
+
+                    notify = db.purgeOldPeriods() == 1 && notify;
+
+                    // Show a notification since our timetable has changed.
+                    if (notify) {
+                        NotificationCompat.Builder mBuilder =
+                                (NotificationCompat.Builder) new NotificationCompat.Builder(mContext)
+                                        .setSmallIcon(R.drawable.human)
+                                        .setLargeIcon(BitmapFactory.decodeResource(
+                                                        mContext.getResources(),
+                                                        R.mipmap.ic_launcher))
+                                        .setAutoCancel(true)
+                                        .setPriority(Notification.PRIORITY_LOW)
+                                        .setCategory(Notification.CATEGORY_RECOMMENDATION)
+                                        .setContentTitle(mContext.getString(
+                                                R.string.notify_timetable_changed_title))
+                                        .setContentText(mContext.getString(
+                                                R.string.notify_timetable_changed_text));
+
+                        Intent resultIntent = new Intent(mContext, MainActivity.class);
+                        resultIntent.putExtra(MainActivity.LAUNCH_FRAGMENT_EXTRA, MainActivity
+                                .Fragments.TIMETABLE.getValue());
+                        resultIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        PendingIntent resultPendingIntent = PendingIntent.getActivity(mContext,
+                                0, resultIntent,PendingIntent.FLAG_UPDATE_CURRENT);
+                        mBuilder.setContentIntent(resultPendingIntent);
+                        NotificationManager mNotificationManager =
+                                (NotificationManager) mContext.getSystemService(
+                                        Context.NOTIFICATION_SERVICE);
+                        mNotificationManager.notify(0, mBuilder.build());
+                    }
 					db.close();
                 }
                 catch(Exception e) {

@@ -60,7 +60,7 @@ public class PeriodModel {
         Date d = null;
         try {
             d = DateHelper.hr24Format.parse(start);
-        } catch (ParseException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return d;
@@ -70,7 +70,7 @@ public class PeriodModel {
         Date d = null;
         try {
             d = DateHelper.hr24Format.parse(end);
-        } catch (ParseException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return d;
@@ -132,7 +132,7 @@ public class PeriodModel {
         try {
             this.start = DateHelper.to24HrFormat(start);
             this.end = DateHelper.to24HrFormat(end);
-        } catch (ParseException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 	}

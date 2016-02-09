@@ -51,6 +51,7 @@
     <string name="pref_key_proxy_username">pref_key_proxy_username</string>
     <string name="pref_key_proxy_password">pref_key_proxy_password</string>
     <string name="pref_key_ga_opt_in">ga_opt_in</string>
+    <string name="pref_key_notify_timetable_changed">notify_timetable_changed</string>
 
     <!--////  Actual user visible text ////-->
 
@@ -111,6 +112,9 @@
     <string name="pref_version">Build Version</string>
     <string name="pref_ga_opt_in">Google Analytics</string>
     <string name="pref_ga_opt_in_summary">Collect and send anonymous data to help improve the app</string>
+    <string name="pref_notify_timetable_changed">Notifications</string>
+    <string name="pref_notify_timetable_changed_summary">Receive a notification when your timetable
+        changes</string>
 
     <!--Showcase View-->
     <string name="sv_attendance_title">Expandable item</string>
@@ -144,5 +148,10 @@
     <string name="navigation_item_1">Attendance</string>
     <string name="navigation_item_2">Timetable</string>
     <string name="navigation_item_3">Settings</string>
+
+    <!--Notifications-->
+    <string name="notify_timetable_changed_title">Timetable has changed</string>
+    <string name="notify_timetable_changed_text">Touch to see
+        your timetable.</string>
 
 </resources>

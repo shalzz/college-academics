@@ -21,20 +21,11 @@ package com.shalzz.attendance.wrapper;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
-import android.text.format.Time;
+import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
 
-import com.shalzz.attendance.Miscellaneous;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.activity.MainActivity;
-
-import java.net.CookieHandler;
-import java.net.CookieManager;
-import java.net.HttpCookie;
-import java.net.URI;
-import java.util.Date;
-import java.util.Iterator;
 
 public class MyPreferencesManager {
 
@@ -93,25 +84,6 @@ public class MyPreferencesManager {
 		editor.remove("PASSWORD");
 		editor.commit();
 	}
-
-    /**
-     * Checks weather this is the first time the app is launched or not.
-     * @return True or False
-     */
-    public static boolean isFirstLaunch(String tag) {
-        SharedPreferences settings = mContext.getSharedPreferences("LAUNCH", 0);
-        return settings.getBoolean("FIRSTLAUNCH"+tag, true);
-    }
-
-    /**
-     * Sets the first launch to false.
-     */
-    public static void setFirstLaunch(String tag) {
-        SharedPreferences settings = mContext.getSharedPreferences("LAUNCH", 0);
-        SharedPreferences.Editor editor = settings.edit();
-        editor.putBoolean("FIRSTLAUNCH"+tag, false);
-        editor.commit();
-    }
 
     public static void removeSettings() {
         removeDefaultSharedPreferences();
