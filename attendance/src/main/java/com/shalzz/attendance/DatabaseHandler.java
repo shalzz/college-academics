@@ -184,7 +184,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         // TODO: Clean up from previous versions, remove in later releases.
         db.execSQL("DROP TABLE IF EXISTS " + "ListFooter");
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_TIMETABLE);
-        db.execSQL("DROP TABLE IF EXISTS " + CREATE_DAYS_ABSENT_TABLE);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_DAYS_ABSENT);
 
         // Create tables again
         onCreate(db);
