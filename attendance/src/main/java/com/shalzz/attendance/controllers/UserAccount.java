@@ -20,10 +20,12 @@
 package com.shalzz.attendance.controllers;
 
 import android.app.Activity;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.util.Log;
+import android.view.View;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -110,7 +112,8 @@ public class UserAccount {
             public void onErrorResponse(VolleyError error) {
                 String msg = MyVolleyErrorHelper.getMessage(error, mContext);
                 misc.dismissProgressDialog();
-                Miscellaneous.showSnackBar(mContext, msg);
+                View view = ((Activity) mContext).getCurrentFocus();
+                Miscellaneous.showSnackBar(view, msg);
                 Log.e(mContext.getClass().getName(), msg);
             }
         };
@@ -131,6 +134,12 @@ public class UserAccount {
 
         // Remove Sync Account
         MySyncManager.removeSyncAccount(mContext);
+
+        // Cancel a notification if it is shown.
+        NotificationManager mNotificationManager =
+                (NotificationManager) mContext.getSystemService(
+                        Context.NOTIFICATION_SERVICE);
+        mNotificationManager.cancel(0 /** timetable changed notification id */);
 
         // Destroy current activity and start Login Activity
         Intent ourIntent = new Intent(mContext, LoginActivity.class);

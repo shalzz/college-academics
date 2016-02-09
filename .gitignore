@@ -2,7 +2,7 @@
 .idea
 build/
 */build/
-attendance/attendance-release.apk
+attendance/*.apk
 
 */*.iml
 *.iml

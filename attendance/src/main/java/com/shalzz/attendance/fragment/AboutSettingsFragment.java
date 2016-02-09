@@ -21,9 +21,9 @@ package com.shalzz.attendance.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.preference.Preference;
-import android.preference.PreferenceFragment;
-import android.preference.PreferenceScreen;
+import android.support.v14.preference.PreferenceFragment;
+import android.support.v7.preference.Preference;
+import android.support.v7.preference.PreferenceScreen;
 
 import com.bugsnag.android.Bugsnag;
 import com.google.android.gms.analytics.HitBuilders;
@@ -36,13 +36,12 @@ import de.psdev.licensesdialog.licenses.GnuGeneralPublicLicense20;
 import de.psdev.licensesdialog.licenses.License;
 import de.psdev.licensesdialog.model.Notice;
 
-public class AboutSettingsFragment extends PreferenceFragment{
+public class AboutSettingsFragment extends PreferenceFragment {
 
     private Context mContext;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onCreatePreferences(Bundle bundle, String s) {
         mContext = getActivity();
         Bugsnag.setContext("About");
 

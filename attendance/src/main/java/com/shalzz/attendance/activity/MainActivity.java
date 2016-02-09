@@ -50,7 +50,6 @@ import com.shalzz.attendance.fragment.AttendanceListFragment;
 import com.shalzz.attendance.fragment.SettingsFragment;
 import com.shalzz.attendance.fragment.TimeTablePagerFragment;
 import com.shalzz.attendance.model.UserModel;
-import com.shalzz.attendance.wrapper.MyPreferencesManager;
 import com.shalzz.attendance.wrapper.MyVolley;
 
 import butterknife.ButterKnife;
@@ -94,9 +93,10 @@ public class MainActivity extends AppCompatActivity {
 
     public static final String FRAGMENT_TAG = "MainActivity.FRAGMENT";
 
-    public static final String LAUNCH_FRAGMENT_EXTRA = "MainActivity.LAUNCH_FRAGMENT";
+    public static final String LAUNCH_FRAGMENT_EXTRA = BuildConfig.APPLICATION_ID +
+            ".MainActivity.LAUNCH_FRAGMENT";
 
-    private static final String PREVIOUS_FRAGMENT_TAG = "MainActivity.PREVOIUS_FRAGMENT";
+    private static final String PREVIOUS_FRAGMENT_TAG = "MainActivity.PREVIOUS_FRAGMENT";
 
     private static final String mTag = "MainActivity";
 
@@ -146,10 +146,10 @@ public class MainActivity extends AppCompatActivity {
         mTitle  = getTitle();
         actionbar = getSupportActionBar();
 
-//        // Check for tablet layout
+        // Check for tablet layout
 //        FrameLayout frameLayout = (FrameLayout)findViewById(R.id.frame_container);
 //        if(((ViewGroup.MarginLayoutParams)frameLayout.getLayoutParams()).leftMargin == (int)getResources().getDimension(R.dimen.drawer_size)) {
-//            mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN, mDrawerList);
+//            mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN, mNavigationView);
 //            mDrawerLayout.setScrimColor(Color.TRANSPARENT);
 //            isDrawerLocked = true;
 //        }
@@ -222,40 +222,36 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void showcaseView() {
-        if(MyPreferencesManager.isFirstLaunch(mTag)) {
 
-            Target homeTarget = new Target() {
-                @Override
-                public Point getPoint() {
-                    // Get approximate position of home icon's center
-                    int actionBarSize = getSupportActionBar().getHeight();
-                    int x = actionBarSize / 2;
-                    int y = actionBarSize / 2;
-                    return new Point(x, y);
+        Target homeTarget = new Target() {
+            @Override
+            public Point getPoint() {
+                // Get approximate position of home icon's center
+                int actionBarSize = actionbar.getHeight();
+                int x = actionBarSize / 2;
+                int y = actionBarSize / 2;
+                return new Point(x, y);
+            }
+        };
+
+        final ShowcaseView sv = new ShowcaseView.Builder(this)
+                .setTarget(homeTarget)
+                .setStyle(R.style.ShowcaseTheme)
+                .singleShot(1111)
+                .setContentTitle(getString(R.string.sv_main_activity_title))
+                .setContentText(getString(R.string.sv_main_activity_content))
+                .build();
+
+        sv.overrideButtonClick(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDrawerLayout.closeDrawer(mNavigationView);
+                sv.hide();
+                if(fragment instanceof AttendanceListFragment) {
+                    ((AttendanceListFragment) fragment).showcaseView();
                 }
-            };
-
-            // TODO: ActionItemTarget target = new ActionItemTarget(this, R.id.home);
-
-            final ShowcaseView sv = new ShowcaseView.Builder(this)
-                    .setTarget(homeTarget)
-                    .setStyle(R.style.ShowcaseTheme)
-                    .setContentTitle(getString(R.string.sv_main_activity_title))
-                    .setContentText(getString(R.string.sv_main_activity_content))
-                    .build();
-
-            sv.overrideButtonClick(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    sv.hide();
-                    if(fragment instanceof AttendanceListFragment)
-                    {
-                        ((AttendanceListFragment) fragment).showcaseView();
-                    }
-                }
-            });
-            MyPreferencesManager.setFirstLaunch(mTag);
-        }
+            }
+        });
     }
 
     public void updateDrawerHeader() {

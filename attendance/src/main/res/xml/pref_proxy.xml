@@ -18,22 +18,22 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<android.support.v7.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <SwitchPreference
+    <android.support.v14.preference.SwitchPreference
         android:key="@string/pref_key_use_proxy"
         android:defaultValue="false"
         android:title="@string/pref_proxy_enable"
         android:summary="@string/pref_proxy_enable_summary"/>
 
-    <com.afollestad.materialdialogs.prefs.MaterialEditTextPreference
+    <android.support.v7.preference.EditTextPreference
         android:key="@string/pref_key_proxy_username"
         android:title="@string/pref_proxy_username"
         android:dependency="@string/pref_key_use_proxy" />
-    <com.afollestad.materialdialogs.prefs.MaterialEditTextPreference
+    <android.support.v7.preference.EditTextPreference
         android:key="@string/pref_key_proxy_password"
         android:title="@string/pref_proxy_password"
         android:dependency="@string/pref_key_use_proxy"
         android:inputType="textPassword"/>
 
-</PreferenceScreen>
+</android.support.v7.preference.PreferenceScreen>

@@ -167,17 +167,17 @@ public class AttendanceListFragment extends Fragment implements
     }
 
     public void showcaseView() {
-        View firstElementView = mRecyclerView.getChildAt(0);
-        ViewTarget target = firstElementView != null ? new ViewTarget(firstElementView)
-                : new ViewTarget(mRecyclerView);
+        if(mRecyclerView != null && mRecyclerView.getChildAt(2) != null) {
+            ViewTarget target = new ViewTarget(mRecyclerView.getChildAt(2));
 
-        new ShowcaseView.Builder(getActivity())
-                .setStyle(R.style.ShowcaseTheme)
-                .setTarget(target)
-                .setContentTitle(getString(R.string.sv_attendance_title))
-                .setContentText(getString(R.string.sv_attendance_content))
-                .build();
-
+            new ShowcaseView.Builder(getActivity())
+                    .setStyle(R.style.ShowcaseTheme)
+                    .setTarget(target)
+                    .singleShot(2222)
+                    .setContentTitle(getString(R.string.sv_attendance_title))
+                    .setContentText(getString(R.string.sv_attendance_content))
+                    .build();
+        }
     }
 
     @Override

@@ -38,22 +38,10 @@
         <license>MIT License</license>
     </notice>
     <notice>
-        <name>Snackbar</name>
-        <url>https://github.com/nispok/snackbar</url>
-        <copyright>Copyright (c) 2014 William Mora</copyright>
-        <license>MIT License</license>
-    </notice>
-    <notice>
         <name>Showcase View</name>
         <url>http://amlcurran.github.io/ShowcaseView/</url>
         <copyright>Copyright Alex Curran © 2012-2014. All rights reserved.</copyright>
         <license>Apache Software License 2.0</license>
-    </notice>
-    <notice>
-        <name>Jsoup</name>
-        <url>http://jsoup.org/</url>
-        <copyright>Copyright © 2009 - 2013 Jonathan Hedley &lt;jonathan@hedley.net&gt; </copyright>
-        <license>MIT License</license>
     </notice>
     <notice>
         <name>okHttp</name>
@@ -68,27 +56,39 @@
         <license>Apache Software License 2.0</license>
     </notice>
     <notice>
-        <name>android-support-recyclerview-v7</name>
-        <url>https://developer.android.com/tools/support-library/features.html#v7-recyclerview</url>
-        <copyright>Copyright (C) 2014 The Android Open Source Project</copyright>
-        <license>Apache Software License 2.0</license>
-    </notice>
-    <notice>
-        <name>android-support-v4</name>
+        <name>v4 Support Library</name>
         <url>https://developer.android.com/tools/support-library/features.html#v4</url>
         <copyright>Copyright (C) 2014 The Android Open Source Project</copyright>
         <license>Apache Software License 2.0</license>
     </notice>
     <notice>
-        <name>android-support-v7</name>
+        <name>v7 recyclerview library</name>
         <url>https://developer.android.com/tools/support-library/features.html#v7</url>
         <copyright>Copyright (C) 2014 The Android Open Source Project</copyright>
         <license>Apache Software License 2.0</license>
     </notice>
     <notice>
-        <name>android-support-v13</name>
+        <name>v7 appcompat library</name>
+        <url>https://developer.android.com/tools/support-library/features.html#v7</url>
+        <copyright>Copyright (C) 2014 The Android Open Source Project</copyright>
+        <license>Apache Software License 2.0</license>
+    </notice>
+    <notice>
+        <name>v13 Support Library</name>
         <url>https://developer.android.com/tools/support-library/features.html#v13</url>
         <copyright>Copyright (C) 2014 The Android Open Source Project</copyright>
+        <license>Apache Software License 2.0</license>
+    </notice>
+    <notice>
+        <name>v14 Preference Support Library</name>
+        <url>https://developer.android.com/tools/support-library/features.html#v14-preference</url>
+        <copyright>Copyright (C) 2015 The Android Open Source Project</copyright>
+        <license>Apache Software License 2.0</license>
+    </notice>
+    <notice>
+        <name>Design Support Library</name>
+        <url>https://developer.android.com/tools/support-library/features.html#design</url>
+        <copyright>Copyright (C) 2015 The Android Open Source Project</copyright>
         <license>Apache Software License 2.0</license>
     </notice>
 </notices>

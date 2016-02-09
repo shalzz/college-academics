@@ -26,7 +26,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
+import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
 
 import com.shalzz.attendance.BuildConfig;
@@ -93,7 +93,7 @@ public class MySyncManager {
                 mContext.getString(R.string.pref_key_sync), true);
 		Log.d(mTag,"Enable sync: "+sync);
 		final long SYNC_INTERVAL_IN_MINUTES = Long.parseLong(sharedPref.getString(
-                mContext.getString(R.string.pref_key_sync_interval), "360"));
+                mContext.getString(R.string.pref_key_sync_interval), "720"));
 		Log.d(mTag,"Sync Interval set to: "+SYNC_INTERVAL_IN_MINUTES);
 		
 		Account mAccount = getSyncAccount(mContext);

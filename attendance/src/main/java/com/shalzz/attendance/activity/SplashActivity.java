@@ -22,8 +22,8 @@ package com.shalzz.attendance.activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.preference.PreferenceManager;
 
 import com.bugsnag.android.Bugsnag;
 import com.bugsnag.android.Severity;
@@ -38,9 +38,9 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Bugsnag.setContext("SplashActivity");
 
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean optIn = sharedPref.getBoolean(getString(R.string.pref_key_ga_opt_in), true);
-        GoogleAnalytics.getInstance(this).setAppOptOut(!optIn);
+		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+		boolean optIn = sharedPref.getBoolean(getString(R.string.pref_key_ga_opt_in), true);
+		GoogleAnalytics.getInstance(this).setAppOptOut(!optIn);
 
         // Set all default values once for this application
         try {
@@ -53,13 +53,13 @@ public class SplashActivity extends AppCompatActivity {
             PreferenceManager.setDefaultValues(this, R.xml.pref_proxy, true);
         }
 
-        boolean loggedin = MyPreferencesManager.getLoginStatus();
-
-        if(!loggedin)
-            startActivity(new Intent(SplashActivity.this, LoginActivity.class));
-        else
-            startActivity(new Intent(SplashActivity.this, MainActivity.class));
-
-        finish();
-    }
+		boolean loggedin = MyPreferencesManager.getLoginStatus();
+		
+		if(!loggedin)
+			startActivity(new Intent(SplashActivity.this, LoginActivity.class));
+		else
+			startActivity(new Intent(SplashActivity.this, MainActivity.class));
+		
+		finish();
+	}
 }

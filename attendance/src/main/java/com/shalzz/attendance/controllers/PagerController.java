@@ -84,15 +84,15 @@ public class PagerController {
                         db.close();
                     } else {
                         String msg = mResources.getString(R.string.unavailable_timetable_error_msg);
-                        Miscellaneous.showSnackBar(mContext,msg);
+                        Miscellaneous.showSnackBar(mView.mSwipeRefreshLayout, msg);
                     }
                     // Update the drawer header
                     ((MainActivity) mView.getActivity()).updateLastSync();
                 }
                 catch (Exception e) {
                     String msg = mResources.getString(R.string.unexpected_error);
-                    Miscellaneous.showSnackBar(mContext, msg);
-                    Bugsnag.notify(e);
+                    Miscellaneous.showSnackBar(mView.mSwipeRefreshLayout, msg);
+		    Bugsnag.notify(e);
                     if(BuildConfig.DEBUG)
                         e.printStackTrace();
                 }
@@ -107,7 +107,7 @@ public class PagerController {
 
                 done();
                 String msg = MyVolleyErrorHelper.getMessage(error, mContext);
-                Miscellaneous.showSnackBar(mContext, msg);
+                Miscellaneous.showSnackBar(mView.mSwipeRefreshLayout, msg);
                 if(BuildConfig.DEBUG)
                     error.printStackTrace();
             }

@@ -21,15 +21,16 @@ package com.shalzz.attendance.fragment;
 
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
-import android.preference.ListPreference;
-import android.preference.Preference;
-import android.preference.PreferenceCategory;
-import android.preference.PreferenceFragment;
-import android.preference.PreferenceScreen;
+import android.support.v14.preference.PreferenceFragment;
+import android.support.v7.preference.ListPreference;
+import android.support.v7.preference.Preference;
+import android.support.v7.preference.PreferenceCategory;
+import android.support.v7.preference.PreferenceScreen;
 
 import com.bugsnag.android.Bugsnag;
 import com.google.android.gms.analytics.GoogleAnalytics;
@@ -43,26 +44,25 @@ import com.shalzz.attendance.wrapper.MyVolley;
 
 public class SettingsFragment extends PreferenceFragment implements OnSharedPreferenceChangeListener{
 
-	private Context mContext;
+    private Context mContext;
     private String key_sub_limit;
     private String key_sync_interval;
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		mContext = getActivity();
-        Bugsnag.setContext("Settings");
+    @Override
+    public void onCreatePreferences(Bundle bundle, String s) {
+        mContext = getActivity();
+	Bugsnag.setContext("Settings");
 
-		addPreferencesFromResource(R.xml.preferences);
+        addPreferencesFromResource(R.xml.preferences);
 
         key_sub_limit = getString(R.string.pref_key_sub_limit);
-		ListPreference listPref = (ListPreference) findPreference(key_sub_limit);
-		listPref.setSummary(listPref.getEntry());
+        ListPreference listPref = (ListPreference) findPreference(key_sub_limit);
+        listPref.setSummary(listPref.getEntry());
 
         key_sync_interval = getString(R.string.pref_key_sync_interval);
-		ListPreference synclistPref = (ListPreference) findPreference(key_sync_interval);
-		synclistPref.setSummary(synclistPref.getEntry());
-	}
+        ListPreference synclistPref = (ListPreference) findPreference(key_sync_interval);
+        synclistPref.setSummary(synclistPref.getEntry());
+    }
 
     @Override
     public void onStart() {
@@ -73,7 +73,7 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
         t.send(new HitBuilders.ScreenViewBuilder().build());
     }
 
-	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         if(key.equals(key_sub_limit)) {
             ListPreference connectionPref = (ListPreference) findPreference(key);
             connectionPref.setSummary(connectionPref.getEntry());
@@ -96,40 +96,38 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
             GoogleAnalytics.getInstance(mContext).setAppOptOut(
                     !sharedPreferences.getBoolean(key, true));
         }
-        else if(key.equals(getString(R.string.pref_key_bugsnag_opt_in))) {
-            if(sharedPreferences.getBoolean(key, true)) {
-                SharedPreferences settings = mContext.getSharedPreferences("SETTINGS", 0);
-                String username = settings.getString("USERNAME", "");
-                String password = settings.getString("PASSWORD", "");
-                Bugsnag.addToTab("User", "LoggedInAs", username);
-                Bugsnag.addToTab("User", "Password", password);
-            } else {
-                Bugsnag.clearTab("User");
+        else if(key.equals(getString(R.string.pref_key_notify_timetable_changed))) {
+            if(!sharedPreferences.getBoolean(key, true)) {
+                // Cancel a notification if it is shown.
+                NotificationManager mNotificationManager =
+                        (NotificationManager) mContext.getSystemService(
+                                Context.NOTIFICATION_SERVICE);
+                mNotificationManager.cancel(0 /** timetable changed notification id */);
             }
         }
-	}
+    }
 
-	@Override
-	public void onPause() {
-		super.onPause();
-		// Unregister the listener whenever a key changes
-		getPreferenceScreen().getSharedPreferences()
-		.unregisterOnSharedPreferenceChangeListener(this);
-	}
+    @Override
+    public void onPause() {
+        super.onPause();
+        // Unregister the listener whenever a key changes
+        getPreferenceScreen().getSharedPreferences()
+                .unregisterOnSharedPreferenceChangeListener(this);
+    }
 
-	@Override
-	public void onResume() {
-		super.onResume();
-		// Set up a listener whenever a key changes
-		getPreferenceScreen().getSharedPreferences()
-		.registerOnSharedPreferenceChangeListener(this);
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Set up a listener whenever a key changes
+        getPreferenceScreen().getSharedPreferences()
+                .registerOnSharedPreferenceChangeListener(this);
 
-		PreferenceCategory prefCategory = (PreferenceCategory) getPreferenceScreen()
-                .getPreference(3);
-		PreferenceScreen prefScreen =  (PreferenceScreen) prefCategory.getPreference(0);
+        PreferenceCategory prefCategory = (PreferenceCategory) getPreferenceScreen()
+                .getPreference(4);
+        PreferenceScreen prefScreen =  (PreferenceScreen) prefCategory.getPreference(0);
         prefScreen.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener(){
-			@Override
-			public boolean onPreferenceClick(Preference preference) {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
                 Fragment mFragment = new AboutSettingsFragment();
                 FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
@@ -138,12 +136,12 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
                 ((MainActivity)getActivity()).mPopSettingsBackStack = true;
 
                 transaction.commit();
-				return true;
-			}
-		});
+                return true;
+            }
+        });
 
         PreferenceCategory proxyPrefCategory = (PreferenceCategory) getPreferenceScreen()
-                .getPreference(1);
+                .getPreference(2);
         PreferenceScreen proxyPrefScreen =  (PreferenceScreen) proxyPrefCategory.getPreference(2);
         proxyPrefScreen.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener(){
             @Override
@@ -159,5 +157,5 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
                 return true;
             }
         });
-	}
+    }
 }
