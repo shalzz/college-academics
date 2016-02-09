@@ -30,7 +30,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SyncResult;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v7.app.NotificationCompat;
@@ -39,15 +38,12 @@ import android.util.Log;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.shalzz.attendance.BuildConfig;
 import com.shalzz.attendance.DatabaseHandler;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.activity.MainActivity;
 import com.shalzz.attendance.model.PeriodModel;
 import com.shalzz.attendance.model.SubjectModel;
-import com.shalzz.attendance.model.UserModel;
 import com.shalzz.attendance.network.DataAPI;
-import com.shalzz.attendance.wrapper.MyPreferencesManager;
 import com.shalzz.attendance.wrapper.MyVolleyErrorHelper;
 
 import java.util.ArrayList;
@@ -93,24 +89,9 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 	public void onPerformSync(Account account, Bundle extras, String authority,
 			ContentProviderClient provider, SyncResult syncResult) {
 
-        UserModel user = new DatabaseHandler(mContext).getUser();
-        String creds = String.format("%s:%s", user.getSapid(), user.getPassword());
-		DataAPI.getUser(userSuccessListener(), myErrorListener(), creds);
 		DataAPI.getAttendance(attendanceSuccessListener(), myErrorListener());
 		DataAPI.getTimeTable(timeTableSuccessListener(), myErrorListener());
 	}
-
-    private Response.Listener<UserModel> userSuccessListener() {
-        return new Response.Listener<UserModel>() {
-            @Override
-            public void onResponse(UserModel user) {
-
-                DatabaseHandler db = new DatabaseHandler(mContext);
-                db.addOrUpdateUser(user);
-                db.close();
-            }
-        };
-    }
 
 	private Response.Listener<ArrayList<SubjectModel>> attendanceSuccessListener() {
 		return new Response.Listener<ArrayList<SubjectModel>>() {
