@@ -19,6 +19,7 @@
 
 package com.shalzz.attendance.wrapper;
 
+import com.bugsnag.android.Bugsnag;
 import com.shalzz.attendance.model.Week;
 
 import java.text.DateFormat;
@@ -70,6 +71,7 @@ public class DateHelper {
         try {
             date = technicalDateFormat.parse(datestr);
         } catch (ParseException e) {
+            Bugsnag.notify(e);
             e.printStackTrace();
         }
         return date;

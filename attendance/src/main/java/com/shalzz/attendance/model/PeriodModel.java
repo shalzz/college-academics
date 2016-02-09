@@ -20,6 +20,7 @@
 package com.shalzz.attendance.model;
 
 import com.bugsnag.android.Bugsnag;
+import com.bugsnag.android.Severity;
 import com.shalzz.attendance.wrapper.DateHelper;
 
 import java.text.ParseException;
@@ -62,6 +63,7 @@ public class PeriodModel {
         try {
             d = DateHelper.hr24Format.parse(start);
         } catch (ParseException e) {
+            Bugsnag.notify(e, Severity.WARNING);
             e.printStackTrace();
         }
         return d;
@@ -72,6 +74,7 @@ public class PeriodModel {
         try {
             d = DateHelper.hr24Format.parse(end);
         } catch (ParseException e) {
+            Bugsnag.notify(e, Severity.WARNING);
             e.printStackTrace();
         }
         return d;

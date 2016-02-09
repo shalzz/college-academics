@@ -26,6 +26,7 @@ import android.view.View;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.bugsnag.android.Bugsnag;
 import com.shalzz.attendance.BuildConfig;
 import com.shalzz.attendance.DatabaseHandler;
 import com.shalzz.attendance.Miscellaneous;
@@ -91,6 +92,7 @@ public class PagerController {
                 catch (Exception e) {
                     String msg = mResources.getString(R.string.unexpected_error);
                     Miscellaneous.showSnackBar(mContext, msg);
+                    Bugsnag.notify(e);
                     if(BuildConfig.DEBUG)
                         e.printStackTrace();
                 }

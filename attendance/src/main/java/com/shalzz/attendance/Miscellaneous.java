@@ -35,6 +35,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.bugsnag.android.Bugsnag;
 import com.nispok.snackbar.Snackbar;
 import com.nispok.snackbar.SnackbarManager;
 import com.nispok.snackbar.enums.SnackbarType;
@@ -211,6 +212,7 @@ public class Miscellaneous {
             return hexString.toString();
 
         } catch (NoSuchAlgorithmException e) {
+            Bugsnag.notify(e);
             e.printStackTrace();
         }
         return "";
