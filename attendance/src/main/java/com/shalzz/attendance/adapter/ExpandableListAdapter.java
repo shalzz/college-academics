@@ -484,7 +484,10 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         holder.classes.setText(mSubjects.get(position).getClassesAttended().intValue() + "/"
                 + mSubjects.get(position).getClassesHeld().intValue());
         Drawable d = holder.percent.getProgressDrawable();
-        d.setLevel(percent.intValue()*100);
+        if(percent > 0f)
+            d.setLevel(percent.intValue()*100);
+        else
+            d.setLevel(1);
         holder.percent.setProgressDrawable(d);
         holder.percent.setProgress(percent.intValue());
 
