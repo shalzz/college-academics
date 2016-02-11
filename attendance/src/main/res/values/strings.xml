@@ -65,6 +65,7 @@
     <string name="unavailable_timetable_error_msg">No TimeTable available at this time</string>
     <string name="form_sapid_error">Invalid SAP ID</string>
     <string name="form_password_error">This field is required</string>
+    <string name="auth_error">Incorrect SAP ID or password</string>
 
     <!--EditText's and TextView's-->
     <string name="no_classes">You don\'t have any classes on this day :)</string>
