@@ -30,11 +30,11 @@ import com.android.volley.VolleyError;
 import com.shalzz.attendance.R;
 
 public class MyVolleyErrorHelper {
-	
+
 	/**
-	 * Returns appropriate message which is to be displayed to the user 
+	 * Returns appropriate message which is to be displayed to the user
 	 * against the specified error object.
-	 * 
+	 *
 	 * @param error {@link Object}
 	 * @param context {@link android.content.Context}
 	 * @return Error Message
@@ -60,7 +60,7 @@ public class MyVolleyErrorHelper {
 	private static boolean isNetworkProblem(Object error) {
 		return error instanceof NetworkError;
 	}
-	
+
 	/**
 	 * Determines whether the error is related to server
 	 * @param error {@link Object}
@@ -69,11 +69,11 @@ public class MyVolleyErrorHelper {
 	private static boolean isServerProblem(Object error) {
 		return (error instanceof ServerError) || (error instanceof AuthFailureError);
 	}
-	
+
 	/**
-	 * Handles the server error, tries to determine whether to show a stock message or to 
+	 * Handles the server error, tries to determine whether to show a stock message or to
 	 * show a message retrieved from the server.
-	 * 
+	 *
 	 * @param err {@link Object}
 	 * @param context {@link android.content.Context}
 	 * @return Error Message
@@ -83,20 +83,20 @@ public class MyVolleyErrorHelper {
 
 		NetworkResponse response = error.networkResponse;
 
-		if (response != null) {
-			switch (response.statusCode) {
-			case 404:
-			case 422:
-			case 401:
-				if(error.getMessage() != null)
-					return error.getMessage();
-				return "Unauthorized";
-			case 407:
-				return context.getResources().getString(R.string.proxy_error);
+        if (response != null) {
+            switch (response.statusCode) {
+                case 401:
+                    if(error.getMessage() != null)
+                        return error.getMessage();
+                    return context.getResources().getString(R.string.auth_error);
+                case 404:
+                case 422:
+                case 407:
+                    return context.getResources().getString(R.string.proxy_error);
 
-			default:
-				return context.getResources().getString(R.string.generic_server_down);
-			}
+                default:
+                    return context.getResources().getString(R.string.generic_server_down);
+            }
 		}
 		return context.getResources().getString(R.string.generic_error);
 	}
