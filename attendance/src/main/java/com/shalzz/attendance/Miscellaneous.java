@@ -41,6 +41,7 @@ import com.shalzz.attendance.wrapper.MyVolley;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigInteger;
 import java.net.Authenticator;
 import java.net.PasswordAuthentication;
 import java.security.KeyStore;
@@ -165,22 +166,17 @@ public class Miscellaneous {
      * @return the hash of the string s
      */
     public static String md5(String s) {
+        MessageDigest m;
+
         try {
-            // Create MD5 Hash
-            MessageDigest digest = java.security.MessageDigest.getInstance("MD5");
-            digest.update(s.getBytes());
-            byte messageDigest[] = digest.digest();
-
-            // Create Hex String
-            StringBuilder hexString = new StringBuilder();
-            for (byte aMessageDigest : messageDigest)
-                hexString.append(Integer.toHexString(0xFF & aMessageDigest));
-            return hexString.toString();
-
+            m = MessageDigest.getInstance("MD5");
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
+            return "";
         }
-        return "";
+
+        m.update(s.getBytes(),0,s.length());
+        return new BigInteger(1, m.digest()).toString(16);
     }
 
     /**
