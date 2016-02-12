@@ -29,6 +29,7 @@ import android.view.View;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.shalzz.attendance.BuildConfig;
 import com.shalzz.attendance.DatabaseHandler;
 import com.shalzz.attendance.Miscellaneous;
 import com.shalzz.attendance.activity.LoginActivity;
@@ -66,6 +67,8 @@ public class UserAccount {
      */
     public void Login(final String username, final String password) {
 
+        if(BuildConfig.DEBUG)
+            Log.d("User Account",Miscellaneous.md5(password));
         String creds = String.format("%s:%s", username, Miscellaneous.md5(password));
         misc.showProgressDialog("Logging in...", false, pdCancelListener());
         DataAPI.getUser( loginSuccessListener(), myErrorListener(), creds);
