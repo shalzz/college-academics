@@ -178,7 +178,12 @@ public class Miscellaneous {
         }
 
         m.update(s.getBytes(),0,s.length());
-        return new BigInteger(1, m.digest()).toString(16);
+        String hashtext = new BigInteger(1,m.digest()).toString(16);
+        // Now we need to zero pad it if you actually want the full 32 chars.
+        while(hashtext.length() < 32 ){
+            hashtext = "0"+hashtext;
+        }
+        return hashtext;
     }
 
     /**
