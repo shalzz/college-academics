@@ -20,9 +20,9 @@
 package com.shalzz.attendance.fragment;
 
 import android.app.DatePickerDialog;
-import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -145,7 +145,8 @@ public class TimeTablePagerFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         mToday =  DateHelper.getToDay();
-        mTimeTablePagerAdapter = new TimeTablePagerAdapter(getActivity().getFragmentManager(), mToday);
+        mTimeTablePagerAdapter = new TimeTablePagerAdapter(getActivity().getSupportFragmentManager
+                (), mToday);
         mViewPager.setAdapter(mTimeTablePagerAdapter);
 
         mController = new PagerController(mContext, this);

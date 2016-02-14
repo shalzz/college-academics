@@ -19,9 +19,6 @@
 
 package com.shalzz.attendance.activity;
 
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -29,6 +26,9 @@ import android.graphics.Point;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -115,6 +115,7 @@ public class MainActivity extends AppCompatActivity {
     private FragmentManager mFragmentManager;
     private Fragment fragment = null;
     private ActionBar actionbar;
+    private DatabaseHandler mDb;;
     // Our custom poor-man's back stack which has only one entry at maximum.
     private Fragment mPreviousFragment;
 
@@ -140,9 +141,10 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         mNavTitles = getResources().getStringArray(R.array.drawer_array);
-        mFragmentManager = getFragmentManager();
+        mFragmentManager = getSupportFragmentManager();
         mTitle  = getTitle();
         actionbar = getSupportActionBar();
+        mDb = new DatabaseHandler(this);
 
         // Check for tablet layout
 //        FrameLayout frameLayout = (FrameLayout)findViewById(R.id.frame_container);
@@ -195,8 +197,8 @@ public class MainActivity extends AppCompatActivity {
 
         // Recycle fragment
         if(savedInstanceState != null) {
-            fragment =  getFragmentManager().findFragmentByTag(FRAGMENT_TAG);
-            mPreviousFragment = getFragmentManager().getFragment(savedInstanceState, PREVIOUS_FRAGMENT_TAG);
+            fragment =  getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG);
+            mPreviousFragment = getSupportFragmentManager().getFragment(savedInstanceState, PREVIOUS_FRAGMENT_TAG);
             Log.d(mTag, "current fag found: " + fragment );
             Log.d(mTag, "previous fag found: " + mPreviousFragment );
             selectItem(mCurrentSelectedPosition);
@@ -257,9 +259,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void updateUserDetails() {
-        DatabaseHandler db = new DatabaseHandler(this);
-        if(db.getUserCount()>0) {
-            UserModel user = db.getUser();
+        if(mDb.getUserCount()>0) {
+            UserModel user = mDb.getUser();
 
             DrawerheaderVH.tv_name.setText(user.getName());
             DrawerheaderVH.tv_course.setText(user.getCourse());
@@ -267,9 +268,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void updateLastSync() {
-        DatabaseHandler db = new DatabaseHandler(this);
-        if(db.getRowCount()>0) {
-            int time = (int) db.getLastSync();
+        if(mDb.getRowCount()>0) {
+            int time = (int) mDb.getLastSync();
             DrawerheaderVH.last_refresh.setText(
                     getResources().getQuantityString(R.plurals.tv_last_refresh, time, time));
         }
@@ -360,7 +360,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(mTag, this + " showFragment: destroying previous fragment "
                         + mPreviousFragment.getClass().getSimpleName());
             }
-            ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+            ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
             ft.remove(mPreviousFragment);
             mPreviousFragment = null;
         }
@@ -376,7 +376,7 @@ public class MainActivity extends AppCompatActivity {
         if(fragment instanceof SettingsFragment)
             ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         else
-            ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+            ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         ft.commit();
     }
 
@@ -505,7 +505,7 @@ public class MainActivity extends AppCompatActivity {
         super.onSaveInstanceState(outState);
         // for orientation changes, etc.
         if (mPreviousFragment != null) {
-            getFragmentManager()
+            getSupportFragmentManager()
                     .putFragment(outState, PREVIOUS_FRAGMENT_TAG, mPreviousFragment);
             Log.d(mTag, "previous fag saved: " + mPreviousFragment.getClass().getSimpleName());
         }
@@ -526,6 +526,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onDestroy() {
         MyVolley.getInstance().cancelAllPendingRequests();
+        mDb.close();
         super.onDestroy();
     }
 

@@ -73,7 +73,6 @@ android {
         compile 'com.android.support:design:23.1.+'
         compile 'com.android.support:support-v4:23.1.+'
         compile 'com.android.support:appcompat-v7:23.1.+'
-        compile 'com.android.support:support-v13:23.1.+'
         compile 'com.android.support:preference-v14:23.1.+'
 
         // 3rd party library projects
