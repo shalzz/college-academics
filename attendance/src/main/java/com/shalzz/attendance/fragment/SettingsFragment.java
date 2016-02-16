@@ -130,6 +130,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnShar
                 FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
                 transaction.replace(R.id.frame_container, mFragment, MainActivity.FRAGMENT_TAG);
+                transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                 transaction.addToBackStack(null);
                 ((MainActivity)getActivity()).mPopSettingsBackStack = true;
 
@@ -148,6 +149,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnShar
                 FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
                 transaction.replace(R.id.frame_container, mFragment, MainActivity.FRAGMENT_TAG);
+                transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                 transaction.addToBackStack(null);
                 ((MainActivity)getActivity()).mPopSettingsBackStack = true;
 

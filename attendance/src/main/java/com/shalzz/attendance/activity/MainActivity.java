@@ -26,6 +26,7 @@ import android.graphics.Point;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -115,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
     private FragmentManager mFragmentManager;
     private Fragment fragment = null;
     private ActionBar actionbar;
-    private DatabaseHandler mDb;;
+    private DatabaseHandler mDb;
     // Our custom poor-man's back stack which has only one entry at maximum.
     private Fragment mPreviousFragment;
 
@@ -197,8 +198,8 @@ public class MainActivity extends AppCompatActivity {
 
         // Recycle fragment
         if(savedInstanceState != null) {
-            fragment =  getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG);
-            mPreviousFragment = getSupportFragmentManager().getFragment(savedInstanceState, PREVIOUS_FRAGMENT_TAG);
+            fragment =  mFragmentManager.findFragmentByTag(FRAGMENT_TAG);
+            mPreviousFragment = mFragmentManager.getFragment(savedInstanceState, PREVIOUS_FRAGMENT_TAG);
             Log.d(mTag, "current fag found: " + fragment );
             Log.d(mTag, "previous fag found: " + mPreviousFragment );
             selectItem(mCurrentSelectedPosition);
@@ -304,9 +305,11 @@ public class MainActivity extends AppCompatActivity {
                 return;
             case 1:
                 fragment = new AttendanceListFragment();
+                mPreviousFragment = null; // GC
                 break;
             case 2:
                 fragment = new TimeTablePagerFragment();
+                mPreviousFragment = null; // GC
                 break;
             case 3:
                 fragment = new SettingsFragment();
@@ -373,10 +376,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Show the new one
         ft.add(R.id.frame_container,fragment,FRAGMENT_TAG);
-        if(fragment instanceof SettingsFragment)
-            ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-        else
-            ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         ft.commit();
     }
 
@@ -388,16 +388,20 @@ public class MainActivity extends AppCompatActivity {
             mDrawerLayout.closeDrawer(mNavigationView);
         }
         else if (shouldPopFromBackStack()) {
+            if(BuildConfig.DEBUG)
+                Log.i(mTag,"popping from back stack");
             if(mPopSettingsBackStack) {
+                if(BuildConfig.DEBUG)
+                    Log.i(mTag,"popping nested settings fragment");
                 mPopSettingsBackStack = false;
-                getFragmentManager().popBackStackImmediate();
+                mFragmentManager.popBackStackImmediate();
             } else {
                 // Custom back stack
                 popFromBackStack();
             }
         }
         else {
-            super.onBackPressed();
+            ActivityCompat.finishAfterTransition(this);
         }
     }
 
@@ -505,8 +509,7 @@ public class MainActivity extends AppCompatActivity {
         super.onSaveInstanceState(outState);
         // for orientation changes, etc.
         if (mPreviousFragment != null) {
-            getSupportFragmentManager()
-                    .putFragment(outState, PREVIOUS_FRAGMENT_TAG, mPreviousFragment);
+            mFragmentManager.putFragment(outState, PREVIOUS_FRAGMENT_TAG, mPreviousFragment);
             Log.d(mTag, "previous fag saved: " + mPreviousFragment.getClass().getSimpleName());
         }
     }
