@@ -20,36 +20,60 @@
 package com.shalzz.attendance.controllers;
 
 import android.content.Context;
+import android.os.Bundle;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import com.shalzz.attendance.adapter.DayListAdapter;
 import com.shalzz.attendance.fragment.DayFragment;
+import com.shalzz.attendance.loader.DayAsyncTaskLoader;
+import com.shalzz.attendance.loader.SubjectAsyncTaskLoader;
+import com.shalzz.attendance.model.PeriodModel;
+import com.shalzz.attendance.wrapper.DateHelper;
 
-public class DayController {
+import java.util.Date;
+import java.util.List;
 
+public class DayController implements LoaderManager.LoaderCallbacks<List<PeriodModel>> {
+
+    private Context mContext;
     private DayFragment mView;
-    public DayListAdapter mAdapter;
+    private DayListAdapter mAdapter;
 
-    public DayController(Context context, String day, DayFragment view) {
+    public DayController(Context context, DayFragment view)  {
+        mContext = context;
         mView = view;
-        mAdapter = new DayListAdapter(context, day);
-        mAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
-            @Override
-            public void onChanged() {
-                super.onChanged();
-                checkAdapterIsEmpty();
-            }
-        });
+        mAdapter = new DayListAdapter();
         mView.mRecyclerView.setAdapter(mAdapter);
-        checkAdapterIsEmpty();
     }
 
-    private void checkAdapterIsEmpty () {
-        if (mAdapter.getItemCount() == 0) {
+    @Override
+    public Loader<List<PeriodModel>> onCreateLoader(int id, Bundle args) {
+        Date date = args != null ? (Date) args
+                .getSerializable(DayFragment.ARG_DATE) : new Date();
+        return new DayAsyncTaskLoader(mContext, DateHelper.getShortWeekday(date));
+    }
+
+    @Override
+    public void onLoadFinished(Loader<List<PeriodModel>> loader, List<PeriodModel> data) {
+        if (data.size() == 0) {
             mView.mEmptyView.setVisibility(View.VISIBLE);
         } else {
             mView.mEmptyView.setVisibility(View.GONE);
+            mAdapter.addAll(data);
         }
+    }
+
+    @Override
+    public void onLoaderReset(Loader<List<PeriodModel>> loader) {
+        // Loader reset, throw away our data,
+        // unregister any listeners, etc.
+        mAdapter.clear();
+        // Of course, unless you use destroyLoader(),
+        // this is called when everything is already dying
+        // so a completely empty onLoaderReset() is
+        // totally acceptable
     }
 }

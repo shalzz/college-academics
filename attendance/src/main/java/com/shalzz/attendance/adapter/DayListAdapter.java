@@ -19,7 +19,6 @@
 
 package com.shalzz.attendance.adapter;
 
-import android.content.Context;
 import android.support.v7.util.SortedList;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.util.SortedListAdapterCallback;
@@ -28,13 +27,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.shalzz.attendance.DatabaseHandler;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.model.PeriodModel;
-import com.shalzz.attendance.model.SubjectModel;
 
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.ButterKnife;
@@ -42,8 +38,6 @@ import butterknife.InjectView;
 
 public class DayListAdapter extends RecyclerView.Adapter<DayListAdapter.ViewHolder>{
 
-    private Context mContext;
-    private String mDay;
     private SortedList<PeriodModel> mPeriods;
 
     // Provide a reference to the views for each data item
@@ -61,9 +55,7 @@ public class DayListAdapter extends RecyclerView.Adapter<DayListAdapter.ViewHold
         }
     }
 
-    public DayListAdapter(Context context, String day){
-        mContext = context;
-        mDay = day;
+    public DayListAdapter(){
         mPeriods = new SortedList<>(PeriodModel.class,
                 new SortedListAdapterCallback<PeriodModel>(this) {
                     @Override
@@ -100,21 +92,10 @@ public class DayListAdapter extends RecyclerView.Adapter<DayListAdapter.ViewHold
                         return item1.getId() == item2.getId();
                     }
                 });
-        DatabaseHandler db = new DatabaseHandler(mContext);
-        mPeriods.addAll(db.getAllPeriods(mDay));
     }
 
     public void addAll(List<PeriodModel> periods) {
         mPeriods.addAll(periods);
-    }
-
-    public void updatePeriods() {
-        DatabaseHandler db = new DatabaseHandler(mContext);
-        mPeriods.addAll(db.getAllPeriods(mDay));
-    }
-
-    public int getPeriodCount() {
-        return mPeriods.size();
     }
 
     public void clear() {

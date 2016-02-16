@@ -23,46 +23,45 @@ import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
 
 import com.shalzz.attendance.DatabaseHandler;
-import com.shalzz.attendance.model.SubjectModel;
+import com.shalzz.attendance.model.PeriodModel;
 
 import java.util.List;
 
-public class SubjectAsyncTaskLoader extends AsyncTaskLoader<List<SubjectModel>> {
+public class DayAsyncTaskLoader extends AsyncTaskLoader<List<PeriodModel>> {
 
     private DatabaseHandler mDb;
-    private List<SubjectModel> mSubjects;
+    private String mDay;
+    private List<PeriodModel> mPeriods;
 
-    // If non-null, this is the current filter the user has provided.
-    public String mCurFilter;
-
-    public SubjectAsyncTaskLoader(Context context, String filter) {
+    public DayAsyncTaskLoader(Context context, String day) {
         super(context);
-        mCurFilter = filter;
+        mDay = day;
     }
 
     @Override
     protected void onStartLoading() {
-        if (mSubjects != null) {
+        if (mPeriods != null) {
             // Use cached data
-            deliverResult(mSubjects);
+            deliverResult(mPeriods);
         }
-        if (takeContentChanged() || mSubjects == null) {
+        if (takeContentChanged() || mPeriods == null) {
             // Something has changed or we have no data,
             // so kick off loading it
             forceLoad();
         }
     }
 
-    public List<SubjectModel> loadInBackground() {
+    @Override
+    public List<PeriodModel> loadInBackground() {
         if(mDb == null)
             mDb = new DatabaseHandler(getContext());
-        return mDb.getAllSubjects(this, mCurFilter);
+        return mDb.getAllPeriods(mDay, this);
     }
 
     @Override
-    public void deliverResult(List<SubjectModel> data) {
+    public void deliverResult(List<PeriodModel> data) {
         // We’ll save the data for later retrieval
-        mSubjects = data;
+        mPeriods = data;
         // We can do any pre-processing we want here
         // Just remember this is on the UI thread so nothing lengthy!
         super.deliverResult(data);
@@ -78,7 +77,7 @@ public class SubjectAsyncTaskLoader extends AsyncTaskLoader<List<SubjectModel>> 
     }
 
     @Override
-    public void onCanceled(List<SubjectModel> data) {
+    public void onCanceled(List<PeriodModel> data) {
         super.onCanceled(data);
         if(mDb != null) {
             mDb.close();

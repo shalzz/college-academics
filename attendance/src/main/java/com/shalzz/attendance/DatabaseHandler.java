@@ -551,7 +551,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.close(); // Closing database connection
     }
 
-    public ArrayList<PeriodModel> getAllPeriods(String dayName) {
+    public ArrayList<PeriodModel> getAllPeriods(String dayName, AsyncTaskLoader callback) {
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.query(TABLE_TIMETABLE, null, KEY_DAY + "=?",
@@ -560,6 +560,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         ArrayList<PeriodModel> periods = new ArrayList<>();
         if (cursor.moveToFirst()) {
             do {
+                // Check isLoadInBackgroundCanceled() to cancel out early
+                if(callback != null && callback.isLoadInBackgroundCanceled()) {
+                    break;
+                }
                 PeriodModel period = new PeriodModel();
                 period.setId(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_ID)));
                 period.setDay(cursor.getString(cursor.getColumnIndexOrThrow(KEY_DAY)));

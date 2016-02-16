@@ -58,7 +58,6 @@ public class DayFragment extends Fragment {
     public static DayFragment newInstance(Date date) {
         DayFragment f = new DayFragment();
 
-        // Supply num input as an argument.
         Bundle args = new Bundle();
         args.putSerializable(ARG_DATE, date);
         f.setArguments(args);
@@ -99,22 +98,18 @@ public class DayFragment extends Fragment {
         return mView;
     }
 
-    @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        mController = new DayController(mContext, DateHelper.getShortWeekday(mDate), this);
+        mController = new DayController(mContext, this);
+        getLoaderManager().initLoader(0, getArguments(), mController);
     }
 
-    public void update() {
-        mController.mAdapter.updatePeriods();
-    }
 
-    public void clear() {
-        mController.mAdapter.clear();
-    }
-
-    @NonNull
-    public Date getDate() {
-        return mDate;
+    public void update(boolean force) {
+        Bundle args = new Bundle();
+        args.putSerializable(ARG_DATE, mDate);
+        if(force)
+            getLoaderManager().destroyLoader(0);
+        getLoaderManager().restartLoader(0, args, mController);
     }
 
     @Override

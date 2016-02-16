@@ -27,7 +27,6 @@ import android.view.ViewGroup;
 import com.shalzz.attendance.fragment.DayFragment;
 import com.shalzz.attendance.wrapper.DateHelper;
 
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -54,14 +53,6 @@ public class TimeTablePagerAdapter extends FragmentStatePagerAdapter {
 		return fragment;
 	}
 
-    public Collection<DayFragment> getActiveFragments() {
-        return activeFragments.values();
-    }
-
-    public DayFragment getFragment(int position) {
-        return activeFragments.get(position);
-    }
-
     @Override
     public int getCount() {
         return 31;
@@ -77,12 +68,29 @@ public class TimeTablePagerAdapter extends FragmentStatePagerAdapter {
 
     public void setDate(Date date) {
         mDate = date;
+        updateDates();
         notifyDataSetChanged();
+    }
+
+    public void updateDates() {
+        for(int i =0; i<getCount(); i++) {
+            Date date = DateHelper.addDays(mDate, -15+i);
+            dates.put(i, date);
+        }
+    }
+
+    public void updateActiveFragments(boolean force) {
+        for(int i = 0; i < activeFragments.size(); i++) {
+            DayFragment fragment = activeFragments.get(i);
+            if (fragment != null) {
+                fragment.update(force);
+            }
+        }
     }
 
 	@Override
 	public void destroyItem(ViewGroup viewPager, int position, Object object) {
-		activeFragments.remove(position);
+        activeFragments.remove(position);
 		super.destroyItem(viewPager, position, object);
 	}
 }

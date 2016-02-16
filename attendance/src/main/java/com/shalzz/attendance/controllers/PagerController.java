@@ -21,6 +21,7 @@ package com.shalzz.attendance.controllers;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.View;
 
@@ -31,6 +32,7 @@ import com.shalzz.attendance.DatabaseHandler;
 import com.shalzz.attendance.Miscellaneous;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.activity.MainActivity;
+import com.shalzz.attendance.adapter.TimeTablePagerAdapter;
 import com.shalzz.attendance.fragment.TimeTablePagerFragment;
 import com.shalzz.attendance.model.PeriodModel;
 import com.shalzz.attendance.network.DataAPI;
@@ -43,20 +45,48 @@ import java.util.Date;
 public class PagerController {
 
     private TimeTablePagerFragment mView;
+    private TimeTablePagerAdapter mAdapter;
     private DatabaseHandler db;
     private Context mContext;
     private Resources mResources;
     private String mTag = "Pager Controller";
+    private Date mToday = new Date();
 
-    public PagerController(Context context, TimeTablePagerFragment view) {
+    public PagerController(Context context, TimeTablePagerFragment view, FragmentManager fm) {
         mContext = context;
         mResources = MyVolley.getMyResources();
         mView = view;
         db = new DatabaseHandler(mContext);
+        mAdapter = new TimeTablePagerAdapter(fm, mToday);
+        mView.mViewPager.setAdapter(mAdapter);
+    }
+
+    public void setDate(Date date) {
+        mAdapter.setDate(date);
+        mView.updateTitle();
+        scrollToToday();
+    }
+
+    public void setToday() {
+        if(mAdapter.getDate() != mToday) {
+            setDate(mToday);
+        }
+    }
+
+    public void scrollToToday() {
+        mView.mViewPager.setCurrentItem(15, true);
+    }
+
+    public Date getDateForPosition(int position) {
+        return mAdapter.getDateForPosition(position);
     }
 
     public void updatePeriods() {
         DataAPI.getTimeTable(successListener(), errorListener());
+    }
+
+    public void updateFragmentsData(boolean force) {
+        mAdapter.updateActiveFragments(force);
     }
 
     public Response.Listener<ArrayList<PeriodModel>> successListener() {
@@ -75,11 +105,11 @@ public class PagerController {
                         if (db.purgeOldPeriods() == 1) {
                             if(BuildConfig.DEBUG)
                                 Log.d(mTag, "Purging Periods...");
-                            mView.clearFragmentsData();
+                            updateFragmentsData(true);
+                        } else {
+                            updateFragmentsData(false);
                         }
-
-                        mView.updateFragmentsData();
-                        mView.scrollToToday();
+                        setToday();
                         db.close();
                     } else {
                         String msg = mResources.getString(R.string.unavailable_timetable_error_msg);
