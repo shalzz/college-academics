@@ -93,7 +93,7 @@ public class MySyncManager {
                 mContext.getString(R.string.pref_key_sync), true);
 		Log.d(mTag,"Enable sync: "+sync);
 		final long SYNC_INTERVAL_IN_MINUTES = Long.parseLong(sharedPref.getString(
-                mContext.getString(R.string.pref_key_sync_interval), "720"));
+                mContext.getString(R.string.pref_key_sync_interval), "480"));
 		Log.d(mTag,"Sync Interval set to: "+SYNC_INTERVAL_IN_MINUTES);
 		
 		Account mAccount = getSyncAccount(mContext);
