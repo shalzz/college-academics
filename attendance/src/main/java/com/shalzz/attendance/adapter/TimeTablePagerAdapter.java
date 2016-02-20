@@ -20,10 +20,11 @@
 package com.shalzz.attendance.adapter;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.view.ViewGroup;
 
+import com.shalzz.attendance.DatabaseHandler;
 import com.shalzz.attendance.fragment.DayFragment;
 import com.shalzz.attendance.wrapper.DateHelper;
 
@@ -33,29 +34,52 @@ import java.util.HashMap;
 public class TimeTablePagerAdapter extends FragmentStatePagerAdapter {
 
 	@SuppressLint("UseSparseArrays")
-	private final HashMap<Integer, DayFragment> activeFragments = new HashMap<Integer, DayFragment>();
 	private final HashMap<Integer, Date> dates = new HashMap<>();
+	private final HashMap<Date, Integer> positions = new HashMap<>();
     private Date mDate;
-	
-	public TimeTablePagerAdapter(FragmentManager fm, Date date) {
+    private Context mContext;
+    private int mCount;
+
+	public TimeTablePagerAdapter(FragmentManager fm, Context context, Date date) {
 		super(fm);
+        mContext = context;
         mDate = date;
+        DatabaseHandler db = new DatabaseHandler(mContext);
+        if(db.getTimetableCount()<=0) {
+            mCount = 0;
+        } else {
+            mCount = 31;
+        }
+        db.close();
 	}
 
 	@Override
 	public DayFragment getItem(int position) {
         Date date = DateHelper.addDays(mDate, -15+position);
         DayFragment fragment = DayFragment.newInstance(date);
-		
-		activeFragments.put(position, fragment);
+
         dates.put(position, date);
+        positions.put(date,position);
 		
 		return fragment;
 	}
 
     @Override
+    public int getItemPosition(Object item) {
+        DayFragment fragment = (DayFragment)item;
+        Date date = fragment.getDate();
+        int position = positions.get(date);
+
+        if (position >= 0) {
+            return position;
+        } else {
+            return POSITION_NONE;
+        }
+    }
+
+    @Override
     public int getCount() {
-        return 31;
+        return mCount;
     }
 
     public Date getDate() {
@@ -67,8 +91,11 @@ public class TimeTablePagerAdapter extends FragmentStatePagerAdapter {
     }
 
     public void setDate(Date date) {
-        mDate = date;
-        updateDates();
+        if(mDate != date) {
+            mDate = date;
+            updateDates();
+        }
+        mCount = 31;
         notifyDataSetChanged();
     }
 
@@ -78,19 +105,4 @@ public class TimeTablePagerAdapter extends FragmentStatePagerAdapter {
             dates.put(i, date);
         }
     }
-
-    public void updateActiveFragments(boolean force) {
-        for(int i = 0; i < activeFragments.size(); i++) {
-            DayFragment fragment = activeFragments.get(i);
-            if (fragment != null) {
-                fragment.update(force);
-            }
-        }
-    }
-
-	@Override
-	public void destroyItem(ViewGroup viewPager, int position, Object object) {
-        activeFragments.remove(position);
-		super.destroyItem(viewPager, position, object);
-	}
 }

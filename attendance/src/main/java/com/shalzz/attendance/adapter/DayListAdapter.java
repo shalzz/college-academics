@@ -22,11 +22,13 @@ package com.shalzz.attendance.adapter;
 import android.support.v7.util.SortedList;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.util.SortedListAdapterCallback;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.shalzz.attendance.BuildConfig;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.model.PeriodModel;
 
@@ -39,6 +41,7 @@ import butterknife.InjectView;
 public class DayListAdapter extends RecyclerView.Adapter<DayListAdapter.ViewHolder>{
 
     private SortedList<PeriodModel> mPeriods;
+    private SortedListAdapterCallback<PeriodModel> callback;
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
@@ -56,46 +59,65 @@ public class DayListAdapter extends RecyclerView.Adapter<DayListAdapter.ViewHold
     }
 
     public DayListAdapter(){
-        mPeriods = new SortedList<>(PeriodModel.class,
-                new SortedListAdapterCallback<PeriodModel>(this) {
-                    @Override
-                    public int compare(PeriodModel o1, PeriodModel o2) {
-                        return (int) (o1.getStartDate().getTime() - o2.getStartDate().getTime());
-                    }
+        callback = new SortedListAdapterCallback<PeriodModel>(this) {
+            @Override
+            public int compare(PeriodModel o1, PeriodModel o2) {
+                int compare =(int) (o1.getStartDate().getTime() - o2.getStartDate().getTime());
+                if(BuildConfig.DEBUG)
+                    Log.i("Day adapter",""+compare);
+                return compare;
+            }
 
-                    @SuppressWarnings("SimplifiableIfStatement")
-                    @Override
-                    public boolean areContentsTheSame(PeriodModel oldItem, PeriodModel newItem) {
-                        if(oldItem.getId() != newItem.getId()) {
-                            return false;
-                        }
-                        if(oldItem.getDay().equals(newItem.getDay())) {
-                            return false;
-                        }
-                        if(!oldItem.getSubjectName().equals(newItem.getSubjectName())) {
-                            return false;
-                        }
-                        if(oldItem.getTeacher().equals(newItem.getTeacher())) {
-                            return false;
-                        }
-                        if(oldItem.getTime().equals(newItem.getTime())) {
-                            return false;
-                        }
-                        if(oldItem.getRoom().equals(newItem.getRoom())) {
-                            return false;
-                        }
-                        return oldItem.getBatch().equals(newItem.getBatch());
-                    }
+            @SuppressWarnings("SimplifiableIfStatement")
+            @Override
+            public boolean areContentsTheSame(PeriodModel oldItem, PeriodModel newItem) {
+                if(oldItem.getId() != newItem.getId()) {
+                    return false;
+                }
+                if(oldItem.getDay().equals(newItem.getDay())) {
+                    return false;
+                }
+                if(!oldItem.getSubjectName().equals(newItem.getSubjectName())) {
+                    return false;
+                }
+                if(oldItem.getTeacher().equals(newItem.getTeacher())) {
+                    return false;
+                }
+                if(oldItem.getTime().equals(newItem.getTime())) {
+                    return false;
+                }
+                if(oldItem.getRoom().equals(newItem.getRoom())) {
+                    return false;
+                }
+                return oldItem.getBatch().equals(newItem.getBatch());
+            }
 
-                    @Override
-                    public boolean areItemsTheSame(PeriodModel item1, PeriodModel item2) {
-                        return item1.getId() == item2.getId();
-                    }
-                });
+            @Override
+            public boolean areItemsTheSame(PeriodModel item1, PeriodModel item2) {
+                return item1.getId() == item2.getId();
+            }
+        };
+
+        mPeriods = new SortedList<>(PeriodModel.class, callback);
     }
 
-    public void addAll(List<PeriodModel> periods) {
+    public void update(List<PeriodModel> periods) {
+        mPeriods.beginBatchedUpdates();
+        for (int i = 0; i < mPeriods.size(); i++) {
+            PeriodModel existingObject = mPeriods.get(i);
+            boolean found = false;
+            for (PeriodModel newObject : periods) {
+                if (callback.areItemsTheSame(existingObject, newObject)) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                mPeriods.remove(existingObject);
+            }
+        }
         mPeriods.addAll(periods);
+        mPeriods.endBatchedUpdates();
     }
 
     public void clear() {

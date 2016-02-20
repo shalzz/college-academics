@@ -45,7 +45,7 @@ import java.util.Date;
 public class PagerController {
 
     private TimeTablePagerFragment mView;
-    private TimeTablePagerAdapter mAdapter;
+    public TimeTablePagerAdapter mAdapter;
     private DatabaseHandler db;
     private Context mContext;
     private Resources mResources;
@@ -57,7 +57,7 @@ public class PagerController {
         mResources = MyVolley.getMyResources();
         mView = view;
         db = new DatabaseHandler(mContext);
-        mAdapter = new TimeTablePagerAdapter(fm, mToday);
+        mAdapter = new TimeTablePagerAdapter(fm, mContext, mToday);
         mView.mViewPager.setAdapter(mAdapter);
     }
 
@@ -68,9 +68,7 @@ public class PagerController {
     }
 
     public void setToday() {
-        if(mAdapter.getDate() != mToday) {
-            setDate(mToday);
-        }
+        setDate(mToday);
     }
 
     public void scrollToToday() {
@@ -83,10 +81,6 @@ public class PagerController {
 
     public void updatePeriods() {
         DataAPI.getTimeTable(successListener(), errorListener());
-    }
-
-    public void updateFragmentsData(boolean force) {
-        mAdapter.updateActiveFragments(force);
     }
 
     public Response.Listener<ArrayList<PeriodModel>> successListener() {
@@ -105,11 +99,12 @@ public class PagerController {
                         if (db.purgeOldPeriods() == 1) {
                             if(BuildConfig.DEBUG)
                                 Log.d(mTag, "Purging Periods...");
-                            updateFragmentsData(true);
-                        } else {
-                            updateFragmentsData(false);
                         }
+
+                        // TODO: use an event bus or RxJava to update fragment contents
+
                         setToday();
+                        mView.updateTitle();
                         db.close();
                     } else {
                         String msg = mResources.getString(R.string.unavailable_timetable_error_msg);

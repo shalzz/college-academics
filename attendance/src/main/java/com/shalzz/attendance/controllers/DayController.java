@@ -60,9 +60,10 @@ public class DayController implements LoaderManager.LoaderCallbacks<List<PeriodM
     public void onLoadFinished(Loader<List<PeriodModel>> loader, List<PeriodModel> data) {
         if (data.size() == 0) {
             mView.mEmptyView.setVisibility(View.VISIBLE);
+            mAdapter.clear();
         } else {
             mView.mEmptyView.setVisibility(View.GONE);
-            mAdapter.addAll(data);
+            mAdapter.update(data);
         }
     }
 

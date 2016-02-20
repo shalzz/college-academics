@@ -103,13 +103,8 @@ public class DayFragment extends Fragment {
         getLoaderManager().initLoader(0, getArguments(), mController);
     }
 
-
-    public void update(boolean force) {
-        Bundle args = new Bundle();
-        args.putSerializable(ARG_DATE, mDate);
-        if(force)
-            getLoaderManager().destroyLoader(0);
-        getLoaderManager().restartLoader(0, args, mController);
+    public Date getDate() {
+        return mDate;
     }
 
     @Override
