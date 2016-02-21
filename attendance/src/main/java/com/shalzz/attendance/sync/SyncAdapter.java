@@ -100,6 +100,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 			@Override
 			public void onResponse(ArrayList<SubjectModel> response) {
                 try {
+                    Bugsnag.leaveBreadcrumb("Sync: got attendance");
 					DatabaseHandler db = new DatabaseHandler(mContext);
                     long now = new Date().getTime();
                     for (SubjectModel subject : response) {
@@ -121,6 +122,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 			@Override
 			public void onResponse(ArrayList<PeriodModel> response) {
                 try {
+                    Bugsnag.leaveBreadcrumb("Sync: got timetable");
 					DatabaseHandler db = new DatabaseHandler(mContext);
                     long now = new Date().getTime();
 					for(PeriodModel period : response) {
@@ -136,6 +138,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
                     // Show a notification since our timetable has changed.
                     if (notify) {
+                        Bugsnag.leaveBreadcrumb("Notifying user");
                         NotificationCompat.Builder mBuilder =
                                 (NotificationCompat.Builder) new NotificationCompat.Builder(mContext)
                                         .setSmallIcon(R.drawable.human)

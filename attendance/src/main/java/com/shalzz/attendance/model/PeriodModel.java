@@ -63,7 +63,7 @@ public class PeriodModel {
         try {
             d = DateHelper.hr24Format.parse(start);
         } catch (Exception e) {
-	    Bugsnag.notify(e, Severity.WARNING);
+	        Bugsnag.notify(e, Severity.WARNING);
             e.printStackTrace();
         }
         return d;
@@ -74,7 +74,7 @@ public class PeriodModel {
         try {
             d = DateHelper.hr24Format.parse(end);
         } catch (Exception e) {
-	    Bugsnag.notify(e, Severity.WARNING);
+	        Bugsnag.notify(e, Severity.WARNING);
             e.printStackTrace();
         }
         return d;
@@ -137,7 +137,7 @@ public class PeriodModel {
             this.start = DateHelper.to24HrFormat(start);
             this.end = DateHelper.to24HrFormat(end);
         } catch (Exception e) {
-	    Bugsnag.notify(e);
+	        Bugsnag.notify(e);
             e.printStackTrace();
         }
 	}

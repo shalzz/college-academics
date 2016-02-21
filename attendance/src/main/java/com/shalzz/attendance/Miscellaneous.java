@@ -278,6 +278,7 @@ public class Miscellaneous {
                 Toast.makeText(MyVolley.getAppContext(), "Wifi changed to "+wifiInfo.getSSID(), Toast.LENGTH_LONG).show();
                 if (wifiInfo.getSSID().contains("UPESNET"))
                 {
+                    Bugsnag.leaveBreadcrumb("Proxy enabled!");
                     //					OkAuthenticator auth = new OkAuthenticator() {
                     //
                     //						@Override

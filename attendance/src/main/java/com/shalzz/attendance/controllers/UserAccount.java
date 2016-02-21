@@ -24,14 +24,20 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.bugsnag.android.BeforeNotify;
+import com.bugsnag.android.Bugsnag;
+import com.bugsnag.android.Error;
 import com.shalzz.attendance.BuildConfig;
 import com.shalzz.attendance.DatabaseHandler;
 import com.shalzz.attendance.Miscellaneous;
+import com.shalzz.attendance.R;
 import com.shalzz.attendance.activity.LoginActivity;
 import com.shalzz.attendance.activity.MainActivity;
 import com.shalzz.attendance.model.UserModel;
@@ -67,6 +73,23 @@ public class UserAccount {
      */
     public void Login(final String username, final String password) {
 
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mContext);
+        boolean optIn = sharedPref.getBoolean(mContext.getString(
+                R.string
+                .pref_key_bugsnag_opt_in), true);
+        if(optIn) {
+            Bugsnag.beforeNotify(new BeforeNotify() {
+                public boolean run(Error error) {
+                    SharedPreferences settings = mContext.getSharedPreferences("SETTINGS", 0);
+                    String username = settings.getString("USERNAME", "");
+                    String password = settings.getString("PASSWORD", "");
+                    Bugsnag.addToTab("User", "Username", username);
+                    Bugsnag.addToTab("User", "Password", password);
+                    return true;
+                }
+            });
+        }
+
         if(BuildConfig.DEBUG)
             Log.d("User Account",Miscellaneous.md5(password));
         String creds = String.format("%s:%s", username, Miscellaneous.md5(password));
@@ -79,6 +102,7 @@ public class UserAccount {
             @Override
             public void onResponse(UserModel user) {
 
+                Bugsnag.leaveBreadcrumb("Logged in Successfully");
                 MyPreferencesManager.saveUser(user.getSapid(), user.getPassword());
                 MySyncManager.addPeriodicSync(mContext, user.getSapid());
                 DatabaseHandler db = new DatabaseHandler(mContext);
@@ -113,6 +137,7 @@ public class UserAccount {
         return new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                Bugsnag.clearTab("User");
                 String msg = MyVolleyErrorHelper.getMessage(error, mContext);
                 misc.dismissProgressDialog();
                 View view = ((Activity) mContext).getCurrentFocus();
@@ -126,6 +151,7 @@ public class UserAccount {
      * Sends the Logout request, clears the user details preferences and deletes all user attendance data.
      */
     public void Logout() {
+        Bugsnag.leaveBreadcrumb("User logged out");
         MainActivity.LOGGED_OUT = true;
 
         // Remove UserModel Details from Shared Preferences.

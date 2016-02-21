@@ -29,6 +29,7 @@ import android.os.Bundle;
 import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
 
+import com.bugsnag.android.Bugsnag;
 import com.shalzz.attendance.BuildConfig;
 import com.shalzz.attendance.R;
 
@@ -48,6 +49,7 @@ public class MySyncManager {
 	 * @param context The application context
 	 */
 	public static Account CreateSyncAccount(Context context, String accountName) {
+        Bugsnag.leaveBreadcrumb("Creating a sync account: " + accountName);
 		// Create the account type and default account
 		Account newAccount = new Account(accountName, ACCOUNT_TYPE);
 		// Get an instance of the Android account manager
@@ -76,6 +78,7 @@ public class MySyncManager {
 	}
 
 	public static void removeSyncAccount(Context mContext) {
+        Bugsnag.leaveBreadcrumb("removing sync account");
 		AccountManager accountManager = AccountManager.get(mContext);
         Account account = getSyncAccount(mContext);
         if(account!=null)
@@ -95,6 +98,7 @@ public class MySyncManager {
 		final long SYNC_INTERVAL_IN_MINUTES = Long.parseLong(sharedPref.getString(
                 mContext.getString(R.string.pref_key_sync_interval), "720"));
 		Log.d(mTag,"Sync Interval set to: "+SYNC_INTERVAL_IN_MINUTES);
+        Bugsnag.leaveBreadcrumb("Sync interval set to: " + SYNC_INTERVAL_IN_MINUTES);
 		
 		Account mAccount = getSyncAccount(mContext);
 		
@@ -119,6 +123,7 @@ public class MySyncManager {
 	}
 
 	public static void enableAutomaticSync(Context mContext,String accountName) {
+        Bugsnag.leaveBreadcrumb("Sync enabled");
         Account mAccount = getSyncAccount(mContext);
         if(mAccount==null)
             mAccount = CreateSyncAccount(mContext,accountName);
@@ -127,6 +132,7 @@ public class MySyncManager {
 	}
 
     public static void disableAutomaticSync(Context mContext,String accountName) {
+        Bugsnag.leaveBreadcrumb("Sync disabled");
         Account mAccount = getSyncAccount(mContext);
         if(mAccount==null)
             mAccount = CreateSyncAccount(mContext,accountName);

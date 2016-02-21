@@ -40,6 +40,7 @@ public class SplashActivity extends AppCompatActivity {
 
 		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
 		boolean optIn = sharedPref.getBoolean(getString(R.string.pref_key_ga_opt_in), true);
+        Bugsnag.leaveBreadcrumb("Google analytics enabled: " + optIn);
 		GoogleAnalytics.getInstance(this).setAppOptOut(!optIn);
 
         // Set all default values once for this application

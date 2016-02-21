@@ -29,6 +29,7 @@ import android.widget.Toast;
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.toolbox.HttpStack;
+import com.bugsnag.android.Bugsnag;
 import com.shalzz.attendance.Miscellaneous;
 import com.squareup.okhttp.Call;
 import com.squareup.okhttp.Headers;
@@ -82,11 +83,13 @@ public class MyOkHttpStack implements HttpStack {
         client.setWriteTimeout(timeoutMs, TimeUnit.MILLISECONDS);
 
         if(Miscellaneous.useProxy()) {
+            Bugsnag.leaveBreadcrumb("Using Proxy!");
             Log.i("MyOkHttpStack", "Using Proxy!");
             Toast.makeText(MyVolley.getAppContext(), "Using proxy", Toast.LENGTH_LONG).show();
             Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("proxy.ddn.upes.ac.in", 8080));
             client.setProxy(proxy);
         } else if(client.getProxy()!=null) {
+            Bugsnag.leaveBreadcrumb("Proxy removed!");
             Toast.makeText(MyVolley.getAppContext(), "Proxy removed", Toast.LENGTH_LONG).show();
             Log.i("MyOkHttpStack","Proxy removed!");
             client.setProxy(null);
