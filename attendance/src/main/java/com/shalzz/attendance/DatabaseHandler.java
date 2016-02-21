@@ -49,7 +49,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     /**
      * Database Version
      */
-    private static final int DATABASE_VERSION = 7;
+    private static final int DATABASE_VERSION = 8;
 
     /**
      * Database Name
