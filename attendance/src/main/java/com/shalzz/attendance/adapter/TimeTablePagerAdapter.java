@@ -21,13 +21,16 @@ package com.shalzz.attendance.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v7.preference.PreferenceManager;
 
 import com.shalzz.attendance.DatabaseHandler;
+import com.shalzz.attendance.R;
 import com.shalzz.attendance.fragment.DayFragment;
-import com.shalzz.attendance.wrapper.DateHelper;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -40,10 +43,9 @@ public class TimeTablePagerAdapter extends FragmentStatePagerAdapter {
     private Context mContext;
     private int mCount;
 
-	public TimeTablePagerAdapter(FragmentManager fm, Context context, Date date) {
+	public TimeTablePagerAdapter(FragmentManager fm, Context context) {
 		super(fm);
         mContext = context;
-        mDate = date;
         DatabaseHandler db = new DatabaseHandler(mContext);
         if(db.getTimetableCount()<=0) {
             mCount = 0;
@@ -55,13 +57,7 @@ public class TimeTablePagerAdapter extends FragmentStatePagerAdapter {
 
 	@Override
 	public DayFragment getItem(int position) {
-        Date date = DateHelper.addDays(mDate, -15+position);
-        DayFragment fragment = DayFragment.newInstance(date);
-
-        dates.put(position, date);
-        positions.put(date,position);
-		
-		return fragment;
+        return DayFragment.newInstance(dates.get(position));
 	}
 
     @Override
@@ -90,6 +86,24 @@ public class TimeTablePagerAdapter extends FragmentStatePagerAdapter {
         return dates.get(position);
     }
 
+    public int getPositionForDate(Date date) {
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mContext);
+        boolean show = sharedPref.getBoolean(mContext.getString(R.string.pref_key_show_weekends), true);
+        if(!show) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(date);
+            if(calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) {
+                calendar.add(Calendar.DATE, 1);
+            }
+            if(calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {
+                calendar.add(Calendar.DATE, 1);
+            }
+            date = calendar.getTime();
+        }
+
+        return positions.get(date);
+    }
+
     public void setDate(Date date) {
         if(mDate != date) {
             mDate = date;
@@ -100,9 +114,27 @@ public class TimeTablePagerAdapter extends FragmentStatePagerAdapter {
     }
 
     public void updateDates() {
-        for(int i =0; i<getCount(); i++) {
-            Date date = DateHelper.addDays(mDate, -15+i);
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mContext);
+        boolean show = sharedPref.getBoolean(mContext.getString(R.string.pref_key_show_weekends), true);
+        int day_offset = 0;
+        Calendar calendar = Calendar.getInstance();
+        for(int i =0; i < getCount() ; i++) {
+            calendar.setTime(mDate);
+            calendar.add(Calendar.DATE, -15+i);
+            if(!show) {
+                calendar.add(Calendar.DATE, day_offset);
+                if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) {
+                    calendar.add(Calendar.DATE, 1);
+                    ++day_offset;
+                }
+                if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {
+                    calendar.add(Calendar.DATE, 1);
+                    ++day_offset;
+                }
+            }
+            Date date = calendar.getTime();
             dates.put(i, date);
+            positions.put(date, i);
         }
     }
 }

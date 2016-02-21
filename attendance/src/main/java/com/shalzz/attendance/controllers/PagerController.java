@@ -57,22 +57,23 @@ public class PagerController {
         mResources = MyVolley.getMyResources();
         mView = view;
         db = new DatabaseHandler(mContext);
-        mAdapter = new TimeTablePagerAdapter(fm, mContext, mToday);
+        mAdapter = new TimeTablePagerAdapter(fm, mContext);
         mView.mViewPager.setAdapter(mAdapter);
     }
 
     public void setDate(Date date) {
         mAdapter.setDate(date);
         mView.updateTitle();
-        scrollToToday();
+        scrollToDate(date);
     }
 
     public void setToday() {
         setDate(mToday);
     }
 
-    public void scrollToToday() {
-        mView.mViewPager.setCurrentItem(15, true);
+    public void scrollToDate(Date date) {
+        int pos = mAdapter.getPositionForDate(date);
+        mView.mViewPager.setCurrentItem(pos, true);
     }
 
     public Date getDateForPosition(int position) {

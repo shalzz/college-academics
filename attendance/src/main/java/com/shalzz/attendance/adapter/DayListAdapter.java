@@ -22,13 +22,11 @@ package com.shalzz.attendance.adapter;
 import android.support.v7.util.SortedList;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.util.SortedListAdapterCallback;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.shalzz.attendance.BuildConfig;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.model.PeriodModel;
 
@@ -62,10 +60,7 @@ public class DayListAdapter extends RecyclerView.Adapter<DayListAdapter.ViewHold
         callback = new SortedListAdapterCallback<PeriodModel>(this) {
             @Override
             public int compare(PeriodModel o1, PeriodModel o2) {
-                int compare =(int) (o1.getStartDate().getTime() - o2.getStartDate().getTime());
-                if(BuildConfig.DEBUG)
-                    Log.i("Day adapter",""+compare);
-                return compare;
+                return (o1.getStartDate().compareTo(o2.getStartDate()));
             }
 
             @SuppressWarnings("SimplifiableIfStatement")

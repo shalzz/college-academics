@@ -69,11 +69,6 @@ public class TimeTablePagerFragment extends Fragment {
     @InjectView(R.id.pager)
     public ViewPager mViewPager;
 
-    /**
-     * Remember the position of the previous pager position.
-     */
-    private static final String STATE_PREVIOUS_POSITION = "previous_pager_position";
-
     private int mPreviousPosition = 15;
     private PagerController mController;
     private OnPageChangeListener mPageChangeListener;
@@ -100,10 +95,6 @@ public class TimeTablePagerFragment extends Fragment {
                              Bundle savedInstanceState) {
         if(container==null)
             return null;
-
-        if (savedInstanceState != null) {
-            mPreviousPosition = savedInstanceState.getInt(STATE_PREVIOUS_POSITION);
-        }
 
         setHasOptionsMenu(true);
         setRetainInstance(false);
@@ -149,7 +140,7 @@ public class TimeTablePagerFragment extends Fragment {
             mViewPager.setVisibility(View.GONE);
         }
         else
-            mViewPager.setCurrentItem(mPreviousPosition, true);
+            mController.setToday();
 
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -230,7 +221,6 @@ public class TimeTablePagerFragment extends Fragment {
         }
         else if(item.getItemId() == R.id.menu_today) {
             mController.setToday();
-            mController.scrollToToday(); // force scroll
         }
         return super.onOptionsItemSelected(item);
     }
