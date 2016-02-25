@@ -127,6 +127,14 @@ public class PeriodModel {
 		this.teacher = capitalizeString(teacher);
 	}
 
+    public void setStart(String start) {
+        this.start = start;
+    }
+
+    public void setEnd(String end) {
+        this.end = end;
+    }
+
 	public void setTime(String start, String end) {
         // always store time in 24 hour format
         try {
@@ -167,7 +175,9 @@ public class PeriodModel {
 				", teacher='" + teacher + '\'' +
 				", room='" + room + '\'' +
 				", start='" + start + '\'' +
+				", start='" + getStartDate().getTime() + '\'' +
 				", end='" + end + '\'' +
+				", end='" + getEndDate().getTime() + '\'' +
 				", day='" + day + '\'' +
 				", batch='" + batch + '\'' +
 				'}';

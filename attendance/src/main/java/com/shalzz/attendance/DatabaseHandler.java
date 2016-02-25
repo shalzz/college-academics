@@ -172,6 +172,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public void onConfigure(SQLiteDatabase db) {
         super.onConfigure(db);
         db.setForeignKeyConstraintsEnabled(true);
+        db.enableWriteAheadLogging();
     }
 
     /**
@@ -571,9 +572,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 period.setTeacher(cursor.getString(cursor.getColumnIndexOrThrow(KEY_TEACHER)));
                 period.setRoom(cursor.getString(cursor.getColumnIndexOrThrow(KEY_ROOM)));
                 period.setBatch(cursor.getString(cursor.getColumnIndexOrThrow(KEY_BATCH)));
-                String start = cursor.getString(cursor.getColumnIndexOrThrow(KEY_START));
-                String end = cursor.getString(cursor.getColumnIndexOrThrow(KEY_END));
-                period.setTime(start,end);
+                period.setStart(cursor.getString(cursor.getColumnIndexOrThrow(KEY_START)));
+                period.setEnd(cursor.getString(cursor.getColumnIndexOrThrow(KEY_END)));
                 periods.add(period);
             } while (cursor.moveToNext());
         }

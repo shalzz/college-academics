@@ -141,6 +141,7 @@ public class TimeTablePagerFragment extends Fragment {
         }
         else
             mController.setToday();
+        db.close();
 
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override

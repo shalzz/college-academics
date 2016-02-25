@@ -75,6 +75,9 @@ public class SubjectAsyncTaskLoader extends AsyncTaskLoader<List<SubjectModel>> 
     protected void onStopLoading() {
         // Attempt to cancel the current load task if possible.
         cancelLoad();
+        if(mDb != null) {
+            mDb.close();
+        }
     }
 
     @Override

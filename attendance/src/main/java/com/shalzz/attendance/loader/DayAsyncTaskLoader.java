@@ -74,6 +74,9 @@ public class DayAsyncTaskLoader extends AsyncTaskLoader<List<PeriodModel>> {
     protected void onStopLoading() {
         // Attempt to cancel the current load task if possible.
         cancelLoad();
+        if (mDb != null) {
+            mDb.close();
+        }
     }
 
     @Override

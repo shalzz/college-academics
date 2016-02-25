@@ -62,15 +62,16 @@ public class TimeTablePagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public int getItemPosition(Object item) {
-        DayFragment fragment = (DayFragment)item;
-        Date date = fragment.getDate();
-        int position = positions.get(date);
-
-        if (position >= 0) {
-            return position;
-        } else {
-            return POSITION_NONE;
-        }
+//        DayFragment fragment = (DayFragment)item;
+//        Date date = fragment.getDate();
+//        int position = positions.get(date);
+//
+//        if (position >= 0) {
+//            return position;
+//        } else {
+//            return POSITION_NONE;
+//        }
+        return POSITION_NONE;
     }
 
     @Override
@@ -105,11 +106,11 @@ public class TimeTablePagerAdapter extends FragmentStatePagerAdapter {
     }
 
     public void setDate(Date date) {
+        mCount = 31;
         if(mDate != date) {
             mDate = date;
             updateDates();
         }
-        mCount = 31;
         notifyDataSetChanged();
     }
 
