@@ -102,7 +102,7 @@ public class TimeTablePagerFragment extends Fragment {
         final View view = inflater.inflate(R.layout.fragment_viewpager, container, false);
         ButterKnife.inject(this,view);
 
-        mSwipeRefreshLayout.setSwipeableChildren(R.id.pager);
+        mSwipeRefreshLayout.setSwipeableChildren(R.id.time_table_recycler_view);
 
         // Set the color scheme of the SwipeRefreshLayout by providing 4 color resource ids
         mSwipeRefreshLayout.setColorSchemeResources(
