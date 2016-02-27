@@ -33,6 +33,9 @@
 
     <!--Network related strings-->
     <string name="UserAgent" translatable="false">Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.57 Safari/537.36</string>
+    <string name="proxy_host" translatable="false">proxy1.ddn.upes.ac.in</string>
+    <string name="proxy_port" translatable="false">8080</string>
+    <string name="upesnet_ssid" translatable="false">UPESNET</string>
 
     <!--URL's-->
     <string name="URL_user" translatable="false">https://upes.winnou.net/api/v1/me</string>
