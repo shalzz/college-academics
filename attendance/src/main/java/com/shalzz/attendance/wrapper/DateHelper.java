@@ -54,17 +54,6 @@ public class DateHelper {
         return Week.getFullDay(weekday - 1);
     }
 
-    public static Date getToDay() {
-        return new Date();
-    }
-
-    public static Date addDays(Date date, int numberOfDays) {
-        Calendar c = Calendar.getInstance();
-        c.setTime(date);
-        c.add(Calendar.DATE, numberOfDays);
-        return c.getTime();
-    }
-
     public static Date parseDate(String datestr) {
         Date date = null;
         try {

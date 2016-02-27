@@ -20,9 +20,9 @@
 package com.shalzz.attendance.fragment;
 
 import android.app.DatePickerDialog;
-import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -44,7 +44,6 @@ import com.google.android.gms.analytics.Tracker;
 import com.shalzz.attendance.CircularIndeterminate;
 import com.shalzz.attendance.DatabaseHandler;
 import com.shalzz.attendance.R;
-import com.shalzz.attendance.adapter.TimeTablePagerAdapter;
 import com.shalzz.attendance.controllers.PagerController;
 import com.shalzz.attendance.controllers.UserAccount;
 import com.shalzz.attendance.wrapper.DateHelper;
@@ -70,19 +69,12 @@ public class TimeTablePagerFragment extends Fragment {
     @InjectView(R.id.pager)
     public ViewPager mViewPager;
 
-    /**
-     * Remember the position of the previous pager position.
-     */
-    private static final String STATE_PREVIOUS_POSITION = "previous_pager_position";
-
     private int mPreviousPosition = 15;
     private PagerController mController;
     private OnPageChangeListener mPageChangeListener;
-    private TimeTablePagerAdapter mTimeTablePagerAdapter;
     private String myTag = "Pager Fragment";
     private Context mContext;
     private ActionBar actionbar;
-    private Date mToday;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -104,17 +96,13 @@ public class TimeTablePagerFragment extends Fragment {
         if(container==null)
             return null;
 
-        if (savedInstanceState != null) {
-            mPreviousPosition = savedInstanceState.getInt(STATE_PREVIOUS_POSITION);
-        }
-
         setHasOptionsMenu(true);
         setRetainInstance(false);
         actionbar= ((AppCompatActivity)getActivity()).getSupportActionBar();
         final View view = inflater.inflate(R.layout.fragment_viewpager, container, false);
         ButterKnife.inject(this,view);
 
-        mSwipeRefreshLayout.setSwipeableChildren(R.id.pager);
+        mSwipeRefreshLayout.setSwipeableChildren(R.id.time_table_recycler_view);
 
         // Set the color scheme of the SwipeRefreshLayout by providing 4 color resource ids
         mSwipeRefreshLayout.setColorSchemeResources(
@@ -144,11 +132,7 @@ public class TimeTablePagerFragment extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mToday =  DateHelper.getToDay();
-        mTimeTablePagerAdapter = new TimeTablePagerAdapter(getActivity().getFragmentManager(), mToday);
-        mViewPager.setAdapter(mTimeTablePagerAdapter);
-
-        mController = new PagerController(mContext, this);
+        mController = new PagerController(mContext, this, getActivity().getSupportFragmentManager());
         DatabaseHandler db = new DatabaseHandler(mContext);
         if(db.getTimetableCount()<=0) {
             mController.updatePeriods();
@@ -156,7 +140,8 @@ public class TimeTablePagerFragment extends Fragment {
             mViewPager.setVisibility(View.GONE);
         }
         else
-            mViewPager.setCurrentItem(mPreviousPosition, true);
+            mController.setToday();
+        db.close();
 
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -228,7 +213,7 @@ public class TimeTablePagerFragment extends Fragment {
         }
         else if(item.getItemId() == R.id.menu_date) {
             Calendar today = Calendar.getInstance();
-            today.setTime(mToday);
+            today.setTime(new Date());
             DatePickerDialog mDatePickerDialog = new DatePickerDialog(mContext,onDateSetListner()
                     ,today.get(Calendar.YEAR)
                     ,today.get(Calendar.MONTH)
@@ -236,40 +221,17 @@ public class TimeTablePagerFragment extends Fragment {
             mDatePickerDialog.show();
         }
         else if(item.getItemId() == R.id.menu_today) {
-            if(mTimeTablePagerAdapter.getDate() != mToday) {
-                mTimeTablePagerAdapter.setDate(mToday);
-            }
-            scrollToToday();
-            updateTitle();
+            mController.setToday();
         }
         return super.onOptionsItemSelected(item);
     }
-    public void clearFragmentsData() {
-        for (DayFragment fragment : mTimeTablePagerAdapter.getActiveFragments()) {
-            fragment.clear();
-        }
-    }
 
-    public void updateFragmentsData() {
-        for (DayFragment fragment : mTimeTablePagerAdapter.getActiveFragments()) {
-//            Log.d("TimeTableActivity", "Update Fragment " + fragment.getDate() + " with new data.");
-            fragment.update();
-        }
-        updateTitle();
-    }
-
-    private void updateTitle() {
-        DayFragment fragment = mTimeTablePagerAdapter.getFragment(mPreviousPosition);
-//        Log.d(myTag,"Dayfragment: " + fragment);
-        if(fragment!=null) {
-            Date mDate = fragment.getDate();
+    public void updateTitle() {
+        Date mDate  = mController.getDateForPosition(mPreviousPosition);
+        if(mDate!=null) {
             actionbar.setTitle(DateHelper.getProperWeekday(mDate));
             actionbar.setSubtitle(DateHelper.formatToProperFormat(mDate));
         }
-    }
-
-    public void scrollToToday() {
-        mViewPager.setCurrentItem(15, true);
     }
 
     DatePickerDialog.OnDateSetListener onDateSetListner() {
@@ -278,9 +240,7 @@ public class TimeTablePagerFragment extends Fragment {
             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
                 Calendar date = Calendar.getInstance();
                 date.set(year, monthOfYear, dayOfMonth);
-                mTimeTablePagerAdapter.setDate(date.getTime());
-                updateTitle();
-                scrollToToday();
+                mController.setDate(date.getTime());
             }
         };
     }
@@ -292,5 +252,4 @@ public class TimeTablePagerFragment extends Fragment {
         MyVolley.getInstance().cancelPendingRequests(MyVolley.ACTIVITY_NETWORK_TAG);
         ButterKnife.reset(this);
     }
-
 }

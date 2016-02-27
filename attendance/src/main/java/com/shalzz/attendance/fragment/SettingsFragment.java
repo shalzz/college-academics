@@ -19,17 +19,17 @@
 
 package com.shalzz.attendance.fragment;
 
-import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
-import android.support.v14.preference.PreferenceFragment;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.preference.ListPreference;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceCategory;
+import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.PreferenceScreen;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
@@ -41,7 +41,7 @@ import com.shalzz.attendance.activity.MainActivity;
 import com.shalzz.attendance.wrapper.MySyncManager;
 import com.shalzz.attendance.wrapper.MyVolley;
 
-public class SettingsFragment extends PreferenceFragment implements OnSharedPreferenceChangeListener{
+public class SettingsFragment extends PreferenceFragmentCompat implements OnSharedPreferenceChangeListener{
 
     private Context mContext;
     private String key_sub_limit;
@@ -130,6 +130,7 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
                 FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
                 transaction.replace(R.id.frame_container, mFragment, MainActivity.FRAGMENT_TAG);
+                transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                 transaction.addToBackStack(null);
                 ((MainActivity)getActivity()).mPopSettingsBackStack = true;
 
@@ -148,6 +149,7 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
                 FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
                 transaction.replace(R.id.frame_container, mFragment, MainActivity.FRAGMENT_TAG);
+                transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                 transaction.addToBackStack(null);
                 ((MainActivity)getActivity()).mPopSettingsBackStack = true;
 

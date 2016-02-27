@@ -21,6 +21,7 @@ package com.shalzz.attendance.controllers;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.View;
 
@@ -31,6 +32,7 @@ import com.shalzz.attendance.DatabaseHandler;
 import com.shalzz.attendance.Miscellaneous;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.activity.MainActivity;
+import com.shalzz.attendance.adapter.TimeTablePagerAdapter;
 import com.shalzz.attendance.fragment.TimeTablePagerFragment;
 import com.shalzz.attendance.model.PeriodModel;
 import com.shalzz.attendance.network.DataAPI;
@@ -43,16 +45,39 @@ import java.util.Date;
 public class PagerController {
 
     private TimeTablePagerFragment mView;
+    public TimeTablePagerAdapter mAdapter;
     private DatabaseHandler db;
     private Context mContext;
     private Resources mResources;
     private String mTag = "Pager Controller";
+    private Date mToday = new Date();
 
-    public PagerController(Context context, TimeTablePagerFragment view) {
+    public PagerController(Context context, TimeTablePagerFragment view, FragmentManager fm) {
         mContext = context;
         mResources = MyVolley.getMyResources();
         mView = view;
         db = new DatabaseHandler(mContext);
+        mAdapter = new TimeTablePagerAdapter(fm, mContext);
+        mView.mViewPager.setAdapter(mAdapter);
+    }
+
+    public void setDate(Date date) {
+        mAdapter.setDate(date);
+        mView.updateTitle();
+        scrollToDate(date);
+    }
+
+    public void setToday() {
+        setDate(mToday);
+    }
+
+    public void scrollToDate(Date date) {
+        int pos = mAdapter.getPositionForDate(date);
+        mView.mViewPager.setCurrentItem(pos, true);
+    }
+
+    public Date getDateForPosition(int position) {
+        return mAdapter.getDateForPosition(position);
     }
 
     public void updatePeriods() {
@@ -75,11 +100,12 @@ public class PagerController {
                         if (db.purgeOldPeriods() == 1) {
                             if(BuildConfig.DEBUG)
                                 Log.d(mTag, "Purging Periods...");
-                            mView.clearFragmentsData();
                         }
 
-                        mView.updateFragmentsData();
-                        mView.scrollToToday();
+                        // TODO: use an event bus or RxJava to update fragment contents
+
+                        setToday();
+                        mView.updateTitle();
                         db.close();
                     } else {
                         String msg = mResources.getString(R.string.unavailable_timetable_error_msg);

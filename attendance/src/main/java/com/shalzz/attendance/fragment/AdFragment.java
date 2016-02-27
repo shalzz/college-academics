@@ -19,9 +19,9 @@
 
 package com.shalzz.attendance.fragment;
 
-import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,7 +43,7 @@ public class AdFragment extends Fragment {
         super.onActivityCreated(bundle);
         AdView mAdView = (AdView) getView().findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder()
-//                .addTestDevice("F9687B4F94B9427327A76A24D717C6B5")
+                .addTestDevice("F9687B4F94B9427327A76A24D717C6B5")
                 .build();
         mAdView.loadAd(adRequest);
     }
