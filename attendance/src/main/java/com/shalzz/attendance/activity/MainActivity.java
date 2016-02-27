@@ -19,9 +19,9 @@
 
 package com.shalzz.attendance.activity;
 
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ValueAnimator;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -29,15 +29,21 @@ import android.graphics.Point;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.TextView;
 
 import com.bugsnag.android.Bugsnag;
@@ -107,17 +113,17 @@ public class MainActivity extends AppCompatActivity {
     @InjectView(R.id.list_slidermenu)
     NavigationView mNavigationView;
 
+    private int mContentViewHeight;
     private int mCurrentSelectedPosition = Fragments.ATTENDANCE.getValue();
     private String[] mNavTitles;
-    private CharSequence mDrawerTitle;
-    private CharSequence mTitle;
     private ActionBarDrawerToggle mDrawerToggle;
     private DrawerHeaderViewHolder DrawerheaderVH;
     private FragmentManager mFragmentManager;
     private Fragment fragment = null;
-    private ActionBar actionbar;
+    private DatabaseHandler mDb;
     // Our custom poor-man's back stack which has only one entry at maximum.
     private Fragment mPreviousFragment;
+    private Toolbar mToolbar;
 
     public static class DrawerHeaderViewHolder extends RecyclerView.ViewHolder {
         @InjectView(R.id.drawer_header_name) TextView tv_name;
@@ -131,46 +137,98 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.drawer);
         ButterKnife.inject(this);
         Bugsnag.setContext("MainActivity");
 
-        // set toolbar as actionbar
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
         mNavTitles = getResources().getStringArray(R.array.drawer_array);
-        mFragmentManager = getFragmentManager();
-        mTitle  = getTitle();
-        actionbar = getSupportActionBar();
-
-        // Check for tablet layout
-//        FrameLayout frameLayout = (FrameLayout)findViewById(R.id.frame_container);
-//        if(((ViewGroup.MarginLayoutParams)frameLayout.getLayoutParams()).leftMargin == (int)getResources().getDimension(R.dimen.drawer_size)) {
-//            mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN, mNavigationView);
-//            mDrawerLayout.setScrimColor(Color.TRANSPARENT);
-//            isDrawerLocked = true;
-//        }
-
+        mFragmentManager = getSupportFragmentManager();
+        mDb = new DatabaseHandler(this);
         View Drawerheader = mNavigationView.inflateHeaderView(R.layout.drawer_header);
         DrawerheaderVH = new DrawerHeaderViewHolder(Drawerheader);
 
-        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar,
+        /**     ------------- Toolbar init -----------           */
+
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        if(getIntent().hasExtra(SplashActivity.INTENT_EXTRA_STARTING_ACTIVITY)) {
+            mToolbar.getViewTreeObserver().addOnPreDrawListener(
+                    new ViewTreeObserver.OnPreDrawListener() {
+                        @Override
+                        public boolean onPreDraw() {
+                            mToolbar.getViewTreeObserver().removeOnPreDrawListener(this);
+                            final int widthSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
+                            final int heightSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
+
+                            mToolbar.measure(widthSpec, heightSpec);
+                            mContentViewHeight = mToolbar.getHeight();
+                            collapseToolbar(savedInstanceState);
+                            return true;
+                        }
+                    });
+        } else {
+            int toolBarHeight;
+            TypedValue tv = new TypedValue();
+            getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true);
+            toolBarHeight = TypedValue.complexToDimensionPixelSize(
+                    tv.data, getResources().getDisplayMetrics());
+            ViewGroup.LayoutParams lp = mToolbar.getLayoutParams();
+            lp.height = toolBarHeight;
+            mToolbar.setLayoutParams(lp);
+            init(savedInstanceState);
+        }
+        setSupportActionBar(mToolbar);
+
+        /**     ------------- Toolbar init ends -----------           */
+
+        initDrawer();
+    }
+
+    public void init(Bundle savedInstanceState) {
+        // Display the fragments
+
+        // Select either the default item (Fragments.ATTENDANCE) or the last selected item.
+        mCurrentSelectedPosition = reloadCurrentFragment();
+
+        // Recycle fragment
+        if(savedInstanceState != null) {
+            fragment =  mFragmentManager.findFragmentByTag(FRAGMENT_TAG);
+            mPreviousFragment = mFragmentManager.getFragment(savedInstanceState, PREVIOUS_FRAGMENT_TAG);
+            Log.d(mTag, "current fag found: " + fragment );
+            Log.d(mTag, "previous fag found: " + mPreviousFragment );
+            selectItem(mCurrentSelectedPosition);
+            showFragment(fragment);
+        }
+        else if(getIntent().hasExtra(LAUNCH_FRAGMENT_EXTRA)) {
+            displayView(getIntent().getIntExtra(LAUNCH_FRAGMENT_EXTRA,
+                    Fragments.ATTENDANCE.getValue()));
+        }
+        else if(getIntent().getAction()!=null &&
+                getIntent().getAction().equals(Intent.ACTION_MANAGE_NETWORK_USAGE)) {
+            displayView(Fragments.SETTINGS.getValue());
+        }
+        else {
+            displayView(mCurrentSelectedPosition);
+        }
+
+        updateDrawerHeader();
+        showcaseView();
+    }
+
+    private void initDrawer() {
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar,
                 R.string.drawer_open, R.string.drawer_close) {
 
             /** Called when a drawer has settled in a completely closed state. */
             public void onDrawerClosed(View view) {
                 super.onDrawerClosed(view);
-                actionbar.setTitle(mTitle);
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
 
             /** Called when a drawer has settled in a completely open state. */
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
-                actionbar.setTitle(mDrawerTitle);
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
         };
@@ -191,34 +249,6 @@ public class MainActivity extends AppCompatActivity {
             mDrawerLayout.setStatusBarBackgroundColor(getResources().getColor(
                     R.color.primary_dark));
         }
-
-        // Select either the default item (Fragments.ATTENDANCE) or the last selected item.
-        mCurrentSelectedPosition = reloadCurrentFragment();
-
-        // Recycle fragment
-        if(savedInstanceState != null) {
-            fragment =  getFragmentManager().findFragmentByTag(FRAGMENT_TAG);
-            mPreviousFragment = getFragmentManager().getFragment(savedInstanceState, PREVIOUS_FRAGMENT_TAG);
-            Log.d(mTag, "current fag found: " + fragment );
-            Log.d(mTag, "previous fag found: " + mPreviousFragment );
-            selectItem(mCurrentSelectedPosition);
-            showFragment(fragment);
-        }
-        else if(getIntent().hasExtra(LAUNCH_FRAGMENT_EXTRA)) {
-            displayView(getIntent().getIntExtra(LAUNCH_FRAGMENT_EXTRA,
-                    Fragments.ATTENDANCE.getValue()));
-        }
-        else if(getIntent().getAction()!=null &&
-                getIntent().getAction().equals(Intent.ACTION_MANAGE_NETWORK_USAGE)) {
-            displayView(Fragments.SETTINGS.getValue());
-            Bugsnag.leaveBreadcrumb("MANAGE_NETWORK_USAGE intent received");
-        }
-        else {
-            displayView(mCurrentSelectedPosition);
-        }
-
-        updateDrawerHeader();
-        showcaseView();
     }
 
     void showcaseView() {
@@ -227,7 +257,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public Point getPoint() {
                 // Get approximate position of home icon's center
-                int actionBarSize = actionbar.getHeight();
+                int actionBarSize = mToolbar.getHeight();
                 int x = actionBarSize / 2;
                 int y = actionBarSize / 2;
                 return new Point(x, y);
@@ -254,15 +284,47 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void collapseToolbar(final Bundle savedInstanceState) {
+        int toolBarHeight;
+        TypedValue tv = new TypedValue();
+        getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true);
+        toolBarHeight = TypedValue.complexToDimensionPixelSize(
+                tv.data, getResources().getDisplayMetrics());
+
+        ValueAnimator valueHeightAnimator = ValueAnimator
+                .ofInt(mContentViewHeight, toolBarHeight);
+
+        valueHeightAnimator.addUpdateListener(
+                new ValueAnimator.AnimatorUpdateListener() {
+
+                    @Override
+                    public void onAnimationUpdate(ValueAnimator animation) {
+                        ViewGroup.LayoutParams lp = mToolbar.getLayoutParams();
+                        lp.height = (Integer) animation.getAnimatedValue();
+                        mToolbar.setLayoutParams(lp);
+                    }
+                });
+
+        valueHeightAnimator.start();
+        valueHeightAnimator.addListener(
+                new AnimatorListenerAdapter() {
+
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        super.onAnimationEnd(animation);
+                        init(savedInstanceState);
+                    }
+                });
+    }
+
     public void updateDrawerHeader() {
         updateUserDetails();
         updateLastSync();
     }
 
     public void updateUserDetails() {
-        DatabaseHandler db = new DatabaseHandler(this);
-        if(db.getUserCount()>0) {
-            UserModel user = db.getUser();
+        if(mDb.getUserCount()>0) {
+            UserModel user = mDb.getUser();
 
             DrawerheaderVH.tv_name.setText(user.getName());
             DrawerheaderVH.tv_course.setText(user.getCourse());
@@ -271,9 +333,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void updateLastSync() {
-        DatabaseHandler db = new DatabaseHandler(this);
-        if(db.getRowCount()>0) {
-            int time = (int) db.getLastSync();
+        if(mDb.getRowCount()>0) {
+            int time = (int) mDb.getLastSync();
             DrawerheaderVH.last_refresh.setText(
                     getResources().getQuantityString(R.plurals.tv_last_refresh, time, time));
         }
@@ -308,9 +369,11 @@ public class MainActivity extends AppCompatActivity {
                 return;
             case 1:
                 fragment = new AttendanceListFragment();
+                mPreviousFragment = null; // GC
                 break;
             case 2:
                 fragment = new TimeTablePagerFragment();
+                mPreviousFragment = null; // GC
                 break;
             case 3:
                 fragment = new SettingsFragment();
@@ -335,8 +398,7 @@ public class MainActivity extends AppCompatActivity {
     private void selectItem(int position) {
         mCurrentSelectedPosition = position;
         mNavigationView.getMenu().getItem(position-1).setChecked(true);
-        mDrawerTitle = mNavTitles[position-1];
-        setTitle(mDrawerTitle);
+        setTitle(mNavTitles[position-1]);
         if(!isDrawerLocked && mDrawerLayout.isDrawerOpen(mNavigationView))
             mDrawerLayout.closeDrawer(mNavigationView);
     }
@@ -364,7 +426,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(mTag, this + " showFragment: destroying previous fragment "
                         + mPreviousFragment.getClass().getSimpleName());
             }
-            ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+            ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
             ft.remove(mPreviousFragment);
             mPreviousFragment = null;
         }
@@ -377,10 +439,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Show the new one
         ft.add(R.id.frame_container,fragment,FRAGMENT_TAG);
-        if(fragment instanceof SettingsFragment)
-            ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-        else
-            ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         ft.commit();
     }
 
@@ -392,10 +451,14 @@ public class MainActivity extends AppCompatActivity {
             mDrawerLayout.closeDrawer(mNavigationView);
         }
         else if (shouldPopFromBackStack()) {
+            if(BuildConfig.DEBUG)
+                Log.i(mTag,"popping from back stack");
             if(mPopSettingsBackStack) {
+                if(BuildConfig.DEBUG)
+                    Log.i(mTag,"popping nested settings fragment");
                 mPopSettingsBackStack = false;
-                getFragmentManager().popBackStackImmediate();
-                Bugsnag.leaveBreadcrumb("Back: Popping from internal back stack");
+                mFragmentManager.popBackStackImmediate();
+		Bugsnag.leaveBreadcrumb("Back: Popping from internal back stack");
             } else {
                 // Custom back stack
                 popFromBackStack();
@@ -403,8 +466,8 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         else {
-            super.onBackPressed();
-            Bugsnag.leaveBreadcrumb("App closed");
+            ActivityCompat.finishAfterTransition(this);
+	    Bugsnag.leaveBreadcrumb("App closed");
         }
     }
 
@@ -464,7 +527,7 @@ public class MainActivity extends AppCompatActivity {
             SharedPreferences.Editor editor = getSharedPreferences("SETTINGS", 0).edit();
             mCurrentSelectedPosition = mCurrentSelectedPosition == Fragments.SETTINGS.getValue() ?
                     Fragments.ATTENDANCE.getValue() : mCurrentSelectedPosition;
-            editor.putInt(PREFERENCE_ACTIVATED_FRAGMENT, mCurrentSelectedPosition).apply();
+            editor.putInt(PREFERENCE_ACTIVATED_FRAGMENT, mCurrentSelectedPosition).commit();
         }
     }
 
@@ -475,9 +538,8 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void setTitle(CharSequence title) {
-        mTitle = title;
-        actionbar.setTitle(mTitle);
-        actionbar.setSubtitle("");
+        mToolbar.setTitle(title);
+        mToolbar.setSubtitle("");
     }
 
     @Override
@@ -512,8 +574,7 @@ public class MainActivity extends AppCompatActivity {
         super.onSaveInstanceState(outState);
         // for orientation changes, etc.
         if (mPreviousFragment != null) {
-            getFragmentManager()
-                    .putFragment(outState, PREVIOUS_FRAGMENT_TAG, mPreviousFragment);
+            mFragmentManager.putFragment(outState, PREVIOUS_FRAGMENT_TAG, mPreviousFragment);
             Log.d(mTag, "previous fag saved: " + mPreviousFragment.getClass().getSimpleName());
         }
     }
@@ -533,6 +594,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onDestroy() {
         MyVolley.getInstance().cancelAllPendingRequests();
+        mDb.close();
         super.onDestroy();
     }
 

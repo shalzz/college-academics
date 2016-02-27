@@ -49,5 +49,5 @@
     <!--  The following value should be replaced with correct property id. -->
     <string name="ga_trackingId">UA-48815638-1</string>
     <string name="ga_appName">UPES Academics</string>
-    <string name="ga_appVersion">2.3.0</string>
+    <string name="ga_appVersion">2.2.4</string>
 </resources>

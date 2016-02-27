@@ -24,6 +24,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.support.v4.content.AsyncTaskLoader;
 
 import com.shalzz.attendance.model.ListFooterModel;
 import com.shalzz.attendance.model.PeriodModel;
@@ -48,7 +49,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     /**
      * Database Version
      */
-    private static final int DATABASE_VERSION = 7;
+    private static final int DATABASE_VERSION = 8;
 
     /**
      * Database Name
@@ -171,6 +172,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public void onConfigure(SQLiteDatabase db) {
         super.onConfigure(db);
         db.setForeignKeyConstraintsEnabled(true);
+        db.enableWriteAheadLogging();
     }
 
     /**
@@ -216,8 +218,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             dates.put(KEY_DAYS_ABSENT, DateHelper.formatToTechnicalFormat(date));
             db.insert(TABLE_DAYS_ABSENT, null, dates);
         }
-
-        db.close(); // Closing database connection
     }
 
     /**
@@ -242,12 +242,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             db.insertWithOnConflict(TABLE_DAYS_ABSENT, null, dates, SQLiteDatabase.CONFLICT_IGNORE);
         }
 
-        // updating row
-        int rows_affected = db.update(TABLE_ATTENDANCE, values, KEY_ID + " = ?",
+        return db.update(TABLE_ATTENDANCE, values, KEY_ID + " = ?",
                 new String[] { String.valueOf(subject.getID()) });
-        db.close();
-
-        return rows_affected;
     }
 
     /**
@@ -268,99 +264,63 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             updateSubject(subject, timestamp);
         }
         cursor.close();
-        db.close(); // Closing database connection
     }
 
     /**
      * Get All Subjects
      * @return subjectList
      */
-    public List<SubjectModel> getAllSubjects() {
+    public List<SubjectModel> getAllSubjects(AsyncTaskLoader callback, String filter) {
         List<SubjectModel> subjectList = new ArrayList<>();
-        // Select All Query
-        String selectQuery = "SELECT  * FROM " + TABLE_ATTENDANCE + ";";
-
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery(selectQuery, null);
+        Cursor cursor;
 
-        // looping through all rows and adding to list
-        if (cursor.moveToFirst()) {
-            do {
-
-                SubjectModel subject = new SubjectModel();
-                subject.setID(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_ID)));
-                subject.setName(cursor.getString(cursor.getColumnIndexOrThrow(KEY_NAME)));
-                subject.setClassesHeld(cursor.getFloat(cursor.getColumnIndexOrThrow(KEY_CLASSES_HELD)));
-                subject.setClassesAttended(cursor.getFloat(cursor.getColumnIndexOrThrow(KEY_CLASSES_ATTENDED)));
-
-                String datesQuery = "SELECT " + KEY_DAYS_ABSENT + " FROM " + TABLE_DAYS_ABSENT +
-                        " WHERE " + KEY_ID + " = " + subject.getID() + ";";
-
-                Cursor dateCursor = db.rawQuery(datesQuery, null);
-                ArrayList<Date> dates = new ArrayList<>();
-                if (dateCursor.moveToFirst()) {
-                    do {
-                        Date date = DateHelper.parseDate(dateCursor.getString(0));
-                        dates.add(date);
-                    } while (dateCursor.moveToNext());
-                }
-                dateCursor.close();
-                Date dateArray[] = new Date[dates.size()];
-                subject.setAbsentDates(dates.toArray(dateArray));
-
-                subjectList.add(subject);
-            } while (cursor.moveToNext());
+        if (filter != null) {
+            cursor = db.query(TABLE_ATTENDANCE, new String[]{KEY_ID, KEY_NAME, KEY_CLASSES_HELD,
+                            KEY_CLASSES_ATTENDED, KEY_DAYS_ABSENT}, KEY_NAME + " LIKE '%" +
+                            filter + "%'",
+                    null, null, null, KEY_NAME, null);
+        } else {
+            cursor = db.query(TABLE_ATTENDANCE, new String[]{KEY_ID, KEY_NAME, KEY_CLASSES_HELD,
+                            KEY_CLASSES_ATTENDED, KEY_DAYS_ABSENT}, null,
+                    null, null, null, KEY_NAME, null);
         }
 
-        db.close();
-        cursor.close();
+        if (cursor != null && cursor.moveToFirst()) {
+            try {
+                do {
+                    // Check isLoadInBackgroundCanceled() to cancel out early
+                    if(callback != null && callback.isLoadInBackgroundCanceled()) {
+                        break;
+                    }
 
-        return subjectList;
-    }
+                    SubjectModel subject = new SubjectModel();
+                    subject.setID(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_ID)));
+                    subject.setName(cursor.getString(cursor.getColumnIndexOrThrow(KEY_NAME)));
+                    subject.setClassesHeld(cursor.getFloat(cursor.getColumnIndexOrThrow(KEY_CLASSES_HELD)));
+                    subject.setClassesAttended(cursor.getFloat(cursor.getColumnIndexOrThrow(KEY_CLASSES_ATTENDED)));
 
-    /**
-     * Get All Subjects ordered alphabetically.
-     * @return subjectList
-     */
-    public List<SubjectModel> getAllOrderedSubjects() {
-        List<SubjectModel> subjectList = new ArrayList<>();
-        // Select All Query
-        String selectQuery = "SELECT  * FROM " + TABLE_ATTENDANCE + " ORDER BY " + KEY_NAME + ";";
+                    String datesQuery = "SELECT " + KEY_DAYS_ABSENT + " FROM " + TABLE_DAYS_ABSENT +
+                            " WHERE " + KEY_ID + " = " + subject.getID() + ";";
 
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery(selectQuery, null);
+                    Cursor dateCursor = db.rawQuery(datesQuery, null);
+                    ArrayList<Date> dates = new ArrayList<>();
+                    if (dateCursor.moveToFirst()) {
+                        do {
+                            Date date = DateHelper.parseDate(dateCursor.getString(0));
+                            dates.add(date);
+                        } while (dateCursor.moveToNext());
+                    }
+                    dateCursor.close();
+                    Date dateArray[] = new Date[dates.size()];
+                    subject.setAbsentDates(dates.toArray(dateArray));
 
-        // looping through all rows and adding to list
-        if (cursor.moveToFirst()) {
-            do {
-
-                SubjectModel subject = new SubjectModel();
-                subject.setID(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_ID)));
-                subject.setName(cursor.getString(cursor.getColumnIndexOrThrow(KEY_NAME)));
-                subject.setClassesHeld(cursor.getFloat(cursor.getColumnIndexOrThrow(KEY_CLASSES_HELD)));
-                subject.setClassesAttended(cursor.getFloat(cursor.getColumnIndexOrThrow(KEY_CLASSES_ATTENDED)));
-
-                String datesQuery = "SELECT " + KEY_DAYS_ABSENT + " FROM " + TABLE_DAYS_ABSENT +
-                        " WHERE " + KEY_ID + " = " + subject.getID() + ";";
-
-                Cursor dateCursor = db.rawQuery(datesQuery, null);
-                ArrayList<Date> dates = new ArrayList<>();
-                if (dateCursor.moveToFirst()) {
-                    do {
-                        Date date = DateHelper.parseDate(dateCursor.getString(0));
-                        dates.add(date);
-                    } while (dateCursor.moveToNext());
-                }
-                dateCursor.close();
-                Date dateArray[] = new Date[dates.size()];
-                subject.setAbsentDates(dates.toArray(dateArray));
-
-                subjectList.add(subject);
-            } while (cursor.moveToNext());
+                    subjectList.add(subject);
+                } while (cursor.moveToNext());
+            } finally {
+                cursor.close();
+            }
         }
-
-        db.close();
-        cursor.close();
 
         return subjectList;
     }
@@ -592,7 +552,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.close(); // Closing database connection
     }
 
-    public ArrayList<PeriodModel> getAllPeriods(String dayName) {
+    public ArrayList<PeriodModel> getAllPeriods(String dayName, AsyncTaskLoader callback) {
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.query(TABLE_TIMETABLE, null, KEY_DAY + "=?",
@@ -601,6 +561,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         ArrayList<PeriodModel> periods = new ArrayList<>();
         if (cursor.moveToFirst()) {
             do {
+                // Check isLoadInBackgroundCanceled() to cancel out early
+                if(callback != null && callback.isLoadInBackgroundCanceled()) {
+                    break;
+                }
                 PeriodModel period = new PeriodModel();
                 period.setId(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_ID)));
                 period.setDay(cursor.getString(cursor.getColumnIndexOrThrow(KEY_DAY)));
@@ -608,9 +572,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 period.setTeacher(cursor.getString(cursor.getColumnIndexOrThrow(KEY_TEACHER)));
                 period.setRoom(cursor.getString(cursor.getColumnIndexOrThrow(KEY_ROOM)));
                 period.setBatch(cursor.getString(cursor.getColumnIndexOrThrow(KEY_BATCH)));
-                String start = cursor.getString(cursor.getColumnIndexOrThrow(KEY_START));
-                String end = cursor.getString(cursor.getColumnIndexOrThrow(KEY_END));
-                period.setTime(start,end);
+                period.setStart(cursor.getString(cursor.getColumnIndexOrThrow(KEY_START)));
+                period.setEnd(cursor.getString(cursor.getColumnIndexOrThrow(KEY_END)));
                 periods.add(period);
             } while (cursor.moveToNext());
         }

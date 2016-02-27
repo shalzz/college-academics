@@ -21,8 +21,8 @@ package com.shalzz.attendance.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v14.preference.PreferenceFragment;
 import android.support.v7.preference.Preference;
+import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.PreferenceScreen;
 
 import com.bugsnag.android.Bugsnag;
@@ -36,7 +36,7 @@ import de.psdev.licensesdialog.licenses.GnuGeneralPublicLicense20;
 import de.psdev.licensesdialog.licenses.License;
 import de.psdev.licensesdialog.model.Notice;
 
-public class AboutSettingsFragment extends PreferenceFragment {
+public class AboutSettingsFragment extends PreferenceFragmentCompat {
 
     private Context mContext;
 

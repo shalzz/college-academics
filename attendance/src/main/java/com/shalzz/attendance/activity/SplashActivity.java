@@ -33,10 +33,15 @@ import com.shalzz.attendance.wrapper.MyPreferencesManager;
 
 public class SplashActivity extends AppCompatActivity {
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        Bugsnag.setContext("SplashActivity");
+    public static final String INTENT_EXTRA_STARTING_ACTIVITY = "starting_activity";
+    public static final String SPLASH_ACTIVITY = "splash_activity";
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+        // Make sure this is before calling super.onCreate
+        setTheme(R.style.AppTheme);
+		super.onCreate(savedInstanceState);
+	Bugsnag.setContext("SplashActivity");
 
 		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
 		boolean optIn = sharedPref.getBoolean(getString(R.string.pref_key_ga_opt_in), true);
@@ -55,12 +60,15 @@ public class SplashActivity extends AppCompatActivity {
         }
 
 		boolean loggedin = MyPreferencesManager.getLoginStatus();
-		
+
+        Intent intent;
 		if(!loggedin)
-			startActivity(new Intent(SplashActivity.this, LoginActivity.class));
+            intent = new Intent(SplashActivity.this, LoginActivity.class);
 		else
-			startActivity(new Intent(SplashActivity.this, MainActivity.class));
-		
+            intent = new Intent(SplashActivity.this, MainActivity.class);
+
+        intent.putExtra(INTENT_EXTRA_STARTING_ACTIVITY, SPLASH_ACTIVITY);
+        startActivity(intent);
 		finish();
 	}
 }

@@ -22,18 +22,19 @@ package com.shalzz.attendance.fragment;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
-import android.app.Fragment;
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -133,7 +134,7 @@ public class AttendanceListFragment extends Fragment implements
 
         mLinearLayoutManager = new LinearLayoutManager(mContext,
                 LinearLayoutManager.VERTICAL, false);
-        mLinearLayoutManager.setSmoothScrollbarEnabled(true);
+        mLinearLayoutManager.setSmoothScrollbarEnabled(false);
         mGridLayoutManager = new StaggeredGridLayoutManager(GRID_LAYOUT_SPAN_COUNT,
                 StaggeredGridLayoutManager.VERTICAL);
         mGridLayoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_NONE);
@@ -152,10 +153,7 @@ public class AttendanceListFragment extends Fragment implements
         super.onViewCreated(view, savedInstanceState);
 
         controller = new AttendanceController(mContext, this);
-
-        if(!controller.hasSubjects()) {
-            controller.updateSubjects();
-        }
+        mProgress.setVisibility(View.VISIBLE);
 
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -164,6 +162,12 @@ public class AttendanceListFragment extends Fragment implements
             }
         });
 
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        getLoaderManager().initLoader(0, null, controller);
     }
 
     public void showcaseView() {
@@ -188,21 +192,6 @@ public class AttendanceListFragment extends Fragment implements
 
         final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
         searchView.setQueryHint(mResources.getString(R.string.hint_search));
-
-        MenuItemCompat.setOnActionExpandListener(searchItem, new MenuItemCompat.OnActionExpandListener() {
-            @Override
-            public boolean onMenuItemActionCollapse(MenuItem item) {
-                controller.getSubjects();
-                return true;  // Return true to collapse action view
-            }
-
-            @Override
-            public boolean onMenuItemActionExpand(MenuItem item) {
-                // Do something when expanded
-                return true;  // Return true to expand action view
-            }
-        });
-
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
 
             @Override
@@ -213,7 +202,12 @@ public class AttendanceListFragment extends Fragment implements
 
             @Override
             public boolean onQueryTextChange(String arg0) {
-                controller.getSubjectsLike(arg0);
+                String filter = !TextUtils.isEmpty(arg0) ? arg0 : null;
+                Bundle bundle = new Bundle();
+                bundle.putString(AttendanceController.SUBJECT_FILTER,filter);
+                // destroy the loader first to clear the adapter
+                getLoaderManager().destroyLoader(0);
+                getLoaderManager().restartLoader(0, bundle, controller);
                 return false;
             }
         });

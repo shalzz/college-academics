@@ -22,8 +22,8 @@ package com.shalzz.attendance.fragment;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v14.preference.PreferenceFragment;
 import android.support.v7.preference.Preference;
+import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.PreferenceManager;
 
 import com.bugsnag.android.Bugsnag;
@@ -32,7 +32,7 @@ import com.google.android.gms.analytics.Tracker;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.wrapper.MyVolley;
 
-public class ProxySettingsFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
+public class ProxySettingsFragment extends PreferenceFragmentCompat implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     private String key_proxy_username;
 

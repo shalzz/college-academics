@@ -44,6 +44,7 @@
     <string-array name="pref_data_sync_interval_entries">
         <item>3 Hours</item>
         <item>6 Hours</item>
+        <item>8 Hours</item>
         <item>12 Hours</item>
         <item>1 Day</item>
     </string-array>
@@ -51,6 +52,7 @@
     <string-array name="pref_data_sync_interval_values">
         <item>180</item>
         <item>360</item>
+        <item>480</item>
         <item>720</item>
         <item>1440</item>
     </string-array>

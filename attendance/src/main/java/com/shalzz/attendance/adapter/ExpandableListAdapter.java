@@ -145,9 +145,6 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                         return item1.getID() == item2.getID();
                     }
                 });
-        DatabaseHandler db = new DatabaseHandler(mContext);
-        mSubjects.addAll(db.getAllSubjects());
-        mFooter = db.getListFooter();
     }
 
     public void addAll(List<SubjectModel> subjects) {
@@ -458,6 +455,8 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         }
         vh.base.addView(view);
 
+        if(mFooter == null)
+            return;
         Float percent = mFooter.getPercentage();
 
         /** --------footer-------- */

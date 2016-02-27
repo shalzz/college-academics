@@ -22,6 +22,9 @@ package com.shalzz.attendance.controllers;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.os.Bundle;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -37,6 +40,7 @@ import com.shalzz.attendance.R;
 import com.shalzz.attendance.activity.MainActivity;
 import com.shalzz.attendance.adapter.ExpandableListAdapter;
 import com.shalzz.attendance.fragment.AttendanceListFragment;
+import com.shalzz.attendance.loader.SubjectAsyncTaskLoader;
 import com.shalzz.attendance.model.SubjectModel;
 import com.shalzz.attendance.network.DataAPI;
 import com.shalzz.attendance.wrapper.MyVolley;
@@ -44,8 +48,11 @@ import com.shalzz.attendance.wrapper.MyVolleyErrorHelper;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
-public class AttendanceController {
+public class AttendanceController implements LoaderManager.LoaderCallbacks<List<SubjectModel>> {
+
+    public static final String SUBJECT_FILTER = "subject_filter_text";
 
     private AttendanceListFragment mView;
     private ExpandableListAdapter mAdapter;
@@ -69,32 +76,12 @@ public class AttendanceController {
         mAdapter.setLimit(expandLimit);
         LayoutInflater inflater = mView.getActivity().getLayoutInflater();
         mFooter = inflater.inflate(R.layout.list_footer, mView.mRecyclerView, false);
+        mFooter.setVisibility(View.INVISIBLE);
         mAdapter.addFooter(mFooter);
         mView.mRecyclerView.setAdapter(mAdapter);
     }
 
-    public void getSubjects() {
-        mAdapter.addAll(db.getAllSubjects());
-        db.close();
-    }
-
-    public void getSubjectsLike(String arg0) {
-        // remove the existing subjects so only
-        // the subjects matching the search criteria are shown.
-        mAdapter.clear();
-        mAdapter.addAll(db.getAllSubjectsLike(arg0));
-        db.close();
-    }
-
-    public boolean hasSubjects() {
-        return mAdapter.getSubjectCount() > 0;
-    }
-
     public void updateSubjects() {
-        if(!hasSubjects()) {
-            mView.mProgress.setVisibility(View.VISIBLE);
-            mFooter.setVisibility(View.GONE);
-        }
         DataAPI.getAttendance(successListener(), errorListener());
     }
 
@@ -117,6 +104,7 @@ public class AttendanceController {
                             mAdapter.clear();
                         }
 
+                        db.close();
                         mAdapter.addAll(response);
                         mFooter.setVisibility(View.VISIBLE);
                         mAdapter.updateFooter();
@@ -160,5 +148,37 @@ public class AttendanceController {
         if(mView.mSwipeRefreshLayout != null) {
             mView.mSwipeRefreshLayout.setRefreshing(false);
         }
+    }
+
+    @Override
+    public Loader<List<SubjectModel>> onCreateLoader(int id, Bundle args) {
+        String filter = null;
+        if(args != null)
+            filter = args.getString(SUBJECT_FILTER);
+        return new SubjectAsyncTaskLoader(mContext, filter);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<List<SubjectModel>> loader, List<SubjectModel> data) {
+        String filter = ((SubjectAsyncTaskLoader) loader).mCurFilter;
+        if(data.size() == 0 && filter == null) {
+            updateSubjects();
+        } else {
+            done();
+            mAdapter.addAll(data);
+            mFooter.setVisibility(View.VISIBLE);
+            mAdapter.updateFooter();
+        }
+    }
+
+    @Override
+    public void onLoaderReset(Loader<List<SubjectModel>> loader) {
+        // Loader reset, throw away our data,
+        // unregister any listeners, etc.
+        mAdapter.clear();
+        // Of course, unless you use destroyLoader(),
+        // this is called when everything is already dying
+        // so a completely empty onLoaderReset() is
+        // totally acceptable
     }
 }

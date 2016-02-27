@@ -35,7 +35,6 @@ import com.android.volley.toolbox.Volley;
 import com.bugsnag.android.Bugsnag;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
-import com.millennialmedia.android.MMSDK;
 import com.shalzz.attendance.BuildConfig;
 import com.shalzz.attendance.R;
 
@@ -95,7 +94,6 @@ public class MyVolley extends Application {
     public void onCreate() {
         super.onCreate();
         mContext = getApplicationContext();
-        MMSDK.initialize(this);
 
         // Initialize the singleton
         sInstance = this;

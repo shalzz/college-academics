@@ -25,8 +25,8 @@
     <string name="app_copyright" translatable="false">Shaleen Jain &#60;shaleen.jain95@gmail.com&#62;</string>
     <!--Semantic versioning: MAJOR.MINOR.PATCH-->
     <!-- DON'T update this for PATCH release -->
-    <string name="user_version" translatable="false">2.4</string>
-    <string name="pref_version_summary" translatable="false">v2.4.3</string>
+    <string name="user_version" translatable="false">2.5</string>
+    <string name="pref_version_summary" translatable="false">v2.5.0</string>
     
     <!--API keys-->
     <string name="banner_ad_unit_id" translatable="false">ca-app-pub-4430276599804177/4801693846</string>
@@ -54,6 +54,7 @@
     <string name="pref_key_ga_opt_in">ga_opt_in</string>
     <string name="pref_key_bugsnag_opt_in">bugsnag_opt_in</string>
     <string name="pref_key_notify_timetable_changed">notify_timetable_changed</string>
+    <string name="pref_key_show_weekends">show_weekends</string>
 
     <!--////  Actual user visible text ////-->
 
@@ -119,8 +120,9 @@
     <string name="pref_bugsnag_opt_in_summary">Send crash reports with diagnostic
         information to help debug and improve the app</string>
     <string name="pref_notify_timetable_changed">Notifications</string>
-    <string name="pref_notify_timetable_changed_summary">Receive a notification when your timetable
-        changes</string>
+    <string name="pref_notify_timetable_changed_summary">Receive a notification when your
+        timetable changes</string>
+    <string name="pref_show_weekends">Show Weekends</string>
 
     <!--Showcase View-->
     <string name="sv_attendance_title">Expandable item</string>
