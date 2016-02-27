@@ -64,7 +64,6 @@ android {
 
     dependencies {
         useLibrary 'org.apache.http.legacy'
-        compile fileTree(dir: 'libs', include: ['*.jar'])
 
         // google support libraries
         compile 'com.google.android.gms:play-services-analytics:8.+'
