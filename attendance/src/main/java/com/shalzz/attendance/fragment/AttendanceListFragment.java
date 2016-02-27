@@ -132,7 +132,7 @@ public class AttendanceListFragment extends Fragment implements
 
         mLinearLayoutManager = new LinearLayoutManager(mContext,
                 LinearLayoutManager.VERTICAL, false);
-        mLinearLayoutManager.setSmoothScrollbarEnabled(true);
+        mLinearLayoutManager.setSmoothScrollbarEnabled(false);
         mGridLayoutManager = new StaggeredGridLayoutManager(GRID_LAYOUT_SPAN_COUNT,
                 StaggeredGridLayoutManager.VERTICAL);
         mGridLayoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_NONE);
