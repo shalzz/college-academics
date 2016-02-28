@@ -149,6 +149,7 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
 
     public void addAll(List<SubjectModel> subjects) {
         mSubjects.addAll(subjects);
+        updateFooter();
     }
 
     public int getSubjectCount() {
@@ -460,6 +461,7 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         Float percent = mFooter.getPercentage();
 
         /** --------footer-------- */
+        view.setVisibility(View.VISIBLE);
         TextView tvPercent = (TextView) view.findViewById(R.id.tvTotalPercent);
         TextView tvClasses = (TextView) view.findViewById(R.id.tvClass);
         ProgressBar pbPercent = (ProgressBar) view.findViewById(R.id.pbTotalPercent);

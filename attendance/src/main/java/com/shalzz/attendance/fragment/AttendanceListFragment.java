@@ -133,6 +133,7 @@ public class AttendanceListFragment extends Fragment implements
         mLinearLayoutManager = new LinearLayoutManager(mContext,
                 LinearLayoutManager.VERTICAL, false);
         mLinearLayoutManager.setSmoothScrollbarEnabled(false);
+        mLinearLayoutManager.setStackFromEnd(false);
         mGridLayoutManager = new StaggeredGridLayoutManager(GRID_LAYOUT_SPAN_COUNT,
                 StaggeredGridLayoutManager.VERTICAL);
         mGridLayoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_NONE);
@@ -277,7 +278,7 @@ public class AttendanceListFragment extends Fragment implements
                         : ValueAnimator.ofFloat(1f, 0f);
 
                 // scroll to make the view fully visible.
-                mRecyclerView.smoothScrollToPosition(viewHolder.position);
+                mRecyclerView.smoothScrollToPosition(mRecyclerView.getChildAdapterPosition(view));
 
                 animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
 
