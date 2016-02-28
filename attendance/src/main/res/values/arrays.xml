@@ -57,4 +57,18 @@
         <item>1440</item>
     </string-array>
 
+    <string-array name="pref_day_night_entries">
+        <item>Default to system\'s setting</item>
+        <item>Change between day/night based on the time of day</item>
+        <item>Always use the day theme</item>
+        <item> Always use the night theme</item>
+    </string-array>
+
+    <string-array name="pref_day_night_values">
+        <item>-1</item>
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+
 </resources>

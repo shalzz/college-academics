@@ -220,7 +220,7 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
             FrameLayout frameLayout = new FrameLayout(parent.getContext());
             //make sure it fills the space
             frameLayout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.MATCH_PARENT));
+                    ViewGroup.LayoutParams.WRAP_CONTENT));
             return new HeaderFooterViewHolder(frameLayout);
         }
     }

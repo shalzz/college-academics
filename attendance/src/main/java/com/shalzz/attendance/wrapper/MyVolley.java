@@ -21,8 +21,11 @@ package com.shalzz.attendance.wrapper;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.support.v7.app.AppCompatDelegate;
+import android.support.v7.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -97,7 +100,11 @@ public class MyVolley extends Application {
         // Initialize the singleton
         sInstance = this;
 
-        // TODO: create a singleton for DatabaseHandler?
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        int nightMode = Integer.parseInt(sharedPref.getString(
+                mContext.getString(R.string.pref_key_day_night), "-1"));
+        //noinspection WrongConstant
+        AppCompatDelegate.setDefaultNightMode(nightMode);
     }
 
     /**
