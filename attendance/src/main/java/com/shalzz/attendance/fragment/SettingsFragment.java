@@ -26,6 +26,7 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.preference.ListPreference;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceCategory;
@@ -80,6 +81,9 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnShar
         if(key.equals(key_sync_day_night)) {
             ListPreference connectionPref = (ListPreference) findPreference(key);
             connectionPref.setSummary(connectionPref.getEntry());
+            //noinspection WrongConstant
+            AppCompatDelegate.setDefaultNightMode(Integer.parseInt(sharedPreferences.
+                    getString(key,"-1")));
         }
         else if(key.equals(key_sub_limit)) {
             ListPreference connectionPref = (ListPreference) findPreference(key);
