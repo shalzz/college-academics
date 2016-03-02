@@ -145,8 +145,7 @@ public class MainActivity extends AppCompatActivity {
         mNavTitles = getResources().getStringArray(R.array.drawer_array);
         mFragmentManager = getSupportFragmentManager();
         mDb = new DatabaseHandler(this);
-        View Drawerheader = mNavigationView.inflateHeaderView(R.layout.drawer_header);
-        DrawerheaderVH = new DrawerHeaderViewHolder(Drawerheader);
+        DrawerheaderVH = new DrawerHeaderViewHolder(mNavigationView.getHeaderView(0));
 
         /**     ------------- Toolbar init -----------           */
 
