@@ -123,6 +123,7 @@ public class MainActivity extends AppCompatActivity {
     // Our custom poor-man's back stack which has only one entry at maximum.
     private Fragment mPreviousFragment;
     private Toolbar mToolbar;
+    private ValueAnimator toolbarHeightAnimator;
 
     public static class DrawerHeaderViewHolder extends RecyclerView.ViewHolder {
         @InjectView(R.id.drawer_header_name) TextView tv_name;
@@ -237,11 +238,11 @@ public class MainActivity extends AppCompatActivity {
 
         // Set the drawer toggle as the DrawerListener
         if(!isDrawerLocked) {
-            mDrawerLayout.setDrawerListener(mDrawerToggle);
+            mDrawerLayout.addDrawerListener(mDrawerToggle);
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             mDrawerLayout.setStatusBarBackgroundColor(getResources().getColor(R.color.primary_dark,
-                    null));
+                    getTheme()));
         } else {
             //noinspection deprecation
             mDrawerLayout.setStatusBarBackgroundColor(getResources().getColor(
@@ -289,10 +290,10 @@ public class MainActivity extends AppCompatActivity {
         toolBarHeight = TypedValue.complexToDimensionPixelSize(
                 tv.data, getResources().getDisplayMetrics());
 
-        ValueAnimator valueHeightAnimator = ValueAnimator
+        toolbarHeightAnimator = ValueAnimator
                 .ofInt(mContentViewHeight, toolBarHeight);
 
-        valueHeightAnimator.addUpdateListener(
+        toolbarHeightAnimator.addUpdateListener(
                 new ValueAnimator.AnimatorUpdateListener() {
 
                     @Override
@@ -303,8 +304,8 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
 
-        valueHeightAnimator.start();
-        valueHeightAnimator.addListener(
+        toolbarHeightAnimator.start();
+        toolbarHeightAnimator.addListener(
                 new AnimatorListenerAdapter() {
 
                     @Override
@@ -566,6 +567,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        if(toolbarHeightAnimator!= null)
+            toolbarHeightAnimator.removeAllListeners();
         // for orientation changes, etc.
         if (mPreviousFragment != null) {
             mFragmentManager.putFragment(outState, PREVIOUS_FRAGMENT_TAG, mPreviousFragment);
@@ -587,6 +590,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onDestroy() {
+        mDrawerLayout.removeDrawerListener(mDrawerToggle);
         MyVolley.getInstance().cancelAllPendingRequests();
         mDb.close();
         super.onDestroy();
