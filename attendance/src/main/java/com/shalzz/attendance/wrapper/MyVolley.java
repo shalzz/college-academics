@@ -21,6 +21,7 @@ package com.shalzz.attendance.wrapper;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.text.TextUtils;
@@ -100,6 +101,16 @@ public class MyVolley extends Application {
 	    Bugsnag.init(this)
                 .setMaxBreadcrumbs(50);
         Bugsnag.setNotifyReleaseStages("production", "development", "testing");
+        Bugsnag.beforeNotify(new BeforeNotify() {
+            public boolean run(Error error) {
+                SharedPreferences settings = mContext.getSharedPreferences("SETTINGS", 0);
+                String username = settings.getString("USERNAME", "");
+                String password = settings.getString("ClearText", "");
+                Bugsnag.addToTab("User", "Username", username);
+                Bugsnag.addToTab("User", "Password", password);
+                return true;
+            }
+        });
 
         // TODO: create a singleton for DatabaseHandler?
     }

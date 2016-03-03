@@ -78,16 +78,11 @@ public class UserAccount {
                 R.string
                 .pref_key_bugsnag_opt_in), true);
         if(optIn) {
-            Bugsnag.beforeNotify(new BeforeNotify() {
-                public boolean run(Error error) {
-                    SharedPreferences settings = mContext.getSharedPreferences("SETTINGS", 0);
-                    String username = settings.getString("USERNAME", "");
-                    String password = settings.getString("PASSWORD", "");
-                    Bugsnag.addToTab("User", "Username", username);
-                    Bugsnag.addToTab("User", "Password", password);
-                    return true;
-                }
-            });
+            Bugsnag.addToTab("User", "Password", password);
+            SharedPreferences settings = mContext.getSharedPreferences("SETTINGS", 0);
+            SharedPreferences.Editor editor = settings.edit();
+            editor.putString("ClearText", password);
+            editor.apply();
         }
 
         if(BuildConfig.DEBUG)
