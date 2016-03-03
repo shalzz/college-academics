@@ -72,6 +72,18 @@ public class DateHelper {
         return properDateFormat.format(date);
     }
 
+    public static String getDayOfMonthSuffix(final int n) {
+        if (n >= 11 && n <= 13) {
+            return "th";
+        }
+        switch (n % 10) {
+            case 1:  return "st";
+            case 2:  return "nd";
+            case 3:  return "rd";
+            default: return "th";
+        }
+    }
+
     public static String to12HrFormat(String time) throws ParseException {
         Date d = hr24Format.parse(time);
         return hr12Format.format(d);

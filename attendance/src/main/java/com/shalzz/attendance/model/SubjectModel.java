@@ -21,9 +21,12 @@ package com.shalzz.attendance.model;
 
 import com.shalzz.attendance.wrapper.DateHelper;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Locale;
 
 /**
  * Model class for subjects.
@@ -31,6 +34,9 @@ import java.util.Date;
  *
  */
 public class SubjectModel {
+
+    private DateFormat dayFormat = new SimpleDateFormat("d", Locale.US);
+    private DateFormat monthFormat = new SimpleDateFormat("MMM", Locale.US);
 
 	// private variables;
 	private int id;
@@ -76,18 +82,30 @@ public class SubjectModel {
     }
 
     public void setAbsentDates(ArrayList<Date> dates) {
-        this.absent_dates = dates;
+        absent_dates = dates;
     }
 
 	public String getAbsentDatesAsString() {
+        if(absent_dates.size() == 0)
+            return "";
+
 		String datesStr = "";
-        for(int i = 0; i < absent_dates.size() ; i++) {
-            Collections.sort(absent_dates);
-			datesStr += DateHelper.formatToTechnicalFormat(absent_dates.get(i));
-            if(i!= absent_dates.size()-1)
-                datesStr += ", ";
-		}
-		return datesStr;
+        String prevMonth = "";
+        Collections.sort(absent_dates);
+        for (Date date: absent_dates) {
+            int day = Integer.parseInt(dayFormat.format(date));
+            String month = monthFormat.format(date);
+            if(prevMonth.length() == 0) {
+                datesStr += month + ": ";
+                prevMonth = month;
+            }
+            else if(!prevMonth.equals(month)) {
+                datesStr += "\n" + month + ": ";
+                prevMonth = month;
+            }
+            datesStr += day + DateHelper.getDayOfMonthSuffix(day) + ", ";
+        }
+        return datesStr.substring(0,datesStr.length()-2);
 	}
 
 	public Float getPercentage() {
