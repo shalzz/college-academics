@@ -59,6 +59,7 @@ import com.shalzz.attendance.wrapper.MyVolley;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import butterknife.Optional;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -108,9 +109,8 @@ public class MainActivity extends AppCompatActivity {
     public boolean mPopSettingsBackStack =  false;
 
     // Views
-    @InjectView(R.id.drawer_layout) DrawerLayout mDrawerLayout;
-    @InjectView(R.id.list_slidermenu)
-    NavigationView mNavigationView;
+    @Optional @InjectView(R.id.drawer_layout) DrawerLayout mDrawerLayout;
+    @InjectView(R.id.list_slidermenu) NavigationView mNavigationView;
 
     private int mContentViewHeight;
     private int mCurrentSelectedPosition = Fragments.ATTENDANCE.getValue();
@@ -141,6 +141,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.drawer);
         ButterKnife.inject(this);
 
+        isDrawerLocked = getResources().getBoolean(R.bool.tablet_layout);
         mNavTitles = getResources().getStringArray(R.array.drawer_array);
         mFragmentManager = getSupportFragmentManager();
         mDb = new DatabaseHandler(this);
@@ -179,7 +180,11 @@ public class MainActivity extends AppCompatActivity {
 
         /**     ------------- Toolbar init ends -----------           */
 
-        initDrawer();
+        // Set the list's click listener
+        mNavigationView.setNavigationItemSelectedListener(new NavigationItemSelectedListener());
+
+        if(!isDrawerLocked)
+            initDrawer();
     }
 
     public void init(Bundle savedInstanceState) {
@@ -229,15 +234,9 @@ public class MainActivity extends AppCompatActivity {
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
         };
-
-        // Set the list's click listener
-        mNavigationView.setNavigationItemSelectedListener(new NavigationItemSelectedListener());
         mDrawerToggle.setDrawerIndicatorEnabled(true);
+        mDrawerLayout.addDrawerListener(mDrawerToggle);
 
-        // Set the drawer toggle as the DrawerListener
-        if(!isDrawerLocked) {
-            mDrawerLayout.addDrawerListener(mDrawerToggle);
-        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             mDrawerLayout.setStatusBarBackgroundColor(getResources().getColor(R.color.primary_dark,
                     getTheme()));
@@ -249,6 +248,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void showcaseView() {
+
+        if(isDrawerLocked ) {
+            if(fragment instanceof AttendanceListFragment) {
+                ((AttendanceListFragment) fragment).showcaseView();
+            }
+            return;
+        }
 
         Target homeTarget = new Target() {
             @Override
@@ -272,7 +278,8 @@ public class MainActivity extends AppCompatActivity {
         sv.overrideButtonClick(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mDrawerLayout.closeDrawer(mNavigationView);
+                if(!isDrawerLocked )
+                    mDrawerLayout.closeDrawer(mNavigationView);
                 sv.hide();
                 if(fragment instanceof AttendanceListFragment) {
                     ((AttendanceListFragment) fragment).showcaseView();
@@ -338,8 +345,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home)
-        {
+        if (item.getItemId() == android.R.id.home && !isDrawerLocked ) {
             if (mDrawerLayout.isDrawerOpen(mNavigationView)) {
                 mDrawerLayout.closeDrawer(mNavigationView);
             } else {
@@ -442,8 +448,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         // close drawer if it is open
-        if (mDrawerLayout.isDrawerOpen(mNavigationView) && !isDrawerLocked)
-        {
+        if (!isDrawerLocked && mDrawerLayout.isDrawerOpen(mNavigationView)) {
             mDrawerLayout.closeDrawer(mNavigationView);
         }
         else if (shouldPopFromBackStack()) {
@@ -539,7 +544,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         // Sync the toggle state after onRestoreInstanceState has occurred.
-        mDrawerToggle.syncState();
+        if(mDrawerToggle != null)
+            mDrawerToggle.syncState();
     }
 
     /**
@@ -575,7 +581,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        mDrawerToggle.onConfigurationChanged(newConfig);
+        if(mDrawerToggle != null)
+            mDrawerToggle.onConfigurationChanged(newConfig);
     }
 
     @Override
@@ -586,7 +593,8 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onDestroy() {
-        mDrawerLayout.removeDrawerListener(mDrawerToggle);
+        if(!isDrawerLocked)
+            mDrawerLayout.removeDrawerListener(mDrawerToggle);
         MyVolley.getInstance().cancelAllPendingRequests();
         mDb.close();
         super.onDestroy();
