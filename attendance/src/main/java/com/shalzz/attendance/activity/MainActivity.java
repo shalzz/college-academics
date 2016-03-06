@@ -123,7 +123,6 @@ public class MainActivity extends AppCompatActivity {
     // Our custom poor-man's back stack which has only one entry at maximum.
     private Fragment mPreviousFragment;
     private Toolbar mToolbar;
-    private ValueAnimator toolbarHeightAnimator;
 
     public static class DrawerHeaderViewHolder extends RecyclerView.ViewHolder {
         @InjectView(R.id.drawer_header_name) TextView tv_name;
@@ -289,7 +288,7 @@ public class MainActivity extends AppCompatActivity {
         toolBarHeight = TypedValue.complexToDimensionPixelSize(
                 tv.data, getResources().getDisplayMetrics());
 
-        toolbarHeightAnimator = ValueAnimator
+        ValueAnimator toolbarHeightAnimator = ValueAnimator
                 .ofInt(mContentViewHeight, toolBarHeight);
 
         toolbarHeightAnimator.addUpdateListener(
@@ -437,7 +436,7 @@ public class MainActivity extends AppCompatActivity {
         // Show the new one
         ft.add(R.id.frame_container,fragment,FRAGMENT_TAG);
         ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-        ft.commit();
+        ft.commitAllowingStateLoss();
     }
 
     @Override
@@ -566,8 +565,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        if(toolbarHeightAnimator!= null)
-            toolbarHeightAnimator.removeAllListeners();
         // for orientation changes, etc.
         if (mPreviousFragment != null) {
             mFragmentManager.putFragment(outState, PREVIOUS_FRAGMENT_TAG, mPreviousFragment);
