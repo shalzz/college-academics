@@ -23,6 +23,7 @@
  */
 package com.shalzz.attendance.wrapper;
 
+import android.content.res.Resources;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -30,6 +31,7 @@ import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.toolbox.HttpStack;
 import com.shalzz.attendance.Miscellaneous;
+import com.shalzz.attendance.R;
 import com.squareup.okhttp.Call;
 import com.squareup.okhttp.Headers;
 import com.squareup.okhttp.MediaType;
@@ -82,15 +84,17 @@ public class MyOkHttpStack implements HttpStack {
         client.setWriteTimeout(timeoutMs, TimeUnit.MILLISECONDS);
 
         if(Miscellaneous.useProxy()) {
-            Log.i("MyOkHttpStack", "Using Proxy!");
-            Toast.makeText(MyVolley.getAppContext(), "Using proxy", Toast.LENGTH_LONG).show();
-            Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("proxy.ddn.upes.ac.in", 8080));
+            Resources resources = MyVolley.getMyResources();
+            Log.d("Proxy","Using Proxy!");
+            Proxy proxy = new Proxy(Proxy.Type.HTTP,
+                    new InetSocketAddress(resources.getString(R.string.proxy_host),
+                            Integer.parseInt(resources.getString(R.string.proxy_port))));
             client.setProxy(proxy);
         } else if(client.getProxy()!=null) {
-            Toast.makeText(MyVolley.getAppContext(), "Proxy removed", Toast.LENGTH_LONG).show();
-            Log.i("MyOkHttpStack","Proxy removed!");
-            client.setProxy(null);
+            Log.d("Proxy","Proxy removed");
+            client.setProxy(Proxy.NO_PROXY);
         }
+        client.setAuthenticator(Miscellaneous.getAuthenticator());
 
         com.squareup.okhttp.Request.Builder okHttpRequestBuilder = new com.squareup.okhttp.Request.Builder();
         okHttpRequestBuilder.url(request.getUrl());

@@ -105,8 +105,6 @@ public class AttendanceController implements LoaderManager.LoaderCallbacks<List<
 
                         db.close();
                         mAdapter.addAll(response);
-                        mFooter.setVisibility(View.VISIBLE);
-                        mAdapter.updateFooter();
                         mView.showcaseView();
                     } else {
                         String msg = mResources.getString(R.string.unavailable_data_error_msg);
@@ -164,8 +162,6 @@ public class AttendanceController implements LoaderManager.LoaderCallbacks<List<
         } else {
             done();
             mAdapter.addAll(data);
-            mFooter.setVisibility(View.VISIBLE);
-            mAdapter.updateFooter();
         }
     }
 

@@ -22,6 +22,7 @@ package com.shalzz.attendance;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
@@ -37,25 +38,16 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.shalzz.attendance.wrapper.MyVolley;
+import com.squareup.okhttp.Authenticator;
+import com.squareup.okhttp.Credentials;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.math.BigInteger;
-import java.net.Authenticator;
-import java.net.PasswordAuthentication;
-import java.security.KeyStore;
+import java.net.Proxy;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.security.cert.Certificate;
-import java.security.cert.CertificateException;
-import java.security.cert.CertificateFactory;
-
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManagerFactory;
 
 public class Miscellaneous {
 
@@ -185,124 +177,49 @@ public class Miscellaneous {
     }
 
     /**
-     * Creates a new SSL Socket Factory with the given KeyStore.
-     *
-     * @param keyStore A KeyStore to create the SSL Socket Factory in context of
-     */
-    public static javax.net.ssl.SSLSocketFactory getSSLSocketFactory(KeyStore keyStore) {
-        SSLSocketFactory factory = null;
-        try {
-            SSLContext sslContext = SSLContext.getInstance("SSL");
-            TrustManagerFactory trustManagerFactory =
-                    TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-            trustManagerFactory.init(keyStore);
-            KeyManagerFactory keyManagerFactory =
-                    KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-            keyManagerFactory.init(keyStore, "keystore_pass".toCharArray());
-            sslContext.init(keyManagerFactory.getKeyManagers(),
-                    trustManagerFactory.getTrustManagers(), new SecureRandom());
-            factory = sslContext.getSocketFactory();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return factory;
-    }
-
-    /**
-     * Gets a KeyStore containing the Certificate
-     *
-     * @param cert InputStream of the Certificate
-     * @return KeyStore
-     */
-    public static KeyStore getKeystoreOfCA(InputStream cert) {
-
-        // Load CAs from an InputStream
-        InputStream caInput = null;
-        Certificate ca = null;
-        try {
-            CertificateFactory cf = CertificateFactory.getInstance("X.509");
-            caInput = new BufferedInputStream(cert);
-            ca = cf.generateCertificate(caInput);
-        } catch (CertificateException e1) {
-            e1.printStackTrace();
-        } finally {
-            try {
-                caInput.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        // Create a KeyStore containing our trusted CAs
-        String keyStoreType = KeyStore.getDefaultType();
-        KeyStore keyStore = null;
-        try {
-            keyStore = KeyStore.getInstance(keyStoreType);
-            keyStore.load(null, null);
-            keyStore.setCertificateEntry("ca", ca);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return keyStore;
-    }
-
-    /**
-     * Determines whether to use proxy settings or not.
+     * Determines whether to use proxy host or not.
      * @return true or false.
      */
     public static boolean useProxy() {
-        ConnectivityManager connManager = (ConnectivityManager) MyVolley.getAppContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-        if (mWifi.isConnectedOrConnecting()) {
-            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(MyVolley.getAppContext());
-            boolean useProxy = sharedPref.getBoolean("", false);
-            final String username;
-            final String password;
-            try {
-                username = sharedPref.getString(
-                        MyVolley.getAppContext().getString(R.string.pref_key_proxy_username), "");
-                password = sharedPref.getString(
-                        MyVolley.getAppContext().getString(R.string.pref_key_proxy_password), "");
-            } catch (Exception e) {
-                // ignore
-                return false;
-            }
-            if(useProxy && !username.isEmpty() && !password.isEmpty())
-            {
+        Resources resources = MyVolley.getMyResources();
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(MyVolley.getAppContext());
+        boolean useProxy = sharedPref.getBoolean(resources.getString(R.string.pref_key_use_proxy), false);
+        if(useProxy) {
+            ConnectivityManager connManager = (ConnectivityManager) MyVolley.getAppContext()
+                    .getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+            if (mWifi.isConnectedOrConnecting()) {
                 WifiManager wifiManager = (WifiManager) MyVolley.getAppContext().getSystemService(Context.WIFI_SERVICE);
                 WifiInfo wifiInfo = wifiManager.getConnectionInfo();
-                Log.d("wifiInfo",""+ wifiInfo.toString());
-                Log.d("SSID",""+wifiInfo.getSSID());
-                Toast.makeText(MyVolley.getAppContext(), "Wifi changed to "+wifiInfo.getSSID(), Toast.LENGTH_LONG).show();
-                if (wifiInfo.getSSID().contains("UPESNET"))
-                {
-                    //					OkAuthenticator auth = new OkAuthenticator() {
-                    //
-                    //						@Override
-                    //						public Credential authenticateProxy(Proxy arg0, URL arg1,
-                    //								List<Challenge> arg2) throws IOException {
-                    //							return Credential.basic(username,password);
-                    //						}
-                    //
-                    //						@Override
-                    //						public Credential authenticate(Proxy arg0, URL arg1, List<Challenge> arg2)
-                    //								throws IOException {
-                    //							return Credential.basic(username,password);
-                    //						}
-                    //					};
-                    //					Authenticator.setDefault((Authenticator) auth);
-
-                    Authenticator authenticator = new Authenticator() {
-
-                        public PasswordAuthentication getPasswordAuthentication() {
-                            return (new PasswordAuthentication(username,password.toCharArray()));
-                        }
-                    };
-                    Authenticator.setDefault(authenticator);
-                    return true;
-                }
+                Log.d("Proxy","Wifi changed to " + wifiInfo.getSSID());
+                return wifiInfo.getSSID().equals(resources.getString(R.string.upesnet_ssid));
             }
         }
         return false;
+    }
+    public static String getProxyCredentials() {
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(MyVolley.getAppContext());
+        final String username = sharedPref.getString(
+                MyVolley.getAppContext().getString(R.string.pref_key_proxy_username), "");
+        final String password = sharedPref.getString(
+                MyVolley.getAppContext().getString(R.string.pref_key_proxy_password), "");
+        return Credentials.basic(username, password);
+    }
+
+    public static Authenticator getAuthenticator() {
+        return new Authenticator() {
+
+            @Override
+            public Request authenticate(Proxy proxy, Response response) throws IOException {
+                return null;
+            }
+
+            @Override
+            public Request authenticateProxy(Proxy proxy, Response response) throws IOException {
+                return response.request().newBuilder()
+                        .header("Proxy-Authorization", getProxyCredentials())
+                        .build();
+            }
+        };
     }
 }

@@ -34,6 +34,7 @@
         android:key="@string/pref_key_proxy_password"
         android:title="@string/pref_proxy_password"
         android:dependency="@string/pref_key_use_proxy"
-        android:inputType="textPassword"/>
+        android:inputType="textPassword"
+        android:password="true" />
 
 </android.support.v7.preference.PreferenceScreen>

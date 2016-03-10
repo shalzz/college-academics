@@ -149,6 +149,7 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
 
     public void addAll(List<SubjectModel> subjects) {
         mSubjects.addAll(subjects);
+        updateFooter();
     }
 
     public int getSubjectCount() {
@@ -219,7 +220,7 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
             FrameLayout frameLayout = new FrameLayout(parent.getContext());
             //make sure it fills the space
             frameLayout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.MATCH_PARENT));
+                    ViewGroup.LayoutParams.WRAP_CONTENT));
             return new HeaderFooterViewHolder(frameLayout);
         }
     }
@@ -391,7 +392,7 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
 
         int held = mSubjects.get(position).getClassesHeld().intValue();
         int attend = mSubjects.get(position).getClassesAttended().intValue();
-        float percent = mSubjects.get(position).getPercentage();
+        int percent = Math.round(mSubjects.get(position).getPercentage());
 
         tvAbsent.setText("Days Absent: " + mSubjects.get(position).getAbsentDatesAsString());
 
@@ -403,7 +404,7 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                 ivAlert.setImageBitmap(null);
             } else {
                 tvReach.setText(mResources.getQuantityString(R.plurals.tv_classes_to_67,x,x));
-                tvReach.setTextColor(mResources.getColor(R.color.holo_orange_light));
+                tvReach.setTextColor(mResources.getColor(R.color.attend));
                 tvReach.setVisibility(View.VISIBLE);
                 ivAlert.setVisibility(View.VISIBLE);
                 ivAlert.setImageBitmap(mBitmap);
@@ -417,7 +418,7 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                 ivAlert.setImageBitmap(null);
             } else {
                 tvReach.setText(mResources.getQuantityString(R.plurals.tv_classes_to_75, x, x));
-                tvReach.setTextColor(mResources.getColor(R.color.holo_orange_light));
+                tvReach.setTextColor(mResources.getColor(R.color.attend));
                 tvReach.setVisibility(View.VISIBLE);
                 ivAlert.setVisibility(View.VISIBLE);
                 ivAlert.setImageBitmap(mBitmap);
@@ -428,7 +429,7 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                 tvReach.setVisibility(View.GONE);
             } else {
                 tvReach.setText(mResources.getQuantityString(R.plurals.tv_miss_classes, x, x));
-                tvReach.setTextColor(mResources.getColor(R.color.holo_green_light));
+                tvReach.setTextColor(mResources.getColor(R.color.skip));
                 tvReach.setVisibility(View.VISIBLE);
             }
             ivAlert.setVisibility(View.GONE);
@@ -460,6 +461,7 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         Float percent = mFooter.getPercentage();
 
         /** --------footer-------- */
+        view.setVisibility(View.VISIBLE);
         TextView tvPercent = (TextView) view.findViewById(R.id.tvTotalPercent);
         TextView tvClasses = (TextView) view.findViewById(R.id.tvClass);
         ProgressBar pbPercent = (ProgressBar) view.findViewById(R.id.pbTotalPercent);

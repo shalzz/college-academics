@@ -20,4 +20,5 @@
 
 <resources>
     <bool name="use_grid_layout">false</bool>
+    <bool name="tablet_layout">false</bool>
 </resources>

@@ -59,6 +59,7 @@ import com.shalzz.attendance.wrapper.MyVolley;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import butterknife.Optional;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -108,9 +109,8 @@ public class MainActivity extends AppCompatActivity {
     public boolean mPopSettingsBackStack =  false;
 
     // Views
-    @InjectView(R.id.drawer_layout) DrawerLayout mDrawerLayout;
-    @InjectView(R.id.list_slidermenu)
-    NavigationView mNavigationView;
+    @Optional @InjectView(R.id.drawer_layout) DrawerLayout mDrawerLayout;
+    @InjectView(R.id.list_slidermenu) NavigationView mNavigationView;
 
     private int mContentViewHeight;
     private int mCurrentSelectedPosition = Fragments.ATTENDANCE.getValue();
@@ -123,6 +123,9 @@ public class MainActivity extends AppCompatActivity {
     // Our custom poor-man's back stack which has only one entry at maximum.
     private Fragment mPreviousFragment;
     private Toolbar mToolbar;
+    private Bundle mSavedInstanceState;
+    private ValueAnimator mToolbarHeightAnimator;
+    private boolean mResumed = false;
 
     public static class DrawerHeaderViewHolder extends RecyclerView.ViewHolder {
         @InjectView(R.id.drawer_header_name) TextView tv_name;
@@ -136,16 +139,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onCreate(final Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.drawer);
         ButterKnife.inject(this);
 
+        mSavedInstanceState = savedInstanceState;
+        isDrawerLocked = getResources().getBoolean(R.bool.tablet_layout);
         mNavTitles = getResources().getStringArray(R.array.drawer_array);
         mFragmentManager = getSupportFragmentManager();
         mDb = new DatabaseHandler(this);
-        View Drawerheader = mNavigationView.inflateHeaderView(R.layout.drawer_header);
-        DrawerheaderVH = new DrawerHeaderViewHolder(Drawerheader);
+        DrawerheaderVH = new DrawerHeaderViewHolder(mNavigationView.getHeaderView(0));
 
         /**     ------------- Toolbar init -----------           */
 
@@ -161,7 +165,7 @@ public class MainActivity extends AppCompatActivity {
 
                             mToolbar.measure(widthSpec, heightSpec);
                             mContentViewHeight = mToolbar.getHeight();
-                            collapseToolbar(savedInstanceState);
+                            collapseToolbar();
                             return true;
                         }
                     });
@@ -174,25 +178,40 @@ public class MainActivity extends AppCompatActivity {
             ViewGroup.LayoutParams lp = mToolbar.getLayoutParams();
             lp.height = toolBarHeight;
             mToolbar.setLayoutParams(lp);
-            init(savedInstanceState);
+            init();
         }
         setSupportActionBar(mToolbar);
 
         /**     ------------- Toolbar init ends -----------           */
 
-        initDrawer();
+        // Set the list's click listener
+        mNavigationView.setNavigationItemSelectedListener(new NavigationItemSelectedListener());
+
+        if(!isDrawerLocked)
+            initDrawer();
     }
 
-    public void init(Bundle savedInstanceState) {
-        // Display the fragments
+    @Override
+    protected void onResumeFragments() {
+        super.onResumeFragments();
+        mResumed = true;
+        if(mToolbarHeightAnimator != null && !mToolbarHeightAnimator.isRunning()) {
+            init();
+        }
+    }
+
+    /**
+     * Initialise a fragment
+     **/
+    public void init() {
 
         // Select either the default item (Fragments.ATTENDANCE) or the last selected item.
         mCurrentSelectedPosition = reloadCurrentFragment();
 
         // Recycle fragment
-        if(savedInstanceState != null) {
+        if(mSavedInstanceState != null) {
             fragment =  mFragmentManager.findFragmentByTag(FRAGMENT_TAG);
-            mPreviousFragment = mFragmentManager.getFragment(savedInstanceState, PREVIOUS_FRAGMENT_TAG);
+            mPreviousFragment = mFragmentManager.getFragment(mSavedInstanceState, PREVIOUS_FRAGMENT_TAG);
             Log.d(mTag, "current fag found: " + fragment );
             Log.d(mTag, "previous fag found: " + mPreviousFragment );
             selectItem(mCurrentSelectedPosition);
@@ -230,18 +249,12 @@ public class MainActivity extends AppCompatActivity {
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
         };
-
-        // Set the list's click listener
-        mNavigationView.setNavigationItemSelectedListener(new NavigationItemSelectedListener());
         mDrawerToggle.setDrawerIndicatorEnabled(true);
+        mDrawerLayout.addDrawerListener(mDrawerToggle);
 
-        // Set the drawer toggle as the DrawerListener
-        if(!isDrawerLocked) {
-            mDrawerLayout.setDrawerListener(mDrawerToggle);
-        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             mDrawerLayout.setStatusBarBackgroundColor(getResources().getColor(R.color.primary_dark,
-                    null));
+                    getTheme()));
         } else {
             //noinspection deprecation
             mDrawerLayout.setStatusBarBackgroundColor(getResources().getColor(
@@ -249,7 +262,48 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void collapseToolbar() {
+        int toolBarHeight;
+        TypedValue tv = new TypedValue();
+        getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true);
+        toolBarHeight = TypedValue.complexToDimensionPixelSize(
+                tv.data, getResources().getDisplayMetrics());
+
+        mToolbarHeightAnimator = ValueAnimator
+                .ofInt(mContentViewHeight, toolBarHeight);
+
+        mToolbarHeightAnimator.addUpdateListener(
+                new ValueAnimator.AnimatorUpdateListener() {
+
+                    @Override
+                    public void onAnimationUpdate(ValueAnimator animation) {
+                        ViewGroup.LayoutParams lp = mToolbar.getLayoutParams();
+                        lp.height = (Integer) animation.getAnimatedValue();
+                        mToolbar.setLayoutParams(lp);
+                    }
+                });
+
+        mToolbarHeightAnimator.start();
+        mToolbarHeightAnimator.addListener(
+                new AnimatorListenerAdapter() {
+
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        super.onAnimationEnd(animation);
+                        if(mResumed)
+                            init();
+                    }
+                });
+    }
+
     void showcaseView() {
+
+        if(isDrawerLocked ) {
+            if(fragment instanceof AttendanceListFragment) {
+                ((AttendanceListFragment) fragment).showcaseView();
+            }
+            return;
+        }
 
         Target homeTarget = new Target() {
             @Override
@@ -273,46 +327,14 @@ public class MainActivity extends AppCompatActivity {
         sv.overrideButtonClick(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mDrawerLayout.closeDrawer(mNavigationView);
+                if(!isDrawerLocked )
+                    mDrawerLayout.closeDrawer(mNavigationView);
                 sv.hide();
                 if(fragment instanceof AttendanceListFragment) {
                     ((AttendanceListFragment) fragment).showcaseView();
                 }
             }
         });
-    }
-
-    private void collapseToolbar(final Bundle savedInstanceState) {
-        int toolBarHeight;
-        TypedValue tv = new TypedValue();
-        getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true);
-        toolBarHeight = TypedValue.complexToDimensionPixelSize(
-                tv.data, getResources().getDisplayMetrics());
-
-        ValueAnimator valueHeightAnimator = ValueAnimator
-                .ofInt(mContentViewHeight, toolBarHeight);
-
-        valueHeightAnimator.addUpdateListener(
-                new ValueAnimator.AnimatorUpdateListener() {
-
-                    @Override
-                    public void onAnimationUpdate(ValueAnimator animation) {
-                        ViewGroup.LayoutParams lp = mToolbar.getLayoutParams();
-                        lp.height = (Integer) animation.getAnimatedValue();
-                        mToolbar.setLayoutParams(lp);
-                    }
-                });
-
-        valueHeightAnimator.start();
-        valueHeightAnimator.addListener(
-                new AnimatorListenerAdapter() {
-
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        super.onAnimationEnd(animation);
-                        init(savedInstanceState);
-                    }
-                });
     }
 
     public void updateDrawerHeader() {
@@ -339,8 +361,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home)
-        {
+        if (item.getItemId() == android.R.id.home && !isDrawerLocked ) {
             if (mDrawerLayout.isDrawerOpen(mNavigationView)) {
                 mDrawerLayout.closeDrawer(mNavigationView);
             } else {
@@ -443,8 +464,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         // close drawer if it is open
-        if (mDrawerLayout.isDrawerOpen(mNavigationView) && !isDrawerLocked)
-        {
+        if (!isDrawerLocked && mDrawerLayout.isDrawerOpen(mNavigationView)) {
             mDrawerLayout.closeDrawer(mNavigationView);
         }
         else if (shouldPopFromBackStack()) {
@@ -540,7 +560,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         // Sync the toggle state after onRestoreInstanceState has occurred.
-        mDrawerToggle.syncState();
+        if(mDrawerToggle != null)
+            mDrawerToggle.syncState();
     }
 
     /**
@@ -566,6 +587,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        mResumed = false;
         // for orientation changes, etc.
         if (mPreviousFragment != null) {
             mFragmentManager.putFragment(outState, PREVIOUS_FRAGMENT_TAG, mPreviousFragment);
@@ -576,7 +598,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        mDrawerToggle.onConfigurationChanged(newConfig);
+        if(mDrawerToggle != null)
+            mDrawerToggle.onConfigurationChanged(newConfig);
     }
 
     @Override
@@ -587,6 +610,8 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onDestroy() {
+        if(!isDrawerLocked)
+            mDrawerLayout.removeDrawerListener(mDrawerToggle);
         MyVolley.getInstance().cancelAllPendingRequests();
         mDb.close();
         super.onDestroy();

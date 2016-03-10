@@ -52,6 +52,7 @@ public class AboutSettingsFragment extends PreferenceFragmentCompat {
         Tracker t = ((MyVolley) getActivity().getApplication()).getTracker(
                 MyVolley.TrackerName.APP_TRACKER);
 
+        t.setScreenName(getClass().getSimpleName());
         t.send(new HitBuilders.ScreenViewBuilder().build());
     }
 
