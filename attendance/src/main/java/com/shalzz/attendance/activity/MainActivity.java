@@ -123,6 +123,9 @@ public class MainActivity extends AppCompatActivity {
     // Our custom poor-man's back stack which has only one entry at maximum.
     private Fragment mPreviousFragment;
     private Toolbar mToolbar;
+    private Bundle mSavedInstanceState;
+    private ValueAnimator mToolbarHeightAnimator;
+    private boolean mResumed = false;
 
     public static class DrawerHeaderViewHolder extends RecyclerView.ViewHolder {
         @InjectView(R.id.drawer_header_name) TextView tv_name;
@@ -136,11 +139,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onCreate(final Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.drawer);
         ButterKnife.inject(this);
 
+        mSavedInstanceState = savedInstanceState;
         isDrawerLocked = getResources().getBoolean(R.bool.tablet_layout);
         mNavTitles = getResources().getStringArray(R.array.drawer_array);
         mFragmentManager = getSupportFragmentManager();
@@ -161,7 +165,7 @@ public class MainActivity extends AppCompatActivity {
 
                             mToolbar.measure(widthSpec, heightSpec);
                             mContentViewHeight = mToolbar.getHeight();
-                            collapseToolbar(savedInstanceState);
+                            collapseToolbar();
                             return true;
                         }
                     });
@@ -174,7 +178,7 @@ public class MainActivity extends AppCompatActivity {
             ViewGroup.LayoutParams lp = mToolbar.getLayoutParams();
             lp.height = toolBarHeight;
             mToolbar.setLayoutParams(lp);
-            init(savedInstanceState);
+            init();
         }
         setSupportActionBar(mToolbar);
 
@@ -187,16 +191,27 @@ public class MainActivity extends AppCompatActivity {
             initDrawer();
     }
 
-    public void init(Bundle savedInstanceState) {
-        // Display the fragments
+    @Override
+    protected void onResumeFragments() {
+        super.onResumeFragments();
+        mResumed = true;
+        if(mToolbarHeightAnimator != null && !mToolbarHeightAnimator.isRunning()) {
+            init();
+        }
+    }
+
+    /**
+     * Initialise a fragment
+     **/
+    public void init() {
 
         // Select either the default item (Fragments.ATTENDANCE) or the last selected item.
         mCurrentSelectedPosition = reloadCurrentFragment();
 
         // Recycle fragment
-        if(savedInstanceState != null) {
+        if(mSavedInstanceState != null) {
             fragment =  mFragmentManager.findFragmentByTag(FRAGMENT_TAG);
-            mPreviousFragment = mFragmentManager.getFragment(savedInstanceState, PREVIOUS_FRAGMENT_TAG);
+            mPreviousFragment = mFragmentManager.getFragment(mSavedInstanceState, PREVIOUS_FRAGMENT_TAG);
             Log.d(mTag, "current fag found: " + fragment );
             Log.d(mTag, "previous fag found: " + mPreviousFragment );
             selectItem(mCurrentSelectedPosition);
@@ -247,6 +262,40 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void collapseToolbar() {
+        int toolBarHeight;
+        TypedValue tv = new TypedValue();
+        getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true);
+        toolBarHeight = TypedValue.complexToDimensionPixelSize(
+                tv.data, getResources().getDisplayMetrics());
+
+        mToolbarHeightAnimator = ValueAnimator
+                .ofInt(mContentViewHeight, toolBarHeight);
+
+        mToolbarHeightAnimator.addUpdateListener(
+                new ValueAnimator.AnimatorUpdateListener() {
+
+                    @Override
+                    public void onAnimationUpdate(ValueAnimator animation) {
+                        ViewGroup.LayoutParams lp = mToolbar.getLayoutParams();
+                        lp.height = (Integer) animation.getAnimatedValue();
+                        mToolbar.setLayoutParams(lp);
+                    }
+                });
+
+        mToolbarHeightAnimator.start();
+        mToolbarHeightAnimator.addListener(
+                new AnimatorListenerAdapter() {
+
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        super.onAnimationEnd(animation);
+                        if(mResumed)
+                            init();
+                    }
+                });
+    }
+
     void showcaseView() {
 
         if(isDrawerLocked ) {
@@ -286,39 +335,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-    }
-
-    private void collapseToolbar(final Bundle savedInstanceState) {
-        int toolBarHeight;
-        TypedValue tv = new TypedValue();
-        getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true);
-        toolBarHeight = TypedValue.complexToDimensionPixelSize(
-                tv.data, getResources().getDisplayMetrics());
-
-        ValueAnimator toolbarHeightAnimator = ValueAnimator
-                .ofInt(mContentViewHeight, toolBarHeight);
-
-        toolbarHeightAnimator.addUpdateListener(
-                new ValueAnimator.AnimatorUpdateListener() {
-
-                    @Override
-                    public void onAnimationUpdate(ValueAnimator animation) {
-                        ViewGroup.LayoutParams lp = mToolbar.getLayoutParams();
-                        lp.height = (Integer) animation.getAnimatedValue();
-                        mToolbar.setLayoutParams(lp);
-                    }
-                });
-
-        toolbarHeightAnimator.start();
-        toolbarHeightAnimator.addListener(
-                new AnimatorListenerAdapter() {
-
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        super.onAnimationEnd(animation);
-                        init(savedInstanceState);
-                    }
-                });
     }
 
     public void updateDrawerHeader() {
@@ -442,7 +458,7 @@ public class MainActivity extends AppCompatActivity {
         // Show the new one
         ft.add(R.id.frame_container,fragment,FRAGMENT_TAG);
         ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-        ft.commitAllowingStateLoss();
+        ft.commit();
     }
 
     @Override
@@ -571,6 +587,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        mResumed = false;
         // for orientation changes, etc.
         if (mPreviousFragment != null) {
             mFragmentManager.putFragment(outState, PREVIOUS_FRAGMENT_TAG, mPreviousFragment);
