@@ -404,7 +404,7 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                 ivAlert.setImageBitmap(null);
             } else {
                 tvReach.setText(mResources.getQuantityString(R.plurals.tv_classes_to_67,x,x));
-                tvReach.setTextColor(mResources.getColor(R.color.holo_orange_light));
+                tvReach.setTextColor(mResources.getColor(R.color.attend));
                 tvReach.setVisibility(View.VISIBLE);
                 ivAlert.setVisibility(View.VISIBLE);
                 ivAlert.setImageBitmap(mBitmap);
@@ -418,7 +418,7 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                 ivAlert.setImageBitmap(null);
             } else {
                 tvReach.setText(mResources.getQuantityString(R.plurals.tv_classes_to_75, x, x));
-                tvReach.setTextColor(mResources.getColor(R.color.holo_orange_light));
+                tvReach.setTextColor(mResources.getColor(R.color.attend));
                 tvReach.setVisibility(View.VISIBLE);
                 ivAlert.setVisibility(View.VISIBLE);
                 ivAlert.setImageBitmap(mBitmap);
@@ -429,7 +429,7 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                 tvReach.setVisibility(View.GONE);
             } else {
                 tvReach.setText(mResources.getQuantityString(R.plurals.tv_miss_classes, x, x));
-                tvReach.setTextColor(mResources.getColor(R.color.holo_green_light));
+                tvReach.setTextColor(mResources.getColor(R.color.skip));
                 tvReach.setVisibility(View.VISIBLE);
             }
             ivAlert.setVisibility(View.GONE);
