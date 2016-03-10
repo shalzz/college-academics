@@ -392,7 +392,7 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
 
         int held = mSubjects.get(position).getClassesHeld().intValue();
         int attend = mSubjects.get(position).getClassesAttended().intValue();
-        float percent = mSubjects.get(position).getPercentage();
+        int percent = Math.round(mSubjects.get(position).getPercentage());
 
         tvAbsent.setText("Days Absent: " + mSubjects.get(position).getAbsentDatesAsString());
 
