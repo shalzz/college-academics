@@ -24,6 +24,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.Build;
 import android.support.v4.content.AsyncTaskLoader;
 
 import com.shalzz.attendance.model.ListFooterModel;
@@ -171,7 +172,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     @Override
     public void onConfigure(SQLiteDatabase db) {
         super.onConfigure(db);
-        db.setForeignKeyConstraintsEnabled(true);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            db.setForeignKeyConstraintsEnabled(true);
+        }
         db.enableWriteAheadLogging();
     }
 
@@ -312,8 +315,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                         } while (dateCursor.moveToNext());
                     }
                     dateCursor.close();
-                    Date dateArray[] = new Date[dates.size()];
-                    subject.setAbsentDates(dates.toArray(dateArray));
+                    subject.setAbsentDates(dates);
 
                     subjectList.add(subject);
                 } while (cursor.moveToNext());
@@ -357,8 +359,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                     } while (dateCursor.moveToNext());
                 }
                 dateCursor.close();
-                Date dateArray[] = new Date[dates.size()];
-                subject.setAbsentDates(dates.toArray(dateArray));
+                subject.setAbsentDates(dates);
 
                 subjectList.add(subject);
             } while (cursor.moveToNext());

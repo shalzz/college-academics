@@ -26,7 +26,7 @@
     <!--Semantic versioning: MAJOR.MINOR.PATCH-->
     <!-- DON'T update this for PATCH release -->
     <string name="user_version" translatable="false">2.5</string>
-    <string name="pref_version_summary" translatable="false">v2.5.0</string>
+    <string name="pref_version_summary" translatable="false">v2.6.0</string>
     
     <!--API keys-->
     <string name="banner_ad_unit_id" translatable="false">ca-app-pub-4430276599804177/4801693846</string>
@@ -34,6 +34,9 @@
 
     <!--Network related strings-->
     <string name="UserAgent" translatable="false">Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.57 Safari/537.36</string>
+    <string name="proxy_host" translatable="false">proxy1.ddn.upes.ac.in</string>
+    <string name="proxy_port" translatable="false">8080</string>
+    <string name="upesnet_ssid" translatable="false">UPESNET</string>
 
     <!--URL's-->
     <string name="URL_user" translatable="false">https://upes.winnou.net/api/v1/me</string>
@@ -55,6 +58,7 @@
     <string name="pref_key_bugsnag_opt_in">bugsnag_opt_in</string>
     <string name="pref_key_notify_timetable_changed">notify_timetable_changed</string>
     <string name="pref_key_show_weekends">show_weekends</string>
+    <string name="pref_key_day_night">day_night</string>
 
     <!--////  Actual user visible text ////-->
 
@@ -123,6 +127,8 @@
     <string name="pref_notify_timetable_changed_summary">Receive a notification when your
         timetable changes</string>
     <string name="pref_show_weekends">Show Weekends</string>
+    <string name="pref_day_night">Day/Night Theme</string>
+    <string name="pref_day_night_dialog">Select Night Mode</string>
 
     <!--Showcase View-->
     <string name="sv_attendance_title">Expandable item</string>

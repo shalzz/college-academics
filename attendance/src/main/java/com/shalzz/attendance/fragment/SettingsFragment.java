@@ -26,6 +26,7 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.preference.ListPreference;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceCategory;
@@ -47,6 +48,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnShar
     private Context mContext;
     private String key_sub_limit;
     private String key_sync_interval;
+    private String key_sync_day_night;
 
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
@@ -54,6 +56,10 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnShar
 	Bugsnag.setContext("Settings");
 
         addPreferencesFromResource(R.xml.preferences);
+
+        key_sync_day_night = getString(R.string.pref_key_day_night);
+        ListPreference dayNightListPref = (ListPreference) findPreference(key_sync_day_night);
+        dayNightListPref.setSummary(dayNightListPref.getEntry());
 
         key_sub_limit = getString(R.string.pref_key_sub_limit);
         ListPreference listPref = (ListPreference) findPreference(key_sub_limit);
@@ -70,11 +76,19 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnShar
         Tracker t = ((MyVolley) getActivity().getApplication()).getTracker(
                 MyVolley.TrackerName.APP_TRACKER);
 
+        t.setScreenName(getClass().getSimpleName());
         t.send(new HitBuilders.ScreenViewBuilder().build());
     }
 
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if(key.equals(key_sub_limit)) {
+        if(key.equals(key_sync_day_night)) {
+            ListPreference connectionPref = (ListPreference) findPreference(key);
+            connectionPref.setSummary(connectionPref.getEntry());
+            //noinspection WrongConstant
+            AppCompatDelegate.setDefaultNightMode(Integer.parseInt(sharedPreferences.
+                    getString(key,"-1")));
+        }
+        else if(key.equals(key_sub_limit)) {
             ListPreference connectionPref = (ListPreference) findPreference(key);
             connectionPref.setSummary(connectionPref.getEntry());
         }
@@ -123,7 +137,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnShar
                 .registerOnSharedPreferenceChangeListener(this);
 
         PreferenceCategory prefCategory = (PreferenceCategory) getPreferenceScreen()
-                .getPreference(4);
+                .getPreference(5);
         PreferenceScreen prefScreen =  (PreferenceScreen) prefCategory.getPreference(0);
         prefScreen.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener(){
             @Override
@@ -142,7 +156,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnShar
         });
 
         PreferenceCategory proxyPrefCategory = (PreferenceCategory) getPreferenceScreen()
-                .getPreference(2);
+                .getPreference(3);
         PreferenceScreen proxyPrefScreen =  (PreferenceScreen) proxyPrefCategory.getPreference(2);
         proxyPrefScreen.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener(){
             @Override

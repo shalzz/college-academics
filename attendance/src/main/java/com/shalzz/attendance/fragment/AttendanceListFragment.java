@@ -112,6 +112,7 @@ public class AttendanceListFragment extends Fragment implements
         Tracker t = ((MyVolley) getActivity().getApplication()).getTracker(
                 MyVolley.TrackerName.APP_TRACKER);
 
+        t.setScreenName(getClass().getSimpleName());
         t.send(new HitBuilders.ScreenViewBuilder().build());
     }
 
@@ -135,6 +136,8 @@ public class AttendanceListFragment extends Fragment implements
         mLinearLayoutManager = new LinearLayoutManager(mContext,
                 LinearLayoutManager.VERTICAL, false);
         mLinearLayoutManager.setSmoothScrollbarEnabled(false);
+        mLinearLayoutManager.setStackFromEnd(false);
+	    mLinearLayoutManager.setAutoMeasureEnabled(true);
         mGridLayoutManager = new StaggeredGridLayoutManager(GRID_LAYOUT_SPAN_COUNT,
                 StaggeredGridLayoutManager.VERTICAL);
         mGridLayoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_NONE);
@@ -279,7 +282,7 @@ public class AttendanceListFragment extends Fragment implements
                         : ValueAnimator.ofFloat(1f, 0f);
 
                 // scroll to make the view fully visible.
-                mRecyclerView.smoothScrollToPosition(viewHolder.position);
+                mRecyclerView.smoothScrollToPosition(mRecyclerView.getChildLayoutPosition(view));
 
                 animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
 

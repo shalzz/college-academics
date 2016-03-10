@@ -24,6 +24,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.support.v7.app.AppCompatDelegate;
+import android.support.v7.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -33,7 +35,9 @@ import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.ImageLoader.ImageCache;
 import com.android.volley.toolbox.Volley;
+import com.bugsnag.android.BeforeNotify;
 import com.bugsnag.android.Bugsnag;
+import com.bugsnag.android.Error;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
 import com.shalzz.attendance.BuildConfig;
@@ -102,6 +106,7 @@ public class MyVolley extends Application {
                 .setMaxBreadcrumbs(50);
         Bugsnag.setNotifyReleaseStages("production", "development", "testing");
         Bugsnag.beforeNotify(new BeforeNotify() {
+            @Override
             public boolean run(Error error) {
                 SharedPreferences settings = mContext.getSharedPreferences("SETTINGS", 0);
                 String username = settings.getString("USERNAME", "");
@@ -112,7 +117,11 @@ public class MyVolley extends Application {
             }
         });
 
-        // TODO: create a singleton for DatabaseHandler?
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        int nightMode = Integer.parseInt(sharedPref.getString(
+                mContext.getString(R.string.pref_key_day_night), "-1"));
+        //noinspection WrongConstant
+        AppCompatDelegate.setDefaultNightMode(nightMode);
     }
 
     /**

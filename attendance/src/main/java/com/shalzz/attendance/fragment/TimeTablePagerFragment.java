@@ -89,6 +89,7 @@ public class TimeTablePagerFragment extends Fragment {
         Tracker t = ((MyVolley) getActivity().getApplication()).getTracker(
                 MyVolley.TrackerName.APP_TRACKER);
 
+        t.setScreenName(getClass().getSimpleName());
         t.send(new HitBuilders.ScreenViewBuilder().build());
     }
 
