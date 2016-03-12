@@ -200,6 +200,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        showcaseView();
+    }
+
     /**
      * Initialise a fragment
      **/
@@ -230,7 +236,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
         updateDrawerHeader();
-        showcaseView();
     }
 
     private void initDrawer() {
