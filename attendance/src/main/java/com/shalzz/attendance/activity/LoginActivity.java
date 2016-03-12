@@ -23,6 +23,7 @@ import android.animation.ValueAnimator;
 import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.Toolbar;
 import android.util.TypedValue;
 import android.view.KeyEvent;
@@ -58,6 +59,9 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        if (savedInstanceState == null) {
+            getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         ButterKnife.inject(this);
@@ -160,14 +164,14 @@ public class LoginActivity extends AppCompatActivity {
         String password = etPass.getText().toString();
 
         if(sapid.length()==0 || sapid.length()!=9) {
-            etSapid.requestFocus();
-            etSapid.setError(getString(R.string.form_sapid_error));
+            textInputSapid.requestFocus();
+            textInputSapid.setError(getString(R.string.form_sapid_error));
             Miscellaneous.showKeyboard(this, etSapid);
             return false;
         }
         else if (password.length()==0) {
-            etPass.requestFocus();
-            etPass.setError(getString(R.string.form_password_error));
+            textInputPass.requestFocus();
+            textInputPass.setError(getString(R.string.form_password_error));
             Miscellaneous.showKeyboard(this,etPass);
             return false;
         }

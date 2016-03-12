@@ -127,6 +127,7 @@ public class MainActivity extends AppCompatActivity {
     private Bundle mSavedInstanceState;
     private ValueAnimator mToolbarHeightAnimator;
     private boolean mResumed = false;
+    private boolean initialised = false;
 
     public static class DrawerHeaderViewHolder extends RecyclerView.ViewHolder {
         @InjectView(R.id.drawer_header_name) TextView tv_name;
@@ -180,7 +181,6 @@ public class MainActivity extends AppCompatActivity {
             ViewGroup.LayoutParams lp = mToolbar.getLayoutParams();
             lp.height = toolBarHeight;
             mToolbar.setLayoutParams(lp);
-            init();
         }
         setSupportActionBar(mToolbar);
 
@@ -197,15 +197,27 @@ public class MainActivity extends AppCompatActivity {
     protected void onResumeFragments() {
         super.onResumeFragments();
         mResumed = true;
-        if(mToolbarHeightAnimator != null && !mToolbarHeightAnimator.isRunning()) {
+        if(mToolbarHeightAnimator == null || !mToolbarHeightAnimator.isRunning()) {
             init();
         }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        showcaseView();
     }
 
     /**
      * Initialise a fragment
      **/
     public void init() {
+        if(initialised) {
+           return;
+        }
+        initialised = true;
+
+        Log.d(mTag, "init: running!");
 
         // Select either the default item (Fragments.ATTENDANCE) or the last selected item.
         mCurrentSelectedPosition = reloadCurrentFragment();
@@ -232,7 +244,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
         updateDrawerHeader();
-        showcaseView();
     }
 
     private void initDrawer() {
@@ -568,6 +579,7 @@ public class MainActivity extends AppCompatActivity {
         // Sync the toggle state after onRestoreInstanceState has occurred.
         if(mDrawerToggle != null)
             mDrawerToggle.syncState();
+        mSavedInstanceState = savedInstanceState;
     }
 
     /**

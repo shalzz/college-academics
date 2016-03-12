@@ -38,8 +38,6 @@ public class SplashActivity extends AppCompatActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-        // Make sure this is before calling super.onCreate
-        setTheme(R.style.AppTheme);
 		super.onCreate(savedInstanceState);
 	Bugsnag.setContext("SplashActivity");
 
