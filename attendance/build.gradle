@@ -68,11 +68,11 @@ android {
         // google support libraries
         compile 'com.google.android.gms:play-services-analytics:8.+'
         compile 'com.google.android.gms:play-services-ads:8.+'
-        compile 'com.android.support:recyclerview-v7:23.2.+'
-        compile 'com.android.support:design:23.2.+'
-        compile 'com.android.support:support-v4:23.2.+'
-        compile 'com.android.support:appcompat-v7:23.2.+'
-        compile 'com.android.support:preference-v14:23.2.+'
+        compile 'com.android.support:recyclerview-v7:23.2.1'
+        compile 'com.android.support:design:23.2.1'
+        compile 'com.android.support:support-v4:23.2.1'
+        compile 'com.android.support:appcompat-v7:23.2.1'
+        compile 'com.android.support:preference-v14:23.2.1'
 
         // 3rd party library projects
         compile 'com.jakewharton:butterknife:6.0.0'
