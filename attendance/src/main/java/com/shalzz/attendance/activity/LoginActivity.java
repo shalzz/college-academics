@@ -58,11 +58,10 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
         if (savedInstanceState == null) {
             getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-            recreate();
         }
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         ButterKnife.inject(this);
 
