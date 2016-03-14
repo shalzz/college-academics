@@ -547,6 +547,7 @@ public class MainActivity extends AppCompatActivity {
         mPreviousFragment = null;
     }
 
+    @SuppressWarnings("CommitPrefEdits")
     private void persistCurrentFragment() {
         if(!LOGGED_OUT) {
             SharedPreferences.Editor editor = getSharedPreferences("SETTINGS", 0).edit();

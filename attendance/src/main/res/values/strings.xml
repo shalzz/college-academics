@@ -134,7 +134,6 @@
     <string name="sv_main_activity_content">Press this button or swipe from the left edge to access the navigation bar</string>
 
     <!--EditText Hint's-->
-    <string name="hint_captcha">Captcha</string>
     <string name="hint_sapid">SAP ID</string>
     <string name="hint_password">Password</string>
     <string name="hint_search">Search subjects</string>
@@ -145,8 +144,6 @@
     <!--Accessibility-->
     <string name="drawer_open">Navigation drawer opened</string>
     <string name="drawer_close">Navigation drawer closed</string>
-    <string name="captcha_image_view">Captcha image</string>
-    <string name="refresh_captcha_button">Captcha refresh button</string>
 
     <!--Options Menu-->
     <string name="menu_logout">Log Out</string>

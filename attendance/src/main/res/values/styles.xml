@@ -50,6 +50,10 @@
         <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
     </style>
 
+    <style name="AppTheme.NavigationTheme">
+        <item name="android:colorBackground">@color/list_background</item>
+    </style>
+
     <style name="AppTheme.Launcher">
         <item name="android:windowBackground">@drawable/launch_screen</item>
     </style>

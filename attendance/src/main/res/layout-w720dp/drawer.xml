@@ -22,7 +22,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    tools:context=".activity.MainActivity">
+    tools:context=".activity.MainActivity"
+    tools:ignore="InconsistentLayout">
 
     <!-- The navigation drawer -->
     <include layout="@layout/include_drawer_list"/>
