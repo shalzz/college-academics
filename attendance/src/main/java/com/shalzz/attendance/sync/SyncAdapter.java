@@ -82,7 +82,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     @Override
     public void onPerformSync(Account account, Bundle extras, String authority,
                               ContentProviderClient provider, SyncResult syncResult) {
-	Bugsnag.leaveBreadcrumb("Running sync adapter");
+	    Bugsnag.leaveBreadcrumb("Running sync adapter");
 
         Call<List<Subject>> call = api.getAttendance(preferencesManager.getBasicAuthCredentials());
         call.enqueue(new Callback<List<Subject>>() {
@@ -166,7 +166,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                         db.close();
                     }
                     catch(Exception e) {
-			Bugsnag.notify(e);
+			            Bugsnag.notify(e);
                         e.printStackTrace();
                     }
                 }
@@ -175,7 +175,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
             @Override
             public void onFailure(Call<List<Period>> call, Throwable t) {
                 t.printStackTrace();
-		Bugsnag.notify(t);
+		        Bugsnag.notify(t);
             }
         });
     }
