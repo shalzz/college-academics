@@ -18,12 +18,7 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<selector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:enterFadeDuration="@android:integer/config_mediumAnimTime" >
-
-    <!--<item android:state_pressed="true" android:drawable="@color/primary_32" />-->
-    <item android:state_pressed="false" android:state_activated="true" android:drawable="@color/primary_32" />
-    <item android:state_pressed="false" android:state_checked="true" android:drawable="@color/primary_32" />
-    <item android:drawable="@android:color/transparent" />
-
-</selector>
+<resources xmlns:tools="http://schemas.android.com/tools"
+           tools:shrinkMode="safe"
+           tools:keep="@color/abc_secondary_text_material_light"
+           tools:discard=""/>

@@ -19,7 +19,9 @@
   -->
 
 <merge
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="UnusedAttribute">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"

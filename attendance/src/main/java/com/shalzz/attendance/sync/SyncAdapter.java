@@ -112,7 +112,8 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 			}
 		};
 	}
-	
+
+    @SuppressLint("InlinedApi")
 	private Response.Listener<ArrayList<PeriodModel>> timeTableSuccessListener() {
 		return new Response.Listener<ArrayList<PeriodModel>>() {
 			@Override
@@ -135,7 +136,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                     if (notify) {
                         NotificationCompat.Builder mBuilder =
                                 (NotificationCompat.Builder) new NotificationCompat.Builder(mContext)
-                                        .setSmallIcon(R.drawable.human)
+                                        .setSmallIcon(R.drawable.ic_stat_human)
                                         .setLargeIcon(BitmapFactory.decodeResource(
                                                         mContext.getResources(),
                                                         R.mipmap.ic_launcher))
