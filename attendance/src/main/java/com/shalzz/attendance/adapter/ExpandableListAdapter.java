@@ -186,7 +186,7 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         public RelativeLayout childView;
         public TextView tvAbsent;
         public TextView tvReach;
-        public ImageView ivAlert;
+        public android.support.v7.widget.AppCompatImageView ivAlert;
 
         public GenericViewHolder(View itemView) {
             super(itemView);
@@ -265,7 +265,7 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         View childView = views.childView;
         views.tvAbsent = (TextView) childView.findViewById(R.id.tvAbsent);
         views.tvReach = (TextView) childView.findViewById(R.id.tvReach);
-        views.ivAlert = (ImageView) childView.findViewById(R.id.imageView1);
+        views.ivAlert = (android.support.v7.widget.AppCompatImageView) childView.findViewById(R.id.imageView1);
 
         bindChildView(views,views.position);
     }

@@ -34,7 +34,7 @@
         android:text="Days Absent:"
         android:textSize="15sp" />
 
-    <ImageView
+    <android.support.v7.widget.AppCompatImageView
         android:id="@+id/imageView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
