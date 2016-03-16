@@ -20,6 +20,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'bugsnag'
 
 bugsnag {
+    apiKey '600a00bfd5bd72e5df7f288f74df8f9b'
     autoProguardConfig false
 }
 
