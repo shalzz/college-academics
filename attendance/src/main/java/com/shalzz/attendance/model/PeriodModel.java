@@ -25,6 +25,7 @@ import com.shalzz.attendance.wrapper.DateHelper;
 
 import java.text.ParseException;
 import java.util.Date;
+import java.util.Locale;
 
 public class PeriodModel {
 
@@ -159,7 +160,7 @@ public class PeriodModel {
     }
     
     public String capitalizeString(String name) {
-        char[] chars = name.toLowerCase().toCharArray();
+        char[] chars = name.toLowerCase(Locale.getDefault()).toCharArray();
         boolean found = false;
         for (int i = 0; i < chars.length; i++) {
             if (!found && Character.isLetter(chars[i])) {

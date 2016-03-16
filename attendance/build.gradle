@@ -44,7 +44,6 @@ android {
         }
     }
 
-//  TODO: proguard the app
     buildTypes {
         debug {
             applicationIdSuffix '.debug'
@@ -59,8 +58,11 @@ android {
             resValue "string", "contentAuthority", defaultConfig.applicationId + '.provider'
             resValue "string", "account_type", "com.shalzz"
             buildConfigField "String", "ACCOUNT_TYPE", '"com.shalzz"'
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+            minifyEnabled true
+            shrinkResources true
+            FileCollection proGuardFileCollection = files { file('./proguard').listFiles() }
+            proguardFiles(proGuardFileCollection)
+            proguardFile getDefaultProguardFile('proguard-android-optimize.txt')
         }
     }
 
@@ -90,7 +92,7 @@ android {
         compile('com.github.afollestad.material-dialogs:core:0.8.5.5@aar') {
             transitive = true
         }
-        compile('de.psdev.licensesdialog:licensesdialog:1.6.0') {
+        compile('de.psdev.licensesdialog:licensesdialog:1.8.0') {
             exclude module: 'support-v4'
         }
     }

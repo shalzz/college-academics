@@ -1,67 +1,30 @@
 
-#-injars  build/intermediates/classes/release
-#-outjars build/classes-processed.jar
+# Keep the BuildConfig
+-keep class com.shalzz.attendance.BuildConfig { *; }
 
-#-libraryjars /home/shalzz/Development/android-sdk/platforms/android-21/android.jar
-# -libraryjars (! com/squareup/okhttp/**)
+# Keep the support library
+-keep class android.support.v4.** { *; }
+-keep interface android.support.v4.** { *;}
 
--keep class com.squareup.** { *; }
+# Apache HTTP
+-dontnote org.apache.http.**
+-dontnote android.net.**
 
--keep class retrofit.** { *; }
+-keepattributes InnerClasses
 
--keepclasseswithmembers class * {
+# Application classes that will be serialized/deserialized over Gson
+-keep class com.shalzz.attendance.model.** { *; }
 
-@retrofit.http.* <methods>; }
-
--keepattributes Signature 
-
--ignorewarnings
--dontobfuscate
-
-# Butterknife
--dontwarn butterknife.internal.**
--keep class **$$ViewInjector { *; }
--keepnames class * { @butterknife.InjectView *;}
-
-# Play services
--keep class * extends java.util.ListResourceBundle {
-    protected Object[][] getContents();
-}
-
--keep public class com.google.android.gms.common.internal.safeparcel.SafeParcelable {
-    public static final *** NULL;
-}
-
--keepnames @com.google.android.gms.common.annotation.KeepName class *
--keepclassmembernames class * {
-    @com.google.android.gms.common.annotation.KeepName *;
-}
-
--keepnames class * implements android.os.Parcelable {
-    public static final ** CREATOR;
-}
-
-# Save the obfuscation mapping to a file, so you can de-obfuscate any stack
-# traces later on.
-
-#-printmapping classes-processed.map
-
-# You can print out the seeds that are matching the keep options below.
-
-#-printseeds classes-processed.seeds
-
-# Preverification is irrelevant for the dex compiler and the Dalvik VM.
-
--dontpreverify
+-verbose
+-dump
+-printseeds
+-printusage
+-printmapping
 
 # Reduce the size of the output some more.
 
 -repackageclasses ''
 -allowaccessmodification
-
-# Switch off some optimizations that trip older versions of the Dalvik VM.
-
--optimizations !code/simplification/arithmetic
 
 # Keep a fixed source file attribute and all line number tables to get line
 # numbers in the stack traces.

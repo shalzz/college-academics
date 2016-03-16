@@ -18,9 +18,11 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/child_view"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+                xmlns:tools="http://schemas.android.com/tools"
+                tools:ignore="RtlHardcoded,HardcodedText"
+                android:id="@+id/child_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
     <TextView
         android:id="@+id/tvAbsent"
@@ -32,7 +34,7 @@
         android:text="Days Absent:"
         android:textSize="15sp" />
 
-    <ImageView
+    <android.support.v7.widget.AppCompatImageView
         android:id="@+id/imageView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -41,7 +43,8 @@
         android:layout_toStartOf="@+id/tvReach"
         android:layout_alignBottom="@+id/tvReach"
         android:tint="?attr/colorControlNormal"
-        android:padding="5dp" />
+        android:padding="5dp"
+        android:contentDescription="Alert Icon"/>
 
     <TextView
         android:id="@+id/tvReach"

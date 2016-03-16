@@ -19,6 +19,7 @@
 
 package com.shalzz.attendance.wrapper;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.v7.preference.PreferenceManager;
@@ -27,6 +28,7 @@ import android.util.Log;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.activity.MainActivity;
 
+@SuppressLint("CommitPrefEdits")
 public class MyPreferencesManager {
 
 	/**
