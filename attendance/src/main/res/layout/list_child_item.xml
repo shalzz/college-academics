@@ -42,7 +42,6 @@
         android:layout_toLeftOf="@+id/tvReach"
         android:layout_toStartOf="@+id/tvReach"
         android:layout_alignBottom="@+id/tvReach"
-        android:tint="?attr/colorControlNormal"
         android:padding="5dp"
         android:contentDescription="Alert Icon"/>
 
