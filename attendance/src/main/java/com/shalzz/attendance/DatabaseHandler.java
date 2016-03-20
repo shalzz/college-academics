@@ -219,7 +219,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         dates.put(KEY_ID, subject.getID());
         for(Date date : subject.getAbsentDates()) {
             dates.put(KEY_DAYS_ABSENT, DateHelper.formatToTechnicalFormat(date));
-            db.insert(TABLE_DAYS_ABSENT, null, dates);
+            db.insertWithOnConflict(TABLE_DAYS_ABSENT, null, dates, SQLiteDatabase.CONFLICT_IGNORE);
         }
     }
 
@@ -237,12 +237,38 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(KEY_CLASSES_ATTENDED, subject.getClassesAttended());
         values.put(KEY_LAST_UPDATED, timestamp);
 
+        ArrayList<Date> newDates = (ArrayList<Date>) subject.getAbsentDates().clone();
+
+        String datesQuery = "SELECT " + KEY_DAYS_ABSENT + " FROM " + TABLE_DAYS_ABSENT +
+                " WHERE " + KEY_ID + " = " + subject.getID() + ";";
+
+        Cursor dateCursor = db.rawQuery(datesQuery, null);
+        if (dateCursor.moveToFirst()) {
+            do {
+
+                // fixme: make sure the same date object is created every time
+                // fixme: for the same date string
+                Date date = DateHelper.parseDate(dateCursor.getString(0));
+                // insert only new dates
+                if(newDates.contains(date)) {
+                    newDates.remove(date);
+                }
+                // and delete dates that are no longer marked as absent
+                else {
+                    db.delete(TABLE_DAYS_ABSENT,KEY_ID + "=? and " + KEY_DAYS_ABSENT + "=?",
+                    new String[] { String.valueOf(subject.getID()),
+                            dateCursor.getString(0)});
+                }
+            } while (dateCursor.moveToNext());
+        }
+        dateCursor.close();
+
         // Store the dates in another table corresponding to the same id
-        ContentValues dates = new ContentValues();
-        dates.put(KEY_ID, subject.getID());
-        for(Date date : subject.getAbsentDates()) {
-            dates.put(KEY_DAYS_ABSENT, DateHelper.formatToTechnicalFormat(date));
-            db.insertWithOnConflict(TABLE_DAYS_ABSENT, null, dates, SQLiteDatabase.CONFLICT_IGNORE);
+        ContentValues insert = new ContentValues();
+        insert.put(KEY_ID, subject.getID());
+        for(Date date : newDates) {
+            insert.put(KEY_DAYS_ABSENT, DateHelper.formatToTechnicalFormat(date));
+            db.insertWithOnConflict(TABLE_DAYS_ABSENT, null, insert, SQLiteDatabase.CONFLICT_IGNORE);
         }
 
         return db.update(TABLE_ATTENDANCE, values, KEY_ID + " = ?",
