@@ -43,7 +43,7 @@ public class AdFragment extends Fragment {
         super.onActivityCreated(bundle);
         AdView mAdView = (AdView) getView().findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder()
-                .addTestDevice("F9687B4F94B9427327A76A24D717C6B5")
+                .addTestDevice("CD38834C4D681DE9F2398FA570CF149F")
                 .build();
         mAdView.loadAd(adRequest);
     }
