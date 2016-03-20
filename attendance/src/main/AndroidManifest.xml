@@ -34,12 +34,10 @@
 
     <supports-screens
         android:smallScreens="true"
-        android:normalScreens="true"/>
+        android:normalScreens="true"
         android:largeScreens="true"
         android:xlargeScreens="true"
         android:anyDensity="true"/>
-
-
 
     <application
         android:name=".wrapper.MyVolley"
