@@ -26,7 +26,7 @@
     android:layout_height="match_parent"
     android:layout_gravity="start"
     android:layout_above="@+id/adFragment"
-    android:background="@color/list_background"
+    android:theme="@style/Theme.AppCompat.NoActionBar"
     android:soundEffectsEnabled="true"
     android:hapticFeedbackEnabled="true"
     android:fitsSystemWindows="true"
