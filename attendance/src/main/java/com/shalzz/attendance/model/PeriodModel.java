@@ -31,7 +31,8 @@ public class PeriodModel {
     /** Field names need to be the same
      *  as that of the fields in the
      *  JSON object sent by the REST API,
-     *  for {@link Gson} to be able to deserialize it properly.
+     *  for {@link Gson} to be able to deserialize it
+     *  properly and automatically.
      *
      *  Typical `period` JSON object will be of the format:
      *  {
