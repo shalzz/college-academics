@@ -24,7 +24,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_toRightOf="@+id/list_slidermenu"
-                android:layout_toEndOf="@+id/list_slidermenu">
+                android:layout_toEndOf="@+id/list_slidermenu"
+                android:layout_above="@+id/adFragment">
 
     <include layout="@layout/include_toolbar"/>
 
