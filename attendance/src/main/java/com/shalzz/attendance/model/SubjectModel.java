@@ -29,34 +29,29 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Locale;
 
-/**
- * Model class for subjects.
- * @author shalzz
+/** Field names need to be the same
+ *  as that of the fields in the
+ *  JSON object sent by the REST API,
+ *  for {@link Gson} to be able to deserialize it
+ *  properly and automatically.
  *
+ *  Typical `attendance` JSON object will be of the format:
+ *  {
+ *      "absent_dates":["","",...],
+ *      "id": ##,
+ *      "name":"",
+ *      "held": ##,
+ *      "attended": ##}
+ *  }
+ *
+ *  which is exposed by the api endpoint /api/v1/me/attendance
+ *  by the express.js server (upes-api) as of this writing.
  */
 public class SubjectModel {
 
     private DateFormat dayFormat = new SimpleDateFormat("d", Locale.US);
     private DateFormat monthFormat = new SimpleDateFormat("MMM", Locale.US);
 
-    /** Field names need to be the same
-     *  as that of the fields in the
-     *  JSON object sent by the REST API,
-     *  for {@link Gson} to be able to deserialize it
-     *  properly and automatically.
-     *
-     *  Typical `attendance` JSON object will be of the format:
-     *  {
-     *      "absent_dates":["","",...],
-     *      "id": ##,
-     *      "name":"",
-     *      "held": ##,
-     *      "attended": ##}
-     *  }
-     *
-     *  which is exposed by the api endpoint /api/v1/me/attendance
-     *  by the express.js server (upes-api) as of this writing.
-     */
 	private int id;
 	private String name;
 	private Float held;

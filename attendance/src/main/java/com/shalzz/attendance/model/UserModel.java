@@ -21,25 +21,25 @@ package com.shalzz.attendance.model;
 
 import com.google.gson.Gson;
 
+/** Field names need to be the same
+ *  as that of the fields in the
+ *  JSON object sent by the REST API,
+ *  for {@link Gson} to be able to deserialize it
+ *  properly and automatically.
+ *
+ *  Typical `user` JSON object will be of the format:
+ *  {
+ *      "sapid": "",
+ *      "password": "",
+ *      "name": "",
+ *      "course": ""
+ *  }
+ *
+ *  which is exposed by the api endpoint /api/v1/me
+ *  by the express.js server (upes-api) as of this writing.
+ */
 public class UserModel {
 
-    /** Field names need to be the same
-     *  as that of the fields in the
-     *  JSON object sent by the REST API,
-     *  for {@link Gson} to be able to deserialize it
-     *  properly and automatically.
-     *
-     *  Typical `user` JSON object will be of the format:
-     *  {
-     *      "sapid": "",
-     *      "password": "",
-     *      "name": "",
-     *      "course": ""
-     *  }
-     *
-     *  which is exposed by the api endpoint /api/v1/me
-     *  by the express.js server (upes-api) as of this writing.
-     */
     private String sapid;
     private String password;
     private String name;
