@@ -22,11 +22,13 @@ package com.shalzz.attendance.adapter;
 import android.support.v7.util.SortedList;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.util.SortedListAdapterCallback;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.shalzz.attendance.BuildConfig;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.model.PeriodModel;
 
@@ -39,6 +41,7 @@ import butterknife.InjectView;
 public class DayListAdapter extends RecyclerView.Adapter<DayListAdapter.ViewHolder>{
 
     private SortedList<PeriodModel> mPeriods;
+    private List<Integer> subjectIDs;
     private SortedListAdapterCallback<PeriodModel> callback;
 
     // Provide a reference to the views for each data item
@@ -49,6 +52,7 @@ public class DayListAdapter extends RecyclerView.Adapter<DayListAdapter.ViewHold
         @InjectView(R.id.tvTime) TextView tvTime;
         @InjectView(R.id.tvTeacher) TextView tvTeacher;
         @InjectView(R.id.tvRoom) TextView tvRoom;
+        @InjectView(R.id.tvMarkedAbsent) TextView tvMarkedAbsent;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -147,6 +151,16 @@ public class DayListAdapter extends RecyclerView.Adapter<DayListAdapter.ViewHold
             e.printStackTrace();
         }
 
+        if(subjectIDs.contains(period.getId()))
+            holder.tvMarkedAbsent.setVisibility(View.VISIBLE);
+        else {
+            holder.tvMarkedAbsent.setVisibility(View.GONE);
+        }
+
+    }
+
+    public void setAbsentSubjects(List<Integer> IDs) {
+        subjectIDs = IDs;
     }
 
     // Return the size of your dataset (invoked by the layout manager)
