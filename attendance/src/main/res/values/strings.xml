@@ -121,7 +121,9 @@
     <string name="pref_notify_timetable_changed">Notifications</string>
     <string name="pref_notify_timetable_changed_summary">Receive a notification when your
         timetable changes</string>
-    <string name="pref_show_weekends">Show Weekends</string>
+    <string name="pref_show_weekends">Weekends</string>
+    <string name="pref_show_weekends_summary_on">Display weekends as well</string>
+    <string name="pref_show_weekends_summary_off">Display only weekdays</string>
     <string name="pref_day_night">Day/Night Theme</string>
     <string name="pref_day_night_dialog">Select Night Mode</string>
 
