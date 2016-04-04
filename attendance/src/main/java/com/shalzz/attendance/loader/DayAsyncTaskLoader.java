@@ -55,10 +55,7 @@ public class DayAsyncTaskLoader extends AsyncTaskLoader<DayModel> {
     public DayModel loadInBackground() {
         if(mDb == null)
             mDb = new DatabaseHandler(getContext());
-        DayModel day = new DayModel();
-        day.setAbsentSubjects(mDb.getAbsentSubjects(mDate));
-        day.setPeriods(mDb.getAllPeriods(mDate, this));
-        return day;
+        return new DayModel(mDb.getAbsentSubjects(mDate), mDb.getAllPeriods(mDate, this));
     }
 
     @Override

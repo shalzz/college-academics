@@ -19,12 +19,22 @@
 
 package com.shalzz.attendance.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class DayModel {
 
     private List<PeriodModel> periods;
     private List<Integer> subjectIDs;
+
+    public DayModel() {
+
+    }
+
+    public DayModel(List<Integer> absentSubjects, ArrayList<PeriodModel> allPeriods) {
+        subjectIDs = absentSubjects;
+        periods = allPeriods;
+    }
 
     public List<Integer> getAbsentSubjects() {
         return subjectIDs;
