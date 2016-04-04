@@ -186,8 +186,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         // Drop older table if existed
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_ATTENDANCE);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_USER);
-        // TODO: Clean up from previous versions, remove in later releases.
-        db.execSQL("DROP TABLE IF EXISTS " + "ListFooter");
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_TIMETABLE);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_DAYS_ABSENT);
 
@@ -237,6 +235,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(KEY_CLASSES_ATTENDED, subject.getClassesAttended());
         values.put(KEY_LAST_UPDATED, timestamp);
 
+        // clone this object as any changes in it will be directly visible to the user
         ArrayList<Date> newDates = (ArrayList<Date>) subject.getAbsentDates().clone();
 
         String datesQuery = "SELECT " + KEY_DAY_ABSENT + " FROM " + TABLE_DAYS_ABSENT +
@@ -246,8 +245,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         if (dateCursor.moveToFirst()) {
             do {
 
-                // fixme: make sure the same date object is created every time
-                // fixme: for the same date string
                 Date date = DateHelper.parseDate(dateCursor.getString(0));
                 // insert only new dates
                 if(newDates.contains(date)) {
