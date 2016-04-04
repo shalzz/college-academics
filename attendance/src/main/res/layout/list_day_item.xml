@@ -74,7 +74,7 @@
         android:id="@+id/tvRoom"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textAppearance="?android:attr/textAppearanceSmall"
         android:text="8201"
         android:layout_marginRight="6dp"
         android:layout_marginEnd="6dp"
