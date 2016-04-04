@@ -23,28 +23,28 @@ import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
 
 import com.shalzz.attendance.DatabaseHandler;
-import com.shalzz.attendance.model.PeriodModel;
+import com.shalzz.attendance.model.DayModel;
 
-import java.util.List;
+import java.util.Date;
 
-public class DayAsyncTaskLoader extends AsyncTaskLoader<List<PeriodModel>> {
+public class DayAsyncTaskLoader extends AsyncTaskLoader<DayModel> {
 
     private DatabaseHandler mDb;
-    private String mDay;
-    private List<PeriodModel> mPeriods;
+    private Date mDate;
+    private DayModel mDay;
 
-    public DayAsyncTaskLoader(Context context, String day) {
+    public DayAsyncTaskLoader(Context context, Date date) {
         super(context);
-        mDay = day;
+        mDate = date;
     }
 
     @Override
     protected void onStartLoading() {
-        if (mPeriods != null) {
+        if (mDay != null) {
             // Use cached data
-            deliverResult(mPeriods);
+            deliverResult(mDay);
         }
-        if (takeContentChanged() || mPeriods == null) {
+        if (takeContentChanged() || mDay == null) {
             // Something has changed or we have no data,
             // so kick off loading it
             forceLoad();
@@ -52,16 +52,19 @@ public class DayAsyncTaskLoader extends AsyncTaskLoader<List<PeriodModel>> {
     }
 
     @Override
-    public List<PeriodModel> loadInBackground() {
+    public DayModel loadInBackground() {
         if(mDb == null)
             mDb = new DatabaseHandler(getContext());
-        return mDb.getAllPeriods(mDay, this);
+        DayModel day = new DayModel();
+        day.setAbsentSubjects(mDb.getAbsentSubjects(mDate));
+        day.setPeriods(mDb.getAllPeriods(mDate, this));
+        return day;
     }
 
     @Override
-    public void deliverResult(List<PeriodModel> data) {
+    public void deliverResult(DayModel data) {
         // We’ll save the data for later retrieval
-        mPeriods = data;
+        mDay = data;
         // We can do any pre-processing we want here
         // Just remember this is on the UI thread so nothing lengthy!
         super.deliverResult(data);
@@ -80,7 +83,7 @@ public class DayAsyncTaskLoader extends AsyncTaskLoader<List<PeriodModel>> {
     }
 
     @Override
-    public void onCanceled(List<PeriodModel> data) {
+    public void onCanceled(DayModel data) {
         super.onCanceled(data);
         if(mDb != null) {
             mDb.close();

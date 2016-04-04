@@ -22,14 +22,13 @@ package com.shalzz.attendance.adapter;
 import android.support.v7.util.SortedList;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.util.SortedListAdapterCallback;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.shalzz.attendance.BuildConfig;
 import com.shalzz.attendance.R;
+import com.shalzz.attendance.model.DayModel;
 import com.shalzz.attendance.model.PeriodModel;
 
 import java.text.ParseException;
@@ -100,7 +99,9 @@ public class DayListAdapter extends RecyclerView.Adapter<DayListAdapter.ViewHold
         mPeriods = new SortedList<>(PeriodModel.class, callback);
     }
 
-    public void update(List<PeriodModel> periods) {
+    public void update(DayModel day) {
+        List<PeriodModel> periods = day.getPeriods();
+        subjectIDs = day.getAbsentSubjects();
         mPeriods.beginBatchedUpdates();
         for (int i = 0; i < mPeriods.size(); i++) {
             PeriodModel existingObject = mPeriods.get(i);
@@ -157,10 +158,6 @@ public class DayListAdapter extends RecyclerView.Adapter<DayListAdapter.ViewHold
             holder.tvMarkedAbsent.setVisibility(View.GONE);
         }
 
-    }
-
-    public void setAbsentSubjects(List<Integer> IDs) {
-        subjectIDs = IDs;
     }
 
     // Return the size of your dataset (invoked by the layout manager)

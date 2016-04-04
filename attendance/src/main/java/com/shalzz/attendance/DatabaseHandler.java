@@ -599,7 +599,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.close(); // Closing database connection
     }
 
-    public ArrayList<PeriodModel> getAllPeriods(String dayName, AsyncTaskLoader callback) {
+    public ArrayList<PeriodModel> getAllPeriods(Date date, AsyncTaskLoader callback) {
+        String dayName = DateHelper.getShortWeekday(date);
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.query(TABLE_TIMETABLE, null, KEY_DAY + "=?",
