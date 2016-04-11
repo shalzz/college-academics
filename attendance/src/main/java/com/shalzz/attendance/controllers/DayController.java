@@ -23,20 +23,18 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import com.shalzz.attendance.adapter.DayListAdapter;
 import com.shalzz.attendance.fragment.DayFragment;
 import com.shalzz.attendance.loader.DayAsyncTaskLoader;
-import com.shalzz.attendance.loader.SubjectAsyncTaskLoader;
+import com.shalzz.attendance.model.DayModel;
 import com.shalzz.attendance.model.PeriodModel;
-import com.shalzz.attendance.wrapper.DateHelper;
 
 import java.util.Date;
 import java.util.List;
 
-public class DayController implements LoaderManager.LoaderCallbacks<List<PeriodModel>> {
+public class DayController implements LoaderManager.LoaderCallbacks<DayModel> {
 
     private Context mContext;
     private DayFragment mView;
@@ -50,15 +48,15 @@ public class DayController implements LoaderManager.LoaderCallbacks<List<PeriodM
     }
 
     @Override
-    public Loader<List<PeriodModel>> onCreateLoader(int id, Bundle args) {
+    public Loader<DayModel> onCreateLoader(int id, Bundle args) {
         Date date = args != null ? (Date) args
                 .getSerializable(DayFragment.ARG_DATE) : new Date();
-        return new DayAsyncTaskLoader(mContext, DateHelper.getShortWeekday(date));
+        return new DayAsyncTaskLoader(mContext, date);
     }
 
     @Override
-    public void onLoadFinished(Loader<List<PeriodModel>> loader, List<PeriodModel> data) {
-        if (data.size() == 0) {
+    public void onLoadFinished(Loader<DayModel> loader, DayModel data) {
+        if (data.getPeriods().size() == 0) {
             mView.mEmptyView.setVisibility(View.VISIBLE);
             mAdapter.clear();
         } else {
@@ -68,7 +66,7 @@ public class DayController implements LoaderManager.LoaderCallbacks<List<PeriodM
     }
 
     @Override
-    public void onLoaderReset(Loader<List<PeriodModel>> loader) {
+    public void onLoaderReset(Loader<DayModel> loader) {
         // Loader reset, throw away our data,
         // unregister any listeners, etc.
         mAdapter.clear();

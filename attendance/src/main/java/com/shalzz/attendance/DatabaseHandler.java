@@ -85,7 +85,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String KEY_NAME = "Subject_Name";
     private static final String KEY_CLASSES_HELD = "No_Classes_Held";
     private static final String KEY_CLASSES_ATTENDED = "No_Classes_Attended";
-    private static final String KEY_DAYS_ABSENT = "Days_Absent";
+    private static final String KEY_DAY_ABSENT = "Days_Absent";
 
     /**
      *  TimeTable Table Column names
@@ -124,14 +124,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String CREATE_ATTENDANCE_TABLE = "CREATE TABLE " + TABLE_ATTENDANCE + " ( "
             + KEY_ID + " INTEGER PRIMARY KEY, " + KEY_NAME + " TEXT, "
             + KEY_CLASSES_HELD + " REAL, " + KEY_CLASSES_ATTENDED + " REAL, "
-            + KEY_LAST_UPDATED + " INTEGER, " + KEY_DAYS_ABSENT + " TEXT "  + ");";
+            + KEY_LAST_UPDATED + " INTEGER, " + KEY_DAY_ABSENT + " TEXT "  + ");";
 
     /**
      * Days Absent CREATE TABLE SQL query.
      */
     private static final String CREATE_DAYS_ABSENT_TABLE = "CREATE TABLE " + TABLE_DAYS_ABSENT +
-            " ( " + KEY_ID + " INTEGER, " + KEY_DAYS_ABSENT + " TEXT, " +
-            " UNIQUE ( " + KEY_ID + "," + KEY_DAYS_ABSENT + " )," +
+            " ( " + KEY_ID + " INTEGER, " + KEY_DAY_ABSENT + " TEXT, " +
+            " UNIQUE ( " + KEY_ID + "," + KEY_DAY_ABSENT + " )," +
             " FOREIGN KEY(" + KEY_ID + " ) REFERENCES " + TABLE_ATTENDANCE + " ( " + KEY_ID +
             " ) ON DELETE CASCADE ); ";
 
@@ -186,8 +186,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         // Drop older table if existed
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_ATTENDANCE);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_USER);
-        // TODO: Clean up from previous versions, remove in later releases.
-        db.execSQL("DROP TABLE IF EXISTS " + "ListFooter");
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_TIMETABLE);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_DAYS_ABSENT);
 
@@ -218,7 +216,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         ContentValues dates = new ContentValues();
         dates.put(KEY_ID, subject.getID());
         for(Date date : subject.getAbsentDates()) {
-            dates.put(KEY_DAYS_ABSENT, DateHelper.formatToTechnicalFormat(date));
+            dates.put(KEY_DAY_ABSENT, DateHelper.formatToTechnicalFormat(date));
             db.insertWithOnConflict(TABLE_DAYS_ABSENT, null, dates, SQLiteDatabase.CONFLICT_IGNORE);
         }
     }
@@ -237,17 +235,16 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(KEY_CLASSES_ATTENDED, subject.getClassesAttended());
         values.put(KEY_LAST_UPDATED, timestamp);
 
+        // clone this object as any changes in it will be directly visible to the user
         ArrayList<Date> newDates = (ArrayList<Date>) subject.getAbsentDates().clone();
 
-        String datesQuery = "SELECT " + KEY_DAYS_ABSENT + " FROM " + TABLE_DAYS_ABSENT +
+        String datesQuery = "SELECT " + KEY_DAY_ABSENT + " FROM " + TABLE_DAYS_ABSENT +
                 " WHERE " + KEY_ID + " = " + subject.getID() + ";";
 
         Cursor dateCursor = db.rawQuery(datesQuery, null);
         if (dateCursor.moveToFirst()) {
             do {
 
-                // fixme: make sure the same date object is created every time
-                // fixme: for the same date string
                 Date date = DateHelper.parseDate(dateCursor.getString(0));
                 // insert only new dates
                 if(newDates.contains(date)) {
@@ -255,7 +252,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 }
                 // and delete dates that are no longer marked as absent
                 else {
-                    db.delete(TABLE_DAYS_ABSENT,KEY_ID + "=? and " + KEY_DAYS_ABSENT + "=?",
+                    db.delete(TABLE_DAYS_ABSENT,KEY_ID + "=? and " + KEY_DAY_ABSENT + "=?",
                     new String[] { String.valueOf(subject.getID()),
                             dateCursor.getString(0)});
                 }
@@ -267,7 +264,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         ContentValues insert = new ContentValues();
         insert.put(KEY_ID, subject.getID());
         for(Date date : newDates) {
-            insert.put(KEY_DAYS_ABSENT, DateHelper.formatToTechnicalFormat(date));
+            insert.put(KEY_DAY_ABSENT, DateHelper.formatToTechnicalFormat(date));
             db.insertWithOnConflict(TABLE_DAYS_ABSENT, null, insert, SQLiteDatabase.CONFLICT_IGNORE);
         }
 
@@ -306,12 +303,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         if (filter != null) {
             cursor = db.query(TABLE_ATTENDANCE, new String[]{KEY_ID, KEY_NAME, KEY_CLASSES_HELD,
-                            KEY_CLASSES_ATTENDED, KEY_DAYS_ABSENT}, KEY_NAME + " LIKE '%" +
+                            KEY_CLASSES_ATTENDED, KEY_DAY_ABSENT}, KEY_NAME + " LIKE '%" +
                             filter + "%'",
                     null, null, null, KEY_NAME, null);
         } else {
             cursor = db.query(TABLE_ATTENDANCE, new String[]{KEY_ID, KEY_NAME, KEY_CLASSES_HELD,
-                            KEY_CLASSES_ATTENDED, KEY_DAYS_ABSENT}, null,
+                            KEY_CLASSES_ATTENDED, KEY_DAY_ABSENT}, null,
                     null, null, null, KEY_NAME, null);
         }
 
@@ -329,7 +326,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                     subject.setClassesHeld(cursor.getFloat(cursor.getColumnIndexOrThrow(KEY_CLASSES_HELD)));
                     subject.setClassesAttended(cursor.getFloat(cursor.getColumnIndexOrThrow(KEY_CLASSES_ATTENDED)));
 
-                    String datesQuery = "SELECT " + KEY_DAYS_ABSENT + " FROM " + TABLE_DAYS_ABSENT +
+                    String datesQuery = "SELECT " + KEY_DAY_ABSENT + " FROM " + TABLE_DAYS_ABSENT +
                             " WHERE " + KEY_ID + " = " + subject.getID() + ";";
 
                     Cursor dateCursor = db.rawQuery(datesQuery, null);
@@ -361,7 +358,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         List<SubjectModel> subjectList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.query(TABLE_ATTENDANCE, new String[]{KEY_ID, KEY_NAME, KEY_CLASSES_HELD,
-                        KEY_CLASSES_ATTENDED, KEY_DAYS_ABSENT}, KEY_NAME + " LIKE '%" + wildcard + "%'",
+                        KEY_CLASSES_ATTENDED, KEY_DAY_ABSENT}, KEY_NAME + " LIKE '%" + wildcard + "%'",
                 null, null, null, KEY_NAME, null);
 
         // looping through all rows and adding to list
@@ -373,7 +370,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 subject.setClassesHeld(cursor.getFloat(cursor.getColumnIndexOrThrow(KEY_CLASSES_HELD)));
                 subject.setClassesAttended(cursor.getFloat(cursor.getColumnIndexOrThrow(KEY_CLASSES_ATTENDED)));
 
-                String datesQuery = "SELECT " + KEY_DAYS_ABSENT + " FROM " + TABLE_DAYS_ABSENT +
+                String datesQuery = "SELECT " + KEY_DAY_ABSENT + " FROM " + TABLE_DAYS_ABSENT +
                         " WHERE " + KEY_ID + " = " + subject.getID() + ";";
 
                 Cursor dateCursor = db.rawQuery(datesQuery, null);
@@ -395,6 +392,26 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         cursor.close();
 
         return subjectList;
+    }
+
+    public List<Integer> getAbsentSubjects(Date date) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        List<Integer> subjectIDs = new ArrayList<>();
+        Cursor cursor = db.query(TABLE_DAYS_ABSENT, new String[]{KEY_ID}, KEY_DAY_ABSENT + " = ?",
+                new String[] { String.valueOf(DateHelper.formatToTechnicalFormat(date)) },
+                null, null, null, null);
+
+        try {
+            if(cursor.moveToFirst()) {
+                do {
+                    subjectIDs.add(cursor.getInt(0));
+                } while (cursor.moveToNext());
+            }
+        } finally {
+            cursor.close();
+        }
+
+        return subjectIDs;
     }
 
     /**
@@ -529,7 +546,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(KEY_DAY, period.getDay());
         values.put(KEY_SUBJECT_NAME, period.getSubjectName());
         values.put(KEY_TEACHER, period.getTeacher());
-        values.put(KEY_ROOM, period.getRoom());
+        values.put(KEY_ROOM, period.getRoom().trim());
         values.put(KEY_START, period.getStartTime());
         values.put(KEY_END, period.getEndTime());
         values.put(KEY_BATCH, period.getBatch());
@@ -546,7 +563,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(KEY_SUBJECT_NAME, period.getSubjectName());
         values.put(KEY_TEACHER, period.getTeacher());
-        values.put(KEY_ROOM, period.getRoom());
+        values.put(KEY_ROOM, period.getRoom().trim());
         values.put(KEY_START, period.getStartTime());
         values.put(KEY_END, period.getEndTime());
         values.put(KEY_BATCH, period.getBatch());
@@ -579,7 +596,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.close(); // Closing database connection
     }
 
-    public ArrayList<PeriodModel> getAllPeriods(String dayName, AsyncTaskLoader callback) {
+    public ArrayList<PeriodModel> getAllPeriods(Date date, AsyncTaskLoader callback) {
+        String dayName = DateHelper.getShortWeekday(date);
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.query(TABLE_TIMETABLE, null, KEY_DAY + "=?",

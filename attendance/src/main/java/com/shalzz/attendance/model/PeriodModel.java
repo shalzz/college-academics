@@ -19,15 +19,36 @@
 
 package com.shalzz.attendance.model;
 
+import com.google.gson.Gson;
 import com.shalzz.attendance.wrapper.DateHelper;
 
 import java.text.ParseException;
 import java.util.Date;
 import java.util.Locale;
 
+/** Field names need to be the same
+ *  as that of the fields in the
+ *  JSON object sent by the REST API,
+ *  for {@link Gson} to be able to deserialize it
+ *  properly and automatically.
+ *
+ *  Typical `period` JSON object will be of the format:
+ *  {
+ *      "id": ##,
+ *      "day": "",
+ *      "name": "",
+ *      "start": "",
+ *      "end": "",
+ *      "teacher": "",
+ *      "room": "",
+ *      "batch": ""
+ *  }
+ *
+ *  which is exposed by the api endpoint /api/v1/me/timetable
+ *  by the express.js server (upes-api) as of this writing.
+ */
 public class PeriodModel {
 
-	// private variables;
 	private int id;
 	private String name;
 	private String teacher;

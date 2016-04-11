@@ -28,6 +28,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.shalzz.attendance.R;
+import com.shalzz.attendance.model.DayModel;
 import com.shalzz.attendance.model.PeriodModel;
 
 import java.text.ParseException;
@@ -39,6 +40,7 @@ import butterknife.InjectView;
 public class DayListAdapter extends RecyclerView.Adapter<DayListAdapter.ViewHolder>{
 
     private SortedList<PeriodModel> mPeriods;
+    private List<Integer> subjectIDs;
     private SortedListAdapterCallback<PeriodModel> callback;
 
     // Provide a reference to the views for each data item
@@ -49,6 +51,7 @@ public class DayListAdapter extends RecyclerView.Adapter<DayListAdapter.ViewHold
         @InjectView(R.id.tvTime) TextView tvTime;
         @InjectView(R.id.tvTeacher) TextView tvTeacher;
         @InjectView(R.id.tvRoom) TextView tvRoom;
+        @InjectView(R.id.tvMarkedAbsent) TextView tvMarkedAbsent;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -96,7 +99,9 @@ public class DayListAdapter extends RecyclerView.Adapter<DayListAdapter.ViewHold
         mPeriods = new SortedList<>(PeriodModel.class, callback);
     }
 
-    public void update(List<PeriodModel> periods) {
+    public void update(DayModel day) {
+        List<PeriodModel> periods = day.getPeriods();
+        subjectIDs = day.getAbsentSubjects();
         mPeriods.beginBatchedUpdates();
         for (int i = 0; i < mPeriods.size(); i++) {
             PeriodModel existingObject = mPeriods.get(i);
@@ -145,6 +150,12 @@ public class DayListAdapter extends RecyclerView.Adapter<DayListAdapter.ViewHold
         } catch (ParseException e) {
             holder.tvTime.setText(period.getTime());
             e.printStackTrace();
+        }
+
+        if(subjectIDs.contains(period.getId()))
+            holder.tvMarkedAbsent.setVisibility(View.VISIBLE);
+        else {
+            holder.tvMarkedAbsent.setVisibility(View.GONE);
         }
 
     }

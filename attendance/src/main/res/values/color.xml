@@ -43,7 +43,9 @@
     <color name="white">#ffffff</color>
     <color name="list_item_title">#fff</color>
     <color name="list_background">#303030</color>
+    <color name="tint">@color/secondary_text_default_material_light</color>
 
+    <color name="absent">@color/holo_red_dark</color>
     <color name="attend">@color/holo_orange_dark</color>
     <color name="skip">@color/holo_green_dark</color>
 

@@ -32,7 +32,6 @@ import android.view.ViewGroup;
 import com.shalzz.attendance.DividerItemDecoration;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.controllers.DayController;
-import com.shalzz.attendance.wrapper.DateHelper;
 
 import java.util.Date;
 

@@ -19,10 +19,12 @@
   -->
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:minHeight="60dp"
-    android:background="?android:attr/selectableItemBackground" >
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minHeight="60dp"
+                android:background="?android:attr/selectableItemBackground"
+                tools:ignore="HardcodedText" >
 
     <TextView
         android:id="@+id/tvSubjectName"
@@ -36,7 +38,7 @@
         android:layout_marginLeft="5dp"
         android:layout_marginStart="5dp"
         android:layout_marginTop="5dp"
-        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="TextView" />
 
 
@@ -45,7 +47,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textSize="13sp"
         android:text="Mr X"
         android:layout_below="@+id/tvSubjectName"
         android:paddingLeft="3dp"
@@ -75,13 +76,24 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:text="8201"
-        android:gravity="end"
         android:layout_marginRight="6dp"
         android:layout_marginEnd="6dp"
-        android:layout_toRightOf="@+id/tvTeacher"
-        android:layout_toEndOf="@+id/tvTeacher"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
-        android:layout_below="@+id/tvSubjectName" />
+        android:layout_below="@+id/tvTime"/>
+
+    <TextView
+        android:id="@+id/tvMarkedAbsent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvRoom"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="@string/day_list_marked_absent"
+        android:textColor="@color/absent"
+        android:padding="3dp"
+        android:layout_marginRight="6dp"
+        android:layout_marginEnd="6dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"/>
 
 </RelativeLayout>

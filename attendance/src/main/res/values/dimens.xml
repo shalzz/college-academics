@@ -58,4 +58,5 @@
     <dimen name="toolbar_elevation">4dp</dimen>
     <dimen name="shadow_depth">4dp</dimen>
     <dimen name="atten_view_expanded_elevation">5dp</dimen>
+    <dimen name="login_activity_width">450dp</dimen>
 </resources>
