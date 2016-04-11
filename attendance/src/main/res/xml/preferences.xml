@@ -44,7 +44,9 @@
         <android.support.v14.preference.SwitchPreference
             android:key="@string/pref_key_show_weekends"
             android:defaultValue="true"
-            android:title="@string/pref_show_weekends"/>
+            android:title="@string/pref_show_weekends"
+            android:summaryOn="@string/pref_show_weekends_summary_on"
+            android:summaryOff="@string/pref_show_weekends_summary_off"/>
         <android.support.v14.preference.SwitchPreference
             android:key="@string/pref_key_notify_timetable_changed"
             android:defaultValue="true"

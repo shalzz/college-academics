@@ -282,7 +282,7 @@ public class AttendanceListFragment extends Fragment implements
                         : ValueAnimator.ofFloat(1f, 0f);
 
                 // scroll to make the view fully visible.
-                mRecyclerView.smoothScrollToPosition(mRecyclerView.getChildLayoutPosition(view));
+                mRecyclerView.smoothScrollToPosition(viewHolder.position);
 
                 animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
 

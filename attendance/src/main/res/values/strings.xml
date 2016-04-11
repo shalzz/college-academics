@@ -26,7 +26,7 @@
     <!--Semantic versioning: MAJOR.MINOR.PATCH-->
     <!-- DON'T update this for PATCH release -->
     <string name="user_version" translatable="false">2.5</string>
-    <string name="pref_version_summary" translatable="false">v2.6.3</string>
+    <string name="pref_version_summary" translatable="false">v2.6.4</string>
     
     <!--API keys-->
     <string name="banner_ad_unit_id" translatable="false">ca-app-pub-4430276599804177/4801693846</string>
@@ -79,6 +79,7 @@
     <string name="swipe_info">To switch to any other day, either swipe across the screen or
         click the jump to date in the top right corner.</string>
     <string name="atten_list_footer_total">Total Attendance:</string>
+    <string name="day_list_marked_absent">Absent!</string>
 
     <!--Plurals-->
     <plurals name="tv_last_refresh">
@@ -126,7 +127,9 @@
     <string name="pref_notify_timetable_changed">Notifications</string>
     <string name="pref_notify_timetable_changed_summary">Receive a notification when your
         timetable changes</string>
-    <string name="pref_show_weekends">Show Weekends</string>
+    <string name="pref_show_weekends">Weekends</string>
+    <string name="pref_show_weekends_summary_on">Display weekends as well</string>
+    <string name="pref_show_weekends_summary_off">Display only weekdays</string>
     <string name="pref_day_night">Day/Night Theme</string>
     <string name="pref_day_night_dialog">Select Night Mode</string>
 
