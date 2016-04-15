@@ -3,6 +3,7 @@
 build/
 */build/
 attendance/*.apk
+attendance/*.txt
 
 */*.iml
 *.iml
