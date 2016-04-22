@@ -95,14 +95,13 @@ public class MyVolley extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        mContext = getApplicationContext();
 
         // Initialize the singleton
         sInstance = this;
 
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         int nightMode = Integer.parseInt(sharedPref.getString(
-                mContext.getString(R.string.pref_key_day_night), "-1"));
+                getString(R.string.pref_key_day_night), "-1"));
         //noinspection WrongConstant
         AppCompatDelegate.setDefaultNightMode(nightMode);
     }
@@ -115,11 +114,13 @@ public class MyVolley extends Application {
     }
 
     public static Context getAppContext() {
-        return MyVolley.mContext;
+        if(mContext == null)
+            mContext = sInstance.getApplicationContext();
+        return mContext;
     }
 
     public static Resources getMyResources() {
-        return mContext.getResources();
+        return MyVolley.getAppContext().getResources();
     }
 
     public synchronized Tracker getTracker(TrackerName trackerId) {
