@@ -384,6 +384,7 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         }
     }
 
+    @SuppressWarnings("deprecation")
     public void bindChildView(GenericViewHolder holder, int position) {
 
         TextView tvAbsent = holder.tvAbsent;
@@ -394,7 +395,8 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         int attend = mSubjects.get(position).getClassesAttended().intValue();
         int percent = Math.round(mSubjects.get(position).getPercentage());
 
-        tvAbsent.setText("Days Absent: " + mSubjects.get(position).getAbsentDatesAsString());
+        tvAbsent.setText(mResources.getString(R.string.atten_list_days_absent,
+                mSubjects.get(position).getAbsentDatesAsString()));
 
         if (percent<67 && held!=0) {
             int x = (2*held) - (3*attend);
@@ -404,7 +406,11 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                 ivAlert.setImageBitmap(null);
             } else {
                 tvReach.setText(mResources.getQuantityString(R.plurals.tv_classes_to_67,x,x));
-                tvReach.setTextColor(mResources.getColor(R.color.attend));
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    tvReach.setTextColor(mResources.getColor(R.color.attend, mContext.getTheme()));
+                } else {
+                    tvReach.setTextColor(mResources.getColor(R.color.attend));
+                }
                 tvReach.setVisibility(View.VISIBLE);
                 ivAlert.setVisibility(View.VISIBLE);
                 ivAlert.setImageBitmap(mBitmap);
@@ -418,7 +424,11 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                 ivAlert.setImageBitmap(null);
             } else {
                 tvReach.setText(mResources.getQuantityString(R.plurals.tv_classes_to_75, x, x));
-                tvReach.setTextColor(mResources.getColor(R.color.attend));
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    tvReach.setTextColor(mResources.getColor(R.color.attend, mContext.getTheme()));
+                } else {
+                    tvReach.setTextColor(mResources.getColor(R.color.attend));
+                }
                 tvReach.setVisibility(View.VISIBLE);
                 ivAlert.setVisibility(View.VISIBLE);
                 ivAlert.setImageBitmap(mBitmap);
@@ -429,7 +439,11 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                 tvReach.setVisibility(View.GONE);
             } else {
                 tvReach.setText(mResources.getQuantityString(R.plurals.tv_miss_classes, x, x));
-                tvReach.setTextColor(mResources.getColor(R.color.skip));
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    tvReach.setTextColor(mResources.getColor(R.color.skip, mContext.getTheme()));
+                } else {
+                    tvReach.setTextColor(mResources.getColor(R.color.skip));
+                }
                 tvReach.setVisibility(View.VISIBLE);
             }
             ivAlert.setVisibility(View.GONE);
@@ -465,8 +479,11 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         TextView tvPercent = (TextView) view.findViewById(R.id.tvTotalPercent);
         TextView tvClasses = (TextView) view.findViewById(R.id.tvClass);
         ProgressBar pbPercent = (ProgressBar) view.findViewById(R.id.pbTotalPercent);
-        tvPercent.setText(mFooter.getPercentage()+"%");
-        tvClasses.setText(mFooter.getAttended().intValue() + "/" + mFooter.getHeld().intValue());
+        tvPercent.setText(mResources.getString(R.string.atten_list_percentage,
+                mFooter.getPercentage()));
+        tvClasses.setText(mResources.getString(R.string.atten_list_attended_upon_held,
+                mFooter.getAttended().intValue(),
+                mFooter.getHeld().intValue()));
         pbPercent.setProgress(percent.intValue());
         Drawable d = pbPercent.getProgressDrawable();
         d.setLevel(percent.intValue() * 100);
@@ -481,9 +498,11 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         // - replace the contents of the view with that element
         Float percent = mSubjects.get(position).getPercentage();
         holder.subject.setText(mSubjects.get(position).getName());
-        holder.percentage.setText(mSubjects.get(position).getPercentage().toString()+"%");
-        holder.classes.setText(mSubjects.get(position).getClassesAttended().intValue() + "/"
-                + mSubjects.get(position).getClassesHeld().intValue());
+        holder.percentage.setText(mResources.getString(R.string.atten_list_percentage,
+                mSubjects.get(position).getPercentage()));
+        holder.classes.setText(mResources.getString(R.string.atten_list_attended_upon_held,
+                mSubjects.get(position).getClassesAttended().intValue(),
+                mSubjects.get(position).getClassesHeld().intValue()));
         Drawable d = holder.percent.getProgressDrawable();
         if(percent > 0f)
             d.setLevel(percent.intValue()*100);

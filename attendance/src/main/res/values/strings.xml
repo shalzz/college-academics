@@ -75,9 +75,13 @@
     <!--EditText's and TextView's-->
     <string name="no_classes">You don\'t have any classes on this day :)</string>
     <string name="swipe_info">To switch to any other day, either swipe across the screen or
-        click the jump to date in the top right corner.</string>
-    <string name="atten_list_footer_total">Total Attendance:</string>
+        click the scroll to date in the top right corner.</string>
     <string name="day_list_marked_absent">Absent!</string>
+    <string name="atten_list_footer_total">Total Attendance:</string>
+    <string name="atten_list_days_absent">"Days Absent: <xliff:g id="absent_dates">%s</xliff:g>"
+    </string>
+    <string name="atten_list_percentage"><xliff:g id="percentage">%.2f</xliff:g>%%</string>
+    <string name="atten_list_attended_upon_held"><xliff:g id="attended">%d</xliff:g>/<xliff:g id="held">%d</xliff:g></string>
 
     <!--Plurals-->
     <plurals name="tv_last_refresh">

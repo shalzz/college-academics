@@ -123,7 +123,7 @@ public class SubjectModel {
 
 	public Float getPercentage() {
         if(held > 0f)
-            return (float) (Math.round( attended / held * 10000.0 ) / 100.0 );
+            return attended / held * 100;
         return 0.0f;
 	}
 
