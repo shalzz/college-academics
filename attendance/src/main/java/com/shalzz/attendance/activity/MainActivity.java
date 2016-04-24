@@ -19,6 +19,7 @@
 
 package com.shalzz.attendance.activity;
 
+import android.animation.ValueAnimator;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -30,7 +31,9 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -38,6 +41,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.TextView;
 
 import com.github.amlcurran.showcaseview.ShowcaseView;
@@ -79,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Drawer lock state. True for tablets, false otherwise .
      */
-    private boolean isDrawerLocked = false;
+    private boolean isTabletLayout = false;
 
     /**
      * To prevent saving the drawer position when logging out.
@@ -134,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.drawer);
         ButterKnife.inject(this);
 
-        isDrawerLocked = getResources().getBoolean(R.bool.tablet_layout);
+        isTabletLayout = getResources().getBoolean(R.bool.tablet_layout);
         mNavTitles = getResources().getStringArray(R.array.drawer_array);
         mFragmentManager = getSupportFragmentManager();
         mDb = new DatabaseHandler(this);
@@ -145,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
         // Set the list's click listener
         mNavigationView.setNavigationItemSelectedListener(new NavigationItemSelectedListener());
 
-        if(!isDrawerLocked)
+        if(!isTabletLayout)
             initDrawer();
 
         init(savedInstanceState);
@@ -206,6 +210,21 @@ public class MainActivity extends AppCompatActivity {
             }
         };
         mDrawerToggle.setDrawerIndicatorEnabled(true);
+        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int drawerLockMode = mDrawerLayout.getDrawerLockMode(GravityCompat.START);
+                // check if drawer is shown as up
+                if(drawerLockMode == DrawerLayout.LOCK_MODE_LOCKED_CLOSED) {
+                    onBackPressed();
+                } else if (mDrawerLayout.isDrawerVisible(GravityCompat.START)
+                        && (drawerLockMode != DrawerLayout.LOCK_MODE_LOCKED_OPEN)) {
+                    mDrawerLayout.closeDrawer(GravityCompat.START);
+                } else {
+                    mDrawerLayout.openDrawer(GravityCompat.START);
+                }
+            }
+        });
         mDrawerLayout.addDrawerListener(mDrawerToggle);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -220,7 +239,7 @@ public class MainActivity extends AppCompatActivity {
 
     void showcaseView() {
 
-        if(isDrawerLocked ) {
+        if(isTabletLayout) {
             if(fragment instanceof AttendanceListFragment) {
                 ((AttendanceListFragment) fragment).showcaseView();
             }
@@ -249,7 +268,7 @@ public class MainActivity extends AppCompatActivity {
         sv.overrideButtonClick(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!isDrawerLocked )
+                if(!isTabletLayout)
                     mDrawerLayout.closeDrawer(mNavigationView);
                 sv.hide();
                 if(fragment instanceof AttendanceListFragment) {
@@ -281,18 +300,27 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home && !isDrawerLocked ) {
-            if (mDrawerLayout.isDrawerOpen(mNavigationView)) {
-                mDrawerLayout.closeDrawer(mNavigationView);
-            } else {
-                mDrawerLayout.openDrawer(mNavigationView);
-            }
-        }
-        return super.onOptionsItemSelected(item);
-    }
+    public void setDrawerAsUp(boolean enabled) {
+        if(isTabletLayout)
+            return ;
 
+        float start = enabled ? 0f : 1f ;
+        float end = enabled ? 1f : 0f ;
+        mDrawerLayout.setDrawerLockMode(enabled ? DrawerLayout.LOCK_MODE_LOCKED_CLOSED :
+                DrawerLayout.LOCK_MODE_UNLOCKED);
+
+        ValueAnimator anim = ValueAnimator.ofFloat(start, end);
+        anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                float slideOffset = (Float) valueAnimator.getAnimatedValue();
+                mDrawerToggle.onDrawerSlide(mDrawerLayout, slideOffset);
+            }
+        });
+        anim.setInterpolator(new DecelerateInterpolator());
+        anim.setDuration(300);
+        anim.start();
+    }
 
     private class NavigationItemSelectedListener implements NavigationView.OnNavigationItemSelectedListener {
         @Override
@@ -303,6 +331,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void displayView(int position) {
+        ActionBar actionBar = getSupportActionBar();
         // update the main content by replacing fragments
         switch (position) {
             case 0:
@@ -310,13 +339,22 @@ public class MainActivity extends AppCompatActivity {
             case 1:
                 fragment = new AttendanceListFragment();
                 mPreviousFragment = null; // GC
+                if (isTabletLayout && actionBar != null) {
+                    actionBar.setDisplayHomeAsUpEnabled(false);
+                }
                 break;
             case 2:
                 fragment = new TimeTablePagerFragment();
                 mPreviousFragment = null; // GC
+                if (isTabletLayout && actionBar != null) {
+                    actionBar.setDisplayHomeAsUpEnabled(false);
+                }
                 break;
             case 3:
                 fragment = new SettingsFragment();
+                if (isTabletLayout && actionBar != null) {
+                    actionBar.setDisplayHomeAsUpEnabled(true);
+                }
                 break;
             default:
                 break;
@@ -325,7 +363,6 @@ public class MainActivity extends AppCompatActivity {
         if (fragment != null) {
             selectItem(position);
             showFragment(fragment);
-            mPopSettingsBackStack = false;
         } else {
             Log.e(TAG, "Error in creating fragment");
         }
@@ -339,7 +376,7 @@ public class MainActivity extends AppCompatActivity {
         mCurrentSelectedPosition = position;
         mNavigationView.getMenu().getItem(position-1).setChecked(true);
         setTitle(mNavTitles[position-1]);
-        if(!isDrawerLocked && mDrawerLayout.isDrawerOpen(mNavigationView))
+        if(!isTabletLayout && mDrawerLayout.isDrawerOpen(mNavigationView))
             mDrawerLayout.closeDrawer(mNavigationView);
     }
 
@@ -384,9 +421,22 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // called by the activity on tablets,
+        // as we do not set a onClick listener
+        // on the toolbar navigation icon
+        // while on a tablet
+        if(item.getItemId() == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public void onBackPressed() {
         // close drawer if it is open
-        if (!isDrawerLocked && mDrawerLayout.isDrawerOpen(mNavigationView)) {
+        if (!isTabletLayout && mDrawerLayout.isDrawerOpen(mNavigationView)) {
             mDrawerLayout.closeDrawer(mNavigationView);
         }
         else if (shouldPopFromBackStack()) {
@@ -397,9 +447,14 @@ public class MainActivity extends AppCompatActivity {
                     Log.i(TAG,"popping nested settings fragment");
                 mPopSettingsBackStack = false;
                 mFragmentManager.popBackStackImmediate();
+                setDrawerAsUp(false);
             } else {
                 // Custom back stack
                 popFromBackStack();
+                ActionBar actionBar = getSupportActionBar();
+                if (isTabletLayout && actionBar != null) {
+                    actionBar.setDisplayHomeAsUpEnabled(false);
+                }
             }
         }
         else {
@@ -532,7 +587,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onDestroy() {
-        if(!isDrawerLocked)
+        if(!isTabletLayout)
             mDrawerLayout.removeDrawerListener(mDrawerToggle);
         MyVolley.getInstance().cancelAllPendingRequests();
         mDb.close();

@@ -28,6 +28,7 @@ import android.support.v7.preference.PreferenceScreen;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.shalzz.attendance.R;
+import com.shalzz.attendance.activity.MainActivity;
 import com.shalzz.attendance.wrapper.MyVolley;
 
 import de.psdev.licensesdialog.LicensesDialog;
@@ -38,10 +39,13 @@ import de.psdev.licensesdialog.model.Notice;
 public class AboutSettingsFragment extends PreferenceFragmentCompat {
 
     private Context mContext;
+    private MainActivity mainActivity;
 
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
         mContext = getActivity();
+        mainActivity = ((MainActivity) getActivity());
+        mainActivity.setDrawerAsUp(true);
 
         addPreferencesFromResource(R.xml.pref_about);
     }
@@ -59,6 +63,7 @@ public class AboutSettingsFragment extends PreferenceFragmentCompat {
     @Override
     public void onResume() {
         super.onResume();
+        mainActivity.setTitle(getString(R.string.about_settings_title));
 
         PreferenceScreen prefScreen =  getPreferenceScreen();
         Preference auth = prefScreen.getPreference(0);
@@ -92,5 +97,4 @@ public class AboutSettingsFragment extends PreferenceFragmentCompat {
             }
         });
     }
-
 }

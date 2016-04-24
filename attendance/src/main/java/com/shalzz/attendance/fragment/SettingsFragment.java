@@ -130,6 +130,8 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnShar
     @Override
     public void onResume() {
         super.onResume();
+        getActivity().setTitle(getString(R.string.navigation_item_3));
+
         // Set up a listener whenever a key changes
         getPreferenceScreen().getSharedPreferences()
                 .registerOnSharedPreferenceChangeListener(this);

@@ -29,15 +29,20 @@ import android.support.v7.preference.PreferenceManager;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.shalzz.attendance.R;
+import com.shalzz.attendance.activity.MainActivity;
 import com.shalzz.attendance.wrapper.MyVolley;
 
 public class ProxySettingsFragment extends PreferenceFragmentCompat implements SharedPreferences.OnSharedPreferenceChangeListener {
 
+    private static final String TAG = "Proxy fragment";
     private String key_proxy_username;
+    private MainActivity mainActivity;
 
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
         Context mContext = getActivity();
+        mainActivity = ((MainActivity) getActivity());
+        mainActivity.setDrawerAsUp(true);
 
         addPreferencesFromResource(R.xml.pref_proxy);
 
@@ -77,6 +82,7 @@ public class ProxySettingsFragment extends PreferenceFragmentCompat implements S
     @Override
     public void onResume() {
         super.onResume();
+        mainActivity.setTitle(getString(R.string.proxy_settings_title));
         // Set up a listener whenever a key changes
         getPreferenceScreen().getSharedPreferences()
                 .registerOnSharedPreferenceChangeListener(this);
