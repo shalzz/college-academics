@@ -31,9 +31,6 @@ import com.shalzz.attendance.wrapper.MyPreferencesManager;
 
 public class SplashActivity extends AppCompatActivity {
 
-    public static final String INTENT_EXTRA_STARTING_ACTIVITY = "starting_activity";
-    public static final String SPLASH_ACTIVITY = "splash_activity";
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -60,7 +57,6 @@ public class SplashActivity extends AppCompatActivity {
 		else
             intent = new Intent(SplashActivity.this, MainActivity.class);
 
-        intent.putExtra(INTENT_EXTRA_STARTING_ACTIVITY, SPLASH_ACTIVITY);
         startActivity(intent);
 		finish();
 	}

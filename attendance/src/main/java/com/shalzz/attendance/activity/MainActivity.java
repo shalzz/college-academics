@@ -19,9 +19,6 @@
 
 package com.shalzz.attendance.activity;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.animation.ValueAnimator;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -39,11 +36,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.TextView;
 
 import com.github.amlcurran.showcaseview.ShowcaseView;
@@ -104,15 +98,15 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String PREVIOUS_FRAGMENT_TAG = "MainActivity.PREVIOUS_FRAGMENT";
 
-    private static final String mTag = "MainActivity";
+    private static final String TAG = "MainActivity";
 
     public boolean mPopSettingsBackStack =  false;
 
     // Views
     @Optional @InjectView(R.id.drawer_layout) DrawerLayout mDrawerLayout;
     @InjectView(R.id.list_slidermenu) NavigationView mNavigationView;
+    @InjectView(R.id.toolbar) Toolbar mToolbar;
 
-    private int mContentViewHeight;
     private int mCurrentSelectedPosition = Fragments.ATTENDANCE.getValue();
     private String[] mNavTitles;
     private ActionBarDrawerToggle mDrawerToggle;
@@ -122,11 +116,6 @@ public class MainActivity extends AppCompatActivity {
     private DatabaseHandler mDb;
     // Our custom poor-man's back stack which has only one entry at maximum.
     private Fragment mPreviousFragment;
-    private Toolbar mToolbar;
-    private Bundle mSavedInstanceState;
-    private ValueAnimator mToolbarHeightAnimator;
-    private boolean mResumed = false;
-    private boolean initialised = false;
 
     public static class DrawerHeaderViewHolder extends RecyclerView.ViewHolder {
         @InjectView(R.id.drawer_header_name) TextView tv_name;
@@ -145,59 +134,21 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.drawer);
         ButterKnife.inject(this);
 
-        mSavedInstanceState = savedInstanceState;
         isDrawerLocked = getResources().getBoolean(R.bool.tablet_layout);
         mNavTitles = getResources().getStringArray(R.array.drawer_array);
         mFragmentManager = getSupportFragmentManager();
         mDb = new DatabaseHandler(this);
         DrawerheaderVH = new DrawerHeaderViewHolder(mNavigationView.getHeaderView(0));
 
-        /**     ------------- Toolbar init -----------           */
-
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        if(getIntent().hasExtra(SplashActivity.INTENT_EXTRA_STARTING_ACTIVITY)) {
-            mToolbar.getViewTreeObserver().addOnPreDrawListener(
-                    new ViewTreeObserver.OnPreDrawListener() {
-                        @Override
-                        public boolean onPreDraw() {
-                            mToolbar.getViewTreeObserver().removeOnPreDrawListener(this);
-                            final int widthSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
-                            final int heightSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
-
-                            mToolbar.measure(widthSpec, heightSpec);
-                            mContentViewHeight = mToolbar.getHeight();
-                            collapseToolbar();
-                            return true;
-                        }
-                    });
-        } else {
-            int toolBarHeight;
-            TypedValue tv = new TypedValue();
-            getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true);
-            toolBarHeight = TypedValue.complexToDimensionPixelSize(
-                    tv.data, getResources().getDisplayMetrics());
-            ViewGroup.LayoutParams lp = mToolbar.getLayoutParams();
-            lp.height = toolBarHeight;
-            mToolbar.setLayoutParams(lp);
-        }
         setSupportActionBar(mToolbar);
-
-        /**     ------------- Toolbar init ends -----------           */
 
         // Set the list's click listener
         mNavigationView.setNavigationItemSelectedListener(new NavigationItemSelectedListener());
 
         if(!isDrawerLocked)
             initDrawer();
-    }
 
-    @Override
-    protected void onResumeFragments() {
-        super.onResumeFragments();
-        mResumed = true;
-        if(mToolbarHeightAnimator == null || !mToolbarHeightAnimator.isRunning()) {
-            init();
-        }
+        init(savedInstanceState);
     }
 
     @Override
@@ -209,23 +160,17 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Initialise a fragment
      **/
-    public void init() {
-        if(initialised) {
-           return;
-        }
-        initialised = true;
-
-        Log.d(mTag, "init: running!");
+    public void init(Bundle bundle) {
 
         // Select either the default item (Fragments.ATTENDANCE) or the last selected item.
         mCurrentSelectedPosition = reloadCurrentFragment();
 
         // Recycle fragment
-        if(mSavedInstanceState != null) {
+        if(bundle != null) {
             fragment =  mFragmentManager.findFragmentByTag(FRAGMENT_TAG);
-            mPreviousFragment = mFragmentManager.getFragment(mSavedInstanceState, PREVIOUS_FRAGMENT_TAG);
-            Log.d(mTag, "current fag found: " + fragment );
-            Log.d(mTag, "previous fag found: " + mPreviousFragment );
+            mPreviousFragment = mFragmentManager.getFragment(bundle, PREVIOUS_FRAGMENT_TAG);
+            Log.d(TAG, "current fag found: " + fragment );
+            Log.d(TAG, "previous fag found: " + mPreviousFragment );
             selectItem(mCurrentSelectedPosition);
             showFragment(fragment);
         }
@@ -271,40 +216,6 @@ public class MainActivity extends AppCompatActivity {
             mDrawerLayout.setStatusBarBackgroundColor(getResources().getColor(
                     R.color.primary_dark));
         }
-    }
-
-    private void collapseToolbar() {
-        int toolBarHeight;
-        TypedValue tv = new TypedValue();
-        getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true);
-        toolBarHeight = TypedValue.complexToDimensionPixelSize(
-                tv.data, getResources().getDisplayMetrics());
-
-        mToolbarHeightAnimator = ValueAnimator
-                .ofInt(mContentViewHeight, toolBarHeight);
-
-        mToolbarHeightAnimator.addUpdateListener(
-                new ValueAnimator.AnimatorUpdateListener() {
-
-                    @Override
-                    public void onAnimationUpdate(ValueAnimator animation) {
-                        ViewGroup.LayoutParams lp = mToolbar.getLayoutParams();
-                        lp.height = (Integer) animation.getAnimatedValue();
-                        mToolbar.setLayoutParams(lp);
-                    }
-                });
-
-        mToolbarHeightAnimator.start();
-        mToolbarHeightAnimator.addListener(
-                new AnimatorListenerAdapter() {
-
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        super.onAnimationEnd(animation);
-                        if(mResumed)
-                            init();
-                    }
-                });
     }
 
     void showcaseView() {
@@ -416,7 +327,7 @@ public class MainActivity extends AppCompatActivity {
             showFragment(fragment);
             mPopSettingsBackStack = false;
         } else {
-            Log.e(mTag, "Error in creating fragment");
+            Log.e(TAG, "Error in creating fragment");
         }
     }
 
@@ -452,7 +363,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (mPreviousFragment != null) {
             if (BuildConfig.DEBUG) {
-                Log.d(mTag, this + " showFragment: destroying previous fragment "
+                Log.d(TAG, this + " showFragment: destroying previous fragment "
                         + mPreviousFragment.getClass().getSimpleName());
             }
             ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
@@ -480,10 +391,10 @@ public class MainActivity extends AppCompatActivity {
         }
         else if (shouldPopFromBackStack()) {
             if(BuildConfig.DEBUG)
-                Log.i(mTag,"popping from back stack");
+                Log.i(TAG,"popping from back stack");
             if(mPopSettingsBackStack) {
                 if(BuildConfig.DEBUG)
-                    Log.i(mTag,"popping nested settings fragment");
+                    Log.i(TAG,"popping nested settings fragment");
                 mPopSettingsBackStack = false;
                 mFragmentManager.popBackStackImmediate();
             } else {
@@ -526,7 +437,7 @@ public class MainActivity extends AppCompatActivity {
         final FragmentTransaction ft = mFragmentManager.beginTransaction();
         final Fragment installed = getInstalledFragment();
         int position = Fragments.ATTENDANCE.getValue() ;
-        Log.i(mTag, this + " backstack: [pop] " + installed.getClass().getSimpleName() + " -> "
+        Log.i(TAG, this + " backstack: [pop] " + installed.getClass().getSimpleName() + " -> "
                 + mPreviousFragment.getClass().getSimpleName());
 
         ft.remove(installed);
@@ -574,7 +485,6 @@ public class MainActivity extends AppCompatActivity {
         // Sync the toggle state after onRestoreInstanceState has occurred.
         if(mDrawerToggle != null)
             mDrawerToggle.syncState();
-        mSavedInstanceState = savedInstanceState;
     }
 
     /**
@@ -600,11 +510,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        mResumed = false;
         // for orientation changes, etc.
         if (mPreviousFragment != null) {
             mFragmentManager.putFragment(outState, PREVIOUS_FRAGMENT_TAG, mPreviousFragment);
-            Log.d(mTag, "previous fag saved: " + mPreviousFragment.getClass().getSimpleName());
+            Log.d(TAG, "previous fag saved: " + mPreviousFragment.getClass().getSimpleName());
         }
     }
 

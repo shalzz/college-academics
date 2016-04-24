@@ -19,17 +19,13 @@
 
 package com.shalzz.attendance.activity;
 
-import android.animation.ValueAnimator;
 import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.Toolbar;
-import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
@@ -49,12 +45,9 @@ public class LoginActivity extends AppCompatActivity {
     @InjectView(R.id.etPass) TextInputLayout textInputPass;
     @SuppressWarnings("FieldCanBeLocal")
     @InjectView(R.id.bLogin) Button bLogin;
+    @InjectView(R.id.toolbar) Toolbar mToolbar;
     private EditText etSapid;
     private EditText etPass;
-    private Toolbar mToolbar;
-
-    private int mContentViewHeight;
-    private String myTag;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,34 +59,7 @@ public class LoginActivity extends AppCompatActivity {
         ButterKnife.inject(this);
 
         // set toolbar as actionbar
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        if(getIntent().hasExtra(SplashActivity.INTENT_EXTRA_STARTING_ACTIVITY)) {
-            mToolbar.getViewTreeObserver().addOnPreDrawListener(
-                    new ViewTreeObserver.OnPreDrawListener() {
-                        @Override
-                        public boolean onPreDraw() {
-                            mToolbar.getViewTreeObserver().removeOnPreDrawListener(this);
-                            final int widthSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
-                            final int heightSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
-
-                            mToolbar.measure(widthSpec, heightSpec);
-                            mContentViewHeight = mToolbar.getHeight();
-                            collapseToolbar();
-                            return true;
-                        }
-                    });
-        } else {
-            int toolBarHeight;
-            TypedValue tv = new TypedValue();
-            getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true);
-            toolBarHeight = TypedValue.complexToDimensionPixelSize(
-                    tv.data, getResources().getDisplayMetrics());
-            ViewGroup.LayoutParams lp = mToolbar.getLayoutParams();
-            lp.height = toolBarHeight;
-            mToolbar.setLayoutParams(lp);
-        }
         setSupportActionBar(mToolbar);
-        myTag = getLocalClassName();
 
         etSapid = textInputSapid.getEditText();
         etPass = textInputPass.getEditText();
@@ -120,30 +86,6 @@ public class LoginActivity extends AppCompatActivity {
                     Login();
             }
         });
-    }
-
-    private void collapseToolbar() {
-        int toolBarHeight;
-        TypedValue tv = new TypedValue();
-        getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true);
-        toolBarHeight = TypedValue.complexToDimensionPixelSize(
-                tv.data, getResources().getDisplayMetrics());
-
-        ValueAnimator valueHeightAnimator = ValueAnimator
-                .ofInt(mContentViewHeight, toolBarHeight);
-
-        valueHeightAnimator.addUpdateListener(
-                new ValueAnimator.AnimatorUpdateListener() {
-
-                    @Override
-                    public void onAnimationUpdate(ValueAnimator animation) {
-                        ViewGroup.LayoutParams lp = mToolbar.getLayoutParams();
-                        lp.height = (Integer) animation.getAnimatedValue();
-                        mToolbar.setLayoutParams(lp);
-                    }
-                });
-
-        valueHeightAnimator.start();
     }
 
     public void Login() {

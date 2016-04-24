@@ -55,6 +55,8 @@
     <!-- Bottom margin for action bar subtitles -->
     <dimen name="action_bar_subtitle_bottom_margin">5dip</dimen>
 
+    <dimen name="status_bar_height">25dp</dimen>
+
     <dimen name="toolbar_elevation">4dp</dimen>
     <dimen name="shadow_depth">4dp</dimen>
     <dimen name="atten_view_expanded_elevation">5dp</dimen>
