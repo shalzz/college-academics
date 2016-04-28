@@ -19,13 +19,22 @@
 apply plugin: 'com.android.application'
 android {
     compileSdkVersion 23
-    buildToolsVersion '23.0.2'
+    buildToolsVersion '23.0.3'
     defaultConfig {
         applicationId 'com.shalzz.attendance'
         minSdkVersion 14
         targetSdkVersion 23
 
         resConfigs "en"
+    }
+
+    compileOptions {
+        incremental true
+    }
+
+    dexOptions {
+        dexInProcess true
+        maxProcessCount = 4
     }
 
     productFlavors {
@@ -48,12 +57,12 @@ android {
             buildConfigField "String", "ACCOUNT_TYPE", '"com.shalzz.debug"'
         }
         release {
+            minifyEnabled true
+            useProguard true
             resValue "string", "app_name", "UPES Academics"
             resValue "string", "contentAuthority", defaultConfig.applicationId + '.provider'
             resValue "string", "account_type", "com.shalzz"
             buildConfigField "String", "ACCOUNT_TYPE", '"com.shalzz"'
-            minifyEnabled true
-            shrinkResources true
             FileCollection proGuardFileCollection = files { file('./proguard').listFiles() }
             proguardFiles(proGuardFileCollection)
             proguardFile getDefaultProguardFile('proguard-android-optimize.txt')
