@@ -218,6 +218,7 @@ public class AttendanceListFragment extends Fragment implements
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId() == R.id.menu_logout) {
             new UserAccount(mContext).Logout();
+            return true;
         }
         else if(item.getItemId() == R.id.menu_refresh) {
             // We make sure that the SwipeRefreshLayout is displaying it's refreshing indicator
@@ -225,6 +226,7 @@ public class AttendanceListFragment extends Fragment implements
                 mSwipeRefreshLayout.setRefreshing(true);
                 controller.updateSubjects();
             }
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
