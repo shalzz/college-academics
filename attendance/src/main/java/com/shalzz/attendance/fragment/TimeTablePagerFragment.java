@@ -24,7 +24,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
-import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -53,8 +52,10 @@ import com.shalzz.attendance.wrapper.MyVolley;
 import java.util.Calendar;
 import java.util.Date;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.OnPageChange;
+import butterknife.Unbinder;
 
 public class TimeTablePagerFragment extends Fragment {
 
@@ -62,19 +63,21 @@ public class TimeTablePagerFragment extends Fragment {
      * The {@link android.support.v4.widget.SwipeRefreshLayout} that detects swipe gestures and
      * triggers callbacks in the app.
      */
-    @InjectView(R.id.swiperefresh)
+    @BindView(R.id.swiperefresh)
     public MultiSwipeRefreshLayout mSwipeRefreshLayout;
-    @InjectView(R.id.circular_indet)
+
+    @BindView(R.id.circular_indet)
     public CircularIndeterminate mProgress;
-    @InjectView(R.id.pager)
+
+    @BindView(R.id.pager)
     public ViewPager mViewPager;
 
     private int mPreviousPosition = 15;
     private PagerController mController;
-    private OnPageChangeListener mPageChangeListener;
     private String myTag = "Pager Fragment";
     private Context mContext;
     private ActionBar actionbar;
+    private Unbinder unbinder;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -101,7 +104,7 @@ public class TimeTablePagerFragment extends Fragment {
         setRetainInstance(false);
         actionbar= ((AppCompatActivity)getActivity()).getSupportActionBar();
         final View view = inflater.inflate(R.layout.fragment_viewpager, container, false);
-        ButterKnife.inject(this,view);
+        unbinder = ButterKnife.bind(this, view);
 
         mSwipeRefreshLayout.setSwipeableChildren(R.id.time_table_recycler_view);
 
@@ -111,20 +114,6 @@ public class TimeTablePagerFragment extends Fragment {
                 R.color.swipe_color_3, R.color.swipe_color_4);
 
         mViewPager.setOffscreenPageLimit(3);
-        mPageChangeListener = new OnPageChangeListener() {
-
-            public void onPageScrollStateChanged(int state) {
-            }
-
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-            }
-
-            public void onPageSelected(int position) {
-                mPreviousPosition = position;
-                updateTitle();
-            }
-        };
-        mViewPager.addOnPageChangeListener(mPageChangeListener);
 
         return view;
     }
@@ -197,7 +186,7 @@ public class TimeTablePagerFragment extends Fragment {
     /* Called whenever we call invalidateOptionsMenu() */
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
-        updateTitle();
+        updateTitle(-1);
     }
 
     @Override
@@ -217,7 +206,7 @@ public class TimeTablePagerFragment extends Fragment {
         else if(item.getItemId() == R.id.menu_date) {
             Calendar today = Calendar.getInstance();
             today.setTime(new Date());
-            DatePickerDialog mDatePickerDialog = new DatePickerDialog(mContext,onDateSetListner()
+            DatePickerDialog mDatePickerDialog = new DatePickerDialog(mContext, onDateSetListener()
                     ,today.get(Calendar.YEAR)
                     ,today.get(Calendar.MONTH)
                     ,today.get(Calendar.DAY_OF_MONTH));
@@ -231,7 +220,14 @@ public class TimeTablePagerFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
-    public void updateTitle() {
+    /**
+     * Update action bar title and subtitle
+     * @param position to update for, -1 for current page
+     */
+    @OnPageChange(R.id.pager)
+    public void updateTitle(int position) {
+        if(position > 0)
+            mPreviousPosition = position;
         Date mDate  = mController.getDateForPosition(mPreviousPosition);
         if(mDate!=null) {
             actionbar.setTitle(DateHelper.getProperWeekday(mDate));
@@ -239,7 +235,7 @@ public class TimeTablePagerFragment extends Fragment {
         }
     }
 
-    DatePickerDialog.OnDateSetListener onDateSetListner() {
+    DatePickerDialog.OnDateSetListener onDateSetListener() {
         return new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
@@ -253,8 +249,7 @@ public class TimeTablePagerFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        mViewPager.removeOnPageChangeListener(mPageChangeListener);
         MyVolley.getInstance().cancelPendingRequests(MyVolley.ACTIVITY_NETWORK_TAG);
-        ButterKnife.reset(this);
+        unbinder.unbind();
     }
 }

@@ -34,8 +34,8 @@ import com.shalzz.attendance.model.PeriodModel;
 import java.text.ParseException;
 import java.util.List;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.InjectView;
 
 public class DayListAdapter extends RecyclerView.Adapter<DayListAdapter.ViewHolder>{
 
@@ -47,15 +47,15 @@ public class DayListAdapter extends RecyclerView.Adapter<DayListAdapter.ViewHold
     // Complex data items may need more than one view per item, and
     // you provide access to all the views for a data item in a view holder
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        @InjectView(R.id.tvSubjectName) TextView tvSubjectName;
-        @InjectView(R.id.tvTime) TextView tvTime;
-        @InjectView(R.id.tvTeacher) TextView tvTeacher;
-        @InjectView(R.id.tvRoom) TextView tvRoom;
-        @InjectView(R.id.tvMarkedAbsent) TextView tvMarkedAbsent;
+        @BindView(R.id.tvSubjectName) TextView tvSubjectName;
+        @BindView(R.id.tvTime) TextView tvTime;
+        @BindView(R.id.tvTeacher) TextView tvTeacher;
+        @BindView(R.id.tvRoom) TextView tvRoom;
+        @BindView(R.id.tvMarkedAbsent) TextView tvMarkedAbsent;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            ButterKnife.inject(this,itemView);
+            ButterKnife.bind(this, itemView);
         }
     }
 

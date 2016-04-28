@@ -1,8 +1,9 @@
-## ButterKnife 6 ##
+# ButterKnife 7
 
 -keep class butterknife.** { *; }
 -dontwarn butterknife.internal.**
--keep class **$$ViewInjector { *; }
+-keep class **$$ViewBinder { *; }
+
 -keepclasseswithmembernames class * {
     @butterknife.* <fields>;
 }

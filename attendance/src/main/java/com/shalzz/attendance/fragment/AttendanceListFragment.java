@@ -23,10 +23,10 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.content.Context;
-import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -58,8 +58,12 @@ import com.shalzz.attendance.controllers.UserAccount;
 import com.shalzz.attendance.wrapper.MultiSwipeRefreshLayout;
 import com.shalzz.attendance.wrapper.MyVolley;
 
+import butterknife.BindBool;
+import butterknife.BindDimen;
+import butterknife.BindString;
+import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.Unbinder;
 
 public class AttendanceListFragment extends Fragment implements
         ExpandableListAdapter.SubjectItemExpandedListener {
@@ -68,41 +72,41 @@ public class AttendanceListFragment extends Fragment implements
      * The {@link android.support.v4.widget.SwipeRefreshLayout} that detects swipe gestures and
      * triggers callbacks in the app.
      */
-    @InjectView(R.id.swipe_refresh_atten)
+    @BindView(R.id.swipe_refresh_atten)
     public MultiSwipeRefreshLayout mSwipeRefreshLayout;
 
-    @InjectView(R.id.circular_indet_atten)
+    @BindView(R.id.circular_indet_atten)
     public CircularIndeterminate mProgress;
 
-    @InjectView(R.id.atten_recycler_view)
+    @BindView(R.id.atten_recycler_view)
     public RecyclerView mRecyclerView;
 
-    private boolean useGridLayout = false;
+    @BindBool(R.bool.use_grid_layout)
+    boolean useGridLayout;
 
-    private final int GRID_LAYOUT_SPAN_COUNT = 2;
+    @BindDimen(R.dimen.atten_view_expanded_elevation)
+    float mExpandedItemTranslationZ;
 
+    @BindString(R.string.hint_search)
+    String hint_search_view;
+
+
+    @Nullable
     private LinearLayoutManager mLinearLayoutManager;
+
+    @Nullable
     private StaggeredGridLayoutManager mGridLayoutManager;
+
     private Context mContext;
     private String mTag = "Attendance List Fragment";
-    private Resources mResources;
     private AttendanceController controller;
 
-    private float mExpandedItemTranslationZ;
-    private int mFadeInDuration = 150;
-    private int mFadeInStartDelay = 150;
-    private int mFadeOutDuration = 20;
-    private int mExpandCollapseDuration = 200;
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mContext = getActivity();
-        mResources = getResources();
-        mExpandedItemTranslationZ =
-                mResources.getDimension(R.dimen.atten_view_expanded_elevation);
-        useGridLayout = mResources.getBoolean(R.bool.use_grid_layout);
-    }
+    private final int GRID_LAYOUT_SPAN_COUNT = 2;
+    private final int mFadeInDuration = 150;
+    private final int mFadeInStartDelay = 150;
+    private final int mFadeOutDuration = 20;
+    private final int mExpandCollapseDuration = 200;
+    private Unbinder unbinder;
 
     @Override
     public void onStart() {
@@ -120,9 +124,10 @@ public class AttendanceListFragment extends Fragment implements
         if(container==null)
             return null;
 
+        mContext = getActivity();
         setHasOptionsMenu(true);
         View mView = inflater.inflate(R.layout.fragment_attendance, container, false);
-        ButterKnife.inject(this, mView);
+        unbinder = ButterKnife.bind(this, mView);
 
         mSwipeRefreshLayout.setSwipeableChildren(R.id.atten_recycler_view);
 
@@ -131,14 +136,17 @@ public class AttendanceListFragment extends Fragment implements
                 R.color.swipe_color_1, R.color.swipe_color_2,
                 R.color.swipe_color_3, R.color.swipe_color_4);
 
-        mLinearLayoutManager = new LinearLayoutManager(mContext,
-                LinearLayoutManager.VERTICAL, false);
-        mLinearLayoutManager.setSmoothScrollbarEnabled(false);
-        mLinearLayoutManager.setStackFromEnd(false);
-	    mLinearLayoutManager.setAutoMeasureEnabled(true);
-        mGridLayoutManager = new StaggeredGridLayoutManager(GRID_LAYOUT_SPAN_COUNT,
-                StaggeredGridLayoutManager.VERTICAL);
-        mGridLayoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_NONE);
+        if(useGridLayout) {
+            mGridLayoutManager = new StaggeredGridLayoutManager(GRID_LAYOUT_SPAN_COUNT,
+                    StaggeredGridLayoutManager.VERTICAL);
+            mGridLayoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_NONE);
+        } else {
+            mLinearLayoutManager = new LinearLayoutManager(mContext,
+                    LinearLayoutManager.VERTICAL, false);
+            mLinearLayoutManager.setSmoothScrollbarEnabled(false);
+            mLinearLayoutManager.setStackFromEnd(false);
+            mLinearLayoutManager.setAutoMeasureEnabled(true);
+        }
 
         mRecyclerView.setLayoutManager(useGridLayout ? mGridLayoutManager : mLinearLayoutManager);
 
@@ -192,7 +200,7 @@ public class AttendanceListFragment extends Fragment implements
         MenuItem searchItem = menu.findItem(R.id.menu_search);
 
         final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
-        searchView.setQueryHint(mResources.getString(R.string.hint_search));
+        searchView.setQueryHint(hint_search_view);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
 
             @Override
@@ -330,6 +338,7 @@ public class AttendanceListFragment extends Fragment implements
     @Override
     public View getViewForCallId(long callId) {
         if(!useGridLayout) {
+            assert mLinearLayoutManager != null;
             int firstPosition = mLinearLayoutManager.findFirstVisibleItemPosition();
             int lastPosition = mLinearLayoutManager.findLastVisibleItemPosition();
 
@@ -347,6 +356,7 @@ public class AttendanceListFragment extends Fragment implements
         } else {
             int firstPosition[] = {0, 0};
             int lastPosition[] = {0, 0} ;
+            assert mGridLayoutManager != null;
             mGridLayoutManager.findFirstVisibleItemPositions(firstPosition);
             mGridLayoutManager.findLastVisibleItemPositions(lastPosition);
 
@@ -371,6 +381,6 @@ public class AttendanceListFragment extends Fragment implements
     public void onDestroyView() {
         super.onDestroyView();
         MyVolley.getInstance().cancelPendingRequests(MyVolley.ACTIVITY_NETWORK_TAG);
-        ButterKnife.reset(this);
+        unbinder.unbind();
     }
 }

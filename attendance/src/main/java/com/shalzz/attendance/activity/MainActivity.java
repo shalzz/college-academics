@@ -26,6 +26,7 @@ import android.content.res.Configuration;
 import android.graphics.Point;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -55,35 +56,33 @@ import com.shalzz.attendance.fragment.TimeTablePagerFragment;
 import com.shalzz.attendance.model.UserModel;
 import com.shalzz.attendance.wrapper.MyVolley;
 
+import butterknife.BindArray;
+import butterknife.BindBool;
+import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.InjectView;
-import butterknife.Optional;
 
 public class MainActivity extends AppCompatActivity {
 
     /**
-     * Reference to fragment positions
+     * Null on tablets
      */
-    public enum Fragments {
-        ATTENDANCE(1),
-        TIMETABLE(2),
-        SETTINGS(3);
+    @Nullable @BindView(R.id.drawer_layout)
+    DrawerLayout mDrawerLayout;
 
-        private final int value;
+    @BindView(R.id.list_slidermenu)
+    NavigationView mNavigationView;
 
-        Fragments(int value) {
-            this.value = value;
-        }
-
-        public int getValue() {
-            return value;
-        }
-    }
+    @BindView(R.id.toolbar)
+    Toolbar mToolbar;
 
     /**
      * Drawer lock state. True for tablets, false otherwise .
      */
-    private boolean isTabletLayout = false;
+    @BindBool(R.bool.tablet_layout)
+    boolean isTabletLayout;
+
+    @BindArray(R.array.drawer_array)
+    String[] mNavTitles;
 
     /**
      * To prevent saving the drawer position when logging out.
@@ -106,13 +105,7 @@ public class MainActivity extends AppCompatActivity {
 
     public boolean mPopSettingsBackStack =  false;
 
-    // Views
-    @Optional @InjectView(R.id.drawer_layout) DrawerLayout mDrawerLayout;
-    @InjectView(R.id.list_slidermenu) NavigationView mNavigationView;
-    @InjectView(R.id.toolbar) Toolbar mToolbar;
-
     private int mCurrentSelectedPosition = Fragments.ATTENDANCE.getValue();
-    private String[] mNavTitles;
     private ActionBarDrawerToggle mDrawerToggle;
     private DrawerHeaderViewHolder DrawerheaderVH;
     private FragmentManager mFragmentManager;
@@ -122,13 +115,13 @@ public class MainActivity extends AppCompatActivity {
     private Fragment mPreviousFragment;
 
     public static class DrawerHeaderViewHolder extends RecyclerView.ViewHolder {
-        @InjectView(R.id.drawer_header_name) TextView tv_name;
-        @InjectView(R.id.drawer_header_course) TextView tv_course;
-        @InjectView(R.id.last_refreshed) TextView last_refresh;
+        @BindView(R.id.drawer_header_name) TextView tv_name;
+        @BindView(R.id.drawer_header_course) TextView tv_course;
+        @BindView(R.id.last_refreshed) TextView last_refresh;
 
         public DrawerHeaderViewHolder(View itemView) {
             super(itemView);
-            ButterKnife.inject(this,itemView);
+            ButterKnife.bind(this, itemView);
         }
     }
 
@@ -136,10 +129,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.drawer);
-        ButterKnife.inject(this);
+        ButterKnife.bind(this);
 
-        isTabletLayout = getResources().getBoolean(R.bool.tablet_layout);
-        mNavTitles = getResources().getStringArray(R.array.drawer_array);
         mFragmentManager = getSupportFragmentManager();
         mDb = new DatabaseHandler(this);
         DrawerheaderVH = new DrawerHeaderViewHolder(mNavigationView.getHeaderView(0));
@@ -149,9 +140,7 @@ public class MainActivity extends AppCompatActivity {
         // Set the list's click listener
         mNavigationView.setNavigationItemSelectedListener(new NavigationItemSelectedListener());
 
-        if(!isTabletLayout)
-            initDrawer();
-
+        initDrawer();
         init(savedInstanceState);
     }
 
@@ -194,6 +183,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initDrawer() {
+        if(mDrawerLayout == null)
+            return;
+
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar,
                 R.string.drawer_open, R.string.drawer_close) {
 
@@ -268,7 +260,7 @@ public class MainActivity extends AppCompatActivity {
         sv.overrideButtonClick(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!isTabletLayout)
+                if(mDrawerLayout != null)
                     mDrawerLayout.closeDrawer(mNavigationView);
                 sv.hide();
                 if(fragment instanceof AttendanceListFragment) {
@@ -301,7 +293,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void setDrawerAsUp(boolean enabled) {
-        if(isTabletLayout)
+        if(mDrawerLayout == null)
             return ;
 
         float start = enabled ? 0f : 1f ;
@@ -376,7 +368,7 @@ public class MainActivity extends AppCompatActivity {
         mCurrentSelectedPosition = position;
         mNavigationView.getMenu().getItem(position-1).setChecked(true);
         setTitle(mNavTitles[position-1]);
-        if(!isTabletLayout && mDrawerLayout.isDrawerOpen(mNavigationView))
+        if(mDrawerLayout != null && mDrawerLayout.isDrawerOpen(mNavigationView))
             mDrawerLayout.closeDrawer(mNavigationView);
     }
 
@@ -436,7 +428,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         // close drawer if it is open
-        if (!isTabletLayout && mDrawerLayout.isDrawerOpen(mNavigationView)) {
+        if (mDrawerLayout != null && mDrawerLayout.isDrawerOpen(mNavigationView)) {
             mDrawerLayout.closeDrawer(mNavigationView);
         }
         else if (shouldPopFromBackStack()) {
@@ -587,11 +579,30 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onDestroy() {
-        if(!isTabletLayout)
+        if(mDrawerLayout != null)
             mDrawerLayout.removeDrawerListener(mDrawerToggle);
         MyVolley.getInstance().cancelAllPendingRequests();
         mDb.close();
         super.onDestroy();
+    }
+
+    /**
+     * Reference to fragment positions
+     */
+    public enum Fragments {
+        ATTENDANCE(1),
+        TIMETABLE(2),
+        SETTINGS(3);
+
+        private final int value;
+
+        Fragments(int value) {
+            this.value = value;
+        }
+
+        public int getValue() {
+            return value;
+        }
     }
 
 }

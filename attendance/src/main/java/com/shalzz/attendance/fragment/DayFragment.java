@@ -35,20 +35,24 @@ import com.shalzz.attendance.controllers.DayController;
 
 import java.util.Date;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.Unbinder;
 
 public class DayFragment extends Fragment {
 
-    @InjectView(R.id.time_table_recycler_view)
+    @BindView(R.id.time_table_recycler_view)
     public RecyclerView mRecyclerView;
-    @InjectView(R.id.empty_view)
+
+    @BindView(R.id.empty_view)
     public View mEmptyView;
+
+    public static final String ARG_DATE = "date";
 
     private Context mContext;
     private Date mDate;
     private DayController mController;
-    public static final String ARG_DATE = "date";
+    private Unbinder unbinder;
 
     /**
      * Create a new instance of DayFragment, providing "Date"
@@ -78,7 +82,7 @@ public class DayFragment extends Fragment {
         if(container==null)
             return null;
         View mView = inflater.inflate(R.layout.fragment_day, container, false);
-        ButterKnife.inject(this,mView);
+        unbinder = ButterKnife.bind(this,mView);
 
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
@@ -109,6 +113,6 @@ public class DayFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        ButterKnife.reset(this);
+        unbinder.unbind();
     }
 }

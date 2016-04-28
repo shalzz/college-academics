@@ -36,16 +36,21 @@ import com.shalzz.attendance.R;
 import com.shalzz.attendance.controllers.UserAccount;
 import com.shalzz.attendance.wrapper.MyVolley;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.OnClick;
 
 public class LoginActivity extends AppCompatActivity {
 
-    @InjectView(R.id.etSapid) TextInputLayout textInputSapid;
-    @InjectView(R.id.etPass) TextInputLayout textInputPass;
-    @SuppressWarnings("FieldCanBeLocal")
-    @InjectView(R.id.bLogin) Button bLogin;
-    @InjectView(R.id.toolbar) Toolbar mToolbar;
+    @BindView(R.id.etSapid)
+    TextInputLayout textInputSapid;
+
+    @BindView(R.id.etPass)
+    TextInputLayout textInputPass;
+
+    @BindView(R.id.toolbar)
+    Toolbar mToolbar;
+
     private EditText etSapid;
     private EditText etPass;
 
@@ -56,7 +61,7 @@ public class LoginActivity extends AppCompatActivity {
         }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        ButterKnife.inject(this);
+        ButterKnife.bind(this);
 
         // set toolbar as actionbar
         setSupportActionBar(mToolbar);
@@ -77,18 +82,12 @@ public class LoginActivity extends AppCompatActivity {
                 return false;
             }
         });
-
-        // OnClickListener event for the Login Button
-        bLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (isValid())
-                    Login();
-            }
-        });
     }
 
+    @OnClick(R.id.bLogin)
     public void Login() {
+        if (!isValid())
+            return;
 
         Miscellaneous.closeKeyboard(this, etPass);
         new UserAccount(LoginActivity.this)

@@ -63,7 +63,7 @@ public class PagerController {
 
     public void setDate(Date date) {
         mAdapter.setDate(date);
-        mView.updateTitle();
+        mView.updateTitle(-1);
         scrollToDate(date);
     }
 
@@ -105,7 +105,7 @@ public class PagerController {
                         // TODO: use an event bus or RxJava to update fragment contents
 
                         setToday();
-                        mView.updateTitle();
+                        mView.updateTitle(-1);
                         db.close();
                     } else {
                         String msg = mResources.getString(R.string.unavailable_timetable_error_msg);

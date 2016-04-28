@@ -50,25 +50,23 @@ import com.shalzz.attendance.wrapper.MyVolley;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.InjectView;
 
 public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private Context mContext;
     private Resources mResources;
+    private Bitmap mBitmap;
     private final List<Long> mExpandedIds = new ArrayList<>();
     private float mExpandedTranslationZ;
     private int mLimit = -1;
-    private Bitmap mBitmap;
     private String mTag = "ExpandableList Adapter";
 
     //our items
     private final SortedList<SubjectModel> mSubjects;
     private ListFooterModel mFooter;
-    //headers
     private List<View> headers = new ArrayList<>();
-    //footers
     private List<View> footers = new ArrayList<>();
 
     public static final int TYPE_HEADER = 111;
@@ -177,10 +175,10 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     public static class GenericViewHolder extends RecyclerView.ViewHolder {
         public int position = -1;
 
-        @InjectView(R.id.tvSubj) TextView subject;
-        @InjectView(R.id.tvPercent) TextView percentage;
-        @InjectView(R.id.tvClasses) TextView classes;
-        @InjectView(R.id.pbPercent) ProgressBar percent;
+        @BindView(R.id.tvSubj) TextView subject;
+        @BindView(R.id.tvPercent) TextView percentage;
+        @BindView(R.id.tvClasses) TextView classes;
+        @BindView(R.id.pbPercent) ProgressBar percent;
 
         //child views
         public RelativeLayout childView;
@@ -190,7 +188,7 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
 
         public GenericViewHolder(View itemView) {
             super(itemView);
-            ButterKnife.inject(this,itemView);
+            ButterKnife.bind(this,itemView);
         }
 
     }
