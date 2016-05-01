@@ -53,7 +53,7 @@ import com.shalzz.attendance.R;
 import com.shalzz.attendance.fragment.AttendanceListFragment;
 import com.shalzz.attendance.fragment.SettingsFragment;
 import com.shalzz.attendance.fragment.TimeTablePagerFragment;
-import com.shalzz.attendance.model.UserModel;
+import com.shalzz.attendance.data.model.remote.UserModel;
 import com.shalzz.attendance.wrapper.MyVolley;
 
 import butterknife.BindArray;

@@ -17,38 +17,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.shalzz.attendance.model;
+package com.shalzz.attendance.data.model.local;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.immutables.value.Value;
 
-public class DayModel {
+/**
+ * Model class for the ExpandableListView footer.
+ * @author shalzz
+ *
+ */
+@Value.Immutable
+public abstract class ListFooterModel {
 
-    private List<PeriodModel> periods;
-    private List<Integer> subjectIDs;
+	public abstract Float getHeld();
+	public abstract Float getAttended();
 
-    public DayModel() {
-
-    }
-
-    public DayModel(List<Integer> absentSubjects, ArrayList<PeriodModel> allPeriods) {
-        subjectIDs = absentSubjects;
-        periods = allPeriods;
-    }
-
-    public List<Integer> getAbsentSubjects() {
-        return subjectIDs;
-    }
-
-    public void setAbsentSubjects(List<Integer> subjectIDs) {
-        this.subjectIDs = subjectIDs;
-    }
-
-    public List<PeriodModel> getPeriods() {
-        return periods;
-    }
-
-    public void setPeriods(List<PeriodModel> periods) {
-        this.periods = periods;
-    }
+    @Value.Derived
+	public Float getPercentage() {
+        if(getHeld() > 0f)
+            return getAttended() / getHeld() * 100;
+        return 0.0f;
+	}
 }

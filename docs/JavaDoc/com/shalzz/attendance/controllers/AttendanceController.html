@@ -95,13 +95,13 @@
 <li class="blockList">
 <dl>
 <dt>All Implemented Interfaces:</dt>
-<dd>android.support.v4.app.LoaderManager.LoaderCallbacks&lt;java.util.List&lt;<a href="../../../../com/shalzz/attendance/model/SubjectModel.html" title="class in com.shalzz.attendance.model">SubjectModel</a>&gt;&gt;</dd>
+<dd>android.support.v4.app.LoaderManager.LoaderCallbacks&lt;java.util.List&lt;<a href="../../../../com/shalzz/attendance/model/SubjectModel.html" title="class in com.shalzz.attendance.data.model">SubjectModel</a>&gt;&gt;</dd>
 </dl>
 <hr>
 <br>
 <pre>public class <span class="strong">AttendanceController</span>
 extends java.lang.Object
-implements android.support.v4.app.LoaderManager.LoaderCallbacks&lt;java.util.List&lt;<a href="../../../../com/shalzz/attendance/model/SubjectModel.html" title="class in com.shalzz.attendance.model">SubjectModel</a>&gt;&gt;</pre>
+implements android.support.v4.app.LoaderManager.LoaderCallbacks&lt;java.util.List&lt;<a href="../../../../com/shalzz/attendance/model/SubjectModel.html" title="class in com.shalzz.attendance.data.model">SubjectModel</a>&gt;&gt;</pre>
 </li>
 </ul>
 </div>
@@ -194,7 +194,7 @@ implements android.support.v4.app.LoaderManager.LoaderCallbacks&lt;java.util.Lis
 <td class="colLast"><code><strong><a href="../../../../com/shalzz/attendance/controllers/AttendanceController.html#errorListener()">errorListener</a></strong>()</code>&nbsp;</td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code>android.support.v4.content.Loader&lt;java.util.List&lt;<a href="../../../../com/shalzz/attendance/model/SubjectModel.html" title="class in com.shalzz.attendance.model">SubjectModel</a>&gt;&gt;</code></td>
+<td class="colFirst"><code>android.support.v4.content.Loader&lt;java.util.List&lt;<a href="../../../../com/shalzz/attendance/model/SubjectModel.html" title="class in com.shalzz.attendance.data.model">SubjectModel</a>&gt;&gt;</code></td>
 <td class="colLast"><code><strong><a href="../../../../com/shalzz/attendance/controllers/AttendanceController.html#onCreateLoader(int,%20android.os.Bundle)">onCreateLoader</a></strong>(int&nbsp;id,
               android.os.Bundle&nbsp;args)</code>
 <div class="block">Instantiate and return a new Loader for the given ID.</div>
@@ -202,20 +202,20 @@ implements android.support.v4.app.LoaderManager.LoaderCallbacks&lt;java.util.Lis
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><strong><a href="../../../../com/shalzz/attendance/controllers/AttendanceController.html#onLoaderReset(android.support.v4.content.Loader)">onLoaderReset</a></strong>(android.support.v4.content.Loader&lt;java.util.List&lt;<a href="../../../../com/shalzz/attendance/model/SubjectModel.html" title="class in com.shalzz.attendance.model">SubjectModel</a>&gt;&gt;&nbsp;loader)</code>
+<td class="colLast"><code><strong><a href="../../../../com/shalzz/attendance/controllers/AttendanceController.html#onLoaderReset(android.support.v4.content.Loader)">onLoaderReset</a></strong>(android.support.v4.content.Loader&lt;java.util.List&lt;<a href="../../../../com/shalzz/attendance/model/SubjectModel.html" title="class in com.shalzz.attendance.data.model">SubjectModel</a>&gt;&gt;&nbsp;loader)</code>
 <div class="block">Called when a previously created loader is being reset, and thus
  making its data unavailable.</div>
 </td>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><strong><a href="../../../../com/shalzz/attendance/controllers/AttendanceController.html#onLoadFinished(android.support.v4.content.Loader,%20java.util.List)">onLoadFinished</a></strong>(android.support.v4.content.Loader&lt;java.util.List&lt;<a href="../../../../com/shalzz/attendance/model/SubjectModel.html" title="class in com.shalzz.attendance.model">SubjectModel</a>&gt;&gt;&nbsp;loader,
-              java.util.List&lt;<a href="../../../../com/shalzz/attendance/model/SubjectModel.html" title="class in com.shalzz.attendance.model">SubjectModel</a>&gt;&nbsp;data)</code>
+<td class="colLast"><code><strong><a href="../../../../com/shalzz/attendance/controllers/AttendanceController.html#onLoadFinished(android.support.v4.content.Loader,%20java.util.List)">onLoadFinished</a></strong>(android.support.v4.content.Loader&lt;java.util.List&lt;<a href="../../../../com/shalzz/attendance/model/SubjectModel.html" title="class in com.shalzz.attendance.data.model">SubjectModel</a>&gt;&gt;&nbsp;loader,
+              java.util.List&lt;<a href="../../../../com/shalzz/attendance/model/SubjectModel.html" title="class in com.shalzz.attendance.data.model">SubjectModel</a>&gt;&nbsp;data)</code>
 <div class="block">Called when a previously created loader has finished its load.</div>
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code>com.android.volley.Response.Listener&lt;java.util.ArrayList&lt;<a href="../../../../com/shalzz/attendance/model/SubjectModel.html" title="class in com.shalzz.attendance.model">SubjectModel</a>&gt;&gt;</code></td>
+<td class="colFirst"><code>com.android.volley.Response.Listener&lt;java.util.ArrayList&lt;<a href="../../../../com/shalzz/attendance/model/SubjectModel.html" title="class in com.shalzz.attendance.data.model">SubjectModel</a>&gt;&gt;</code></td>
 <td class="colLast"><code><strong><a href="../../../../com/shalzz/attendance/controllers/AttendanceController.html#successListener()">successListener</a></strong>()</code>&nbsp;</td>
 </tr>
 <tr class="altColor">
@@ -358,7 +358,7 @@ implements android.support.v4.app.LoaderManager.LoaderCallbacks&lt;java.util.Lis
 <ul class="blockList">
 <li class="blockList">
 <h4>successListener</h4>
-<pre>public&nbsp;com.android.volley.Response.Listener&lt;java.util.ArrayList&lt;<a href="../../../../com/shalzz/attendance/model/SubjectModel.html" title="class in com.shalzz.attendance.model">SubjectModel</a>&gt;&gt;&nbsp;successListener()</pre>
+<pre>public&nbsp;com.android.volley.Response.Listener&lt;java.util.ArrayList&lt;<a href="../../../../com/shalzz/attendance/model/SubjectModel.html" title="class in com.shalzz.attendance.data.model">SubjectModel</a>&gt;&gt;&nbsp;successListener()</pre>
 </li>
 </ul>
 <a name="errorListener()">
@@ -385,13 +385,13 @@ implements android.support.v4.app.LoaderManager.LoaderCallbacks&lt;java.util.Lis
 <ul class="blockList">
 <li class="blockList">
 <h4>onCreateLoader</h4>
-<pre>public&nbsp;android.support.v4.content.Loader&lt;java.util.List&lt;<a href="../../../../com/shalzz/attendance/model/SubjectModel.html" title="class in com.shalzz.attendance.model">SubjectModel</a>&gt;&gt;&nbsp;onCreateLoader(int&nbsp;id,
+<pre>public&nbsp;android.support.v4.content.Loader&lt;java.util.List&lt;<a href="../../../../com/shalzz/attendance/model/SubjectModel.html" title="class in com.shalzz.attendance.data.model">SubjectModel</a>&gt;&gt;&nbsp;onCreateLoader(int&nbsp;id,
                                                                              android.os.Bundle&nbsp;args)</pre>
 <div class="block"><strong>Description copied from interface:&nbsp;<code>android.support.v4.app.LoaderManager.LoaderCallbacks</code></strong></div>
 <div class="block">Instantiate and return a new Loader for the given ID.</div>
 <dl>
 <dt><strong>Specified by:</strong></dt>
-<dd><code>onCreateLoader</code>&nbsp;in interface&nbsp;<code>android.support.v4.app.LoaderManager.LoaderCallbacks&lt;java.util.List&lt;<a href="../../../../com/shalzz/attendance/model/SubjectModel.html" title="class in com.shalzz.attendance.model">SubjectModel</a>&gt;&gt;</code></dd>
+<dd><code>onCreateLoader</code>&nbsp;in interface&nbsp;<code>android.support.v4.app.LoaderManager.LoaderCallbacks&lt;java.util.List&lt;<a href="../../../../com/shalzz/attendance/model/SubjectModel.html" title="class in com.shalzz.attendance.data.model">SubjectModel</a>&gt;&gt;</code></dd>
 <dt><span class="strong">Parameters:</span></dt><dd><code>id</code> - The ID whose loader is to be created.</dd><dd><code>args</code> - Any arguments supplied by the caller.</dd>
 <dt><span class="strong">Returns:</span></dt><dd>Return a new Loader instance that is ready to start loading.</dd></dl>
 </li>
@@ -402,8 +402,8 @@ implements android.support.v4.app.LoaderManager.LoaderCallbacks&lt;java.util.Lis
 <ul class="blockList">
 <li class="blockList">
 <h4>onLoadFinished</h4>
-<pre>public&nbsp;void&nbsp;onLoadFinished(android.support.v4.content.Loader&lt;java.util.List&lt;<a href="../../../../com/shalzz/attendance/model/SubjectModel.html" title="class in com.shalzz.attendance.model">SubjectModel</a>&gt;&gt;&nbsp;loader,
-                  java.util.List&lt;<a href="../../../../com/shalzz/attendance/model/SubjectModel.html" title="class in com.shalzz.attendance.model">SubjectModel</a>&gt;&nbsp;data)</pre>
+<pre>public&nbsp;void&nbsp;onLoadFinished(android.support.v4.content.Loader&lt;java.util.List&lt;<a href="../../../../com/shalzz/attendance/model/SubjectModel.html" title="class in com.shalzz.attendance.data.model">SubjectModel</a>&gt;&gt;&nbsp;loader,
+                  java.util.List&lt;<a href="../../../../com/shalzz/attendance/model/SubjectModel.html" title="class in com.shalzz.attendance.data.model">SubjectModel</a>&gt;&nbsp;data)</pre>
 <div class="block"><strong>Description copied from interface:&nbsp;<code>android.support.v4.app.LoaderManager.LoaderCallbacks</code></strong></div>
 <div class="block">Called when a previously created loader has finished its load.  Note
  that normally an application is <em>not</em> allowed to commit fragment
@@ -440,7 +440,7 @@ implements android.support.v4.app.LoaderManager.LoaderCallbacks&lt;java.util.Lis
  </ul></div>
 <dl>
 <dt><strong>Specified by:</strong></dt>
-<dd><code>onLoadFinished</code>&nbsp;in interface&nbsp;<code>android.support.v4.app.LoaderManager.LoaderCallbacks&lt;java.util.List&lt;<a href="../../../../com/shalzz/attendance/model/SubjectModel.html" title="class in com.shalzz.attendance.model">SubjectModel</a>&gt;&gt;</code></dd>
+<dd><code>onLoadFinished</code>&nbsp;in interface&nbsp;<code>android.support.v4.app.LoaderManager.LoaderCallbacks&lt;java.util.List&lt;<a href="../../../../com/shalzz/attendance/model/SubjectModel.html" title="class in com.shalzz.attendance.data.model">SubjectModel</a>&gt;&gt;</code></dd>
 <dt><span class="strong">Parameters:</span></dt><dd><code>loader</code> - The Loader that has finished.</dd><dd><code>data</code> - The data generated by the Loader.</dd></dl>
 </li>
 </ul>
@@ -450,14 +450,14 @@ implements android.support.v4.app.LoaderManager.LoaderCallbacks&lt;java.util.Lis
 <ul class="blockListLast">
 <li class="blockList">
 <h4>onLoaderReset</h4>
-<pre>public&nbsp;void&nbsp;onLoaderReset(android.support.v4.content.Loader&lt;java.util.List&lt;<a href="../../../../com/shalzz/attendance/model/SubjectModel.html" title="class in com.shalzz.attendance.model">SubjectModel</a>&gt;&gt;&nbsp;loader)</pre>
+<pre>public&nbsp;void&nbsp;onLoaderReset(android.support.v4.content.Loader&lt;java.util.List&lt;<a href="../../../../com/shalzz/attendance/model/SubjectModel.html" title="class in com.shalzz.attendance.data.model">SubjectModel</a>&gt;&gt;&nbsp;loader)</pre>
 <div class="block"><strong>Description copied from interface:&nbsp;<code>android.support.v4.app.LoaderManager.LoaderCallbacks</code></strong></div>
 <div class="block">Called when a previously created loader is being reset, and thus
  making its data unavailable.  The application should at this point
  remove any references it has to the Loader's data.</div>
 <dl>
 <dt><strong>Specified by:</strong></dt>
-<dd><code>onLoaderReset</code>&nbsp;in interface&nbsp;<code>android.support.v4.app.LoaderManager.LoaderCallbacks&lt;java.util.List&lt;<a href="../../../../com/shalzz/attendance/model/SubjectModel.html" title="class in com.shalzz.attendance.model">SubjectModel</a>&gt;&gt;</code></dd>
+<dd><code>onLoaderReset</code>&nbsp;in interface&nbsp;<code>android.support.v4.app.LoaderManager.LoaderCallbacks&lt;java.util.List&lt;<a href="../../../../com/shalzz/attendance/model/SubjectModel.html" title="class in com.shalzz.attendance.data.model">SubjectModel</a>&gt;&gt;</code></dd>
 <dt><span class="strong">Parameters:</span></dt><dd><code>loader</code> - The Loader that is being reset.</dd></dl>
 </li>
 </ul>

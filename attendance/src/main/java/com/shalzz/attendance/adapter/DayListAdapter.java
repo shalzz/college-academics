@@ -28,8 +28,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.shalzz.attendance.R;
-import com.shalzz.attendance.model.DayModel;
-import com.shalzz.attendance.model.PeriodModel;
+import com.shalzz.attendance.data.model.local.ImmutableDayModel;
+import com.shalzz.attendance.data.model.remote.ImmutablePeriodModel;
 
 import java.text.ParseException;
 import java.util.List;
@@ -39,9 +39,9 @@ import butterknife.ButterKnife;
 
 public class DayListAdapter extends RecyclerView.Adapter<DayListAdapter.ViewHolder>{
 
-    private SortedList<PeriodModel> mPeriods;
+    private SortedList<ImmutablePeriodModel> mPeriods;
     private List<Integer> subjectIDs;
-    private SortedListAdapterCallback<PeriodModel> callback;
+    private SortedListAdapterCallback<ImmutablePeriodModel> callback;
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
@@ -60,28 +60,31 @@ public class DayListAdapter extends RecyclerView.Adapter<DayListAdapter.ViewHold
     }
 
     public DayListAdapter(){
-        callback = new SortedListAdapterCallback<PeriodModel>(this) {
+        callback = new SortedListAdapterCallback<ImmutablePeriodModel>(this) {
             @Override
-            public int compare(PeriodModel o1, PeriodModel o2) {
+            public int compare(ImmutablePeriodModel o1, ImmutablePeriodModel o2) {
                 return (o1.getStartDate().compareTo(o2.getStartDate()));
             }
 
             @SuppressWarnings("SimplifiableIfStatement")
             @Override
-            public boolean areContentsTheSame(PeriodModel oldItem, PeriodModel newItem) {
+            public boolean areContentsTheSame(ImmutablePeriodModel oldItem, ImmutablePeriodModel newItem) {
                 if(oldItem.getId() != newItem.getId()) {
                     return false;
                 }
                 if(oldItem.getDay().equals(newItem.getDay())) {
                     return false;
                 }
-                if(!oldItem.getSubjectName().equals(newItem.getSubjectName())) {
+                if(!oldItem.getName().equals(newItem.getName())) {
                     return false;
                 }
                 if(oldItem.getTeacher().equals(newItem.getTeacher())) {
                     return false;
                 }
-                if(oldItem.getTime().equals(newItem.getTime())) {
+                if(oldItem.getStart().equals(newItem.getStart())) {
+                    return false;
+                }
+                if(oldItem.getEnd().equals(newItem.getEnd())) {
                     return false;
                 }
                 if(oldItem.getRoom().equals(newItem.getRoom())) {
@@ -91,22 +94,22 @@ public class DayListAdapter extends RecyclerView.Adapter<DayListAdapter.ViewHold
             }
 
             @Override
-            public boolean areItemsTheSame(PeriodModel item1, PeriodModel item2) {
+            public boolean areItemsTheSame(ImmutablePeriodModel item1, ImmutablePeriodModel item2) {
                 return item1.getId() == item2.getId();
             }
         };
 
-        mPeriods = new SortedList<>(PeriodModel.class, callback);
+        mPeriods = new SortedList<>(ImmutablePeriodModel.class, callback);
     }
 
-    public void update(DayModel day) {
-        List<PeriodModel> periods = day.getPeriods();
-        subjectIDs = day.getAbsentSubjects();
+    public void update(ImmutableDayModel day) {
+        List<ImmutablePeriodModel> periods = day.getPeriods();
+        subjectIDs = day.getSubjectIDs();
         mPeriods.beginBatchedUpdates();
         for (int i = 0; i < mPeriods.size(); i++) {
-            PeriodModel existingObject = mPeriods.get(i);
+            ImmutablePeriodModel existingObject = mPeriods.get(i);
             boolean found = false;
-            for (PeriodModel newObject : periods) {
+            for (ImmutablePeriodModel newObject : periods) {
                 if (callback.areItemsTheSame(existingObject, newObject)) {
                     found = true;
                     break;
@@ -141,16 +144,11 @@ public class DayListAdapter extends RecyclerView.Adapter<DayListAdapter.ViewHold
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
 
-        PeriodModel period = mPeriods.get(position);
-        holder.tvSubjectName.setText(period.getSubjectName());
+        ImmutablePeriodModel period = mPeriods.get(position);
+        holder.tvSubjectName.setText(period.getName());
         holder.tvRoom.setText(period.getRoom());
         holder.tvTeacher.setText(period.getTeacher());
-        try {
-            holder.tvTime.setText(period.getTimein12hr());
-        } catch (ParseException e) {
-            holder.tvTime.setText(period.getTime());
-            e.printStackTrace();
-        }
+        holder.tvTime.setText(period.getTimein12hr());
 
         if(subjectIDs.contains(period.getId()))
             holder.tvMarkedAbsent.setVisibility(View.VISIBLE);

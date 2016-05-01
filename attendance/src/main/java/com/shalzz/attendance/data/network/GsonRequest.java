@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.shalzz.attendance.network;
+package com.shalzz.attendance.data.network;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;

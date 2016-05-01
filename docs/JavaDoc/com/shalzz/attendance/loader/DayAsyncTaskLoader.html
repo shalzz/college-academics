@@ -89,7 +89,7 @@
 <li>android.support.v4.content.Loader&lt;D&gt;</li>
 <li>
 <ul class="inheritance">
-<li>android.support.v4.content.AsyncTaskLoader&lt;java.util.List&lt;<a href="../../../../com/shalzz/attendance/model/PeriodModel.html" title="class in com.shalzz.attendance.model">PeriodModel</a>&gt;&gt;</li>
+<li>android.support.v4.content.AsyncTaskLoader&lt;java.util.List&lt;<a href="../../../../com/shalzz/attendance/model/PeriodModel.html" title="class in com.shalzz.attendance.data.model">PeriodModel</a>&gt;&gt;</li>
 <li>
 <ul class="inheritance">
 <li>com.shalzz.attendance.loader.DayAsyncTaskLoader</li>
@@ -106,7 +106,7 @@
 <hr>
 <br>
 <pre>public class <span class="strong">DayAsyncTaskLoader</span>
-extends android.support.v4.content.AsyncTaskLoader&lt;java.util.List&lt;<a href="../../../../com/shalzz/attendance/model/PeriodModel.html" title="class in com.shalzz.attendance.model">PeriodModel</a>&gt;&gt;</pre>
+extends android.support.v4.content.AsyncTaskLoader&lt;java.util.List&lt;<a href="../../../../com/shalzz/attendance/model/PeriodModel.html" title="class in com.shalzz.attendance.data.model">PeriodModel</a>&gt;&gt;</pre>
 </li>
 </ul>
 </div>
@@ -149,7 +149,7 @@ extends android.support.v4.content.AsyncTaskLoader&lt;java.util.List&lt;<a href=
 <td class="colLast"><code><strong><a href="../../../../com/shalzz/attendance/loader/DayAsyncTaskLoader.html#mDb">mDb</a></strong></code>&nbsp;</td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code>private java.util.List&lt;<a href="../../../../com/shalzz/attendance/model/PeriodModel.html" title="class in com.shalzz.attendance.model">PeriodModel</a>&gt;</code></td>
+<td class="colFirst"><code>private java.util.List&lt;<a href="../../../../com/shalzz/attendance/model/PeriodModel.html" title="class in com.shalzz.attendance.data.model">PeriodModel</a>&gt;</code></td>
 <td class="colLast"><code><strong><a href="../../../../com/shalzz/attendance/loader/DayAsyncTaskLoader.html#mPeriods">mPeriods</a></strong></code>&nbsp;</td>
 </tr>
 </table>
@@ -187,12 +187,12 @@ extends android.support.v4.content.AsyncTaskLoader&lt;java.util.List&lt;<a href=
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><strong><a href="../../../../com/shalzz/attendance/loader/DayAsyncTaskLoader.html#deliverResult(java.util.List)">deliverResult</a></strong>(java.util.List&lt;<a href="../../../../com/shalzz/attendance/model/PeriodModel.html" title="class in com.shalzz.attendance.model">PeriodModel</a>&gt;&nbsp;data)</code>
+<td class="colLast"><code><strong><a href="../../../../com/shalzz/attendance/loader/DayAsyncTaskLoader.html#deliverResult(java.util.List)">deliverResult</a></strong>(java.util.List&lt;<a href="../../../../com/shalzz/attendance/model/PeriodModel.html" title="class in com.shalzz.attendance.data.model">PeriodModel</a>&gt;&nbsp;data)</code>
 <div class="block">Sends the result of the load to the registered listener.</div>
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code>java.util.List&lt;<a href="../../../../com/shalzz/attendance/model/PeriodModel.html" title="class in com.shalzz.attendance.model">PeriodModel</a>&gt;</code></td>
+<td class="colFirst"><code>java.util.List&lt;<a href="../../../../com/shalzz/attendance/model/PeriodModel.html" title="class in com.shalzz.attendance.data.model">PeriodModel</a>&gt;</code></td>
 <td class="colLast"><code><strong><a href="../../../../com/shalzz/attendance/loader/DayAsyncTaskLoader.html#loadInBackground()">loadInBackground</a></strong>()</code>
 <div class="block">Called on a worker thread to perform the actual load and to return
  the result of the load operation.</div>
@@ -200,7 +200,7 @@ extends android.support.v4.content.AsyncTaskLoader&lt;java.util.List&lt;<a href=
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><strong><a href="../../../../com/shalzz/attendance/loader/DayAsyncTaskLoader.html#onCanceled(java.util.List)">onCanceled</a></strong>(java.util.List&lt;<a href="../../../../com/shalzz/attendance/model/PeriodModel.html" title="class in com.shalzz.attendance.model">PeriodModel</a>&gt;&nbsp;data)</code>
+<td class="colLast"><code><strong><a href="../../../../com/shalzz/attendance/loader/DayAsyncTaskLoader.html#onCanceled(java.util.List)">onCanceled</a></strong>(java.util.List&lt;<a href="../../../../com/shalzz/attendance/model/PeriodModel.html" title="class in com.shalzz.attendance.data.model">PeriodModel</a>&gt;&nbsp;data)</code>
 <div class="block">Called if the task was canceled before it was completed.</div>
 </td>
 </tr>
@@ -284,7 +284,7 @@ extends android.support.v4.content.AsyncTaskLoader&lt;java.util.List&lt;<a href=
 <ul class="blockListLast">
 <li class="blockList">
 <h4>mPeriods</h4>
-<pre>private&nbsp;java.util.List&lt;<a href="../../../../com/shalzz/attendance/model/PeriodModel.html" title="class in com.shalzz.attendance.model">PeriodModel</a>&gt; mPeriods</pre>
+<pre>private&nbsp;java.util.List&lt;<a href="../../../../com/shalzz/attendance/model/PeriodModel.html" title="class in com.shalzz.attendance.data.model">PeriodModel</a>&gt; mPeriods</pre>
 </li>
 </ul>
 </li>
@@ -326,7 +326,7 @@ extends android.support.v4.content.AsyncTaskLoader&lt;java.util.List&lt;<a href=
  but as a result of a call to <code>Loader.startLoading()</code>.</div>
 <dl>
 <dt><strong>Overrides:</strong></dt>
-<dd><code>onStartLoading</code>&nbsp;in class&nbsp;<code>android.support.v4.content.Loader&lt;java.util.List&lt;<a href="../../../../com/shalzz/attendance/model/PeriodModel.html" title="class in com.shalzz.attendance.model">PeriodModel</a>&gt;&gt;</code></dd>
+<dd><code>onStartLoading</code>&nbsp;in class&nbsp;<code>android.support.v4.content.Loader&lt;java.util.List&lt;<a href="../../../../com/shalzz/attendance/model/PeriodModel.html" title="class in com.shalzz.attendance.data.model">PeriodModel</a>&gt;&gt;</code></dd>
 </dl>
 </li>
 </ul>
@@ -336,7 +336,7 @@ extends android.support.v4.content.AsyncTaskLoader&lt;java.util.List&lt;<a href=
 <ul class="blockList">
 <li class="blockList">
 <h4>loadInBackground</h4>
-<pre>public&nbsp;java.util.List&lt;<a href="../../../../com/shalzz/attendance/model/PeriodModel.html" title="class in com.shalzz.attendance.model">PeriodModel</a>&gt;&nbsp;loadInBackground()</pre>
+<pre>public&nbsp;java.util.List&lt;<a href="../../../../com/shalzz/attendance/model/PeriodModel.html" title="class in com.shalzz.attendance.data.model">PeriodModel</a>&gt;&nbsp;loadInBackground()</pre>
 <div class="block"><strong>Description copied from class:&nbsp;<code>android.support.v4.content.AsyncTaskLoader</code></strong></div>
 <div class="block">Called on a worker thread to perform the actual load and to return
  the result of the load operation.
@@ -357,7 +357,7 @@ extends android.support.v4.content.AsyncTaskLoader&lt;java.util.List&lt;<a href=
  result object, if any.</div>
 <dl>
 <dt><strong>Specified by:</strong></dt>
-<dd><code>loadInBackground</code>&nbsp;in class&nbsp;<code>android.support.v4.content.AsyncTaskLoader&lt;java.util.List&lt;<a href="../../../../com/shalzz/attendance/model/PeriodModel.html" title="class in com.shalzz.attendance.model">PeriodModel</a>&gt;&gt;</code></dd>
+<dd><code>loadInBackground</code>&nbsp;in class&nbsp;<code>android.support.v4.content.AsyncTaskLoader&lt;java.util.List&lt;<a href="../../../../com/shalzz/attendance/model/PeriodModel.html" title="class in com.shalzz.attendance.data.model">PeriodModel</a>&gt;&gt;</code></dd>
 <dt><span class="strong">Returns:</span></dt><dd>The result of the load operation.</dd><dt><span class="strong">See Also:</span></dt><dd><code>AsyncTaskLoader.isLoadInBackgroundCanceled()</code>, 
 <code>AsyncTaskLoader.cancelLoadInBackground()</code>, 
 <code>AsyncTaskLoader.onCanceled(D)</code></dd></dl>
@@ -369,14 +369,14 @@ extends android.support.v4.content.AsyncTaskLoader&lt;java.util.List&lt;<a href=
 <ul class="blockList">
 <li class="blockList">
 <h4>deliverResult</h4>
-<pre>public&nbsp;void&nbsp;deliverResult(java.util.List&lt;<a href="../../../../com/shalzz/attendance/model/PeriodModel.html" title="class in com.shalzz.attendance.model">PeriodModel</a>&gt;&nbsp;data)</pre>
+<pre>public&nbsp;void&nbsp;deliverResult(java.util.List&lt;<a href="../../../../com/shalzz/attendance/model/PeriodModel.html" title="class in com.shalzz.attendance.data.model">PeriodModel</a>&gt;&nbsp;data)</pre>
 <div class="block"><strong>Description copied from class:&nbsp;<code>android.support.v4.content.Loader</code></strong></div>
 <div class="block">Sends the result of the load to the registered listener. Should only be called by subclasses.
 
  Must be called from the process's main thread.</div>
 <dl>
 <dt><strong>Overrides:</strong></dt>
-<dd><code>deliverResult</code>&nbsp;in class&nbsp;<code>android.support.v4.content.Loader&lt;java.util.List&lt;<a href="../../../../com/shalzz/attendance/model/PeriodModel.html" title="class in com.shalzz.attendance.model">PeriodModel</a>&gt;&gt;</code></dd>
+<dd><code>deliverResult</code>&nbsp;in class&nbsp;<code>android.support.v4.content.Loader&lt;java.util.List&lt;<a href="../../../../com/shalzz/attendance/model/PeriodModel.html" title="class in com.shalzz.attendance.data.model">PeriodModel</a>&gt;&gt;</code></dd>
 <dt><span class="strong">Parameters:</span></dt><dd><code>data</code> - the result of the load</dd></dl>
 </li>
 </ul>
@@ -390,7 +390,7 @@ extends android.support.v4.content.AsyncTaskLoader&lt;java.util.List&lt;<a href=
 <div class="block">Must be called from the UI thread</div>
 <dl>
 <dt><strong>Overrides:</strong></dt>
-<dd><code>onStopLoading</code>&nbsp;in class&nbsp;<code>android.support.v4.content.Loader&lt;java.util.List&lt;<a href="../../../../com/shalzz/attendance/model/PeriodModel.html" title="class in com.shalzz.attendance.model">PeriodModel</a>&gt;&gt;</code></dd>
+<dd><code>onStopLoading</code>&nbsp;in class&nbsp;<code>android.support.v4.content.Loader&lt;java.util.List&lt;<a href="../../../../com/shalzz/attendance/model/PeriodModel.html" title="class in com.shalzz.attendance.data.model">PeriodModel</a>&gt;&gt;</code></dd>
 </dl>
 </li>
 </ul>
@@ -400,13 +400,13 @@ extends android.support.v4.content.AsyncTaskLoader&lt;java.util.List&lt;<a href=
 <ul class="blockList">
 <li class="blockList">
 <h4>onCanceled</h4>
-<pre>public&nbsp;void&nbsp;onCanceled(java.util.List&lt;<a href="../../../../com/shalzz/attendance/model/PeriodModel.html" title="class in com.shalzz.attendance.model">PeriodModel</a>&gt;&nbsp;data)</pre>
+<pre>public&nbsp;void&nbsp;onCanceled(java.util.List&lt;<a href="../../../../com/shalzz/attendance/model/PeriodModel.html" title="class in com.shalzz.attendance.data.model">PeriodModel</a>&gt;&nbsp;data)</pre>
 <div class="block"><strong>Description copied from class:&nbsp;<code>android.support.v4.content.AsyncTaskLoader</code></strong></div>
 <div class="block">Called if the task was canceled before it was completed.  Gives the class a chance
  to clean up post-cancellation and to properly dispose of the result.</div>
 <dl>
 <dt><strong>Overrides:</strong></dt>
-<dd><code>onCanceled</code>&nbsp;in class&nbsp;<code>android.support.v4.content.AsyncTaskLoader&lt;java.util.List&lt;<a href="../../../../com/shalzz/attendance/model/PeriodModel.html" title="class in com.shalzz.attendance.model">PeriodModel</a>&gt;&gt;</code></dd>
+<dd><code>onCanceled</code>&nbsp;in class&nbsp;<code>android.support.v4.content.AsyncTaskLoader&lt;java.util.List&lt;<a href="../../../../com/shalzz/attendance/model/PeriodModel.html" title="class in com.shalzz.attendance.data.model">PeriodModel</a>&gt;&gt;</code></dd>
 <dt><span class="strong">Parameters:</span></dt><dd><code>data</code> - The value that was returned by <code>AsyncTaskLoader.loadInBackground()</code>, or null
  if the task threw <code>OperationCanceledException</code>.</dd></dl>
 </li>
@@ -425,7 +425,7 @@ extends android.support.v4.content.AsyncTaskLoader&lt;java.util.List&lt;<a href=
  This will always be called from the process's main thread.</div>
 <dl>
 <dt><strong>Overrides:</strong></dt>
-<dd><code>onReset</code>&nbsp;in class&nbsp;<code>android.support.v4.content.Loader&lt;java.util.List&lt;<a href="../../../../com/shalzz/attendance/model/PeriodModel.html" title="class in com.shalzz.attendance.model">PeriodModel</a>&gt;&gt;</code></dd>
+<dd><code>onReset</code>&nbsp;in class&nbsp;<code>android.support.v4.content.Loader&lt;java.util.List&lt;<a href="../../../../com/shalzz/attendance/model/PeriodModel.html" title="class in com.shalzz.attendance.data.model">PeriodModel</a>&gt;&gt;</code></dd>
 </dl>
 </li>
 </ul>

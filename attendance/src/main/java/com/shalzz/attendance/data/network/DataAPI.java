@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.shalzz.attendance.network;
+package com.shalzz.attendance.data.network;
 
 import android.content.res.Resources;
 import android.util.Base64;
@@ -28,9 +28,10 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.shalzz.attendance.R;
-import com.shalzz.attendance.model.PeriodModel;
-import com.shalzz.attendance.model.SubjectModel;
-import com.shalzz.attendance.model.UserModel;
+import com.shalzz.attendance.data.model.remote.GsonAdaptersRemote;
+import com.shalzz.attendance.data.model.remote.ImmutablePeriodModel;
+import com.shalzz.attendance.data.model.remote.ImmutableSubjectModel;
+import com.shalzz.attendance.data.model.remote.ImmutableUserModel;
 import com.shalzz.attendance.wrapper.MyPreferencesManager;
 import com.shalzz.attendance.wrapper.MyVolley;
 
@@ -41,14 +42,14 @@ import java.util.Map;
 
 public class DataAPI {
 
-    public static void getUser(Response.Listener<UserModel> successListener,
+    public static void getUser(Response.Listener<ImmutableUserModel> successListener,
                                Response.ErrorListener errorListener) {
 
         String creds = MyPreferencesManager.getUser();
         getUser(successListener, errorListener, creds);
     }
 
-    public static void getUser(Response.Listener<UserModel> successListener,
+    public static void getUser(Response.Listener<ImmutableUserModel> successListener,
                                Response.ErrorListener errorListener,
                                final String credentials ) {
 
@@ -59,9 +60,14 @@ public class DataAPI {
         headers.put("UserModel-Agent", res.getString(R.string.UserAgent));
 
         String mURL = res.getString(R.string.URL_user);
-        GsonRequest<UserModel> gsonRequest = new GsonRequest<>(
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapterFactory(new GsonAdaptersRemote())
+                .create();
+        GsonRequest<ImmutableUserModel> gsonRequest = new GsonRequest<>(
                 mURL,
-                UserModel.class,
+                ImmutableUserModel.class,
+                null,
+                gson,
                 headers,
                 successListener,
                 errorListener);
@@ -72,7 +78,8 @@ public class DataAPI {
         MyVolley.getInstance().addToRequestQueue(gsonRequest, MyVolley.APPLICATION_NETWORK_TAG);
     }
 
-    public static void getAttendance(Response.Listener<ArrayList<SubjectModel>> successListener,
+    public static void getAttendance(Response.Listener<ArrayList<ImmutableSubjectModel>>
+                                             successListener,
                                      Response.ErrorListener errorListener) {
 
         Resources res = MyVolley.getMyResources();
@@ -83,10 +90,13 @@ public class DataAPI {
         headers.put("UserModel-Agent", res.getString(R.string.UserAgent));
 
         String mURL = res.getString(R.string.URL_attendance);
-        Type collectionType = new TypeToken<ArrayList<SubjectModel>>(){}.getType();
-        Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
+        Type collectionType = new TypeToken<ArrayList<ImmutableSubjectModel>>(){}.getType();
 
-        GsonRequest<ArrayList<SubjectModel>> requestAttendance = new GsonRequest<>(
+        Gson gson = new GsonBuilder()
+                .setDateFormat("yyyy-MM-dd")
+                .registerTypeAdapterFactory(new GsonAdaptersRemote())
+                .create();
+        GsonRequest<ArrayList<ImmutableSubjectModel>> requestAttendance = new GsonRequest<>(
                 mURL,
                 null,
                 collectionType,
@@ -101,7 +111,7 @@ public class DataAPI {
         MyVolley.getInstance().addToRequestQueue(requestAttendance, MyVolley.ACTIVITY_NETWORK_TAG);
     }
 
-    public static void getTimeTable(Response.Listener<ArrayList<PeriodModel>> successListener,
+    public static void getTimeTable(Response.Listener<ArrayList<ImmutablePeriodModel>> successListener,
                                     Response.ErrorListener errorListener) {
 
         Resources res = MyVolley.getMyResources();
@@ -112,10 +122,16 @@ public class DataAPI {
         headers.put("UserModel-Agent", res.getString(R.string.UserAgent));
 
         String mURL = res.getString(R.string.URL_timetable);
-        Type collectionType = new TypeToken<ArrayList<PeriodModel>>(){}.getType();
-        GsonRequest<ArrayList<PeriodModel>> requestTimeTable = new GsonRequest<>(
+        Type collectionType = new TypeToken<ArrayList<ImmutablePeriodModel>>(){}.getType();
+
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapterFactory(new GsonAdaptersRemote())
+                .create();
+        GsonRequest<ArrayList<ImmutablePeriodModel>> requestTimeTable = new GsonRequest<>(
                 mURL,
+                null,
                 collectionType,
+                gson,
                 headers,
                 successListener,
                 errorListener);

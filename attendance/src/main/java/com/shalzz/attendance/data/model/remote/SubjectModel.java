@@ -17,22 +17,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.shalzz.attendance.model;
+package com.shalzz.attendance.data.model.remote;
 
-import com.google.gson.Gson;
+import com.google.gson.annotations.SerializedName;
 import com.shalzz.attendance.wrapper.DateHelper;
+
+import org.immutables.gson.Gson;
+import org.immutables.value.Value;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 /** Field names need to be the same
  *  as that of the fields in the
  *  JSON object sent by the REST API,
- *  for {@link Gson} to be able to deserialize it
+ *  for {@link com.google.gson.Gson} to be able to deserialize it
  *  properly and automatically.
  *
  *  Typical `attendance` JSON object will be of the format:
@@ -47,65 +51,30 @@ import java.util.Locale;
  *  which is exposed by the api endpoint /api/v1/me/attendance
  *  by the express.js server (upes-api) as of this writing.
  */
-public class SubjectModel {
+@Value.Immutable
+public abstract class SubjectModel {
 
-    private DateFormat dayFormat = new SimpleDateFormat("d", Locale.US);
-    private DateFormat monthFormat = new SimpleDateFormat("MMM", Locale.US);
+    public abstract int getId();
+    public abstract String getName();
+    public abstract Float getHeld();
+    public abstract Float getAttended();
+    @SerializedName("absent_dates")
+    public abstract List<Date> getAbsentDates();
 
-	private int id;
-	private String name;
-	private Float held;
-	private Float attended;
-	private ArrayList<Date> absent_dates;
-
-	public int getID(){
-		return this.id;
-	}
-
-	public void setID(int id){
-		this.id = id;
-	}
-
-	public String getName() {
-		return this.name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public Float getClassesHeld() {
-		return this.held;
-	}
-
-	public void setClassesHeld(Float classesHeld) {
-		this.held = classesHeld;
-	}
-
-	public Float getClassesAttended() {
-		return this.attended;
-	}
-
-	public void setClassesAttended(Float classesAttended) {
-		this.attended = classesAttended;
-	}
-
-    public ArrayList<Date> getAbsentDates() {
-        return absent_dates;
-    }
-
-    public void setAbsentDates(ArrayList<Date> dates) {
-        absent_dates = dates;
-    }
-
+    @Gson.Ignore
+    @Value.Derived
 	public String getAbsentDatesAsString() {
-        if(absent_dates.size() == 0)
+        DateFormat dayFormat = new SimpleDateFormat("d", Locale.US);
+        DateFormat monthFormat = new SimpleDateFormat("MMM", Locale.US);
+        List<Date> dates = new ArrayList<>();
+        dates.addAll(getAbsentDates());
+        if(dates.size() == 0)
             return "";
 
 		String datesStr = "";
         String prevMonth = "";
-        Collections.sort(absent_dates);
-        for (Date date: absent_dates) {
+        Collections.sort(dates);
+        for (Date date: dates) {
             int day = Integer.parseInt(dayFormat.format(date));
             String month = monthFormat.format(date);
             if(prevMonth.length() == 0) {
@@ -121,20 +90,11 @@ public class SubjectModel {
         return datesStr.substring(0,datesStr.length()-2);
 	}
 
+    @Gson.Ignore
+    @Value.Derived
 	public Float getPercentage() {
-        if(held > 0f)
-            return attended / held * 100;
+        if(getHeld() > 0f)
+            return getAttended() / getHeld() * 100;
         return 0.0f;
 	}
-
-    @Override
-    public String toString() {
-        return "SubjectModel{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", held=" + held +
-                ", attended=" + attended +
-                ", absent_dates=" + absent_dates +
-                '}';
-    }
 }

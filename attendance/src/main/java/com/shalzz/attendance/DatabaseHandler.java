@@ -27,10 +27,11 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Build;
 import android.support.v4.content.AsyncTaskLoader;
 
-import com.shalzz.attendance.model.ListFooterModel;
-import com.shalzz.attendance.model.PeriodModel;
-import com.shalzz.attendance.model.SubjectModel;
-import com.shalzz.attendance.model.UserModel;
+import com.shalzz.attendance.data.model.remote.ImmutablePeriodModel;
+import com.shalzz.attendance.data.model.remote.ImmutableSubjectModel;
+import com.shalzz.attendance.data.model.remote.ImmutableUserModel;
+import com.shalzz.attendance.data.model.remote.SubjectModel;
+import com.shalzz.attendance.data.model.remote.UserModel;
 import com.shalzz.attendance.wrapper.DateHelper;
 import com.shalzz.attendance.wrapper.MyPreferencesManager;
 
@@ -201,20 +202,20 @@ public class DatabaseHandler extends SQLiteOpenHelper {
      * Add new SubjectModel
      * @param subject the {@link SubjectModel} to add
      */
-    public void addSubject(SubjectModel subject, long timestamp) {
+    public void addSubject(ImmutableSubjectModel subject, long timestamp) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(KEY_ID, subject.getID());
+        values.put(KEY_ID, subject.getId());
         values.put(KEY_NAME, subject.getName());
-        values.put(KEY_CLASSES_HELD, subject.getClassesHeld());
-        values.put(KEY_CLASSES_ATTENDED, subject.getClassesAttended());
+        values.put(KEY_CLASSES_HELD, subject.getHeld());
+        values.put(KEY_CLASSES_ATTENDED, subject.getAttended());
         values.put(KEY_LAST_UPDATED, timestamp);
         db.insert(TABLE_ATTENDANCE, null, values);
 
         // Store the dates in another table corresponding to the same id
         ContentValues dates = new ContentValues();
-        dates.put(KEY_ID, subject.getID());
+        dates.put(KEY_ID, subject.getId());
         for(Date date : subject.getAbsentDates()) {
             dates.put(KEY_DAY_ABSENT, DateHelper.formatToTechnicalFormat(date));
             db.insertWithOnConflict(TABLE_DAYS_ABSENT, null, dates, SQLiteDatabase.CONFLICT_IGNORE);
@@ -226,20 +227,21 @@ public class DatabaseHandler extends SQLiteOpenHelper {
      * @param subject the {@link SubjectModel} to update
      * @return no. of rows affected
      */
-    public int updateSubject(SubjectModel subject, long timestamp) {
+    public int updateSubject(ImmutableSubjectModel subject, long timestamp) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
         values.put(KEY_NAME, subject.getName());
-        values.put(KEY_CLASSES_HELD, subject.getClassesHeld());
-        values.put(KEY_CLASSES_ATTENDED, subject.getClassesAttended());
+        values.put(KEY_CLASSES_HELD, subject.getHeld());
+        values.put(KEY_CLASSES_ATTENDED, subject.getAttended());
         values.put(KEY_LAST_UPDATED, timestamp);
 
         // clone this object as any changes in it will be directly visible to the user
-        ArrayList<Date> newDates = (ArrayList<Date>) subject.getAbsentDates().clone();
+        List<Date> newDates = new ArrayList<>();
+        newDates.addAll(subject.getAbsentDates());
 
         String datesQuery = "SELECT " + KEY_DAY_ABSENT + " FROM " + TABLE_DAYS_ABSENT +
-                " WHERE " + KEY_ID + " = " + subject.getID() + ";";
+                " WHERE " + KEY_ID + " = " + subject.getId() + ";";
 
         Cursor dateCursor = db.rawQuery(datesQuery, null);
         if (dateCursor.moveToFirst()) {
@@ -253,7 +255,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 // and delete dates that are no longer marked as absent
                 else {
                     db.delete(TABLE_DAYS_ABSENT,KEY_ID + "=? and " + KEY_DAY_ABSENT + "=?",
-                    new String[] { String.valueOf(subject.getID()),
+                    new String[] { String.valueOf(subject.getId()),
                             dateCursor.getString(0)});
                 }
             } while (dateCursor.moveToNext());
@@ -262,25 +264,25 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         // Store the dates in another table corresponding to the same id
         ContentValues insert = new ContentValues();
-        insert.put(KEY_ID, subject.getID());
+        insert.put(KEY_ID, subject.getId());
         for(Date date : newDates) {
             insert.put(KEY_DAY_ABSENT, DateHelper.formatToTechnicalFormat(date));
             db.insertWithOnConflict(TABLE_DAYS_ABSENT, null, insert, SQLiteDatabase.CONFLICT_IGNORE);
         }
 
         return db.update(TABLE_ATTENDANCE, values, KEY_ID + " = ?",
-                new String[] { String.valueOf(subject.getID()) });
+                new String[] { String.valueOf(subject.getId()) });
     }
 
     /**
      * Adds a new Subject if it doesn't exists otherwise updates it.
      * @param subject the {@link Subject} to add
      */
-    public void addOrUpdateSubject(SubjectModel subject, long timestamp) {
+    public void addOrUpdateSubject(ImmutableSubjectModel subject, long timestamp) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         Cursor cursor = db.query(TABLE_ATTENDANCE, new String[] { KEY_ID}, KEY_ID + "=?",
-                new String[] { String.valueOf(subject.getID()) }, null, null, null, null);
+                new String[] { String.valueOf(subject.getId()) }, null, null, null, null);
         if (cursor.getCount() == 0)
         {
             addSubject(subject, timestamp);
@@ -296,8 +298,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
      * Get All Subjects
      * @return subjectList
      */
-    public List<SubjectModel> getAllSubjects(AsyncTaskLoader callback, String filter) {
-        List<SubjectModel> subjectList = new ArrayList<>();
+    public List<ImmutableSubjectModel> getAllSubjects(AsyncTaskLoader callback, String filter) {
+        List<ImmutableSubjectModel> subjectList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor;
 
@@ -319,15 +321,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                     if(callback != null && callback.isLoadInBackgroundCanceled()) {
                         break;
                     }
-
-                    SubjectModel subject = new SubjectModel();
-                    subject.setID(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_ID)));
-                    subject.setName(cursor.getString(cursor.getColumnIndexOrThrow(KEY_NAME)));
-                    subject.setClassesHeld(cursor.getFloat(cursor.getColumnIndexOrThrow(KEY_CLASSES_HELD)));
-                    subject.setClassesAttended(cursor.getFloat(cursor.getColumnIndexOrThrow(KEY_CLASSES_ATTENDED)));
+                    int id = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_ID));
 
                     String datesQuery = "SELECT " + KEY_DAY_ABSENT + " FROM " + TABLE_DAYS_ABSENT +
-                            " WHERE " + KEY_ID + " = " + subject.getID() + ";";
+                            " WHERE " + KEY_ID + " = " + id + ";";
 
                     Cursor dateCursor = db.rawQuery(datesQuery, null);
                     ArrayList<Date> dates = new ArrayList<>();
@@ -338,8 +335,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                         } while (dateCursor.moveToNext());
                     }
                     dateCursor.close();
-                    subject.setAbsentDates(dates);
 
+                    ImmutableSubjectModel subject = ImmutableSubjectModel.builder()
+                            .id(id)
+                            .name(cursor.getString(cursor.getColumnIndexOrThrow(KEY_NAME)))
+                            .held(cursor.getFloat(cursor.getColumnIndexOrThrow(KEY_CLASSES_HELD)))
+                            .attended(cursor.getFloat(cursor.getColumnIndexOrThrow(KEY_CLASSES_ATTENDED)))
+                            .absentDates(dates)
+                            .build();
                     subjectList.add(subject);
                 } while (cursor.moveToNext());
             } finally {
@@ -354,8 +357,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
      * Get All Subjects matching the wildcard.
      * @return subjectList
      */
-    public List<SubjectModel> getAllSubjectsLike(String wildcard) {
-        List<SubjectModel> subjectList = new ArrayList<>();
+    public List<ImmutableSubjectModel> getAllSubjectsLike(String wildcard) {
+        List<ImmutableSubjectModel> subjectList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.query(TABLE_ATTENDANCE, new String[]{KEY_ID, KEY_NAME, KEY_CLASSES_HELD,
                         KEY_CLASSES_ATTENDED, KEY_DAY_ABSENT}, KEY_NAME + " LIKE '%" + wildcard + "%'",
@@ -364,14 +367,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         // looping through all rows and adding to list
         if (cursor.moveToFirst()) {
             do {
-                SubjectModel subject = new SubjectModel();
-                subject.setID(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_ID)));
-                subject.setName(cursor.getString(cursor.getColumnIndexOrThrow(KEY_NAME)));
-                subject.setClassesHeld(cursor.getFloat(cursor.getColumnIndexOrThrow(KEY_CLASSES_HELD)));
-                subject.setClassesAttended(cursor.getFloat(cursor.getColumnIndexOrThrow(KEY_CLASSES_ATTENDED)));
+                int id = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_ID));
 
                 String datesQuery = "SELECT " + KEY_DAY_ABSENT + " FROM " + TABLE_DAYS_ABSENT +
-                        " WHERE " + KEY_ID + " = " + subject.getID() + ";";
+                        " WHERE " + KEY_ID + " = " + id + ";";
 
                 Cursor dateCursor = db.rawQuery(datesQuery, null);
                 ArrayList<Date> dates = new ArrayList<>();
@@ -382,8 +381,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                     } while (dateCursor.moveToNext());
                 }
                 dateCursor.close();
-                subject.setAbsentDates(dates);
 
+                ImmutableSubjectModel subject = ImmutableSubjectModel.builder()
+                        .id(id)
+                        .name(cursor.getString(cursor.getColumnIndexOrThrow(KEY_NAME)))
+                        .held(cursor.getFloat(cursor.getColumnIndexOrThrow(KEY_CLASSES_HELD)))
+                        .attended(cursor.getFloat(cursor.getColumnIndexOrThrow(KEY_CLASSES_ATTENDED)))
+                        .absentDates(dates)
+                        .build();
                 subjectList.add(subject);
             } while (cursor.moveToNext());
         }
@@ -506,12 +511,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         String selectQuery = "SELECT  * FROM " + TABLE_USER + ";";
         Cursor cursor = db.rawQuery(selectQuery, null);
 
-        UserModel user = new UserModel();
+        ImmutableUserModel user = null;
         if (cursor.moveToFirst()) {
-            user.setName(cursor.getString(cursor.getColumnIndexOrThrow(KEY_STU_NAME)));
-            user.setCourse(cursor.getString(cursor.getColumnIndexOrThrow(KEY_COURSE)));
-            user.setSapid(cursor.getString(cursor.getColumnIndexOrThrow(KEY_SAPID)));
-            user.setPassword(cursor.getString(cursor.getColumnIndexOrThrow(KEY_PASSWORD)));
+            user = ImmutableUserModel.builder()
+                    .name(cursor.getString(cursor.getColumnIndexOrThrow(KEY_STU_NAME)))
+                    .course(cursor.getString(cursor.getColumnIndexOrThrow(KEY_COURSE)))
+                    .sapid(cursor.getString(cursor.getColumnIndexOrThrow(KEY_SAPID)))
+                    .password(cursor.getString(cursor.getColumnIndexOrThrow(KEY_PASSWORD)))
+                    .build();
         }
 
         db.close();
@@ -519,7 +526,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return user;
     }
 
-    public ListFooterModel getListFooter() {
+    public ImmutableListFooterModel getListFooter() {
         SQLiteDatabase db = this.getReadableDatabase();
 
         String selectQuery = "SELECT  sum(" + KEY_CLASSES_ATTENDED+ ") as " + KEY_TOTAL_ATTEND
@@ -527,10 +534,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 + " FROM " + TABLE_ATTENDANCE + ";";
         Cursor cursor = db.rawQuery(selectQuery, null);
 
-        ListFooterModel footer = new ListFooterModel();
+        ImmutableListFooterModel footer = null;
         if (cursor.moveToFirst()) {
-            footer.setHeld(cursor.getFloat(cursor.getColumnIndexOrThrow(KEY_TOTAL_HELD)));
-            footer.setAttended(cursor.getFloat(cursor.getColumnIndexOrThrow(KEY_TOTAL_ATTEND)));
+            footer = ImmutableListFooterModel.builder()
+                    .held(cursor.getFloat(cursor.getColumnIndexOrThrow(KEY_TOTAL_HELD)))
+                    .attended(cursor.getFloat(cursor.getColumnIndexOrThrow(KEY_TOTAL_ATTEND)))
+                    .build();
         }
         db.close();
         cursor.close();
@@ -538,17 +547,17 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return footer;
     }
 
-    public void addPeriod(PeriodModel period, long timestamp) {
+    public void addPeriod(ImmutablePeriodModel period, long timestamp) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
         values.put(KEY_ID, period.getId());
         values.put(KEY_DAY, period.getDay());
-        values.put(KEY_SUBJECT_NAME, period.getSubjectName());
+        values.put(KEY_SUBJECT_NAME, period.getName());
         values.put(KEY_TEACHER, period.getTeacher());
         values.put(KEY_ROOM, period.getRoom().trim());
-        values.put(KEY_START, period.getStartTime());
-        values.put(KEY_END, period.getEndTime());
+        values.put(KEY_START, period.getStart());
+        values.put(KEY_END, period.getEnd());
         values.put(KEY_BATCH, period.getBatch());
         values.put(KEY_LAST_UPDATED, timestamp);
 
@@ -557,15 +566,15 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.close(); // Closing database connection
     }
 
-    public int updatePeriod(PeriodModel period, long timestamp) {
+    public int updatePeriod(ImmutablePeriodModel period, long timestamp) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(KEY_SUBJECT_NAME, period.getSubjectName());
+        values.put(KEY_SUBJECT_NAME, period.getName());
         values.put(KEY_TEACHER, period.getTeacher());
         values.put(KEY_ROOM, period.getRoom().trim());
-        values.put(KEY_START, period.getStartTime());
-        values.put(KEY_END, period.getEndTime());
+        values.put(KEY_START, period.getStart());
+        values.put(KEY_END, period.getEnd());
         values.put(KEY_BATCH, period.getBatch());
         values.put(KEY_LAST_UPDATED, timestamp);
 
@@ -578,7 +587,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return rows_affected;
     }
 
-    public void addOrUpdatePeriod(PeriodModel period, long timestamp) {
+    public void addOrUpdatePeriod(ImmutablePeriodModel period, long timestamp) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         Cursor cursor = db.query(TABLE_TIMETABLE, new String[] { KEY_SUBJECT_NAME},
@@ -596,29 +605,30 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.close(); // Closing database connection
     }
 
-    public ArrayList<PeriodModel> getAllPeriods(Date date, AsyncTaskLoader callback) {
+    public ArrayList<ImmutablePeriodModel> getAllPeriods(Date date, AsyncTaskLoader callback) {
         String dayName = DateHelper.getShortWeekday(date);
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.query(TABLE_TIMETABLE, null, KEY_DAY + "=?",
                 new String[]{String.valueOf(dayName)}, null, null, KEY_START, null);
 
-        ArrayList<PeriodModel> periods = new ArrayList<>();
+        ArrayList<ImmutablePeriodModel> periods = new ArrayList<>();
         if (cursor.moveToFirst()) {
             do {
                 // Check isLoadInBackgroundCanceled() to cancel out early
                 if(callback != null && callback.isLoadInBackgroundCanceled()) {
                     break;
                 }
-                PeriodModel period = new PeriodModel();
-                period.setId(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_ID)));
-                period.setDay(cursor.getString(cursor.getColumnIndexOrThrow(KEY_DAY)));
-                period.setSubjectName(cursor.getString(cursor.getColumnIndexOrThrow(KEY_SUBJECT_NAME)));
-                period.setTeacher(cursor.getString(cursor.getColumnIndexOrThrow(KEY_TEACHER)));
-                period.setRoom(cursor.getString(cursor.getColumnIndexOrThrow(KEY_ROOM)));
-                period.setBatch(cursor.getString(cursor.getColumnIndexOrThrow(KEY_BATCH)));
-                period.setStart(cursor.getString(cursor.getColumnIndexOrThrow(KEY_START)));
-                period.setEnd(cursor.getString(cursor.getColumnIndexOrThrow(KEY_END)));
+                ImmutablePeriodModel period = ImmutablePeriodModel.builder()
+                        .id(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_ID)))
+                        .day(cursor.getString(cursor.getColumnIndexOrThrow(KEY_DAY)))
+                        .name(cursor.getString(cursor.getColumnIndexOrThrow(KEY_SUBJECT_NAME)))
+                        .teacher(cursor.getString(cursor.getColumnIndexOrThrow(KEY_TEACHER)))
+                        .room(cursor.getString(cursor.getColumnIndexOrThrow(KEY_ROOM)))
+                        .batch(cursor.getString(cursor.getColumnIndexOrThrow(KEY_BATCH)))
+                        .start(cursor.getString(cursor.getColumnIndexOrThrow(KEY_START)))
+                        .end(cursor.getString(cursor.getColumnIndexOrThrow(KEY_END)))
+                        .build();
                 periods.add(period);
             } while (cursor.moveToNext());
         }

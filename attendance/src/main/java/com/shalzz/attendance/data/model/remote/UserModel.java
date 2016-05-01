@@ -17,9 +17,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.shalzz.attendance.model;
+package com.shalzz.attendance.data.model.remote;
 
 import com.google.gson.Gson;
+
+import org.immutables.value.Value;
 
 /** Field names need to be the same
  *  as that of the fields in the
@@ -38,52 +40,11 @@ import com.google.gson.Gson;
  *  which is exposed by the api endpoint /api/v1/me
  *  by the express.js server (upes-api) as of this writing.
  */
-public class UserModel {
+@Value.Immutable
+public abstract class UserModel {
 
-    private String sapid;
-    private String password;
-    private String name;
-    private String course;
-
-    public String getSapid() {
-        return sapid;
-    }
-
-    public void setSapid(String sapid) {
-        this.sapid = sapid;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getCourse() {
-        return course;
-    }
-
-    public void setCourse(String course) {
-        this.course = course;
-    }
-
-    @Override
-    public String toString() {
-        return "UserModel{" +
-                "sapid='" + sapid + '\'' +
-                ", password='" + password + '\'' +
-                ", name='" + name + '\'' +
-                ", course='" + course + '\'' +
-                '}';
-    }
+    public abstract String getSapid();
+    public abstract String getPassword();
+    public abstract String getName();
+    public abstract String getCourse();
 }

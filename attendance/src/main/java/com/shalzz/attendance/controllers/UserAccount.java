@@ -34,8 +34,8 @@ import com.shalzz.attendance.DatabaseHandler;
 import com.shalzz.attendance.Miscellaneous;
 import com.shalzz.attendance.activity.LoginActivity;
 import com.shalzz.attendance.activity.MainActivity;
-import com.shalzz.attendance.model.UserModel;
-import com.shalzz.attendance.network.DataAPI;
+import com.shalzz.attendance.data.model.remote.ImmutableUserModel;
+import com.shalzz.attendance.data.network.DataAPI;
 import com.shalzz.attendance.wrapper.MyPreferencesManager;
 import com.shalzz.attendance.wrapper.MySyncManager;
 import com.shalzz.attendance.wrapper.MyVolley;
@@ -74,10 +74,10 @@ public class UserAccount {
         DataAPI.getUser( loginSuccessListener(), myErrorListener(), creds);
     }
 
-    private Response.Listener<UserModel> loginSuccessListener() {
-        return new Response.Listener<UserModel>() {
+    private Response.Listener<ImmutableUserModel> loginSuccessListener() {
+        return new Response.Listener<ImmutableUserModel>() {
             @Override
-            public void onResponse(UserModel user) {
+            public void onResponse(ImmutableUserModel user) {
 
                 MyPreferencesManager.saveUser(user.getSapid(), user.getPassword());
                 MySyncManager.addPeriodicSync(mContext, user.getSapid());

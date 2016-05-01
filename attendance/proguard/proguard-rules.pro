@@ -13,7 +13,7 @@
 -keepattributes InnerClasses
 
 # Application classes that will be serialized/deserialized over Gson
--keep class com.shalzz.attendance.model.** { *; }
+-keep class com.shalzz.attendance.data.model.** { *; }
 
 -verbose
 -dump

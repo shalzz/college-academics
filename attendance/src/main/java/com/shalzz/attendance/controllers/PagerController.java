@@ -33,9 +33,9 @@ import com.shalzz.attendance.Miscellaneous;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.activity.MainActivity;
 import com.shalzz.attendance.adapter.TimeTablePagerAdapter;
+import com.shalzz.attendance.data.model.remote.ImmutablePeriodModel;
+import com.shalzz.attendance.data.network.DataAPI;
 import com.shalzz.attendance.fragment.TimeTablePagerFragment;
-import com.shalzz.attendance.model.PeriodModel;
-import com.shalzz.attendance.network.DataAPI;
 import com.shalzz.attendance.wrapper.MyVolley;
 import com.shalzz.attendance.wrapper.MyVolleyErrorHelper;
 
@@ -84,16 +84,16 @@ public class PagerController {
         DataAPI.getTimeTable(successListener(), errorListener());
     }
 
-    public Response.Listener<ArrayList<PeriodModel>> successListener() {
-        return new Response.Listener<ArrayList<PeriodModel>>() {
+    public Response.Listener<ArrayList<ImmutablePeriodModel>> successListener() {
+        return new Response.Listener<ArrayList<ImmutablePeriodModel>>() {
             @Override
-            public void onResponse(ArrayList<PeriodModel> response) {
+            public void onResponse(ArrayList<ImmutablePeriodModel> response) {
                 try {
 
                     done();
                     if(response.size() > 0) {
                         long now = new Date().getTime();
-                        for (PeriodModel period : response) {
+                        for (ImmutablePeriodModel period : response) {
                             db.addOrUpdatePeriod(period, now);
                         }
 

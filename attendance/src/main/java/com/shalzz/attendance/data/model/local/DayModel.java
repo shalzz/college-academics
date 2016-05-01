@@ -17,39 +17,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.shalzz.attendance.model;
+package com.shalzz.attendance.data.model.local;
 
-public enum Week {
+import com.shalzz.attendance.data.model.remote.ImmutablePeriodModel;
 
-    SUNDAY ("Sun","Sunday"),
-    MONDAY ("Mon","Monday"),
-    TUESDAY ("Tue","Tuesday"),
-    WEDNESDAY ("Wed","Wednesday"),
-    THURSDAY ("Thu","Thursday"),
-    FRIDAY ("Fri","Friday"),
-    SATURDAY ("Sat","Saturday");
+import org.immutables.value.Value;
 
-    private final String shortDay;
-    private final String fullDay;
+import java.util.List;
 
-    Week(String t, String p) {
-        shortDay = t;
-        fullDay = p;
-    }
 
-    public String getShortDay() {
-        return shortDay;
-    }
+@Value.Immutable(builder = false, copy = false)
+@Value.Style(allParameters = true)
+public abstract class DayModel {
 
-    public static String getShortDay(int i) {
-        return Week.values()[i].getShortDay();
-    }
-
-    public String getFullDay() {
-        return fullDay;
-    }
-
-    public static String getFullDay(int i) {
-        return Week.values()[i].getFullDay();
-    }
+    public abstract List<Integer> getSubjectIDs();
+    public abstract List<ImmutablePeriodModel> getPeriods();
 }

@@ -47,6 +47,7 @@ import java.math.BigInteger;
 import java.net.Proxy;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Locale;
 
 public class Miscellaneous {
 
@@ -173,6 +174,20 @@ public class Miscellaneous {
             hashtext = "0"+hashtext;
         }
         return hashtext;
+    }
+
+    public String capitalizeString(String name) {
+        char[] chars = name.toLowerCase(Locale.getDefault()).toCharArray();
+        boolean found = false;
+        for (int i = 0; i < chars.length; i++) {
+            if (!found && Character.isLetter(chars[i])) {
+                chars[i] = Character.toUpperCase(chars[i]);
+                found = true;
+            } else if (Character.isWhitespace(chars[i]) || chars[i]=='.' || chars[i]=='\'') { // You can add other chars here
+                found = false;
+            }
+        }
+        return String.valueOf(chars);
     }
 
     /**

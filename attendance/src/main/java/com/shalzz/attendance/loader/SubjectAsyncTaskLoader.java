@@ -23,14 +23,14 @@ import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
 
 import com.shalzz.attendance.DatabaseHandler;
-import com.shalzz.attendance.model.SubjectModel;
+import com.shalzz.attendance.data.model.remote.ImmutableSubjectModel;
 
 import java.util.List;
 
-public class SubjectAsyncTaskLoader extends AsyncTaskLoader<List<SubjectModel>> {
+public class SubjectAsyncTaskLoader extends AsyncTaskLoader<List<ImmutableSubjectModel>> {
 
     private DatabaseHandler mDb;
-    private List<SubjectModel> mSubjects;
+    private List<ImmutableSubjectModel> mSubjects;
 
     // If non-null, this is the current filter the user has provided.
     public String mCurFilter;
@@ -53,14 +53,14 @@ public class SubjectAsyncTaskLoader extends AsyncTaskLoader<List<SubjectModel>> 
         }
     }
 
-    public List<SubjectModel> loadInBackground() {
+    public List<ImmutableSubjectModel> loadInBackground() {
         if(mDb == null)
             mDb = new DatabaseHandler(getContext());
         return mDb.getAllSubjects(this, mCurFilter);
     }
 
     @Override
-    public void deliverResult(List<SubjectModel> data) {
+    public void deliverResult(List<ImmutableSubjectModel> data) {
         // We’ll save the data for later retrieval
         mSubjects = data;
         // We can do any pre-processing we want here
@@ -81,7 +81,7 @@ public class SubjectAsyncTaskLoader extends AsyncTaskLoader<List<SubjectModel>> 
     }
 
     @Override
-    public void onCanceled(List<SubjectModel> data) {
+    public void onCanceled(List<ImmutableSubjectModel> data) {
         super.onCanceled(data);
         if(mDb != null) {
             mDb.close();
