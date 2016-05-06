@@ -38,7 +38,7 @@ import com.shalzz.attendance.Miscellaneous;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.activity.MainActivity;
 import com.shalzz.attendance.adapter.ExpandableListAdapter;
-import com.shalzz.attendance.data.model.remote.ImmutableSubjectModel;
+import com.shalzz.attendance.data.model.remote.ImmutableSubject;
 import com.shalzz.attendance.data.network.DataAPI;
 import com.shalzz.attendance.fragment.AttendanceListFragment;
 import com.shalzz.attendance.loader.SubjectAsyncTaskLoader;
@@ -49,7 +49,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class AttendanceController implements LoaderManager.LoaderCallbacks<List<ImmutableSubjectModel>> {
+public class AttendanceController implements LoaderManager.LoaderCallbacks<List<ImmutableSubject>> {
 
     public static final String SUBJECT_FILTER = "subject_filter_text";
 
@@ -84,17 +84,17 @@ public class AttendanceController implements LoaderManager.LoaderCallbacks<List<
         DataAPI.getAttendance(successListener(), errorListener());
     }
 
-    public Response.Listener<ArrayList<ImmutableSubjectModel>> successListener() {
-        return new Response.Listener<ArrayList<ImmutableSubjectModel>>() {
+    public Response.Listener<ArrayList<ImmutableSubject>> successListener() {
+        return new Response.Listener<ArrayList<ImmutableSubject>>() {
             @Override
-            public void onResponse(ArrayList<ImmutableSubjectModel> response) {
+            public void onResponse(ArrayList<ImmutableSubject> response) {
                 try {
 
                     done();
                     if(response.size() > 0) {
                         long now = new Date().getTime();
-                        for (ImmutableSubjectModel subject : response) {
-                            db.addOrUpdateSubject(subject, now);
+                        for (ImmutableSubject subject : response) {
+                            db.addSubject(subject, now);
                         }
 
                         if (db.purgeOldSubjects() == 1) {
@@ -147,7 +147,7 @@ public class AttendanceController implements LoaderManager.LoaderCallbacks<List<
     }
 
     @Override
-    public Loader<List<ImmutableSubjectModel>> onCreateLoader(int id, Bundle args) {
+    public Loader<List<ImmutableSubject>> onCreateLoader(int id, Bundle args) {
         String filter = null;
         if(args != null)
             filter = args.getString(SUBJECT_FILTER);
@@ -155,7 +155,7 @@ public class AttendanceController implements LoaderManager.LoaderCallbacks<List<
     }
 
     @Override
-    public void onLoadFinished(Loader<List<ImmutableSubjectModel>> loader, List<ImmutableSubjectModel> data) {
+    public void onLoadFinished(Loader<List<ImmutableSubject>> loader, List<ImmutableSubject> data) {
         String filter = ((SubjectAsyncTaskLoader) loader).mCurFilter;
         if(data.size() == 0 && filter == null) {
             updateSubjects();
@@ -166,7 +166,7 @@ public class AttendanceController implements LoaderManager.LoaderCallbacks<List<
     }
 
     @Override
-    public void onLoaderReset(Loader<List<ImmutableSubjectModel>> loader) {
+    public void onLoaderReset(Loader<List<ImmutableSubject>> loader) {
         // Loader reset, throw away our data,
         // unregister any listeners, etc.
         mAdapter.clear();

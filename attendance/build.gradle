@@ -18,6 +18,7 @@
  */
 apply plugin: 'com.android.application'
 apply plugin: 'com.neenbedankt.android-apt'
+apply plugin: 'com.squareup.sqldelight'
 
 android {
     compileSdkVersion 23
@@ -36,7 +37,7 @@ android {
 
     dexOptions {
         dexInProcess true
-        maxProcessCount = 4
+        maxProcessCount = 3
     }
 
     productFlavors {

@@ -43,7 +43,8 @@ import android.widget.TextView;
 import com.shalzz.attendance.BuildConfig;
 import com.shalzz.attendance.DatabaseHandler;
 import com.shalzz.attendance.R;
-import com.shalzz.attendance.data.model.remote.ImmutableSubjectModel;
+import com.shalzz.attendance.data.model.local.ImmutableListFooter;
+import com.shalzz.attendance.data.model.remote.ImmutableSubject;
 import com.shalzz.attendance.wrapper.MyVolley;
 
 import java.util.ArrayList;
@@ -63,8 +64,8 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     private String mTag = "ExpandableList Adapter";
 
     //our items
-    private final SortedList<ImmutableSubjectModel> mSubjects;
-    private ImmutableListFooterModel mFooter;
+    private final SortedList<ImmutableSubject> mSubjects;
+    private ImmutableListFooter mFooter;
     private List<View> headers = new ArrayList<>();
     private List<View> footers = new ArrayList<>();
 
@@ -111,40 +112,40 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         mExpandedTranslationZ = mResources.getDimension(R.dimen.atten_view_expanded_elevation);
         mBitmap = BitmapFactory.decodeResource(mResources,R.drawable.alert);
 
-        mSubjects = new SortedList<>(ImmutableSubjectModel.class,
-                new SortedListAdapterCallback<ImmutableSubjectModel>(this) {
+        mSubjects = new SortedList<>(ImmutableSubject.class,
+                new SortedListAdapterCallback<ImmutableSubject>(this) {
                     @Override
-                    public int compare(ImmutableSubjectModel o1, ImmutableSubjectModel o2) {
-                        return o1.getName().compareTo(o2.getName());
+                    public int compare(ImmutableSubject o1, ImmutableSubject o2) {
+                        return o1.name().compareTo(o2.name());
                     }
 
                     @SuppressWarnings("SimplifiableIfStatement")
                     @Override
-                    public boolean areContentsTheSame(ImmutableSubjectModel oldItem, ImmutableSubjectModel newItem) {
-                        if(oldItem.getId() != newItem.getId()) {
+                    public boolean areContentsTheSame(ImmutableSubject oldItem, ImmutableSubject newItem) {
+                        if(oldItem.id() != newItem.id()) {
                             return false;
                         }
-                        if(!oldItem.getName().equals(newItem.getName())) {
+                        if(!oldItem.name().equals(newItem.name())) {
                             return false;
                         }
-                        if(oldItem.getAttended().compareTo(newItem.getAttended())
+                        if(oldItem.attended().compareTo(newItem.attended())
                                 != 0) {
                             return false;
                         }
-                        if(oldItem.getHeld().compareTo(newItem.getHeld()) != 0) {
+                        if(oldItem.held().compareTo(newItem.held()) != 0) {
                             return false;
                         }
                         return oldItem.getAbsentDates().equals(newItem.getAbsentDates());
                     }
 
                     @Override
-                    public boolean areItemsTheSame(ImmutableSubjectModel item1, ImmutableSubjectModel item2) {
-                        return item1.getId() == item2.getId();
+                    public boolean areItemsTheSame(ImmutableSubject item1, ImmutableSubject item2) {
+                        return item1.id() == item2.id();
                     }
                 });
     }
 
-    public void addAll(List<ImmutableSubjectModel> subjects) {
+    public void addAll(List<ImmutableSubject> subjects) {
         mSubjects.addAll(subjects);
         updateFooter();
     }
@@ -161,7 +162,7 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
 
     public void updateFooter() {
         DatabaseHandler db = new DatabaseHandler(mContext);
-        ImmutableListFooterModel footer = db.getListFooter();
+        ImmutableListFooter footer = db.getListFooter();
         if(!footer.equals(mFooter)) {
             mFooter = footer;
             notifyItemChanged(getItemCount()-1);
@@ -388,8 +389,8 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         TextView tvReach = holder.tvReach;
         ImageView ivAlert = holder.ivAlert;
 
-        int held = mSubjects.get(position).getHeld().intValue();
-        int attend = mSubjects.get(position).getAttended().intValue();
+        int held = mSubjects.get(position).held().intValue();
+        int attend = mSubjects.get(position).attended().intValue();
         int percent = Math.round(mSubjects.get(position).getPercentage());
 
         tvAbsent.setText(mResources.getString(R.string.atten_list_days_absent,
@@ -494,12 +495,12 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
         Float percent = mSubjects.get(position).getPercentage();
-        holder.subject.setText(mSubjects.get(position).getName());
+        holder.subject.setText(mSubjects.get(position).name());
         holder.percentage.setText(mResources.getString(R.string.atten_list_percentage,
                 mSubjects.get(position).getPercentage()));
         holder.classes.setText(mResources.getString(R.string.atten_list_attended_upon_held,
-                mSubjects.get(position).getAttended().intValue(),
-                mSubjects.get(position).getHeld().intValue()));
+                mSubjects.get(position).attended().intValue(),
+                mSubjects.get(position).held().intValue()));
         Drawable d = holder.percent.getProgressDrawable();
         if(percent > 0f)
             d.setLevel(percent.intValue()*100);

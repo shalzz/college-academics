@@ -29,9 +29,9 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.data.model.remote.GsonAdaptersRemote;
-import com.shalzz.attendance.data.model.remote.ImmutablePeriodModel;
-import com.shalzz.attendance.data.model.remote.ImmutableSubjectModel;
-import com.shalzz.attendance.data.model.remote.ImmutableUserModel;
+import com.shalzz.attendance.data.model.remote.ImmutablePeriod;
+import com.shalzz.attendance.data.model.remote.ImmutableSubject;
+import com.shalzz.attendance.data.model.remote.ImmutableUser;
 import com.shalzz.attendance.wrapper.MyPreferencesManager;
 import com.shalzz.attendance.wrapper.MyVolley;
 
@@ -42,14 +42,14 @@ import java.util.Map;
 
 public class DataAPI {
 
-    public static void getUser(Response.Listener<ImmutableUserModel> successListener,
+    public static void getUser(Response.Listener<ImmutableUser> successListener,
                                Response.ErrorListener errorListener) {
 
         String creds = MyPreferencesManager.getUser();
         getUser(successListener, errorListener, creds);
     }
 
-    public static void getUser(Response.Listener<ImmutableUserModel> successListener,
+    public static void getUser(Response.Listener<ImmutableUser> successListener,
                                Response.ErrorListener errorListener,
                                final String credentials ) {
 
@@ -57,15 +57,15 @@ public class DataAPI {
         Map<String, String> headers = new HashMap<String, String>();
         String auth = "Basic " + Base64.encodeToString(credentials.getBytes(), Base64.NO_WRAP);
         headers.put("Authorization", auth);
-        headers.put("UserModel-Agent", res.getString(R.string.UserAgent));
+        headers.put("User-Agent", res.getString(R.string.UserAgent));
 
         String mURL = res.getString(R.string.URL_user);
         Gson gson = new GsonBuilder()
                 .registerTypeAdapterFactory(new GsonAdaptersRemote())
                 .create();
-        GsonRequest<ImmutableUserModel> gsonRequest = new GsonRequest<>(
+        GsonRequest<ImmutableUser> gsonRequest = new GsonRequest<>(
                 mURL,
-                ImmutableUserModel.class,
+                ImmutableUser.class,
                 null,
                 gson,
                 headers,
@@ -78,7 +78,7 @@ public class DataAPI {
         MyVolley.getInstance().addToRequestQueue(gsonRequest, MyVolley.APPLICATION_NETWORK_TAG);
     }
 
-    public static void getAttendance(Response.Listener<ArrayList<ImmutableSubjectModel>>
+    public static void getAttendance(Response.Listener<ArrayList<ImmutableSubject>>
                                              successListener,
                                      Response.ErrorListener errorListener) {
 
@@ -87,16 +87,16 @@ public class DataAPI {
         String creds = MyPreferencesManager.getUser();
         String auth = "Basic " + Base64.encodeToString(creds.getBytes(), Base64.NO_WRAP);
         headers.put("Authorization", auth);
-        headers.put("UserModel-Agent", res.getString(R.string.UserAgent));
+        headers.put("User-Agent", res.getString(R.string.UserAgent));
 
         String mURL = res.getString(R.string.URL_attendance);
-        Type collectionType = new TypeToken<ArrayList<ImmutableSubjectModel>>(){}.getType();
+        Type collectionType = new TypeToken<ArrayList<ImmutableSubject>>(){}.getType();
 
         Gson gson = new GsonBuilder()
                 .setDateFormat("yyyy-MM-dd")
                 .registerTypeAdapterFactory(new GsonAdaptersRemote())
                 .create();
-        GsonRequest<ArrayList<ImmutableSubjectModel>> requestAttendance = new GsonRequest<>(
+        GsonRequest<ArrayList<ImmutableSubject>> requestAttendance = new GsonRequest<>(
                 mURL,
                 null,
                 collectionType,
@@ -111,7 +111,7 @@ public class DataAPI {
         MyVolley.getInstance().addToRequestQueue(requestAttendance, MyVolley.ACTIVITY_NETWORK_TAG);
     }
 
-    public static void getTimeTable(Response.Listener<ArrayList<ImmutablePeriodModel>> successListener,
+    public static void getTimeTable(Response.Listener<ArrayList<ImmutablePeriod>> successListener,
                                     Response.ErrorListener errorListener) {
 
         Resources res = MyVolley.getMyResources();
@@ -119,15 +119,15 @@ public class DataAPI {
         String creds = MyPreferencesManager.getUser();
         String auth = "Basic " + Base64.encodeToString(creds.getBytes(), Base64.NO_WRAP);
         headers.put("Authorization", auth);
-        headers.put("UserModel-Agent", res.getString(R.string.UserAgent));
+        headers.put("User-Agent", res.getString(R.string.UserAgent));
 
         String mURL = res.getString(R.string.URL_timetable);
-        Type collectionType = new TypeToken<ArrayList<ImmutablePeriodModel>>(){}.getType();
+        Type collectionType = new TypeToken<ArrayList<ImmutablePeriod>>(){}.getType();
 
         Gson gson = new GsonBuilder()
                 .registerTypeAdapterFactory(new GsonAdaptersRemote())
                 .create();
-        GsonRequest<ArrayList<ImmutablePeriodModel>> requestTimeTable = new GsonRequest<>(
+        GsonRequest<ArrayList<ImmutablePeriod>> requestTimeTable = new GsonRequest<>(
                 mURL,
                 null,
                 collectionType,

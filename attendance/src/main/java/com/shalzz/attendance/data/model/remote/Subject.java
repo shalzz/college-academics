@@ -19,6 +19,8 @@
 
 package com.shalzz.attendance.data.model.remote;
 
+import android.support.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 import com.shalzz.attendance.wrapper.DateHelper;
 
@@ -52,13 +54,27 @@ import java.util.Locale;
  *  by the express.js server (upes-api) as of this writing.
  */
 @Value.Immutable
-public abstract class SubjectModel {
+@Value.Style(allParameters = true)
+public abstract class Subject implements SubjectModel{
+    public static final Mapper<ImmutableSubject> MAPPER =
+            new SubjectModel.Mapper<>(new Mapper.Creator<ImmutableSubject>() {
+                @Override
+                public ImmutableSubject create(int id, String name, Float attended, Float held,
+                                      Long last_updated) {
+                    return ImmutableSubject.of(id,name,attended,held);
+                }
+            });
 
-    public abstract int getId();
-    public abstract String getName();
-    public abstract Float getHeld();
-    public abstract Float getAttended();
+    public static final class Marshal extends SubjectMarshal<Marshal> { }
+
+    @Nullable
+    @Override
+    @Gson.Ignore
+    @Value.Parameter(false)
+    public abstract Long last_updated();
+
     @SerializedName("absent_dates")
+    @Value.Parameter(false)
     public abstract List<Date> getAbsentDates();
 
     @Gson.Ignore
@@ -93,8 +109,8 @@ public abstract class SubjectModel {
     @Gson.Ignore
     @Value.Derived
 	public Float getPercentage() {
-        if(getHeld() > 0f)
-            return getAttended() / getHeld() * 100;
+        if(held() > 0f)
+            return attended() / held() * 100;
         return 0.0f;
 	}
 }

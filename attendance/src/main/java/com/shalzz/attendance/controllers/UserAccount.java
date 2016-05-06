@@ -34,7 +34,7 @@ import com.shalzz.attendance.DatabaseHandler;
 import com.shalzz.attendance.Miscellaneous;
 import com.shalzz.attendance.activity.LoginActivity;
 import com.shalzz.attendance.activity.MainActivity;
-import com.shalzz.attendance.data.model.remote.ImmutableUserModel;
+import com.shalzz.attendance.data.model.remote.ImmutableUser;
 import com.shalzz.attendance.data.network.DataAPI;
 import com.shalzz.attendance.wrapper.MyPreferencesManager;
 import com.shalzz.attendance.wrapper.MySyncManager;
@@ -74,15 +74,15 @@ public class UserAccount {
         DataAPI.getUser( loginSuccessListener(), myErrorListener(), creds);
     }
 
-    private Response.Listener<ImmutableUserModel> loginSuccessListener() {
-        return new Response.Listener<ImmutableUserModel>() {
+    private Response.Listener<ImmutableUser> loginSuccessListener() {
+        return new Response.Listener<ImmutableUser>() {
             @Override
-            public void onResponse(ImmutableUserModel user) {
+            public void onResponse(ImmutableUser user) {
 
-                MyPreferencesManager.saveUser(user.getSapid(), user.getPassword());
-                MySyncManager.addPeriodicSync(mContext, user.getSapid());
+                MyPreferencesManager.saveUser(user.sap_id(), user.password());
+                MySyncManager.addPeriodicSync(mContext, user.sap_id());
                 DatabaseHandler db = new DatabaseHandler(mContext);
-                db.addOrUpdateUser(user);
+                db.addUser(user);
                 db.close();
 
                 misc.dismissProgressDialog();
@@ -118,6 +118,7 @@ public class UserAccount {
                 View view = ((Activity) mContext).getCurrentFocus();
                 Miscellaneous.showSnackBar(view, msg);
                 Log.e(mContext.getClass().getName(), msg);
+                error.printStackTrace();
             }
         };
     }
@@ -128,7 +129,7 @@ public class UserAccount {
     public void Logout() {
         MainActivity.LOGGED_OUT = true;
 
-        // Remove UserModel Details from Shared Preferences.
+        // Remove User Details from Shared Preferences.
         MyPreferencesManager.removeUser();
 
         // Remove user Attendance data from database.

@@ -28,10 +28,9 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.shalzz.attendance.R;
-import com.shalzz.attendance.data.model.local.ImmutableDayModel;
-import com.shalzz.attendance.data.model.remote.ImmutablePeriodModel;
+import com.shalzz.attendance.data.model.local.ImmutableDay;
+import com.shalzz.attendance.data.model.remote.ImmutablePeriod;
 
-import java.text.ParseException;
 import java.util.List;
 
 import butterknife.BindView;
@@ -39,9 +38,9 @@ import butterknife.ButterKnife;
 
 public class DayListAdapter extends RecyclerView.Adapter<DayListAdapter.ViewHolder>{
 
-    private SortedList<ImmutablePeriodModel> mPeriods;
+    private SortedList<ImmutablePeriod> mPeriods;
     private List<Integer> subjectIDs;
-    private SortedListAdapterCallback<ImmutablePeriodModel> callback;
+    private SortedListAdapterCallback<ImmutablePeriod> callback;
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
@@ -60,56 +59,57 @@ public class DayListAdapter extends RecyclerView.Adapter<DayListAdapter.ViewHold
     }
 
     public DayListAdapter(){
-        callback = new SortedListAdapterCallback<ImmutablePeriodModel>(this) {
+        callback = new SortedListAdapterCallback<ImmutablePeriod>(this) {
             @Override
-            public int compare(ImmutablePeriodModel o1, ImmutablePeriodModel o2) {
+            public int compare(ImmutablePeriod o1, ImmutablePeriod o2) {
                 return (o1.getStartDate().compareTo(o2.getStartDate()));
             }
 
             @SuppressWarnings("SimplifiableIfStatement")
             @Override
-            public boolean areContentsTheSame(ImmutablePeriodModel oldItem, ImmutablePeriodModel newItem) {
-                if(oldItem.getId() != newItem.getId()) {
+            public boolean areContentsTheSame(ImmutablePeriod oldItem, ImmutablePeriod newItem) {
+                if(oldItem.id() != newItem.id()) {
                     return false;
                 }
-                if(oldItem.getDay().equals(newItem.getDay())) {
+                if(!oldItem.week_day().equals(newItem.week_day())) {
                     return false;
                 }
-                if(!oldItem.getName().equals(newItem.getName())) {
+                if(!oldItem.name().equals(newItem.name())) {
                     return false;
                 }
-                if(oldItem.getTeacher().equals(newItem.getTeacher())) {
+                if(!oldItem.teacher().equals(newItem.teacher())) {
                     return false;
                 }
-                if(oldItem.getStart().equals(newItem.getStart())) {
+                if(!oldItem.start_time().equals(newItem.start_time())) {
                     return false;
                 }
-                if(oldItem.getEnd().equals(newItem.getEnd())) {
+                if(!oldItem.end_time().equals(newItem.end_time())) {
                     return false;
                 }
-                if(oldItem.getRoom().equals(newItem.getRoom())) {
+                if((oldItem.batch() != null && newItem.batch() != null)
+                        && !oldItem.batch().equals(newItem.batch())) {
                     return false;
                 }
-                return oldItem.getBatch().equals(newItem.getBatch());
+                return oldItem.room().equals(newItem.room());
             }
 
             @Override
-            public boolean areItemsTheSame(ImmutablePeriodModel item1, ImmutablePeriodModel item2) {
-                return item1.getId() == item2.getId();
+            public boolean areItemsTheSame(ImmutablePeriod item1, ImmutablePeriod item2) {
+                return item1.id() == item2.id();
             }
         };
 
-        mPeriods = new SortedList<>(ImmutablePeriodModel.class, callback);
+        mPeriods = new SortedList<>(ImmutablePeriod.class, callback);
     }
 
-    public void update(ImmutableDayModel day) {
-        List<ImmutablePeriodModel> periods = day.getPeriods();
+    public void update(ImmutableDay day) {
+        List<ImmutablePeriod> periods = day.getPeriods();
         subjectIDs = day.getSubjectIDs();
         mPeriods.beginBatchedUpdates();
         for (int i = 0; i < mPeriods.size(); i++) {
-            ImmutablePeriodModel existingObject = mPeriods.get(i);
+            ImmutablePeriod existingObject = mPeriods.get(i);
             boolean found = false;
-            for (ImmutablePeriodModel newObject : periods) {
+            for (ImmutablePeriod newObject : periods) {
                 if (callback.areItemsTheSame(existingObject, newObject)) {
                     found = true;
                     break;
@@ -144,13 +144,13 @@ public class DayListAdapter extends RecyclerView.Adapter<DayListAdapter.ViewHold
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
 
-        ImmutablePeriodModel period = mPeriods.get(position);
-        holder.tvSubjectName.setText(period.getName());
-        holder.tvRoom.setText(period.getRoom());
-        holder.tvTeacher.setText(period.getTeacher());
+        ImmutablePeriod period = mPeriods.get(position);
+        holder.tvSubjectName.setText(period.name());
+        holder.tvRoom.setText(period.room());
+        holder.tvTeacher.setText(period.teacher());
         holder.tvTime.setText(period.getTimein12hr());
 
-        if(subjectIDs.contains(period.getId()))
+        if(subjectIDs.contains(period.id()))
             holder.tvMarkedAbsent.setVisibility(View.VISIBLE);
         else {
             holder.tvMarkedAbsent.setVisibility(View.GONE);

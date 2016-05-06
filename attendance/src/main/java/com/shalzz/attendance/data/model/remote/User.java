@@ -19,7 +19,10 @@
 
 package com.shalzz.attendance.data.model.remote;
 
+import android.support.annotation.NonNull;
+
 import com.google.gson.Gson;
+import com.google.gson.annotations.SerializedName;
 
 import org.immutables.value.Value;
 
@@ -41,10 +44,33 @@ import org.immutables.value.Value;
  *  by the express.js server (upes-api) as of this writing.
  */
 @Value.Immutable
-public abstract class UserModel {
+@Value.Style(allParameters = true)
+public abstract class User implements UserModel {
+    public static final Mapper<ImmutableUser> MAPPER =
+            new Mapper<>( new Mapper.Creator<ImmutableUser>() {
+                @Override
+                public ImmutableUser create(String sap_id, String name, String course, String
+                        password) {
+                    return ImmutableUser.of(sap_id,name,course,password);
+                }
+            });
 
-    public abstract String getSapid();
-    public abstract String getPassword();
-    public abstract String getName();
-    public abstract String getCourse();
+    public static final class Marshal extends UserMarshal<Marshal> { }
+
+    @NonNull
+    @Override
+    @SerializedName("sapid")
+    public abstract String sap_id();
+
+    @NonNull
+    @Override
+    public abstract String name();
+
+    @NonNull
+    @Override
+    public abstract String course();
+
+    @NonNull
+    @Override
+    public abstract String password();
 }

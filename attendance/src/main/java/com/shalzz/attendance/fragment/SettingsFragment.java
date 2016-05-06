@@ -92,7 +92,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnShar
         }
         else if (key.equals(getString(R.string.pref_key_sync))) {
             DatabaseHandler db = new DatabaseHandler(mContext);
-            String account_name =  "" + db.getUser().getSapid();
+            String account_name =  "" + db.getUser().sap_id();
             if (sharedPreferences.getBoolean(key,true))
                 MySyncManager.enableAutomaticSync(mContext, account_name);
             else
@@ -102,7 +102,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnShar
             DatabaseHandler db = new DatabaseHandler(mContext);
             ListPreference connectionPref = (ListPreference) findPreference(key);
             connectionPref.setSummary(connectionPref.getEntry());
-            MySyncManager.addPeriodicSync(mContext, "" + db.getUser().getSapid());
+            MySyncManager.addPeriodicSync(mContext, "" + db.getUser().sap_id());
         }
         else if(key.equals(getString(R.string.pref_key_ga_opt_in))) {
             GoogleAnalytics.getInstance(mContext).setAppOptOut(

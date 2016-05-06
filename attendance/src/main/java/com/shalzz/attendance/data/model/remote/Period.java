@@ -19,6 +19,10 @@
 
 package com.shalzz.attendance.data.model.remote;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
+import com.google.gson.annotations.SerializedName;
 import com.shalzz.attendance.wrapper.DateHelper;
 
 import org.immutables.gson.Gson;
@@ -49,23 +53,67 @@ import java.util.Date;
  *  by the express.js server (upes-api) as of this writing.
  */
 @Value.Immutable
-public abstract class PeriodModel {
+@Value.Style(allParameters = true)
+public abstract class Period implements PeriodModel {
+    public static final Mapper<ImmutablePeriod> MAPPER =
+            new Mapper<>( new Mapper.Creator<ImmutablePeriod>() {
+                @Override
+                public ImmutablePeriod create(int id, String week_day, String name, String teacher,
+                                          String room, String batch, String start_time,
+                                          String end_time, Long last_updated) {
+                    return ImmutablePeriod.of(id,week_day,name,teacher,room,batch,start_time,end_time);
+                }
+            });
 
-	public abstract int getId();
-    public abstract String getName();
-    public abstract String getRoom();
-    public abstract String getTeacher();
-    public abstract String getStart();
-    public abstract String getEnd();
-    public abstract String getDay();
-    public abstract String getBatch();
+    public static final class Marshal extends PeriodMarshal<Marshal> { }
+
+    @Override
+    public abstract int id();
+
+    @NonNull
+    @Override
+    @SerializedName("day")
+    public abstract String week_day();
+
+    @NonNull
+    @Override
+    public abstract String name();
+
+    @NonNull
+    @Override
+    public abstract String teacher();
+
+    @NonNull
+    @Override
+    public abstract String room();
+
+    @NonNull
+    @Override
+    public abstract String batch();
+
+    @NonNull
+    @Override
+    @SerializedName("start")
+    public abstract String start_time();
+
+    @NonNull
+    @Override
+    @SerializedName("end")
+    public abstract String end_time();
+
+    @Nullable
+    @Override
+    @Gson.Ignore
+    @Value.Parameter(false)
+    public abstract Long last_updated();
 
     @Gson.Ignore
     @Value.Derived
+    @Value.Parameter(false)
 	public Date getStartDate() {
         Date d = null;
         try {
-            d = DateHelper.hr24Format.parse(getStart());
+            d = DateHelper.hr24Format.parse(start_time());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -74,14 +122,15 @@ public abstract class PeriodModel {
 
     @Gson.Ignore
     @Value.Derived
+    @Value.Parameter(false)
     public String getTimein12hr() {
         String timeRange , mStart, mEnd;
         try {
-            mStart = DateHelper.to12HrFormat(getStart());
-            mEnd = DateHelper.to12HrFormat(getEnd());
+            mStart = DateHelper.to12HrFormat(start_time());
+            mEnd = DateHelper.to12HrFormat(end_time());
         } catch(ParseException e) {
             e.printStackTrace();
-            return getStart() + "-" + getEnd();
+            return start_time() + "-" + end_time();
         }
 
         // Remove leading zero's

@@ -41,8 +41,8 @@ import com.android.volley.VolleyError;
 import com.shalzz.attendance.DatabaseHandler;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.activity.MainActivity;
-import com.shalzz.attendance.data.model.remote.ImmutablePeriodModel;
-import com.shalzz.attendance.data.model.remote.ImmutableSubjectModel;
+import com.shalzz.attendance.data.model.remote.ImmutablePeriod;
+import com.shalzz.attendance.data.model.remote.ImmutableSubject;
 import com.shalzz.attendance.data.network.DataAPI;
 import com.shalzz.attendance.wrapper.MyVolleyErrorHelper;
 
@@ -93,15 +93,15 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 		DataAPI.getTimeTable(timeTableSuccessListener(), myErrorListener());
 	}
 
-	private Response.Listener<ArrayList<ImmutableSubjectModel>> attendanceSuccessListener() {
-		return new Response.Listener<ArrayList<ImmutableSubjectModel>>() {
+	private Response.Listener<ArrayList<ImmutableSubject>> attendanceSuccessListener() {
+		return new Response.Listener<ArrayList<ImmutableSubject>>() {
 			@Override
-			public void onResponse(ArrayList<ImmutableSubjectModel> response) {
+			public void onResponse(ArrayList<ImmutableSubject> response) {
                 try {
 					DatabaseHandler db = new DatabaseHandler(mContext);
                     long now = new Date().getTime();
-                    for (ImmutableSubjectModel subject : response) {
-                        db.addOrUpdateSubject(subject, now);
+                    for (ImmutableSubject subject : response) {
+                        db.addSubject(subject, now);
                     }
                     db.purgeOldSubjects();
 					db.close();
@@ -114,15 +114,15 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 	}
 
     @SuppressLint("InlinedApi")
-	private Response.Listener<ArrayList<ImmutablePeriodModel>> timeTableSuccessListener() {
-		return new Response.Listener<ArrayList<ImmutablePeriodModel>>() {
+	private Response.Listener<ArrayList<ImmutablePeriod>> timeTableSuccessListener() {
+		return new Response.Listener<ArrayList<ImmutablePeriod>>() {
 			@Override
-			public void onResponse(ArrayList<ImmutablePeriodModel> response) {
+			public void onResponse(ArrayList<ImmutablePeriod> response) {
                 try {
 					DatabaseHandler db = new DatabaseHandler(mContext);
                     long now = new Date().getTime();
-					for(ImmutablePeriodModel period : response) {
-						db.addOrUpdatePeriod(period, now);
+					for(ImmutablePeriod period : response) {
+						db.addPeriod(period, now);
 					}
                     SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences
                             (mContext);

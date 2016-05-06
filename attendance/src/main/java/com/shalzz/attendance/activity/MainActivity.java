@@ -50,10 +50,10 @@ import com.github.amlcurran.showcaseview.targets.Target;
 import com.shalzz.attendance.BuildConfig;
 import com.shalzz.attendance.DatabaseHandler;
 import com.shalzz.attendance.R;
+import com.shalzz.attendance.data.model.remote.User;
 import com.shalzz.attendance.fragment.AttendanceListFragment;
 import com.shalzz.attendance.fragment.SettingsFragment;
 import com.shalzz.attendance.fragment.TimeTablePagerFragment;
-import com.shalzz.attendance.data.model.remote.UserModel;
 import com.shalzz.attendance.wrapper.MyVolley;
 
 import butterknife.BindArray;
@@ -277,15 +277,15 @@ public class MainActivity extends AppCompatActivity {
 
     public void updateUserDetails() {
         if(mDb.getUserCount()>0) {
-            UserModel user = mDb.getUser();
+            User user = mDb.getUser();
 
-            DrawerheaderVH.tv_name.setText(user.getName());
-            DrawerheaderVH.tv_course.setText(user.getCourse());
+            DrawerheaderVH.tv_name.setText(user.name());
+            DrawerheaderVH.tv_course.setText(user.course());
         }
     }
 
     public void updateLastSync() {
-        if(mDb.getRowCount()>0) {
+        if(mDb.getSubjectCount()>0) {
             int time = (int) mDb.getLastSync();
             DrawerheaderVH.last_refresh.setText(
                     getResources().getQuantityString(R.plurals.tv_last_refresh, time, time));

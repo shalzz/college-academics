@@ -19,23 +19,17 @@
 
 package com.shalzz.attendance.data.model.local;
 
+import com.shalzz.attendance.data.model.remote.ImmutablePeriod;
+
 import org.immutables.value.Value;
 
-/**
- * Model class for the ExpandableListView footer.
- * @author shalzz
- *
- */
-@Value.Immutable
-public abstract class ListFooterModel {
+import java.util.List;
 
-	public abstract Float getHeld();
-	public abstract Float getAttended();
 
-    @Value.Derived
-	public Float getPercentage() {
-        if(getHeld() > 0f)
-            return getAttended() / getHeld() * 100;
-        return 0.0f;
-	}
+@Value.Immutable(builder = false, copy = false)
+@Value.Style(allParameters = true)
+public abstract class Day {
+
+    public abstract List<Integer> getSubjectIDs();
+    public abstract List<ImmutablePeriod> getPeriods();
 }
