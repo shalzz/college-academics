@@ -581,7 +581,6 @@ public class MainActivity extends AppCompatActivity {
     public void onDestroy() {
         if(mDrawerLayout != null)
             mDrawerLayout.removeDrawerListener(mDrawerToggle);
-        MyVolley.getInstance().cancelAllPendingRequests();
         mDb.close();
         super.onDestroy();
     }

@@ -37,16 +37,18 @@ import android.widget.EditText;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.shalzz.attendance.wrapper.MyVolley;
-import com.squareup.okhttp.Authenticator;
-import com.squareup.okhttp.Credentials;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.net.InetSocketAddress;
 import java.net.Proxy;
+import java.net.ProxySelector;
+import java.net.SocketAddress;
+import java.net.URI;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 public class Miscellaneous {
@@ -176,7 +178,7 @@ public class Miscellaneous {
         return hashtext;
     }
 
-    public String capitalizeString(String name) {
+    public static String capitalizeString(String name) {
         char[] chars = name.toLowerCase(Locale.getDefault()).toCharArray();
         boolean found = false;
         for (int i = 0; i < chars.length; i++) {
@@ -211,28 +213,23 @@ public class Miscellaneous {
         }
         return false;
     }
-    public static String getProxyCredentials() {
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(MyVolley.getAppContext());
-        final String username = sharedPref.getString(
-                MyVolley.getAppContext().getString(R.string.pref_key_proxy_username), "");
-        final String password = sharedPref.getString(
-                MyVolley.getAppContext().getString(R.string.pref_key_proxy_password), "");
-        return Credentials.basic(username, password);
-    }
 
-    public static Authenticator getAuthenticator() {
-        return new Authenticator() {
-
+    public static ProxySelector getProxySelector() {
+        return new ProxySelector() {
             @Override
-            public Request authenticate(Proxy proxy, Response response) throws IOException {
-                return null;
+            public List<Proxy> select(URI uri) {
+                List<Proxy> list = new ArrayList<>();
+                list.add(Proxy.NO_PROXY);
+                list.add(new Proxy(Proxy.Type.HTTP, new InetSocketAddress(
+                        "proxy.ddn.upes.ac.in",8080)));
+                list.add(new Proxy(Proxy.Type.HTTP, new InetSocketAddress(
+                        "proxy1.ddn.upes.ac.in",8080)));
+                return list;
             }
 
             @Override
-            public Request authenticateProxy(Proxy proxy, Response response) throws IOException {
-                return response.request().newBuilder()
-                        .header("Proxy-Authorization", getProxyCredentials())
-                        .build();
+            public void connectFailed(URI uri, SocketAddress address, IOException failure) {
+
             }
         };
     }

@@ -25,8 +25,17 @@ import android.content.SharedPreferences;
 import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
 
+import com.shalzz.attendance.Miscellaneous;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.activity.MainActivity;
+
+import java.io.IOException;
+
+import okhttp3.Authenticator;
+import okhttp3.Credentials;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.Route;
 
 @SuppressLint("CommitPrefEdits")
 public class MyPreferencesManager {
@@ -51,12 +60,27 @@ public class MyPreferencesManager {
 		return loggedin;
 	}
 
-	public static String getUser() {
+	public static String getBasicAuthCredentials() {
 		SharedPreferences settings = mContext.getSharedPreferences("SETTINGS", 0);
-
-		return String.format("%s:%s", settings.getString("USERNAME", null)
-				, settings.getString("PASSWORD", null));
+        return Credentials.basic(settings.getString("USERNAME", null),
+                settings.getString("PASSWORD", null));
 	}
+
+    public static Authenticator getProxyCredentials() {
+        return new Authenticator() {
+            @Override
+            public Request authenticate(Route route, Response response) throws IOException {
+                SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mContext);
+                final String username = sharedPref.getString(
+                        MyVolley.getAppContext().getString(R.string.pref_key_proxy_username), "");
+                final String password = sharedPref.getString(
+                        MyVolley.getAppContext().getString(R.string.pref_key_proxy_password), "");
+                return response.request().newBuilder()
+                        .header("Proxy-Authorization", Credentials.basic(username,password))
+                        .build();
+            }
+        };
+    }
 
 	/**
 	 * Saves the user details in shared preferences and sets login status to true.

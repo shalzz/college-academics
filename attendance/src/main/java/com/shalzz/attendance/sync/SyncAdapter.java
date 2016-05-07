@@ -34,20 +34,22 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v7.app.NotificationCompat;
 import android.support.v7.preference.PreferenceManager;
-import android.util.Log;
 
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.shalzz.attendance.DatabaseHandler;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.activity.MainActivity;
 import com.shalzz.attendance.data.model.remote.ImmutablePeriod;
 import com.shalzz.attendance.data.model.remote.ImmutableSubject;
 import com.shalzz.attendance.data.network.DataAPI;
-import com.shalzz.attendance.wrapper.MyVolleyErrorHelper;
+import com.shalzz.attendance.wrapper.MyPreferencesManager;
+import com.shalzz.attendance.wrapper.MyVolley;
 
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
@@ -89,93 +91,94 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 	public void onPerformSync(Account account, Bundle extras, String authority,
 			ContentProviderClient provider, SyncResult syncResult) {
 
-		DataAPI.getAttendance(attendanceSuccessListener(), myErrorListener());
-		DataAPI.getTimeTable(timeTableSuccessListener(), myErrorListener());
-	}
-
-	private Response.Listener<ArrayList<ImmutableSubject>> attendanceSuccessListener() {
-		return new Response.Listener<ArrayList<ImmutableSubject>>() {
-			@Override
-			public void onResponse(ArrayList<ImmutableSubject> response) {
-                try {
-					DatabaseHandler db = new DatabaseHandler(mContext);
-                    long now = new Date().getTime();
-                    for (ImmutableSubject subject : response) {
-                        db.addSubject(subject, now);
+        DataAPI api = MyVolley.provideApi(MyVolley.provideClient(), MyVolley.provideGson());
+        Call<List<ImmutableSubject>> call = api.getAttendance(MyPreferencesManager.getBasicAuthCredentials());
+        call.enqueue(new Callback<List<ImmutableSubject>>() {
+            @Override
+            public void onResponse(Call<List<ImmutableSubject>> call, Response<List<ImmutableSubject>> response) {
+                if(response.isSuccessful()) {
+                    try {
+                        DatabaseHandler db = new DatabaseHandler(mContext);
+                        long now = new Date().getTime();
+                        for (ImmutableSubject subject : response.body()) {
+                            db.addSubject(subject, now);
+                        }
+                        db.purgeOldSubjects();
+                        db.close();
                     }
-                    db.purgeOldSubjects();
-					db.close();
-                }
-                catch(Exception e) {
-                    e.printStackTrace();
-                }
-			}
-		};
-	}
-
-    @SuppressLint("InlinedApi")
-	private Response.Listener<ArrayList<ImmutablePeriod>> timeTableSuccessListener() {
-		return new Response.Listener<ArrayList<ImmutablePeriod>>() {
-			@Override
-			public void onResponse(ArrayList<ImmutablePeriod> response) {
-                try {
-					DatabaseHandler db = new DatabaseHandler(mContext);
-                    long now = new Date().getTime();
-					for(ImmutablePeriod period : response) {
-						db.addPeriod(period, now);
-					}
-                    SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences
-                            (mContext);
-                    boolean notify = sharedPref.getBoolean(mContext.getString(
-                            R.string.pref_key_notify_timetable_changed),
-                            true);
-
-                    notify = db.purgeOldPeriods() == 1 && notify;
-
-                    // Show a notification since our timetable has changed.
-                    if (notify) {
-                        NotificationCompat.Builder mBuilder =
-                                (NotificationCompat.Builder) new NotificationCompat.Builder(mContext)
-                                        .setSmallIcon(R.drawable.ic_stat_human)
-                                        .setLargeIcon(BitmapFactory.decodeResource(
-                                                        mContext.getResources(),
-                                                        R.mipmap.ic_launcher))
-                                        .setAutoCancel(true)
-                                        .setPriority(Notification.PRIORITY_LOW)
-                                        .setCategory(Notification.CATEGORY_RECOMMENDATION)
-                                        .setContentTitle(mContext.getString(
-                                                R.string.notify_timetable_changed_title))
-                                        .setContentText(mContext.getString(
-                                                R.string.notify_timetable_changed_text));
-
-                        Intent resultIntent = new Intent(mContext, MainActivity.class);
-                        resultIntent.putExtra(MainActivity.LAUNCH_FRAGMENT_EXTRA, MainActivity
-                                .Fragments.TIMETABLE.getValue());
-                        resultIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        PendingIntent resultPendingIntent = PendingIntent.getActivity(mContext,
-                                0, resultIntent,PendingIntent.FLAG_UPDATE_CURRENT);
-                        mBuilder.setContentIntent(resultPendingIntent);
-                        NotificationManager mNotificationManager =
-                                (NotificationManager) mContext.getSystemService(
-                                        Context.NOTIFICATION_SERVICE);
-                        mNotificationManager.notify(0, mBuilder.build());
+                    catch(Exception e) {
+                        e.printStackTrace();
                     }
-					db.close();
                 }
-                catch(Exception e) {
-                    e.printStackTrace();
-                }
-			}
-		};
-	}
+            }
 
-	private Response.ErrorListener myErrorListener() {
-		return new Response.ErrorListener() {
-			@Override
-			public void onErrorResponse(VolleyError error) {
-				String msg = MyVolleyErrorHelper.getMessage(error, mContext);
-				Log.e(myTag, msg);
-			}
-		};
+            @Override
+            public void onFailure(Call<List<ImmutableSubject>> call, Throwable t) {
+                t.printStackTrace();
+            }
+        });
+
+        Call<List<ImmutablePeriod>> call2 = api.getTimetable(MyPreferencesManager.getBasicAuthCredentials());
+        call2.enqueue(new Callback<List<ImmutablePeriod>>() {
+            @Override
+            @SuppressLint("InlinedApi")
+            public void onResponse(Call<List<ImmutablePeriod>> call,
+                                   Response<List<ImmutablePeriod>> response) {
+                if(response.isSuccessful()) {
+                    try {
+                        DatabaseHandler db = new DatabaseHandler(mContext);
+                        long now = new Date().getTime();
+                        for(ImmutablePeriod period : response.body()) {
+                            db.addPeriod(period, now);
+                        }
+                        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences
+                                (mContext);
+                        boolean notify = sharedPref.getBoolean(mContext.getString(
+                                R.string.pref_key_notify_timetable_changed),
+                                true);
+
+                        notify = db.purgeOldPeriods() == 1 && notify;
+
+                        // Show a notification since our timetable has changed.
+                        if (notify) {
+                            NotificationCompat.Builder mBuilder =
+                                    (NotificationCompat.Builder) new NotificationCompat.Builder(mContext)
+                                            .setSmallIcon(R.drawable.ic_stat_human)
+                                            .setLargeIcon(BitmapFactory.decodeResource(
+                                                    mContext.getResources(),
+                                                    R.mipmap.ic_launcher))
+                                            .setAutoCancel(true)
+                                            .setPriority(Notification.PRIORITY_LOW)
+                                            .setCategory(Notification.CATEGORY_RECOMMENDATION)
+                                            .setContentTitle(mContext.getString(
+                                                    R.string.notify_timetable_changed_title))
+                                            .setContentText(mContext.getString(
+                                                    R.string.notify_timetable_changed_text));
+
+                            Intent resultIntent = new Intent(mContext, MainActivity.class);
+                            resultIntent.putExtra(MainActivity.LAUNCH_FRAGMENT_EXTRA, MainActivity
+                                    .Fragments.TIMETABLE.getValue());
+                            resultIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            PendingIntent resultPendingIntent = PendingIntent.getActivity(mContext,
+                                    0, resultIntent,PendingIntent.FLAG_UPDATE_CURRENT);
+                            mBuilder.setContentIntent(resultPendingIntent);
+                            NotificationManager mNotificationManager =
+                                    (NotificationManager) mContext.getSystemService(
+                                            Context.NOTIFICATION_SERVICE);
+                            mNotificationManager.notify(0, mBuilder.build());
+                        }
+                        db.close();
+                    }
+                    catch(Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<ImmutablePeriod>> call, Throwable t) {
+                t.printStackTrace();
+            }
+        });
 	}
 }

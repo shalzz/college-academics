@@ -24,12 +24,8 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.util.Log;
 import android.view.View;
 
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.shalzz.attendance.BuildConfig;
 import com.shalzz.attendance.DatabaseHandler;
 import com.shalzz.attendance.Miscellaneous;
 import com.shalzz.attendance.activity.LoginActivity;
@@ -39,7 +35,11 @@ import com.shalzz.attendance.data.network.DataAPI;
 import com.shalzz.attendance.wrapper.MyPreferencesManager;
 import com.shalzz.attendance.wrapper.MySyncManager;
 import com.shalzz.attendance.wrapper.MyVolley;
-import com.shalzz.attendance.wrapper.MyVolleyErrorHelper;
+
+import okhttp3.Credentials;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 public class UserAccount {
@@ -50,6 +50,7 @@ public class UserAccount {
      * The activity context used to Log the user from
      */
     private Context mContext;
+    private Call<ImmutableUser> call;
 
     /**
      * Constructor to set the Activity context.
@@ -67,30 +68,38 @@ public class UserAccount {
      */
     public void Login(final String username, final String password) {
 
-        if(BuildConfig.DEBUG)
-            Log.d("User Account",Miscellaneous.md5(password));
-        String creds = String.format("%s:%s", username, Miscellaneous.md5(password));
+        String creds = Credentials.basic(username,Miscellaneous.md5(password));
         misc.showProgressDialog("Logging in...", false, pdCancelListener());
-        DataAPI.getUser( loginSuccessListener(), myErrorListener(), creds);
-    }
 
-    private Response.Listener<ImmutableUser> loginSuccessListener() {
-        return new Response.Listener<ImmutableUser>() {
+        DataAPI api = MyVolley.provideApi(MyVolley.provideClient(), MyVolley.provideGson());
+        call = api.getUser(creds);
+        call.enqueue(new Callback<ImmutableUser>() {
             @Override
-            public void onResponse(ImmutableUser user) {
+            public void onResponse(Call<ImmutableUser> call, Response<ImmutableUser> response) {
+                if(response.isSuccessful()) {
+                    ImmutableUser user = response.body();
+                    MyPreferencesManager.saveUser(user.sap_id(), user.password());
+                    MySyncManager.addPeriodicSync(mContext, user.sap_id());
+                    DatabaseHandler db = new DatabaseHandler(mContext);
+                    db.addUser(user);
+                    db.close();
 
-                MyPreferencesManager.saveUser(user.sap_id(), user.password());
-                MySyncManager.addPeriodicSync(mContext, user.sap_id());
-                DatabaseHandler db = new DatabaseHandler(mContext);
-                db.addUser(user);
-                db.close();
+                    misc.dismissProgressDialog();
+                    Intent ourIntent = new Intent(mContext, MainActivity.class);
+                    mContext.startActivity(ourIntent);
+                    ((Activity) mContext).finish();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ImmutableUser> call, Throwable t) {
 
                 misc.dismissProgressDialog();
-                Intent ourIntent = new Intent(mContext, MainActivity.class);
-                mContext.startActivity(ourIntent);
-                ((Activity) mContext).finish();
+                View view = ((Activity) mContext).getCurrentFocus();
+                Miscellaneous.showSnackBar(view, t.getLocalizedMessage());
+                t.printStackTrace();
             }
-        };
+        });
     }
 
     /**
@@ -102,25 +111,10 @@ public class UserAccount {
             @Override
             public void onCancel(DialogInterface dialog) {
                 // Cancel all pending requests when user presses back button.
-                MyVolley.getInstance().cancelPendingRequests(mContext.getClass().getName());
-                MyVolley.getInstance().cancelPendingRequests("LOGOUT");
+                call.cancel();
             }
         };
 
-    }
-
-    private Response.ErrorListener myErrorListener() {
-        return new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                String msg = MyVolleyErrorHelper.getMessage(error, mContext);
-                misc.dismissProgressDialog();
-                View view = ((Activity) mContext).getCurrentFocus();
-                Miscellaneous.showSnackBar(view, msg);
-                Log.e(mContext.getClass().getName(), msg);
-                error.printStackTrace();
-            }
-        };
     }
 
     /**

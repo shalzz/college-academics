@@ -30,8 +30,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.shalzz.attendance.BuildConfig;
 import com.shalzz.attendance.DatabaseHandler;
 import com.shalzz.attendance.Miscellaneous;
@@ -43,11 +41,13 @@ import com.shalzz.attendance.data.network.DataAPI;
 import com.shalzz.attendance.fragment.AttendanceListFragment;
 import com.shalzz.attendance.loader.SubjectAsyncTaskLoader;
 import com.shalzz.attendance.wrapper.MyVolley;
-import com.shalzz.attendance.wrapper.MyVolleyErrorHelper;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class AttendanceController implements LoaderManager.LoaderCallbacks<List<ImmutableSubject>> {
 
@@ -81,60 +81,55 @@ public class AttendanceController implements LoaderManager.LoaderCallbacks<List<
     }
 
     public void updateSubjects() {
-        DataAPI.getAttendance(successListener(), errorListener());
-    }
-
-    public Response.Listener<ArrayList<ImmutableSubject>> successListener() {
-        return new Response.Listener<ArrayList<ImmutableSubject>>() {
+        DataAPI api = MyVolley.provideApi(MyVolley.provideClient(), MyVolley.provideGson());
+        Call<List<ImmutableSubject>> call = api.getAttendance();
+        call.enqueue(new Callback<List<ImmutableSubject>>() {
             @Override
-            public void onResponse(ArrayList<ImmutableSubject> response) {
-                try {
-
-                    done();
-                    if(response.size() > 0) {
-                        long now = new Date().getTime();
-                        for (ImmutableSubject subject : response) {
-                            db.addSubject(subject, now);
-                        }
-
-                        if (db.purgeOldSubjects() == 1) {
-                            if(BuildConfig.DEBUG)
-                                Log.i(mTag, "Purging Subjects...");
-                            mAdapter.clear();
-                        }
-
-                        db.close();
-                        mAdapter.addAll(response);
-                        mView.showcaseView();
-                    } else {
-                        String msg = mResources.getString(R.string.unavailable_data_error_msg);
-                        Miscellaneous.showSnackBar(mView.mSwipeRefreshLayout, msg);
-                    }
-                    // Update the drawer header
-                    ((MainActivity) mView.getActivity()).updateLastSync();
-                }
-                catch (Exception e) {
-                    String msg = mResources.getString(R.string.unexpected_error);
-                    Miscellaneous.showSnackBar(mView.mSwipeRefreshLayout, msg);
-                    if(BuildConfig.DEBUG)
-                        e.printStackTrace();
-                }
-            }
-        };
-    }
-
-    public Response.ErrorListener errorListener() {
-        return new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-
+            public void onResponse(Call<List<ImmutableSubject>> call,
+                                   Response<List<ImmutableSubject>> response) {
                 done();
-                String msg = MyVolleyErrorHelper.getMessage(error, mContext);
-                Miscellaneous.showSnackBar(mView.mSwipeRefreshLayout, msg);
-                if(BuildConfig.DEBUG)
-                    error.printStackTrace();
+                if(response.isSuccessful()) {
+                    List<ImmutableSubject> subjects = response.body();
+                    try {
+                        if(subjects.size() > 0) {
+                            long now = new Date().getTime();
+                            for (ImmutableSubject subject : subjects) {
+                                db.addSubject(subject, now);
+                            }
+
+                            if (db.purgeOldSubjects() == 1) {
+                                if(BuildConfig.DEBUG)
+                                    Log.i(mTag, "Purging Subjects...");
+                                mAdapter.clear();
+                            }
+
+                            db.close();
+                            mAdapter.addAll(subjects);
+                            mView.showcaseView();
+                        } else {
+                            String msg = mResources.getString(R.string.unavailable_data_error_msg);
+                            Miscellaneous.showSnackBar(mView.mSwipeRefreshLayout, msg);
+                        }
+                        // Update the drawer header
+                        ((MainActivity) mView.getActivity()).updateLastSync();
+                    }
+                    catch (Exception e) {
+                        String msg = mResources.getString(R.string.unexpected_error);
+                        Miscellaneous.showSnackBar(mView.mSwipeRefreshLayout, msg);
+                        if(BuildConfig.DEBUG)
+                            e.printStackTrace();
+                    }
+                }
             }
-        };
+
+            @Override
+            public void onFailure(Call<List<ImmutableSubject>> call, Throwable t) {
+                done();
+                Miscellaneous.showSnackBar(mView.mSwipeRefreshLayout, t.getLocalizedMessage());
+                if(BuildConfig.DEBUG)
+                    t.printStackTrace();
+            }
+        });
     }
 
     public void done() {

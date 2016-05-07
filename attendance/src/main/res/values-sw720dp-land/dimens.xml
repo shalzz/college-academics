@@ -25,12 +25,9 @@
     -->
 
         <!-- Text size for action bar titles -->
-    <dimen name="action_bar_title_text_size">14sp</dimen>
     <!-- Text size for action bar subtitles -->
     <dimen name="action_bar_subtitle_text_size">10dp</dimen>
     <!-- Top margin for action bar subtitles -->
-    <dimen name="action_bar_subtitle_top_margin">-2dp</dimen>
     <!-- Bottom margin for action bar subtitles -->
-    <dimen name="action_bar_subtitle_bottom_margin">2dip</dimen>
 
 </resources>

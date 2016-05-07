@@ -24,7 +24,7 @@ WHERE last_updated != (
     );
 
 select_last_sync:
-SELECT min(last_updated)
+SELECT max(last_updated)
 FROM (
     SELECT last_updated
         FROM subject

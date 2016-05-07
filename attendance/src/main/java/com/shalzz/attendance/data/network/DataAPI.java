@@ -19,126 +19,34 @@
 
 package com.shalzz.attendance.data.network;
 
-import android.content.res.Resources;
-import android.util.Base64;
-
-import com.android.volley.DefaultRetryPolicy;
-import com.android.volley.Response;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
-import com.shalzz.attendance.R;
-import com.shalzz.attendance.data.model.remote.GsonAdaptersRemote;
 import com.shalzz.attendance.data.model.remote.ImmutablePeriod;
 import com.shalzz.attendance.data.model.remote.ImmutableSubject;
 import com.shalzz.attendance.data.model.remote.ImmutableUser;
-import com.shalzz.attendance.wrapper.MyPreferencesManager;
-import com.shalzz.attendance.wrapper.MyVolley;
 
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
-public class DataAPI {
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.http.GET;
+import retrofit2.http.Header;
+import retrofit2.http.Headers;
 
-    public static void getUser(Response.Listener<ImmutableUser> successListener,
-                               Response.ErrorListener errorListener) {
+public interface DataAPI {
 
-        String creds = MyPreferencesManager.getUser();
-        getUser(successListener, errorListener, creds);
-    }
+    String ENDPOINT = "https://upes.winnou.net/api/v1/";
 
-    public static void getUser(Response.Listener<ImmutableUser> successListener,
-                               Response.ErrorListener errorListener,
-                               final String credentials ) {
+    @GET("me")
+    Call<ImmutableUser> getUser(@Header("Authorization") String authorization);
 
-        Resources res = MyVolley.getMyResources();
-        Map<String, String> headers = new HashMap<String, String>();
-        String auth = "Basic " + Base64.encodeToString(credentials.getBytes(), Base64.NO_WRAP);
-        headers.put("Authorization", auth);
-        headers.put("User-Agent", res.getString(R.string.UserAgent));
+    @GET("me/attendance")
+    Call<List<ImmutableSubject>> getAttendance();
 
-        String mURL = res.getString(R.string.URL_user);
-        Gson gson = new GsonBuilder()
-                .registerTypeAdapterFactory(new GsonAdaptersRemote())
-                .create();
-        GsonRequest<ImmutableUser> gsonRequest = new GsonRequest<>(
-                mURL,
-                ImmutableUser.class,
-                null,
-                gson,
-                headers,
-                successListener,
-                errorListener);
+    @GET("me/attendance")
+    Call<List<ImmutableSubject>> getAttendance(@Header("Authorization") String authorization);
 
-        gsonRequest.setShouldCache(false);
-        gsonRequest.setRetryPolicy(new DefaultRetryPolicy(
-                DefaultRetryPolicy.DEFAULT_TIMEOUT_MS, 3, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        MyVolley.getInstance().addToRequestQueue(gsonRequest, MyVolley.APPLICATION_NETWORK_TAG);
-    }
+    @GET("me/timetable")
+    Call<List<ImmutablePeriod>> getTimetable();
 
-    public static void getAttendance(Response.Listener<ArrayList<ImmutableSubject>>
-                                             successListener,
-                                     Response.ErrorListener errorListener) {
-
-        Resources res = MyVolley.getMyResources();
-        final Map<String, String> headers = new HashMap<String, String>();
-        String creds = MyPreferencesManager.getUser();
-        String auth = "Basic " + Base64.encodeToString(creds.getBytes(), Base64.NO_WRAP);
-        headers.put("Authorization", auth);
-        headers.put("User-Agent", res.getString(R.string.UserAgent));
-
-        String mURL = res.getString(R.string.URL_attendance);
-        Type collectionType = new TypeToken<ArrayList<ImmutableSubject>>(){}.getType();
-
-        Gson gson = new GsonBuilder()
-                .setDateFormat("yyyy-MM-dd")
-                .registerTypeAdapterFactory(new GsonAdaptersRemote())
-                .create();
-        GsonRequest<ArrayList<ImmutableSubject>> requestAttendance = new GsonRequest<>(
-                mURL,
-                null,
-                collectionType,
-                gson,
-                headers,
-                successListener,
-                errorListener);
-
-        requestAttendance.setShouldCache(false);
-        requestAttendance.setRetryPolicy(new DefaultRetryPolicy(
-                DefaultRetryPolicy.DEFAULT_TIMEOUT_MS, 3, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        MyVolley.getInstance().addToRequestQueue(requestAttendance, MyVolley.ACTIVITY_NETWORK_TAG);
-    }
-
-    public static void getTimeTable(Response.Listener<ArrayList<ImmutablePeriod>> successListener,
-                                    Response.ErrorListener errorListener) {
-
-        Resources res = MyVolley.getMyResources();
-        Map<String, String> headers = new HashMap<String, String>();
-        String creds = MyPreferencesManager.getUser();
-        String auth = "Basic " + Base64.encodeToString(creds.getBytes(), Base64.NO_WRAP);
-        headers.put("Authorization", auth);
-        headers.put("User-Agent", res.getString(R.string.UserAgent));
-
-        String mURL = res.getString(R.string.URL_timetable);
-        Type collectionType = new TypeToken<ArrayList<ImmutablePeriod>>(){}.getType();
-
-        Gson gson = new GsonBuilder()
-                .registerTypeAdapterFactory(new GsonAdaptersRemote())
-                .create();
-        GsonRequest<ArrayList<ImmutablePeriod>> requestTimeTable = new GsonRequest<>(
-                mURL,
-                null,
-                collectionType,
-                gson,
-                headers,
-                successListener,
-                errorListener);
-
-        requestTimeTable.setShouldCache(false);
-        requestTimeTable.setRetryPolicy(new DefaultRetryPolicy(
-                DefaultRetryPolicy.DEFAULT_TIMEOUT_MS, 3, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        MyVolley.getInstance().addToRequestQueue(requestTimeTable, MyVolley.ACTIVITY_NETWORK_TAG);
-    }
+    @GET("me/timetable")
+    Call<List<ImmutablePeriod>> getTimetable(@Header("Authorization") String authorization);
 }

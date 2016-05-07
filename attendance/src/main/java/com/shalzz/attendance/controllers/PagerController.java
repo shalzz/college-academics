@@ -25,8 +25,6 @@ import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.View;
 
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.shalzz.attendance.BuildConfig;
 import com.shalzz.attendance.DatabaseHandler;
 import com.shalzz.attendance.Miscellaneous;
@@ -37,10 +35,12 @@ import com.shalzz.attendance.data.model.remote.ImmutablePeriod;
 import com.shalzz.attendance.data.network.DataAPI;
 import com.shalzz.attendance.fragment.TimeTablePagerFragment;
 import com.shalzz.attendance.wrapper.MyVolley;
-import com.shalzz.attendance.wrapper.MyVolleyErrorHelper;
 
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
 
 public class PagerController {
 
@@ -81,61 +81,56 @@ public class PagerController {
     }
 
     public void updatePeriods() {
-        DataAPI.getTimeTable(successListener(), errorListener());
-    }
-
-    public Response.Listener<ArrayList<ImmutablePeriod>> successListener() {
-        return new Response.Listener<ArrayList<ImmutablePeriod>>() {
+        DataAPI api = MyVolley.provideApi(MyVolley.provideClient(), MyVolley.provideGson());
+        Call<List<ImmutablePeriod>> call = api.getTimetable();
+        call.enqueue(new Callback<List<ImmutablePeriod>>() {
             @Override
-            public void onResponse(ArrayList<ImmutablePeriod> response) {
-                try {
-
-                    done();
-                    if(response.size() > 0) {
-                        long now = new Date().getTime();
-                        for (ImmutablePeriod period : response) {
-                            db.addPeriod(period, now);
-                        }
-
-                        if (db.purgeOldPeriods() == 1) {
-                            if(BuildConfig.DEBUG)
-                                Log.d(mTag, "Purging Periods...");
-                        }
-
-                        // TODO: use an event bus or RxJava to update fragment contents
-
-                        setToday();
-                        mView.updateTitle(-1);
-                        db.close();
-                    } else {
-                        String msg = mResources.getString(R.string.unavailable_timetable_error_msg);
-                        Miscellaneous.showSnackBar(mView.mSwipeRefreshLayout, msg);
-                    }
-                    // Update the drawer header
-                    ((MainActivity) mView.getActivity()).updateLastSync();
-                }
-                catch (Exception e) {
-                    String msg = mResources.getString(R.string.unexpected_error);
-                    Miscellaneous.showSnackBar(mView.mSwipeRefreshLayout, msg);
-                    if(BuildConfig.DEBUG)
-                        e.printStackTrace();
-                }
-            }
-        };
-    }
-
-    public Response.ErrorListener errorListener() {
-        return new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-
+            public void onResponse(Call<List<ImmutablePeriod>> call,
+                                   retrofit2.Response<List<ImmutablePeriod>> response) {
                 done();
-                String msg = MyVolleyErrorHelper.getMessage(error, mContext);
-                Miscellaneous.showSnackBar(mView.mSwipeRefreshLayout, msg);
-                if(BuildConfig.DEBUG)
-                    error.printStackTrace();
+                if(response.isSuccessful()) {
+                    List<ImmutablePeriod> periods = response.body();
+                    try {
+                        if(periods.size() > 0) {
+                            long now = new Date().getTime();
+                            for (ImmutablePeriod period : periods) {
+                                db.addPeriod(period, now);
+                            }
+
+                            if (db.purgeOldPeriods() == 1) {
+                                if(BuildConfig.DEBUG)
+                                    Log.d(mTag, "Purging Periods...");
+                            }
+
+                            // TODO: use an event bus or RxJava to update fragment contents
+
+                            setToday();
+                            mView.updateTitle(-1);
+                            db.close();
+                        } else {
+                            String msg = mResources.getString(R.string.unavailable_timetable_error_msg);
+                            Miscellaneous.showSnackBar(mView.mSwipeRefreshLayout, msg);
+                        }
+                        // Update the drawer header
+                        ((MainActivity) mView.getActivity()).updateLastSync();
+                    }
+                    catch (Exception e) {
+                        String msg = mResources.getString(R.string.unexpected_error);
+                        Miscellaneous.showSnackBar(mView.mSwipeRefreshLayout, msg);
+                        if(BuildConfig.DEBUG)
+                            e.printStackTrace();
+                    }
+                }
             }
-        };
+
+            @Override
+            public void onFailure(Call<List<ImmutablePeriod>> call, Throwable t) {
+                done();
+                Miscellaneous.showSnackBar(mView.mSwipeRefreshLayout, t.getLocalizedMessage());
+                if(BuildConfig.DEBUG)
+                    t.printStackTrace();
+            }
+        });
     }
 
     public void done() {

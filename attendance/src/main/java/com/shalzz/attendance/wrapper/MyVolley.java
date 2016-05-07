@@ -23,24 +23,28 @@ import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.preference.PreferenceManager;
-import android.text.TextUtils;
-import android.util.Log;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.VolleyLog;
-import com.android.volley.toolbox.ImageLoader;
-import com.android.volley.toolbox.ImageLoader.ImageCache;
-import com.android.volley.toolbox.Volley;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.shalzz.attendance.BuildConfig;
+import com.shalzz.attendance.Miscellaneous;
 import com.shalzz.attendance.R;
+import com.shalzz.attendance.data.model.remote.GsonAdaptersRemote;
+import com.shalzz.attendance.data.network.AuthInterceptor;
+import com.shalzz.attendance.data.network.DataAPI;
+import com.shalzz.attendance.data.network.HeaderInterceptor;
+import com.shalzz.attendance.data.network.LoggingInterceptor;
 
 import java.util.HashMap;
+
+import okhttp3.OkHttpClient;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * Wrapper class for Volley which provides a singleton instance.
@@ -48,24 +52,6 @@ import java.util.HashMap;
  *
  */
 public class MyVolley extends Application {
-
-    /**
-     * Log or request TAG
-     */
-    public static final String TAG = "VOLLEY";
-
-    public static final String ACTIVITY_NETWORK_TAG = "activity";
-
-    public static final String APPLICATION_NETWORK_TAG = "application";
-    /**
-     * Global request queue for Volley
-     */
-    private RequestQueue mRequestQueue;
-
-    /**
-     * Global Image Loader for Volley
-     */
-    private ImageLoader mImageLoader;
 
     /**
      * Application Context.
@@ -76,6 +62,10 @@ public class MyVolley extends Application {
      * A singleton instance of the application class for easy access in other places
      */
     private static MyVolley sInstance;
+
+    private static Gson mGson;
+    private static OkHttpClient mOkHttpClient;
+    private static DataAPI mAPI;
 
     /**
      * Enum used to identify the tracker that needs to be used for tracking.
@@ -134,119 +124,40 @@ public class MyVolley extends Application {
         return mTrackers.get(trackerId);
     }
 
-    /**
-     * @return The Volley Request queue.
-     */
-    public RequestQueue getRequestQueue() {
-        // lazy initialize the request queue, the queue instance will be
-        // created when it is accessed for the first time
-        if(mRequestQueue == null )
-            mRequestQueue = Volley.newRequestQueue(getApplicationContext(), new MyOkHttpStack());
-        return mRequestQueue;
-    }
-
-    /**
-     * Returns instance of ImageLoader initialized with {@link FakeImageCache} which effectively means
-     * that no memory caching is used. This is useful for images that you know that will be show
-     * only once.
-     *
-     * @return {@link ImageLoader}
-     */
-    public ImageLoader getImageLoader() {
-        // lazy initialize the image loader
-        if (mImageLoader == null)
-            mImageLoader = new ImageLoader(getRequestQueue(), new FakeImageCache());
-        return mImageLoader;
-    }
-
-    /**
-     * Adds the specified request to the global queue, if tag is specified
-     * then it is used else Default TAG is used.
-     *
-     * @param req {@link com.android.volley.Request}
-     * @param tag TAG
-     */
-    public <T> void addToRequestQueue(Request<T> req, String tag) {
-        // set the default tag if tag is empty
-        req.setTag(TextUtils.isEmpty(tag) ? TAG : tag);
-
-        if(BuildConfig.DEBUG)
-            VolleyLog.d("Adding request to queue: %s with tag: %s", req.getUrl(),tag);
-
-        getRequestQueue().add(req);
-    }
-
-    /**
-     * Adds the specified request to the global queue using the Default TAG.
-     *
-     * @param req {@link com.android.volley.Request}
-     */
-    public <T> void addToRequestQueue(Request<T> req) {
-        // set the default tag
-        req.setTag(TAG);
-
-        if(BuildConfig.DEBUG)
-            VolleyLog.d("Adding request to queue: %s with tag: %s", req.getUrl(),TAG);
-
-        // add to the requestQueue
-        getRequestQueue().add(req);
-    }
-
-    /**
-     * Cancels all pending requests.
-     */
-    public void cancelAllPendingRequests() {
-        if (mRequestQueue != null) {
-            mRequestQueue.cancelAll(TAG);
-            mRequestQueue.cancelAll(ACTIVITY_NETWORK_TAG);
-            mRequestQueue.cancelAll(APPLICATION_NETWORK_TAG);
+    public static Gson provideGson() {
+        if(mGson == null) {
+            mGson = new GsonBuilder()
+                    .registerTypeAdapterFactory(new GsonAdaptersRemote())
+                    .setDateFormat("yyyy-MM-dd")
+                    .create();
         }
-        if(BuildConfig.DEBUG)
-            Log.d(MyVolley.class.getName(),"Cancelling all requests");
+        return mGson;
     }
 
-    /**
-     * Cancels all pending requests registered by the default {@link MyVolley#TAG}.
-     */
-    public void cancelPendingRequests() {
-        if (mRequestQueue != null) {
-            mRequestQueue.cancelAll(TAG);
+    @NonNull
+    public static OkHttpClient provideClient() {
+        if (mOkHttpClient == null) {
+            final OkHttpClient.Builder okHttpBuilder = new OkHttpClient.Builder()
+                    .addInterceptor(new LoggingInterceptor())
+                    .addInterceptor(new HeaderInterceptor())
+                    .addInterceptor(new AuthInterceptor())
+                    .proxyAuthenticator(MyPreferencesManager.getProxyCredentials())
+                    .proxySelector(Miscellaneous.getProxySelector());
+            mOkHttpClient = okHttpBuilder.build();
         }
-        if(BuildConfig.DEBUG)
-            Log.d(MyVolley.class.getName(),"Cancelling requests with tag: "+TAG);
+        return mOkHttpClient;
     }
 
-    /**
-     * Cancels all pending requests by the specified TAG, it is important
-     * to specify a TAG so that the pending/ongoing requests can be cancelled.
-     *
-     * @param tag TAG
-     */
-    public void cancelPendingRequests(Object tag) {
-        if (mRequestQueue != null) {
-            mRequestQueue.cancelAll(tag);
+    public static DataAPI provideApi(@NonNull OkHttpClient okHttpClient, @NonNull Gson gson) {
+        if(mAPI == null) {
+            mAPI = new Retrofit.Builder()
+                    .baseUrl(DataAPI.ENDPOINT)
+                    .client(okHttpClient)
+                    .addConverterFactory(GsonConverterFactory.create(gson))
+                    .validateEagerly(BuildConfig.DEBUG) // Fail early: check Retrofit configuration at creation time in Debug build.
+                    .build()
+                    .create(DataAPI.class);
         }
-        if(BuildConfig.DEBUG)
-            VolleyLog.d("Cancelling requests with tag: "+tag);
-    }
-
-    /**
-     * Fake cache, i.e. no caching is done.
-     * This class exist just to implement ImageLoader.ImageCache and be used
-     * when no memory cache is needed
-     * @author Ognyan Bankov
-     *
-     */
-    public class FakeImageCache implements ImageCache {
-
-        @Override
-        public Bitmap getBitmap(String url) {
-            return null;
-        }
-
-        @Override
-        public void putBitmap(String url, Bitmap bitmap) {
-        }
-
+        return mAPI;
     }
 }

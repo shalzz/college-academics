@@ -32,15 +32,7 @@
     <string name="test_banner_ad_unit_id" translatable="false">ca-app-pub-3940256099942544/6300978111</string>
 
     <!--Network related strings-->
-    <string name="UserAgent" translatable="false">Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.57 Safari/537.36</string>
-    <string name="proxy_host" translatable="false">proxy1.ddn.upes.ac.in</string>
-    <string name="proxy_port" translatable="false">8080</string>
     <string name="upesnet_ssid" translatable="false">UPESNET</string>
-
-    <!--URL's-->
-    <string name="URL_user" translatable="false">https://upes.winnou.net/api/v1/me</string>
-    <string name="URL_attendance" translatable="false">https://upes.winnou.net/api/v1/me/attendance</string>
-    <string name="URL_timetable" translatable="false">https://upes.winnou.net/api/v1/me/timetable</string>
 
     <!--Preference Keys-->
     <string name="pref_key_sub_limit">subjects_expanded_limit</string>
