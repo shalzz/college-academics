@@ -47,13 +47,7 @@ import org.immutables.value.Value;
 @Value.Style(allParameters = true)
 public abstract class User implements UserModel {
     public static final Mapper<ImmutableUser> MAPPER =
-            new Mapper<>( new Mapper.Creator<ImmutableUser>() {
-                @Override
-                public ImmutableUser create(String sap_id, String name, String course, String
-                        password) {
-                    return ImmutableUser.of(sap_id,name,course,password);
-                }
-            });
+            new Mapper<>(ImmutableUser::of);
 
     public static final class Marshal extends UserMarshal<Marshal> { }
 

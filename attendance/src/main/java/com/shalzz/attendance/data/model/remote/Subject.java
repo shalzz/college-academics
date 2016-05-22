@@ -55,15 +55,10 @@ import java.util.Locale;
  */
 @Value.Immutable
 @Value.Style(allParameters = true)
-public abstract class Subject implements SubjectModel{
+public abstract class Subject implements SubjectModel {
     public static final Mapper<ImmutableSubject> MAPPER =
-            new SubjectModel.Mapper<>(new Mapper.Creator<ImmutableSubject>() {
-                @Override
-                public ImmutableSubject create(int id, String name, Float attended, Float held,
-                                      Long last_updated) {
-                    return ImmutableSubject.of(id,name,attended,held);
-                }
-            });
+            new SubjectModel.Mapper<>((id, name, attended, held, last_updated)
+                    -> ImmutableSubject.of(id,name,attended,held));
 
     public static final class Marshal extends SubjectMarshal<Marshal> { }
 

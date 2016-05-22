@@ -19,6 +19,7 @@
 
 package com.shalzz.attendance;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -151,40 +152,43 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         } else {
             cursor = db.rawQuery(Subject.SELECT_ALL,null);
         }
-        while (cursor.moveToNext()) {
+        try {
+            while (cursor.moveToNext()) {
 
-            // Check isLoadInBackgroundCanceled() to cancel out early
-            if(callback != null && callback.isLoadInBackgroundCanceled()) {
-                break;
+                // Check isLoadInBackgroundCanceled() to cancel out early
+                if (callback != null && callback.isLoadInBackgroundCanceled()) {
+                    break;
+                }
+
+                // get absent dates from another table and add in the subject object
+                int id = cursor.getInt(cursor.getColumnIndexOrThrow(Subject.ID));
+                ArrayList<Date> dates = new ArrayList<>();
+                Cursor dateCursor = db.rawQuery(AbsentDate.SELECT_BY_ID,
+                        new String[]{String.valueOf(id)});
+                while (dateCursor.moveToNext()) {
+                    dates.add(ImmutableAbsentDate.MAPPER.map(dateCursor).absent_date());
+                }
+
+                dateCursor.close();
+                subjectList.add(ImmutableSubject.MAPPER.map(cursor).withAbsentDates(dates));
             }
-
-            // get absent dates from another table and add in the subject object
-            int id = cursor.getInt(cursor.getColumnIndexOrThrow(Subject.ID));
-            ArrayList<Date> dates = new ArrayList<>();
-            Cursor dateCursor = db.rawQuery(AbsentDate.SELECT_BY_ID,
-                    new String[] { String.valueOf(id) });
-            while (dateCursor.moveToNext()) {
-                dates.add(ImmutableAbsentDate.MAPPER.map(dateCursor).absent_date());
-            }
-
-            subjectList.add(ImmutableSubject.MAPPER.map(cursor).withAbsentDates(dates));
+        } finally {
+            cursor.close();
         }
 
         return subjectList;
     }
 
+    @SuppressLint("NewApi")
     public List<Integer> getAbsentSubjects(Date date) {
         SQLiteDatabase db = this.getReadableDatabase();
         List<Integer> subjectIDs = new ArrayList<>();
-        Cursor cursor = db.rawQuery(AbsentDate.SELECT_ABSENT_SUBJECTS,
-                new String[] {String.valueOf(DateHelper.formatToTechnicalFormat(date))});
 
-        try {
+        try (Cursor cursor = db.rawQuery(AbsentDate.SELECT_ABSENT_SUBJECTS,
+                new String[]{String.valueOf(DateHelper.formatToTechnicalFormat(date))})) {
             while (cursor.moveToNext()) {
                 subjectIDs.add(ImmutableAbsentDate.MAPPER.map(cursor).subject_id());
             }
-        } finally {
-            cursor.close();
         }
 
         return subjectIDs;
@@ -195,12 +199,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
      * and deletes if any.
      * @return 1 if one or more subjects are purged else 0
      */
+    @SuppressLint("NewApi")
     public int purgeOldSubjects() {
         SQLiteDatabase db = getWritableDatabase();
-        Cursor cursor = db.rawQuery( Subject.DELETE_OBSOLETE, null);
-        int count = cursor.getCount();
-        cursor.close();
-        return count;
+        try(Cursor cursor = db.rawQuery( Subject.DELETE_OBSOLETE, null)) {
+            int count = cursor.getCount();
+            cursor.close();
+            return count;
+        }
     }
 
     public void addUser(ImmutableUser user) {
@@ -215,46 +221,53 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         );
     }
 
+    @SuppressLint("NewApi")
     public long getLastSync() {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery(Subject.SELECT_LAST_SYNC, null);
+        try(Cursor cursor = db.rawQuery(Subject.SELECT_LAST_SYNC, null)) {
 
-        if(cursor.moveToFirst()) {
-            long now = new Date().getTime();
-            long lastSync = cursor.getLong(0);
-            return (now-lastSync)/(1000*60*60);
+            if (cursor.moveToFirst()) {
+                long now = new Date().getTime();
+                long lastSync = cursor.getLong(0);
+                return (now - lastSync) / (1000 * 60 * 60);
+            }
+            cursor.close();
+            return -1;
         }
-        cursor.close();
-        return -1;
     }
 
+    @SuppressLint("NewApi")
     public ImmutableUser getUser() {
         SQLiteDatabase db = this.getReadableDatabase();
 
-        Cursor cursor = db.rawQuery(User.SELECT_ALL, null);
-        if (cursor.moveToNext()) {
-            return ImmutableUser.MAPPER.map(cursor);
+        try (Cursor cursor = db.rawQuery(User.SELECT_ALL, null)) {
+
+            if (cursor.moveToNext()) {
+                return ImmutableUser.MAPPER.map(cursor);
+            }
         }
         return null;
     }
 
+    @SuppressLint("NewApi")
     public ImmutableListFooter getListFooter() {
         SQLiteDatabase db = this.getReadableDatabase();
+        ImmutableListFooter footer = null;
 
         String selectQuery = "SELECT  sum(" + Subject.ATTENDED+ ") as " + KEY_TOTAL_ATTEND
                 + ",sum(" + Subject.HELD+ ") as " + KEY_TOTAL_HELD
                 + " FROM " + Subject.TABLE_NAME + ";";
-        Cursor cursor = db.rawQuery(selectQuery, null);
+        try(Cursor cursor = db.rawQuery(selectQuery, null)) {
 
-        ImmutableListFooter footer = null;
-        if (cursor.moveToFirst()) {
-            footer = ImmutableListFooter.builder()
-                    .held(cursor.getFloat(cursor.getColumnIndexOrThrow(KEY_TOTAL_HELD)))
-                    .attended(cursor.getFloat(cursor.getColumnIndexOrThrow(KEY_TOTAL_ATTEND)))
-                    .build();
+            if (cursor.moveToFirst()) {
+                footer = ImmutableListFooter.builder()
+                        .held(cursor.getFloat(cursor.getColumnIndexOrThrow(KEY_TOTAL_HELD)))
+                        .attended(cursor.getFloat(cursor.getColumnIndexOrThrow(KEY_TOTAL_ATTEND)))
+                        .build();
+            }
+            db.close();
+            cursor.close();
         }
-        db.close();
-        cursor.close();
 
         return footer;
     }
@@ -275,18 +288,20 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 SQLiteDatabase.CONFLICT_REPLACE);
     }
 
+    @SuppressLint("NewApi")
     public ArrayList<ImmutablePeriod> getAllPeriods(Date date, AsyncTaskLoader callback) {
         String dayName = DateHelper.getShortWeekday(date);
         ArrayList<ImmutablePeriod> periods = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.rawQuery(Period.SELECT_BY_WEEK_DAY, new String[] {dayName});
+        try(Cursor cursor = db.rawQuery(Period.SELECT_BY_WEEK_DAY, new String[] {dayName})) {
 
-        while (cursor.moveToNext()) {
-            // Check isLoadInBackgroundCanceled() to cancel out early
-            if(callback != null && callback.isLoadInBackgroundCanceled()) {
-                break;
+            while (cursor.moveToNext()) {
+                // Check isLoadInBackgroundCanceled() to cancel out early
+                if (callback != null && callback.isLoadInBackgroundCanceled()) {
+                    break;
+                }
+                periods.add(ImmutablePeriod.MAPPER.map(cursor));
             }
-            periods.add(ImmutablePeriod.MAPPER.map(cursor));
         }
 
         return periods;
@@ -297,45 +312,53 @@ public class DatabaseHandler extends SQLiteOpenHelper {
      * and deletes if any.
      * @return 1 if one or more Periods are purged else 0
      */
+    @SuppressLint("NewApi")
     public int purgeOldPeriods() {
         SQLiteDatabase db = getWritableDatabase();
-        Cursor cursor = db.rawQuery( Period.DELETE_OBSOLETE, null);
-        int count = cursor.getCount();
-        cursor.close();
-        return count;
+        try(Cursor cursor = db.rawQuery( Period.DELETE_OBSOLETE, null)) {
+            int count = cursor.getCount();
+            cursor.close();
+            return count;
+        }
     }
 
     /**
      * Check if the attendance data is in database.
      * */
+    @SuppressLint("NewApi")
     public int getSubjectCount() {
         SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.rawQuery(Subject.SELECT_COUNT, null);
-        int rowCount = cursor.getCount();
-        cursor.close();
+        try(Cursor cursor = db.rawQuery(Subject.SELECT_COUNT, null)) {
+            int rowCount = cursor.getCount();
+            cursor.close();
 
-        return rowCount;
+            return rowCount;
+        }
     }
 
     /**
      * Check if the Student data is in database.
      * */
+    @SuppressLint("NewApi")
     public int getUserCount() {
         SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.rawQuery(User.SELECT_COUNT, null);
-        int rowCount = cursor.getCount();
-        cursor.close();
+        try(Cursor cursor = db.rawQuery(User.SELECT_COUNT, null)) {
+            int rowCount = cursor.getCount();
+            cursor.close();
 
-        return rowCount;
+            return rowCount;
+        }
     }
 
+    @SuppressLint("NewApi")
     public int getPeriodCount() {
         SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.rawQuery(Period.SELECT_COUNT, null);
-        int rowCount = cursor.getCount();
-        cursor.close();
+        try(Cursor cursor = db.rawQuery(Period.SELECT_COUNT, null)) {
+            int rowCount = cursor.getCount();
+            cursor.close();
 
-        return rowCount;
+            return rowCount;
+        }
     }
 
     /**

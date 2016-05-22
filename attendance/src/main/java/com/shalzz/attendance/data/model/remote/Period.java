@@ -56,14 +56,8 @@ import java.util.Date;
 @Value.Style(allParameters = true)
 public abstract class Period implements PeriodModel {
     public static final Mapper<ImmutablePeriod> MAPPER =
-            new Mapper<>( new Mapper.Creator<ImmutablePeriod>() {
-                @Override
-                public ImmutablePeriod create(int id, String week_day, String name, String teacher,
-                                          String room, String batch, String start_time,
-                                          String end_time, Long last_updated) {
-                    return ImmutablePeriod.of(id,week_day,name,teacher,room,batch,start_time,end_time);
-                }
-            });
+            new Mapper<>((id, week_day, name, teacher, room, batch, start_time, end_time, last_updated)
+                    -> ImmutablePeriod.of(id,week_day,name,teacher,room,batch,start_time,end_time));
 
     public static final class Marshal extends PeriodMarshal<Marshal> { }
 

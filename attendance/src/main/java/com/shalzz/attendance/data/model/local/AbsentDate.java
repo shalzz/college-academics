@@ -44,12 +44,8 @@ public abstract class AbsentDate implements AbsentDatesModel{
         }
     };
 
-    public static final Mapper<AbsentDate> MAPPER = new Mapper<>(new Mapper.Creator<AbsentDate>() {
-        @Override
-        public ImmutableAbsentDate create(Integer subject_id, Date absent_date) {
-            return ImmutableAbsentDate.of(subject_id,absent_date);
-        }
-    }, DATE_ADAPTER);
+    public static final Mapper<AbsentDate> MAPPER = new Mapper<>((Mapper.Creator<AbsentDate>)
+            ImmutableAbsentDate::of, DATE_ADAPTER);
 
     public static final class Marshal extends AbsentDatesMarshal<Marshal> {
         public Marshal() {
