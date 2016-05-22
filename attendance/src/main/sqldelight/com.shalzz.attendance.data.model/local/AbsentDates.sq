@@ -6,11 +6,11 @@ CREATE TABLE absent (
 );
 
 select_by_id:
-SELECT absent_date
+SELECT *
 FROM absent
 WHERE subject_id = ? ;
 
 select_absent_subjects:
-SELECT subject_id
+SELECT *
 FROM absent
 WHERE absent_date = ?;
