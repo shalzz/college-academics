@@ -31,6 +31,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.shalzz.attendance.Miscellaneous;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.controllers.UserAccount;
@@ -82,6 +84,16 @@ public class LoginActivity extends AppCompatActivity {
                 return false;
             }
         });
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Tracker t = ((MyVolley) getApplication()).getTracker(
+                MyVolley.TrackerName.APP_TRACKER);
+
+        t.setScreenName(getClass().getSimpleName());
+        t.send(new HitBuilders.ScreenViewBuilder().build());
     }
 
     @OnClick(R.id.bLogin)
