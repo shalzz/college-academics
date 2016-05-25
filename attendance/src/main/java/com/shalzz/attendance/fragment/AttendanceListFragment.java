@@ -55,8 +55,12 @@ import com.shalzz.attendance.R;
 import com.shalzz.attendance.adapter.ExpandableListAdapter;
 import com.shalzz.attendance.controllers.AttendanceController;
 import com.shalzz.attendance.controllers.UserAccount;
+import com.shalzz.attendance.data.network.DataAPI;
 import com.shalzz.attendance.wrapper.MultiSwipeRefreshLayout;
-import com.shalzz.attendance.wrapper.MyVolley;
+import com.shalzz.attendance.wrapper.MyApplication;
+
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import butterknife.BindBool;
 import butterknife.BindDimen;
@@ -90,6 +94,14 @@ public class AttendanceListFragment extends Fragment implements
     @BindString(R.string.hint_search)
     String hint_search_view;
 
+    @Inject @Named("app")
+    Tracker t;
+
+    @Inject
+    UserAccount userAccount;
+
+    @Inject
+    DataAPI api;
 
     @Nullable
     private LinearLayoutManager mLinearLayoutManager;
@@ -111,8 +123,6 @@ public class AttendanceListFragment extends Fragment implements
     @Override
     public void onStart() {
         super.onStart();
-        Tracker t = ((MyVolley) getActivity().getApplication()).getTracker(
-                MyVolley.TrackerName.APP_TRACKER);
 
         t.setScreenName(getClass().getSimpleName());
         t.send(new HitBuilders.ScreenViewBuilder().build());
@@ -123,6 +133,7 @@ public class AttendanceListFragment extends Fragment implements
                               Bundle savedInstanceState) {
         if(container==null)
             return null;
+        MyApplication.getAppComponent().inject(this);
 
         mContext = getActivity();
         setHasOptionsMenu(true);
@@ -161,7 +172,7 @@ public class AttendanceListFragment extends Fragment implements
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        controller = new AttendanceController(mContext, this);
+        controller = new AttendanceController(mContext, this, api);
         mProgress.setVisibility(View.VISIBLE);
 
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -225,7 +236,7 @@ public class AttendanceListFragment extends Fragment implements
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId() == R.id.menu_logout) {
-            new UserAccount(mContext).Logout();
+            userAccount.Logout();
             return true;
         }
         else if(item.getItemId() == R.id.menu_refresh) {

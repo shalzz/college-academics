@@ -23,11 +23,20 @@ import com.shalzz.attendance.wrapper.MyPreferencesManager;
 
 import java.io.IOException;
 
+import javax.inject.Inject;
+
 import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.Response;
 
 public class AuthInterceptor implements Interceptor{
+
+    private MyPreferencesManager preferencesManager;
+
+    @Inject
+    public AuthInterceptor(MyPreferencesManager preferencesManager) {
+        this.preferencesManager = preferencesManager;
+    }
 
     @Override
     public Response intercept(Chain chain) throws IOException {
@@ -38,7 +47,7 @@ public class AuthInterceptor implements Interceptor{
         }
 
         Request newRequest = originalRequest.newBuilder()
-                .header("Authorization", MyPreferencesManager.getBasicAuthCredentials())
+                .header("Authorization", preferencesManager.getBasicAuthCredentials())
                 .build();
         return chain.proceed(newRequest);
     }

@@ -34,7 +34,8 @@ import com.shalzz.attendance.data.model.remote.ImmutableUser;
 import com.shalzz.attendance.data.network.DataAPI;
 import com.shalzz.attendance.wrapper.MyPreferencesManager;
 import com.shalzz.attendance.wrapper.MySyncManager;
-import com.shalzz.attendance.wrapper.MyVolley;
+
+import javax.inject.Inject;
 
 import okhttp3.Credentials;
 import retrofit2.Call;
@@ -44,7 +45,9 @@ import retrofit2.Response;
 
 public class UserAccount {
 
-    private Miscellaneous misc;
+    private final MyPreferencesManager preferencesManager;
+    private final Miscellaneous misc;
+    private final DataAPI api;
 
     /**
      * The activity context used to Log the user from
@@ -56,9 +59,15 @@ public class UserAccount {
      * Constructor to set the Activity context.
      * @param context Context
      */
-    public UserAccount(Context context) {
+    @Inject
+    public UserAccount(Context context,
+                       DataAPI api,
+                       Miscellaneous misc,
+                       MyPreferencesManager prefs) {
         mContext = context;
-        misc =  new Miscellaneous(mContext);
+        this.api = api;
+        this.misc = misc;
+        preferencesManager = prefs;
     }
 
     /**
@@ -71,14 +80,13 @@ public class UserAccount {
         String creds = Credentials.basic(username,Miscellaneous.md5(password));
         misc.showProgressDialog("Logging in...", false, pdCancelListener());
 
-        DataAPI api = MyVolley.provideApi(MyVolley.provideClient(), MyVolley.provideGson());
         call = api.getUser(creds);
         call.enqueue(new Callback<ImmutableUser>() {
             @Override
             public void onResponse(Call<ImmutableUser> call, Response<ImmutableUser> response) {
                 if(response.isSuccessful()) {
                     ImmutableUser user = response.body();
-                    MyPreferencesManager.saveUser(user.sap_id(), user.password());
+                    preferencesManager.saveUser(user.sap_id(), user.password());
                     MySyncManager.addPeriodicSync(mContext, user.sap_id());
                     DatabaseHandler db = new DatabaseHandler(mContext);
                     db.addUser(user);
@@ -124,7 +132,7 @@ public class UserAccount {
         MainActivity.LOGGED_OUT = true;
 
         // Remove User Details from Shared Preferences.
-        MyPreferencesManager.removeUser();
+        preferencesManager.removeUser();
 
         // Remove user Attendance data from database.
         DatabaseHandler db = new DatabaseHandler(mContext);

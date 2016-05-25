@@ -27,12 +27,19 @@ import android.support.v7.preference.PreferenceManager;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.shalzz.attendance.R;
+import com.shalzz.attendance.wrapper.MyApplication;
 import com.shalzz.attendance.wrapper.MyPreferencesManager;
+
+import javax.inject.Inject;
 
 public class SplashActivity extends AppCompatActivity {
 
+    @Inject
+    MyPreferencesManager preferencesManager;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+        MyApplication.getAppComponent().inject(this);
 		super.onCreate(savedInstanceState);
 
 		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
@@ -44,12 +51,12 @@ public class SplashActivity extends AppCompatActivity {
             PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
             PreferenceManager.setDefaultValues(this, R.xml.pref_proxy, false);
         } catch (ClassCastException e) {
-			MyPreferencesManager.removeDefaultSharedPreferences();
+            preferencesManager.removeDefaultSharedPreferences();
             PreferenceManager.setDefaultValues(this, R.xml.preferences, true);
             PreferenceManager.setDefaultValues(this, R.xml.pref_proxy, true);
         }
 
-		boolean loggedin = MyPreferencesManager.getLoginStatus();
+		boolean loggedin = preferencesManager.getLoginStatus();
 
         Intent intent;
 		if(!loggedin)

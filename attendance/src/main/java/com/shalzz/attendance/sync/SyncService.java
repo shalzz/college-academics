@@ -19,9 +19,17 @@
 
 package com.shalzz.attendance.sync;
 
+import android.app.Application;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
+
+import com.shalzz.attendance.data.network.DataAPI;
+import com.shalzz.attendance.injection.component.ApplicationComponent;
+import com.shalzz.attendance.wrapper.MyApplication;
+import com.shalzz.attendance.wrapper.MyPreferencesManager;
+
+import javax.inject.Inject;
 
 /**
  * Define a Service that returns an IBinder for the
@@ -29,6 +37,13 @@ import android.os.IBinder;
  * onPerformSync().
  */
 public class SyncService extends Service {
+
+    @Inject
+    MyPreferencesManager preferencesManager;
+
+    @Inject
+    DataAPI api;
+
     // Storage for an instance of the sync adapter
     private static SyncAdapter sSyncAdapter = null;
     // Object to use as a thread-safe lock
@@ -38,6 +53,7 @@ public class SyncService extends Service {
      */
     @Override
     public void onCreate() {
+        MyApplication.getAppComponent().inject(this);
         /*
          * Create the sync adapter as a singleton.
          * Set the sync adapter as syncable
@@ -45,7 +61,9 @@ public class SyncService extends Service {
          */
         synchronized (sSyncAdapterLock) {
             if (sSyncAdapter == null) {
-                sSyncAdapter = new SyncAdapter(getApplicationContext(), true);
+                sSyncAdapter = new SyncAdapter(getApplicationContext(), true, false,
+                        preferencesManager,
+                        api);
             }
         }
     }

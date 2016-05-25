@@ -40,10 +40,11 @@ import com.shalzz.attendance.data.model.remote.ImmutableSubject;
 import com.shalzz.attendance.data.network.DataAPI;
 import com.shalzz.attendance.fragment.AttendanceListFragment;
 import com.shalzz.attendance.loader.SubjectAsyncTaskLoader;
-import com.shalzz.attendance.wrapper.MyVolley;
 
 import java.util.Date;
 import java.util.List;
+
+import javax.inject.Inject;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -60,12 +61,17 @@ public class AttendanceController implements LoaderManager.LoaderCallbacks<List<
     private Resources mResources;
     private String mTag = "Attendance Controller";
     private View mFooter;
+    private final DataAPI api;
 
-    public AttendanceController(Context context, AttendanceListFragment view) {
+    @Inject
+    public AttendanceController(Context context,
+                                AttendanceListFragment view,
+                                DataAPI api) {
         mContext = context;
-        mResources = MyVolley.getMyResources();
+        mResources = context.getResources();
         mView = view;
         db = new DatabaseHandler(mContext);
+        this.api = api;
 
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mContext);
         int expandLimit = Integer.parseInt(sharedPref.getString(
@@ -81,7 +87,6 @@ public class AttendanceController implements LoaderManager.LoaderCallbacks<List<
     }
 
     public void updateSubjects() {
-        DataAPI api = MyVolley.provideApi(MyVolley.provideClient(), MyVolley.provideGson());
         Call<List<ImmutableSubject>> call = api.getAttendance();
         call.enqueue(new Callback<List<ImmutableSubject>>() {
             @Override

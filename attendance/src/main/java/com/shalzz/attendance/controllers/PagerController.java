@@ -34,10 +34,13 @@ import com.shalzz.attendance.adapter.TimeTablePagerAdapter;
 import com.shalzz.attendance.data.model.remote.ImmutablePeriod;
 import com.shalzz.attendance.data.network.DataAPI;
 import com.shalzz.attendance.fragment.TimeTablePagerFragment;
-import com.shalzz.attendance.wrapper.MyVolley;
+import com.shalzz.attendance.wrapper.MyApplication;
 
 import java.util.Date;
 import java.util.List;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -47,18 +50,22 @@ public class PagerController {
     private TimeTablePagerFragment mView;
     public TimeTablePagerAdapter mAdapter;
     private DatabaseHandler db;
-    private Context mContext;
     private Resources mResources;
     private String mTag = "Pager Controller";
     private Date mToday = new Date();
+    private final DataAPI api;
 
-    public PagerController(Context context, TimeTablePagerFragment view, FragmentManager fm) {
-        mContext = context;
-        mResources = MyVolley.getMyResources();
+    @Inject
+    public PagerController(@Singleton Context context,
+                           TimeTablePagerFragment view,
+                           FragmentManager fm,
+                           DataAPI api) {
+        mResources = context.getResources();
         mView = view;
-        db = new DatabaseHandler(mContext);
-        mAdapter = new TimeTablePagerAdapter(fm, mContext);
+        db = new DatabaseHandler(context);
+        mAdapter = new TimeTablePagerAdapter(fm, context);
         mView.mViewPager.setAdapter(mAdapter);
+        this.api = api;
     }
 
     public void setDate(Date date) {
@@ -81,7 +88,6 @@ public class PagerController {
     }
 
     public void updatePeriods() {
-        DataAPI api = MyVolley.provideApi(MyVolley.provideClient(), MyVolley.provideGson());
         Call<List<ImmutablePeriod>> call = api.getTimetable();
         call.enqueue(new Callback<List<ImmutablePeriod>>() {
             @Override

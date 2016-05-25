@@ -43,11 +43,15 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 /**
  * Helper Class for SQLite database
  * @author shalzz
  *
  */
+@Singleton
 public class DatabaseHandler extends SQLiteOpenHelper {
 
     /**
@@ -69,6 +73,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     /**
      * Constructor.
      */
+    @Inject
     public DatabaseHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -106,10 +111,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         // Create tables again
         onCreate(db);
-
-        // remove conflicting shared preferences b/w versions
-        MyPreferencesManager.removeSettings();
-        MyPreferencesManager.removeDefaultSharedPreferences();
     }
 
     /**

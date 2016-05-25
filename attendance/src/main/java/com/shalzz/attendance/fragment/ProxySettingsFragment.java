@@ -30,7 +30,10 @@ import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.activity.MainActivity;
-import com.shalzz.attendance.wrapper.MyVolley;
+import com.shalzz.attendance.wrapper.MyApplication;
+
+import javax.inject.Inject;
+import javax.inject.Named;
 
 public class ProxySettingsFragment extends PreferenceFragmentCompat implements SharedPreferences.OnSharedPreferenceChangeListener {
 
@@ -38,8 +41,13 @@ public class ProxySettingsFragment extends PreferenceFragmentCompat implements S
     private String key_proxy_username;
     private MainActivity mainActivity;
 
+    @Inject
+    @Named("app")
+    Tracker t;
+
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
+        MyApplication.getAppComponent().inject(this);
         Context mContext = getActivity();
         mainActivity = ((MainActivity) getActivity());
         mainActivity.setDrawerAsUp(true);
@@ -55,8 +63,6 @@ public class ProxySettingsFragment extends PreferenceFragmentCompat implements S
     @Override
     public void onStart() {
         super.onStart();
-        Tracker t = ((MyVolley) getActivity().getApplication()).getTracker(
-                MyVolley.TrackerName.APP_TRACKER);
 
         t.setScreenName(getClass().getSimpleName());
         t.send(new HitBuilders.ScreenViewBuilder().build());

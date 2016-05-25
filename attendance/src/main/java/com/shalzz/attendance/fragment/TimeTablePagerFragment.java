@@ -24,7 +24,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
@@ -45,12 +44,16 @@ import com.shalzz.attendance.DatabaseHandler;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.controllers.PagerController;
 import com.shalzz.attendance.controllers.UserAccount;
+import com.shalzz.attendance.data.network.DataAPI;
 import com.shalzz.attendance.wrapper.DateHelper;
 import com.shalzz.attendance.wrapper.MultiSwipeRefreshLayout;
-import com.shalzz.attendance.wrapper.MyVolley;
+import com.shalzz.attendance.wrapper.MyApplication;
 
 import java.util.Calendar;
 import java.util.Date;
+
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -72,6 +75,15 @@ public class TimeTablePagerFragment extends Fragment {
     @BindView(R.id.pager)
     public ViewPager mViewPager;
 
+    @Inject @Named("app")
+    Tracker t;
+
+    @Inject
+    DataAPI api;
+
+    @Inject
+    UserAccount userAccount;
+
     private int mPreviousPosition = 15;
     private PagerController mController;
     private String myTag = "Pager Fragment";
@@ -80,6 +92,7 @@ public class TimeTablePagerFragment extends Fragment {
     private Unbinder unbinder;
 
     public void onCreate(Bundle savedInstanceState) {
+        MyApplication.getAppComponent().inject(this);
         super.onCreate(savedInstanceState);
         mContext = getActivity();
     }
@@ -87,8 +100,6 @@ public class TimeTablePagerFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        Tracker t = ((MyVolley) getActivity().getApplication()).getTracker(
-                MyVolley.TrackerName.APP_TRACKER);
 
         t.setScreenName(getClass().getSimpleName());
         t.send(new HitBuilders.ScreenViewBuilder().build());
@@ -122,7 +133,8 @@ public class TimeTablePagerFragment extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mController = new PagerController(mContext, this, getActivity().getSupportFragmentManager());
+        mController = new PagerController(mContext, this, getActivity().getSupportFragmentManager
+                (),api);
         DatabaseHandler db = new DatabaseHandler(mContext);
         if(db.getPeriodCount()<=0) {
             mController.updatePeriods();
@@ -133,27 +145,19 @@ public class TimeTablePagerFragment extends Fragment {
             mController.setToday();
         db.close();
 
-        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                mController.updatePeriods();
-            }
-        });
+        mSwipeRefreshLayout.setOnRefreshListener(() -> mController.updatePeriods());
 
         // fix for oversensitive horizontal scroll of swipe view
-        mViewPager.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (mSwipeRefreshLayout != null) {
-                    mSwipeRefreshLayout.setEnabled(false);
-                    switch (event.getAction()) {
-                        case MotionEvent.ACTION_UP:
-                            mSwipeRefreshLayout.setEnabled(true);
-                            break;
-                    }
+        mViewPager.setOnTouchListener((v, event) -> {
+            if (mSwipeRefreshLayout != null) {
+                mSwipeRefreshLayout.setEnabled(false);
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_UP:
+                        mSwipeRefreshLayout.setEnabled(true);
+                        break;
                 }
-                return false;
             }
+            return false;
         });
 
         showcaseView();
@@ -192,7 +196,7 @@ public class TimeTablePagerFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId() == R.id.menu_logout) {
-            new UserAccount(mContext).Logout();
+            userAccount.Logout();
             return true;
         }
         else if(item.getItemId() == R.id.menu_refresh) {

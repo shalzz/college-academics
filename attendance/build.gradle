@@ -91,6 +91,10 @@ android {
         compile "com.android.support:appcompat-v7:$SUPPORT_LIBRARY_VERSION"
         compile "com.android.support:preference-v14:$SUPPORT_LIBRARY_VERSION"
 
+        apt 'com.google.dagger:dagger-compiler:2.2'
+        compile 'com.google.dagger:dagger:2.2'
+        provided 'javax.annotation:jsr250-api:1.0'
+
         apt 'com.jakewharton:butterknife-compiler:8.0.1'
         compile 'com.jakewharton:butterknife:8.0.1'
 

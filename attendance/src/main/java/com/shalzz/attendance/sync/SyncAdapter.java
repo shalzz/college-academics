@@ -42,7 +42,6 @@ import com.shalzz.attendance.data.model.remote.ImmutablePeriod;
 import com.shalzz.attendance.data.model.remote.ImmutableSubject;
 import com.shalzz.attendance.data.network.DataAPI;
 import com.shalzz.attendance.wrapper.MyPreferencesManager;
-import com.shalzz.attendance.wrapper.MyVolley;
 
 import java.util.Date;
 import java.util.List;
@@ -56,43 +55,34 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 	// Global variables
 	private String myTag = "Sync Adapter";
 	private Context mContext;
-	
-	/**
-	 * Set up the sync adapter
-	 */
-	public SyncAdapter(Context context, boolean autoInitialize) {
-		super(context, autoInitialize);
-		/*
-		 * If your app uses a content resolver, get an instance of it
-		 * from the incoming Context
-		 */
-		mContext = context;
-	}
+
+    private final MyPreferencesManager preferencesManager;
+    private final DataAPI api;
 
 	/**
 	 * Set up the sync adapter. This form of the
 	 * constructor maintains compatibility with Android 3.0
 	 * and later platform versions
 	 */
-	@SuppressLint("NewApi")
 	public SyncAdapter(
-			Context context,
-			boolean autoInitialize,
-			boolean allowParallelSyncs) {
+            Context context,
+            boolean autoInitialize,
+            boolean allowParallelSyncs, MyPreferencesManager preferencesManager, DataAPI api) {
 		super(context, autoInitialize, allowParallelSyncs);
 		/*
 		 * If your app uses a content resolver, get an instance of it
 		 * from the incoming Context
 		 */
 		mContext = context;
-	}
+        this.preferencesManager = preferencesManager;
+        this.api = api;
+    }
 
 	@Override
 	public void onPerformSync(Account account, Bundle extras, String authority,
 			ContentProviderClient provider, SyncResult syncResult) {
 
-        DataAPI api = MyVolley.provideApi(MyVolley.provideClient(), MyVolley.provideGson());
-        Call<List<ImmutableSubject>> call = api.getAttendance(MyPreferencesManager.getBasicAuthCredentials());
+        Call<List<ImmutableSubject>> call = api.getAttendance(preferencesManager.getBasicAuthCredentials());
         call.enqueue(new Callback<List<ImmutableSubject>>() {
             @Override
             public void onResponse(Call<List<ImmutableSubject>> call, Response<List<ImmutableSubject>> response) {
@@ -118,7 +108,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
             }
         });
 
-        Call<List<ImmutablePeriod>> call2 = api.getTimetable(MyPreferencesManager.getBasicAuthCredentials());
+        Call<List<ImmutablePeriod>> call2 = api.getTimetable(preferencesManager.getBasicAuthCredentials());
         call2.enqueue(new Callback<List<ImmutablePeriod>>() {
             @Override
             @SuppressLint("InlinedApi")

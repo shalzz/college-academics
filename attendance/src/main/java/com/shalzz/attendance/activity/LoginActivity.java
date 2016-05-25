@@ -25,9 +25,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
-import android.view.View;
 import android.view.inputmethod.EditorInfo;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -36,7 +34,10 @@ import com.google.android.gms.analytics.Tracker;
 import com.shalzz.attendance.Miscellaneous;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.controllers.UserAccount;
-import com.shalzz.attendance.wrapper.MyVolley;
+import com.shalzz.attendance.wrapper.MyApplication;
+
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -53,11 +54,19 @@ public class LoginActivity extends AppCompatActivity {
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
 
+    @Inject
+    @Named("app")
+    Tracker t;
+
+    @Inject
+    UserAccount userAccount;
+
     private EditText etSapid;
     private EditText etPass;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        MyApplication.getAppComponent().inject(this);
         if (savedInstanceState == null) {
             getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         }
@@ -89,8 +98,6 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     public void onStart() {
         super.onStart();
-        Tracker t = ((MyVolley) getApplication()).getTracker(
-                MyVolley.TrackerName.APP_TRACKER);
 
         t.setScreenName(getClass().getSimpleName());
         t.send(new HitBuilders.ScreenViewBuilder().build());
@@ -102,8 +109,7 @@ public class LoginActivity extends AppCompatActivity {
             return;
 
         Miscellaneous.closeKeyboard(this, etPass);
-        new UserAccount(LoginActivity.this)
-                .Login(etSapid.getText().toString(), etPass.getText().toString());
+        userAccount.Login(etSapid.getText().toString(), etPass.getText().toString());
     }
 
     /**

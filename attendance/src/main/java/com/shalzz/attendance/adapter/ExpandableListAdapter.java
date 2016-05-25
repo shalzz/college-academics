@@ -45,7 +45,6 @@ import com.shalzz.attendance.DatabaseHandler;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.data.model.local.ImmutableListFooter;
 import com.shalzz.attendance.data.model.remote.ImmutableSubject;
-import com.shalzz.attendance.wrapper.MyVolley;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -107,7 +106,7 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                                  SubjectItemExpandedListener subjectItemExpandedListener) {
 
         mContext = context;
-        mResources = MyVolley.getMyResources();
+        mResources = context.getResources();
         mSubjectItemExpandedListener = subjectItemExpandedListener;
         mExpandedTranslationZ = mResources.getDimension(R.dimen.atten_view_expanded_elevation);
         mBitmap = BitmapFactory.decodeResource(mResources,R.drawable.alert);

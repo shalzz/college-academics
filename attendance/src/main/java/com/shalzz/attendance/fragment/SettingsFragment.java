@@ -40,7 +40,10 @@ import com.shalzz.attendance.DatabaseHandler;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.activity.MainActivity;
 import com.shalzz.attendance.wrapper.MySyncManager;
-import com.shalzz.attendance.wrapper.MyVolley;
+import com.shalzz.attendance.wrapper.MyApplication;
+
+import javax.inject.Inject;
+import javax.inject.Named;
 
 public class SettingsFragment extends PreferenceFragmentCompat implements OnSharedPreferenceChangeListener{
 
@@ -49,8 +52,13 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnShar
     private String key_sync_interval;
     private String key_sync_day_night;
 
+    @Inject
+    @Named("app")
+    Tracker t;
+
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
+        MyApplication.getAppComponent().inject(this);
         mContext = getActivity();
 
         addPreferencesFromResource(R.xml.preferences);
@@ -71,8 +79,6 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnShar
     @Override
     public void onStart() {
         super.onStart();
-        Tracker t = ((MyVolley) getActivity().getApplication()).getTracker(
-                MyVolley.TrackerName.APP_TRACKER);
 
         t.setScreenName(getClass().getSimpleName());
         t.send(new HitBuilders.ScreenViewBuilder().build());

@@ -36,7 +36,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.shalzz.attendance.wrapper.MyVolley;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -51,12 +50,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import javax.inject.Inject;
+
 public class Miscellaneous {
 
     private MaterialDialog.Builder builder = null;
     private MaterialDialog pd = null;
-    private Context mContext;
+    private static Context mContext;
 
+    @Inject
     public Miscellaneous(Context context) {
         mContext = context;
     }
@@ -197,15 +199,15 @@ public class Miscellaneous {
      * @return true or false.
      */
     public static boolean useProxy() {
-        Resources resources = MyVolley.getMyResources();
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(MyVolley.getAppContext());
+        Resources resources = mContext.getResources();
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mContext);
         boolean useProxy = sharedPref.getBoolean(resources.getString(R.string.pref_key_use_proxy), false);
         if(useProxy) {
-            ConnectivityManager connManager = (ConnectivityManager) MyVolley.getAppContext()
+            ConnectivityManager connManager = (ConnectivityManager) mContext
                     .getSystemService(Context.CONNECTIVITY_SERVICE);
             NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
             if (mWifi.isConnectedOrConnecting()) {
-                WifiManager wifiManager = (WifiManager) MyVolley.getAppContext().getSystemService(Context.WIFI_SERVICE);
+                WifiManager wifiManager = (WifiManager) mContext.getSystemService(Context.WIFI_SERVICE);
                 WifiInfo wifiInfo = wifiManager.getConnectionInfo();
                 Log.d("Proxy","Wifi changed to " + wifiInfo.getSSID());
                 return wifiInfo.getSSID().equals(resources.getString(R.string.upesnet_ssid));

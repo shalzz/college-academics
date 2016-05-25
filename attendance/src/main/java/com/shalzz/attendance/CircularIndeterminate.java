@@ -26,6 +26,8 @@ import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.view.View;
 
+import javax.inject.Inject;
+
 /**
  * Simplest custom view possible, using CircularProgressDrawable
  */

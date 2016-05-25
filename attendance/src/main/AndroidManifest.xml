@@ -40,7 +40,7 @@
         android:anyDensity="true"/>
 
     <application
-        android:name=".wrapper.MyVolley"
+        android:name=".wrapper.MyApplication"
         android:allowBackup="true"
         android:allowClearUserData="true"
         android:icon="@mipmap/ic_launcher"
