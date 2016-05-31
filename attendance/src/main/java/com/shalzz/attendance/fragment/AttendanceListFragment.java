@@ -58,6 +58,7 @@ import com.shalzz.attendance.controllers.UserAccount;
 import com.shalzz.attendance.data.network.DataAPI;
 import com.shalzz.attendance.wrapper.MultiSwipeRefreshLayout;
 import com.shalzz.attendance.wrapper.MyApplication;
+import com.shalzz.attendance.wrapper.MyPreferencesManager;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -98,10 +99,12 @@ public class AttendanceListFragment extends Fragment implements
     Tracker t;
 
     @Inject
-    UserAccount userAccount;
+    MyPreferencesManager preferencesManager;
 
     @Inject
     DataAPI api;
+
+    UserAccount userAccount;
 
     @Nullable
     private LinearLayoutManager mLinearLayoutManager;
@@ -136,6 +139,7 @@ public class AttendanceListFragment extends Fragment implements
         MyApplication.getAppComponent().inject(this);
 
         mContext = getActivity();
+        userAccount = new UserAccount(mContext,api, preferencesManager);
         setHasOptionsMenu(true);
         View mView = inflater.inflate(R.layout.fragment_attendance, container, false);
         unbinder = ButterKnife.bind(this, mView);

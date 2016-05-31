@@ -34,7 +34,9 @@ import com.google.android.gms.analytics.Tracker;
 import com.shalzz.attendance.Miscellaneous;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.controllers.UserAccount;
+import com.shalzz.attendance.data.network.DataAPI;
 import com.shalzz.attendance.wrapper.MyApplication;
+import com.shalzz.attendance.wrapper.MyPreferencesManager;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -59,6 +61,11 @@ public class LoginActivity extends AppCompatActivity {
     Tracker t;
 
     @Inject
+    DataAPI dataAPI;
+
+    @Inject
+    MyPreferencesManager preferencesManager;
+
     UserAccount userAccount;
 
     private EditText etSapid;
@@ -77,6 +84,7 @@ public class LoginActivity extends AppCompatActivity {
         // set toolbar as actionbar
         setSupportActionBar(mToolbar);
 
+        userAccount = new UserAccount(this,dataAPI, preferencesManager);
         etSapid = textInputSapid.getEditText();
         etPass = textInputPass.getEditText();
 

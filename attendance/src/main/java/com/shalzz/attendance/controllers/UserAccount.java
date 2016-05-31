@@ -62,12 +62,11 @@ public class UserAccount {
     @Inject
     public UserAccount(Context context,
                        DataAPI api,
-                       Miscellaneous misc,
                        MyPreferencesManager prefs) {
         mContext = context;
         this.api = api;
-        this.misc = misc;
         preferencesManager = prefs;
+        misc = new Miscellaneous(context);
     }
 
     /**
