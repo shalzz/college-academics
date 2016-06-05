@@ -24,13 +24,12 @@ import android.support.annotation.NonNull;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.ryanharter.auto.value.gson.AutoValueGsonTypeAdapterFactory;
 import com.shalzz.attendance.BuildConfig;
 import com.shalzz.attendance.Miscellaneous;
-import com.shalzz.attendance.data.model.remote.GsonAdaptersRemote;
 import com.shalzz.attendance.data.network.AuthInterceptor;
 import com.shalzz.attendance.data.network.DataAPI;
 import com.shalzz.attendance.data.network.HeaderInterceptor;
-import com.shalzz.attendance.data.network.LoggingInterceptor;
 import com.shalzz.attendance.wrapper.MyPreferencesManager;
 
 import javax.inject.Singleton;
@@ -47,7 +46,7 @@ public class NetworkModule {
     @Provides @Singleton
     public static Gson provideGson() {
         return new GsonBuilder()
-                .registerTypeAdapterFactory(new GsonAdaptersRemote())
+                .registerTypeAdapterFactory(new AutoValueGsonTypeAdapterFactory())
                 .setDateFormat("yyyy-MM-dd")
                 .create();
     }
@@ -55,7 +54,7 @@ public class NetworkModule {
     @Provides @Singleton @NonNull
     public static OkHttpClient provideClient(MyPreferencesManager preferences) {
         final OkHttpClient.Builder okHttpBuilder = new OkHttpClient.Builder()
-                .addInterceptor(new LoggingInterceptor())
+//                .addInterceptor(new LoggingInterceptor())
                 .addInterceptor(new HeaderInterceptor())
                 .addInterceptor(new AuthInterceptor(preferences))
                 .proxyAuthenticator(preferences.getProxyCredentials())

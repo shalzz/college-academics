@@ -36,7 +36,7 @@ import com.shalzz.attendance.Miscellaneous;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.activity.MainActivity;
 import com.shalzz.attendance.adapter.ExpandableListAdapter;
-import com.shalzz.attendance.data.model.remote.ImmutableSubject;
+import com.shalzz.attendance.data.model.remote.Subject;
 import com.shalzz.attendance.data.network.DataAPI;
 import com.shalzz.attendance.fragment.AttendanceListFragment;
 import com.shalzz.attendance.loader.SubjectAsyncTaskLoader;
@@ -50,7 +50,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class AttendanceController implements LoaderManager.LoaderCallbacks<List<ImmutableSubject>> {
+public class AttendanceController implements LoaderManager.LoaderCallbacks<List<Subject>> {
 
     public static final String SUBJECT_FILTER = "subject_filter_text";
 
@@ -87,18 +87,18 @@ public class AttendanceController implements LoaderManager.LoaderCallbacks<List<
     }
 
     public void updateSubjects() {
-        Call<List<ImmutableSubject>> call = api.getAttendance();
-        call.enqueue(new Callback<List<ImmutableSubject>>() {
+        Call<List<Subject>> call = api.getAttendance();
+        call.enqueue(new Callback<List<Subject>>() {
             @Override
-            public void onResponse(Call<List<ImmutableSubject>> call,
-                                   Response<List<ImmutableSubject>> response) {
+            public void onResponse(Call<List<Subject>> call,
+                                   Response<List<Subject>> response) {
                 done();
                 if(response.isSuccessful()) {
-                    List<ImmutableSubject> subjects = response.body();
+                    List<Subject> subjects = response.body();
                     try {
                         if(subjects.size() > 0) {
                             long now = new Date().getTime();
-                            for (ImmutableSubject subject : subjects) {
+                            for (Subject subject : subjects) {
                                 db.addSubject(subject, now);
                             }
 
@@ -128,7 +128,7 @@ public class AttendanceController implements LoaderManager.LoaderCallbacks<List<
             }
 
             @Override
-            public void onFailure(Call<List<ImmutableSubject>> call, Throwable t) {
+            public void onFailure(Call<List<Subject>> call, Throwable t) {
                 done();
                 Miscellaneous.showSnackBar(mView.mSwipeRefreshLayout, t.getLocalizedMessage());
                 if(BuildConfig.DEBUG)
@@ -147,7 +147,7 @@ public class AttendanceController implements LoaderManager.LoaderCallbacks<List<
     }
 
     @Override
-    public Loader<List<ImmutableSubject>> onCreateLoader(int id, Bundle args) {
+    public Loader<List<Subject>> onCreateLoader(int id, Bundle args) {
         String filter = null;
         if(args != null)
             filter = args.getString(SUBJECT_FILTER);
@@ -155,7 +155,7 @@ public class AttendanceController implements LoaderManager.LoaderCallbacks<List<
     }
 
     @Override
-    public void onLoadFinished(Loader<List<ImmutableSubject>> loader, List<ImmutableSubject> data) {
+    public void onLoadFinished(Loader<List<Subject>> loader, List<Subject> data) {
         String filter = ((SubjectAsyncTaskLoader) loader).mCurFilter;
         if(data.size() == 0 && filter == null) {
             updateSubjects();
@@ -166,7 +166,7 @@ public class AttendanceController implements LoaderManager.LoaderCallbacks<List<
     }
 
     @Override
-    public void onLoaderReset(Loader<List<ImmutableSubject>> loader) {
+    public void onLoaderReset(Loader<List<Subject>> loader) {
         // Loader reset, throw away our data,
         // unregister any listeners, etc.
         mAdapter.clear();

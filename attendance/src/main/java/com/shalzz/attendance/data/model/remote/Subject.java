@@ -19,13 +19,14 @@
 
 package com.shalzz.attendance.data.model.remote;
 
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 
-import com.google.gson.annotations.SerializedName;
+import com.google.auto.value.AutoValue;
+import com.google.gson.TypeAdapter;
 import com.shalzz.attendance.wrapper.DateHelper;
 
 import org.immutables.gson.Gson;
-import org.immutables.value.Value;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -53,59 +54,95 @@ import java.util.Locale;
  *  which is exposed by the api endpoint /api/v1/me/attendance
  *  by the express.js server (upes-api) as of this writing.
  */
-@Value.Immutable
-@Value.Style(allParameters = true)
-public abstract class Subject implements SubjectModel {
-    public static final Mapper<ImmutableSubject> MAPPER =
-            new SubjectModel.Mapper<>((id, name, attended, held, last_updated)
-                    -> ImmutableSubject.of(id,name,attended,held));
+@AutoValue
+public abstract class Subject implements SubjectModel, Parcelable {
+    public static final Mapper<Subject> MAPPER = new SubjectModel.Mapper<>(
+            (id, name, attended, held, last_updated) -> Subject.builder()
+                    .id(id)
+                    .name(name)
+                    .attended(attended)
+                    .held(held)
+                    .last_updated(last_updated)
+                    .build()
+    );
 
     public static final class Marshal extends SubjectMarshal<Marshal> { }
 
     @Nullable
     @Override
     @Gson.Ignore
-    @Value.Parameter(false)
     public abstract Long last_updated();
 
-    @SerializedName("absent_dates")
-    @Value.Parameter(false)
-    public abstract List<Date> getAbsentDates();
+    @Nullable
+    public abstract List<Date> absent_dates();
 
-    @Gson.Ignore
-    @Value.Derived
-	public String getAbsentDatesAsString() {
-        DateFormat dayFormat = new SimpleDateFormat("d", Locale.US);
-        DateFormat monthFormat = new SimpleDateFormat("MMM", Locale.US);
-        List<Date> dates = new ArrayList<>();
-        dates.addAll(getAbsentDates());
-        if(dates.size() == 0)
-            return "";
+    private String absentDates;
+    private Float percentage;
 
-		String datesStr = "";
-        String prevMonth = "";
-        Collections.sort(dates);
-        for (Date date: dates) {
-            int day = Integer.parseInt(dayFormat.format(date));
-            String month = monthFormat.format(date);
-            if(prevMonth.length() == 0) {
-                datesStr += month + ": ";
-                prevMonth = month;
+	public final String getAbsentDatesAsString() {
+        if(absentDates == null) {
+            if(absent_dates() == null) {
+                absentDates = "";
+                return absentDates;
             }
-            else if(!prevMonth.equals(month)) {
-                datesStr += "\n" + month + ": ";
-                prevMonth = month;
+            DateFormat dayFormat = new SimpleDateFormat("d", Locale.US);
+            DateFormat monthFormat = new SimpleDateFormat("MMM", Locale.US);
+            List<Date> dates = new ArrayList<>();
+            dates.addAll(absent_dates());
+            if (dates.size() == 0)
+                return "";
+
+            String datesStr = "";
+            String prevMonth = "";
+            Collections.sort(dates);
+            for (Date date : dates) {
+                int day = Integer.parseInt(dayFormat.format(date));
+                String month = monthFormat.format(date);
+                if (prevMonth.length() == 0) {
+                    datesStr += month + ": ";
+                    prevMonth = month;
+                } else if (!prevMonth.equals(month)) {
+                    datesStr += "\n" + month + ": ";
+                    prevMonth = month;
+                }
+                datesStr += day + DateHelper.getDayOfMonthSuffix(day) + ", ";
             }
-            datesStr += day + DateHelper.getDayOfMonthSuffix(day) + ", ";
+            absentDates = datesStr.substring(0,datesStr.length()-2);
         }
-        return datesStr.substring(0,datesStr.length()-2);
+        return absentDates;
 	}
 
-    @Gson.Ignore
-    @Value.Derived
-	public Float getPercentage() {
-        if(held() > 0f)
-            return attended() / held() * 100;
-        return 0.0f;
+	public final Float getPercentage() {
+        if(percentage == null) {
+            percentage = held() > 0f ? attended() / held() * 100 : 0.0f;
+        }
+        return percentage;
 	}
+
+    public static Builder builder() {
+        return new AutoValue_Subject.Builder();
+    }
+
+    public Builder toBuilder() {
+        return new AutoValue_Subject.Builder(this);
+    }
+
+    public final Subject withAbsentDates(List<Date> dates) {
+        return toBuilder().absent_dates(dates).build();
+    }
+
+    @AutoValue.Builder
+    public abstract static class Builder {
+        public abstract Builder id(int value);
+        public abstract Builder name(String value);
+        public abstract Builder attended(Float value);
+        public abstract Builder held(Float value);
+        public abstract Builder absent_dates(List<Date> value);
+        public abstract Builder last_updated(Long value);
+        public abstract Subject build();
+    }
+
+    public static TypeAdapter<Subject> typeAdapter(com.google.gson.Gson gson) {
+        return new AutoValue_Subject.GsonTypeAdapter(gson);
+    }
 }

@@ -19,12 +19,13 @@
 
 package com.shalzz.attendance.data.model.remote;
 
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
+import com.google.auto.value.AutoValue;
 import com.google.gson.Gson;
+import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.SerializedName;
-
-import org.immutables.value.Value;
 
 /** Field names need to be the same
  *  as that of the fields in the
@@ -43,11 +44,10 @@ import org.immutables.value.Value;
  *  which is exposed by the api endpoint /api/v1/me
  *  by the express.js server (upes-api) as of this writing.
  */
-@Value.Immutable
-@Value.Style(allParameters = true)
-public abstract class User implements UserModel {
-    public static final Mapper<ImmutableUser> MAPPER =
-            new Mapper<>(ImmutableUser::of);
+@AutoValue
+public abstract class User implements UserModel, Parcelable {
+    public static final Mapper<User> MAPPER =
+            new Mapper<>(User::create);
 
     public static final class Marshal extends UserMarshal<Marshal> { }
 
@@ -56,15 +56,11 @@ public abstract class User implements UserModel {
     @SerializedName("sapid")
     public abstract String sap_id();
 
-    @NonNull
-    @Override
-    public abstract String name();
+    public static User create(String sap_id,String name,String course,String password) {
+        return new AutoValue_User(sap_id,name,course,password);
+    }
 
-    @NonNull
-    @Override
-    public abstract String course();
-
-    @NonNull
-    @Override
-    public abstract String password();
+    public static TypeAdapter<User> typeAdapter(Gson gson) {
+        return new AutoValue_User.GsonTypeAdapter(gson);
+    }
 }

@@ -39,8 +39,8 @@ import com.google.android.gms.analytics.Tracker;
 import com.shalzz.attendance.DatabaseHandler;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.activity.MainActivity;
-import com.shalzz.attendance.wrapper.MySyncManager;
 import com.shalzz.attendance.wrapper.MyApplication;
+import com.shalzz.attendance.wrapper.MySyncManager;
 
 import javax.inject.Inject;
 import javax.inject.Named;

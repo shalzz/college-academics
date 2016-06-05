@@ -28,16 +28,11 @@ import android.os.Build;
 import android.support.v4.content.AsyncTaskLoader;
 
 import com.shalzz.attendance.data.model.local.AbsentDate;
-import com.shalzz.attendance.data.model.local.ImmutableAbsentDate;
-import com.shalzz.attendance.data.model.local.ImmutableListFooter;
-import com.shalzz.attendance.data.model.remote.ImmutablePeriod;
-import com.shalzz.attendance.data.model.remote.ImmutableSubject;
-import com.shalzz.attendance.data.model.remote.ImmutableUser;
+import com.shalzz.attendance.data.model.local.ListFooter;
 import com.shalzz.attendance.data.model.remote.Period;
 import com.shalzz.attendance.data.model.remote.Subject;
 import com.shalzz.attendance.data.model.remote.User;
 import com.shalzz.attendance.wrapper.DateHelper;
-import com.shalzz.attendance.wrapper.MyPreferencesManager;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -117,7 +112,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
      * Add new Subject
      * @param subject the {@link Subject} to add
      */
-    public void addSubject(ImmutableSubject subject, long timestamp) {
+    public void addSubject(Subject subject, long timestamp) {
         SQLiteDatabase db = getWritableDatabase();
 
         db.insertWithOnConflict(Subject.TABLE_NAME,null, new Subject.Marshal()
@@ -130,7 +125,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 SQLiteDatabase.CONFLICT_REPLACE);
 
         // Store the dates in another table corresponding to the same id
-        for(Date date : subject.getAbsentDates()) {
+        for(Date date : subject.absent_dates()) {
             db.insertWithOnConflict(AbsentDate.TABLE_NAME, null, new AbsentDate.Marshal()
                             .subject_id(subject.id())
                             .absent_date(date)
@@ -143,8 +138,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
      * Get All Subjects
      * @return subjectList
      */
-    public List<ImmutableSubject> getAllSubjects(AsyncTaskLoader callback, String filter) {
-        List<ImmutableSubject> subjectList = new ArrayList<>();
+    public List<Subject> getAllSubjects(AsyncTaskLoader callback, String filter) {
+        List<Subject> subjectList = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor;
 
@@ -167,11 +162,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 Cursor dateCursor = db.rawQuery(AbsentDate.SELECT_BY_ID,
                         new String[]{String.valueOf(id)});
                 while (dateCursor.moveToNext()) {
-                    dates.add(ImmutableAbsentDate.MAPPER.map(dateCursor).absent_date());
+                    dates.add(AbsentDate.MAPPER.map(dateCursor).absent_date());
                 }
 
                 dateCursor.close();
-                subjectList.add(ImmutableSubject.MAPPER.map(cursor).withAbsentDates(dates));
+                subjectList.add(Subject.MAPPER.map(cursor).withAbsentDates(dates));
             }
         } finally {
             cursor.close();
@@ -188,7 +183,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         try (Cursor cursor = db.rawQuery(AbsentDate.SELECT_ABSENT_SUBJECTS,
                 new String[]{String.valueOf(DateHelper.formatToTechnicalFormat(date))})) {
             while (cursor.moveToNext()) {
-                subjectIDs.add(ImmutableAbsentDate.MAPPER.map(cursor).subject_id());
+                subjectIDs.add(AbsentDate.MAPPER.map(cursor).subject_id());
             }
         }
 
@@ -210,7 +205,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         }
     }
 
-    public void addUser(ImmutableUser user) {
+    public void addUser(User user) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.insertWithOnConflict(User.TABLE_NAME, null, new User.Marshal()
                         .sap_id(user.sap_id())
@@ -238,22 +233,22 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     @SuppressLint("NewApi")
-    public ImmutableUser getUser() {
+    public User getUser() {
         SQLiteDatabase db = this.getReadableDatabase();
 
         try (Cursor cursor = db.rawQuery(User.SELECT_ALL, null)) {
 
             if (cursor.moveToNext()) {
-                return ImmutableUser.MAPPER.map(cursor);
+                return User.MAPPER.map(cursor);
             }
         }
         return null;
     }
 
     @SuppressLint("NewApi")
-    public ImmutableListFooter getListFooter() {
+    public ListFooter getListFooter() {
         SQLiteDatabase db = this.getReadableDatabase();
-        ImmutableListFooter footer = null;
+        ListFooter footer = null;
 
         String selectQuery = "SELECT  sum(" + Subject.ATTENDED+ ") as " + KEY_TOTAL_ATTEND
                 + ",sum(" + Subject.HELD+ ") as " + KEY_TOTAL_HELD
@@ -261,9 +256,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         try(Cursor cursor = db.rawQuery(selectQuery, null)) {
 
             if (cursor.moveToFirst()) {
-                footer = ImmutableListFooter.builder()
-                        .held(cursor.getFloat(cursor.getColumnIndexOrThrow(KEY_TOTAL_HELD)))
-                        .attended(cursor.getFloat(cursor.getColumnIndexOrThrow(KEY_TOTAL_ATTEND)))
+                footer = ListFooter.builder()
+                        .setHeld(cursor.getFloat(cursor.getColumnIndexOrThrow(KEY_TOTAL_HELD)))
+                        .setAttended(cursor.getFloat(cursor.getColumnIndexOrThrow
+                                (KEY_TOTAL_ATTEND)))
                         .build();
             }
             db.close();
@@ -273,7 +269,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return footer;
     }
 
-    public void addPeriod(ImmutablePeriod period, long timestamp) {
+    public void addPeriod(Period period, long timestamp) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.insertWithOnConflict(Period.TABLE_NAME, null, new Period.Marshal()
                         .id(period.id())
@@ -290,9 +286,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     @SuppressLint("NewApi")
-    public ArrayList<ImmutablePeriod> getAllPeriods(Date date, AsyncTaskLoader callback) {
+    public ArrayList<Period> getAllPeriods(Date date, AsyncTaskLoader callback) {
         String dayName = DateHelper.getShortWeekday(date);
-        ArrayList<ImmutablePeriod> periods = new ArrayList<>();
+        ArrayList<Period> periods = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
         try(Cursor cursor = db.rawQuery(Period.SELECT_BY_WEEK_DAY, new String[] {dayName})) {
 
@@ -301,7 +297,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 if (callback != null && callback.isLoadInBackgroundCanceled()) {
                     break;
                 }
-                periods.add(ImmutablePeriod.MAPPER.map(cursor));
+                periods.add(Period.MAPPER.map(cursor));
             }
         }
 

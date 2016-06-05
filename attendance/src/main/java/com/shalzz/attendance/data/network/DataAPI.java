@@ -19,34 +19,32 @@
 
 package com.shalzz.attendance.data.network;
 
-import com.shalzz.attendance.data.model.remote.ImmutablePeriod;
-import com.shalzz.attendance.data.model.remote.ImmutableSubject;
-import com.shalzz.attendance.data.model.remote.ImmutableUser;
+import com.shalzz.attendance.data.model.remote.Period;
+import com.shalzz.attendance.data.model.remote.Subject;
+import com.shalzz.attendance.data.model.remote.User;
 
 import java.util.List;
 
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
-import retrofit2.http.Headers;
 
 public interface DataAPI {
 
     String ENDPOINT = "https://upes.winnou.net/api/v1/";
 
     @GET("me")
-    Call<ImmutableUser> getUser(@Header("Authorization") String authorization);
+    Call<User> getUser(@Header("Authorization") String authorization);
 
     @GET("me/attendance")
-    Call<List<ImmutableSubject>> getAttendance();
+    Call<List<Subject>> getAttendance();
 
     @GET("me/attendance")
-    Call<List<ImmutableSubject>> getAttendance(@Header("Authorization") String authorization);
+    Call<List<Subject>> getAttendance(@Header("Authorization") String authorization);
 
     @GET("me/timetable")
-    Call<List<ImmutablePeriod>> getTimetable();
+    Call<List<Period>> getTimetable();
 
     @GET("me/timetable")
-    Call<List<ImmutablePeriod>> getTimetable(@Header("Authorization") String authorization);
+    Call<List<Period>> getTimetable(@Header("Authorization") String authorization);
 }

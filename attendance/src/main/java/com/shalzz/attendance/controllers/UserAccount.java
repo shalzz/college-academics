@@ -30,7 +30,7 @@ import com.shalzz.attendance.DatabaseHandler;
 import com.shalzz.attendance.Miscellaneous;
 import com.shalzz.attendance.activity.LoginActivity;
 import com.shalzz.attendance.activity.MainActivity;
-import com.shalzz.attendance.data.model.remote.ImmutableUser;
+import com.shalzz.attendance.data.model.remote.User;
 import com.shalzz.attendance.data.network.DataAPI;
 import com.shalzz.attendance.wrapper.MyPreferencesManager;
 import com.shalzz.attendance.wrapper.MySyncManager;
@@ -53,7 +53,7 @@ public class UserAccount {
      * The activity context used to Log the user from
      */
     private Context mContext;
-    private Call<ImmutableUser> call;
+    private Call<User> call;
 
     /**
      * Constructor to set the Activity context.
@@ -80,11 +80,11 @@ public class UserAccount {
         misc.showProgressDialog("Logging in...", false, pdCancelListener());
 
         call = api.getUser(creds);
-        call.enqueue(new Callback<ImmutableUser>() {
+        call.enqueue(new Callback<User>() {
             @Override
-            public void onResponse(Call<ImmutableUser> call, Response<ImmutableUser> response) {
+            public void onResponse(Call<User> call, Response<User> response) {
                 if(response.isSuccessful()) {
-                    ImmutableUser user = response.body();
+                    User user = response.body();
                     preferencesManager.saveUser(user.sap_id(), user.password());
                     MySyncManager.addPeriodicSync(mContext, user.sap_id());
                     DatabaseHandler db = new DatabaseHandler(mContext);
@@ -99,7 +99,7 @@ public class UserAccount {
             }
 
             @Override
-            public void onFailure(Call<ImmutableUser> call, Throwable t) {
+            public void onFailure(Call<User> call, Throwable t) {
 
                 misc.dismissProgressDialog();
                 View view = ((Activity) mContext).getCurrentFocus();

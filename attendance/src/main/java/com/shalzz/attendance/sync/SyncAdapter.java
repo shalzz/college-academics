@@ -38,8 +38,8 @@ import android.support.v7.preference.PreferenceManager;
 import com.shalzz.attendance.DatabaseHandler;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.activity.MainActivity;
-import com.shalzz.attendance.data.model.remote.ImmutablePeriod;
-import com.shalzz.attendance.data.model.remote.ImmutableSubject;
+import com.shalzz.attendance.data.model.remote.Period;
+import com.shalzz.attendance.data.model.remote.Subject;
 import com.shalzz.attendance.data.network.DataAPI;
 import com.shalzz.attendance.wrapper.MyPreferencesManager;
 
@@ -82,15 +82,15 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 	public void onPerformSync(Account account, Bundle extras, String authority,
 			ContentProviderClient provider, SyncResult syncResult) {
 
-        Call<List<ImmutableSubject>> call = api.getAttendance(preferencesManager.getBasicAuthCredentials());
-        call.enqueue(new Callback<List<ImmutableSubject>>() {
+        Call<List<Subject>> call = api.getAttendance(preferencesManager.getBasicAuthCredentials());
+        call.enqueue(new Callback<List<Subject>>() {
             @Override
-            public void onResponse(Call<List<ImmutableSubject>> call, Response<List<ImmutableSubject>> response) {
+            public void onResponse(Call<List<Subject>> call, Response<List<Subject>> response) {
                 if(response.isSuccessful()) {
                     try {
                         DatabaseHandler db = new DatabaseHandler(mContext);
                         long now = new Date().getTime();
-                        for (ImmutableSubject subject : response.body()) {
+                        for (Subject subject : response.body()) {
                             db.addSubject(subject, now);
                         }
                         db.purgeOldSubjects();
@@ -103,22 +103,22 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
             }
 
             @Override
-            public void onFailure(Call<List<ImmutableSubject>> call, Throwable t) {
+            public void onFailure(Call<List<Subject>> call, Throwable t) {
                 t.printStackTrace();
             }
         });
 
-        Call<List<ImmutablePeriod>> call2 = api.getTimetable(preferencesManager.getBasicAuthCredentials());
-        call2.enqueue(new Callback<List<ImmutablePeriod>>() {
+        Call<List<Period>> call2 = api.getTimetable(preferencesManager.getBasicAuthCredentials());
+        call2.enqueue(new Callback<List<Period>>() {
             @Override
             @SuppressLint("InlinedApi")
-            public void onResponse(Call<List<ImmutablePeriod>> call,
-                                   Response<List<ImmutablePeriod>> response) {
+            public void onResponse(Call<List<Period>> call,
+                                   Response<List<Period>> response) {
                 if(response.isSuccessful()) {
                     try {
                         DatabaseHandler db = new DatabaseHandler(mContext);
                         long now = new Date().getTime();
-                        for(ImmutablePeriod period : response.body()) {
+                        for(Period period : response.body()) {
                             db.addPeriod(period, now);
                         }
                         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences
@@ -166,7 +166,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
             }
 
             @Override
-            public void onFailure(Call<List<ImmutablePeriod>> call, Throwable t) {
+            public void onFailure(Call<List<Period>> call, Throwable t) {
                 t.printStackTrace();
             }
         });

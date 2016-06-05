@@ -28,8 +28,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.shalzz.attendance.R;
-import com.shalzz.attendance.data.model.local.ImmutableDay;
-import com.shalzz.attendance.data.model.remote.ImmutablePeriod;
+import com.shalzz.attendance.data.model.local.Day;
+import com.shalzz.attendance.data.model.remote.Period;
 
 import java.util.List;
 
@@ -38,9 +38,9 @@ import butterknife.ButterKnife;
 
 public class DayListAdapter extends RecyclerView.Adapter<DayListAdapter.ViewHolder>{
 
-    private SortedList<ImmutablePeriod> mPeriods;
+    private SortedList<Period> mPeriods;
     private List<Integer> subjectIDs;
-    private SortedListAdapterCallback<ImmutablePeriod> callback;
+    private SortedListAdapterCallback<Period> callback;
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
@@ -59,15 +59,15 @@ public class DayListAdapter extends RecyclerView.Adapter<DayListAdapter.ViewHold
     }
 
     public DayListAdapter(){
-        callback = new SortedListAdapterCallback<ImmutablePeriod>(this) {
+        callback = new SortedListAdapterCallback<Period>(this) {
             @Override
-            public int compare(ImmutablePeriod o1, ImmutablePeriod o2) {
+            public int compare(Period o1, Period o2) {
                 return (o1.getStartDate().compareTo(o2.getStartDate()));
             }
 
             @SuppressWarnings("SimplifiableIfStatement")
             @Override
-            public boolean areContentsTheSame(ImmutablePeriod oldItem, ImmutablePeriod newItem) {
+            public boolean areContentsTheSame(Period oldItem, Period newItem) {
                 if(oldItem.id() != newItem.id()) {
                     return false;
                 }
@@ -94,22 +94,22 @@ public class DayListAdapter extends RecyclerView.Adapter<DayListAdapter.ViewHold
             }
 
             @Override
-            public boolean areItemsTheSame(ImmutablePeriod item1, ImmutablePeriod item2) {
+            public boolean areItemsTheSame(Period item1, Period item2) {
                 return item1.id() == item2.id();
             }
         };
 
-        mPeriods = new SortedList<>(ImmutablePeriod.class, callback);
+        mPeriods = new SortedList<>(Period.class, callback);
     }
 
-    public void update(ImmutableDay day) {
-        List<ImmutablePeriod> periods = day.getPeriods();
+    public void update(Day day) {
+        List<Period> periods = day.getPeriods();
         subjectIDs = day.getSubjectIDs();
         mPeriods.beginBatchedUpdates();
         for (int i = 0; i < mPeriods.size(); i++) {
-            ImmutablePeriod existingObject = mPeriods.get(i);
+            Period existingObject = mPeriods.get(i);
             boolean found = false;
-            for (ImmutablePeriod newObject : periods) {
+            for (Period newObject : periods) {
                 if (callback.areItemsTheSame(existingObject, newObject)) {
                     found = true;
                     break;
@@ -144,7 +144,7 @@ public class DayListAdapter extends RecyclerView.Adapter<DayListAdapter.ViewHold
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
 
-        ImmutablePeriod period = mPeriods.get(position);
+        Period period = mPeriods.get(position);
         holder.tvSubjectName.setText(period.name());
         holder.tvRoom.setText(period.room());
         holder.tvTeacher.setText(period.teacher());

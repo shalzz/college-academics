@@ -31,10 +31,9 @@ import com.shalzz.attendance.Miscellaneous;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.activity.MainActivity;
 import com.shalzz.attendance.adapter.TimeTablePagerAdapter;
-import com.shalzz.attendance.data.model.remote.ImmutablePeriod;
+import com.shalzz.attendance.data.model.remote.Period;
 import com.shalzz.attendance.data.network.DataAPI;
 import com.shalzz.attendance.fragment.TimeTablePagerFragment;
-import com.shalzz.attendance.wrapper.MyApplication;
 
 import java.util.Date;
 import java.util.List;
@@ -88,18 +87,18 @@ public class PagerController {
     }
 
     public void updatePeriods() {
-        Call<List<ImmutablePeriod>> call = api.getTimetable();
-        call.enqueue(new Callback<List<ImmutablePeriod>>() {
+        Call<List<Period>> call = api.getTimetable();
+        call.enqueue(new Callback<List<Period>>() {
             @Override
-            public void onResponse(Call<List<ImmutablePeriod>> call,
-                                   retrofit2.Response<List<ImmutablePeriod>> response) {
+            public void onResponse(Call<List<Period>> call,
+                                   retrofit2.Response<List<Period>> response) {
                 done();
                 if(response.isSuccessful()) {
-                    List<ImmutablePeriod> periods = response.body();
+                    List<Period> periods = response.body();
                     try {
                         if(periods.size() > 0) {
                             long now = new Date().getTime();
-                            for (ImmutablePeriod period : periods) {
+                            for (Period period : periods) {
                                 db.addPeriod(period, now);
                             }
 
@@ -130,7 +129,7 @@ public class PagerController {
             }
 
             @Override
-            public void onFailure(Call<List<ImmutablePeriod>> call, Throwable t) {
+            public void onFailure(Call<List<Period>> call, Throwable t) {
                 done();
                 Miscellaneous.showSnackBar(mView.mSwipeRefreshLayout, t.getLocalizedMessage());
                 if(BuildConfig.DEBUG)

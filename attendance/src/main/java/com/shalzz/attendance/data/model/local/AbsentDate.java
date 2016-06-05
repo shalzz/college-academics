@@ -21,17 +21,16 @@ package com.shalzz.attendance.data.model.local;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.os.Parcelable;
 
+import com.google.auto.value.AutoValue;
 import com.shalzz.attendance.wrapper.DateHelper;
 import com.squareup.sqldelight.ColumnAdapter;
 
-import org.immutables.value.Value;
-
 import java.util.Date;
 
-@Value.Immutable
-@Value.Style(allParameters = true)
-public abstract class AbsentDate implements AbsentDatesModel{
+@AutoValue
+public abstract class AbsentDate implements AbsentDatesModel, Parcelable {
     private static final ColumnAdapter<Date> DATE_ADAPTER = new ColumnAdapter<Date>() {
         @Override
         public Date map(Cursor cursor, int columnIndex) {
@@ -45,11 +44,15 @@ public abstract class AbsentDate implements AbsentDatesModel{
     };
 
     public static final Mapper<AbsentDate> MAPPER = new Mapper<>((Mapper.Creator<AbsentDate>)
-            ImmutableAbsentDate::of, DATE_ADAPTER);
+            AbsentDate::create, DATE_ADAPTER);
 
     public static final class Marshal extends AbsentDatesMarshal<Marshal> {
         public Marshal() {
             super(DATE_ADAPTER);
         }
+    }
+
+    public static AbsentDate create(Integer subject_id, Date absent_date) {
+        return new AutoValue_AbsentDate(subject_id, absent_date);
     }
 }

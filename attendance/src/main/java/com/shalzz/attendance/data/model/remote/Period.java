@@ -19,14 +19,16 @@
 
 package com.shalzz.attendance.data.model.remote;
 
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.google.auto.value.AutoValue;
+import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.SerializedName;
 import com.shalzz.attendance.wrapper.DateHelper;
 
 import org.immutables.gson.Gson;
-import org.immutables.value.Value;
 
 import java.text.ParseException;
 import java.util.Date;
@@ -52,12 +54,10 @@ import java.util.Date;
  *  which is exposed by the api endpoint /api/v1/me/timetable
  *  by the express.js server (upes-api) as of this writing.
  */
-@Value.Immutable
-@Value.Style(allParameters = true)
-public abstract class Period implements PeriodModel {
-    public static final Mapper<ImmutablePeriod> MAPPER =
-            new Mapper<>((id, week_day, name, teacher, room, batch, start_time, end_time, last_updated)
-                    -> ImmutablePeriod.of(id,week_day,name,teacher,room,batch,start_time,end_time));
+@AutoValue
+public abstract class Period implements PeriodModel, Parcelable {
+    public static final Mapper<Period> MAPPER =
+            new Mapper<>(Period::create);
 
     public static final class Marshal extends PeriodMarshal<Marshal> { }
 
@@ -95,49 +95,57 @@ public abstract class Period implements PeriodModel {
     @SerializedName("end")
     public abstract String end_time();
 
+    private Date start_date;
+    private String timeRange;
+
     @Nullable
     @Override
     @Gson.Ignore
-    @Value.Parameter(false)
     public abstract Long last_updated();
 
-    @Gson.Ignore
-    @Value.Derived
-    @Value.Parameter(false)
-	public Date getStartDate() {
-        Date d = null;
-        try {
-            d = DateHelper.hr24Format.parse(start_time());
-        } catch (Exception e) {
-            e.printStackTrace();
+    public Date getStartDate() {
+        if(start_date == null) {
+            try {
+                start_date = DateHelper.hr24Format.parse(start_time());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
-        return d;
+        return start_date;
 	}
 
-    @Gson.Ignore
-    @Value.Derived
-    @Value.Parameter(false)
     public String getTimein12hr() {
-        String timeRange , mStart, mEnd;
-        try {
-            mStart = DateHelper.to12HrFormat(start_time());
-            mEnd = DateHelper.to12HrFormat(end_time());
-        } catch(ParseException e) {
-            e.printStackTrace();
-            return start_time() + "-" + end_time();
+        if(timeRange == null) {
+            String mStart, mEnd;
+            try {
+                mStart = DateHelper.to12HrFormat(start_time());
+                mEnd = DateHelper.to12HrFormat(end_time());
+            } catch (ParseException e) {
+                e.printStackTrace();
+                return start_time() + "-" + end_time();
+            }
+
+            // Remove leading zero's
+            mStart = mStart.startsWith("0") ? mStart.substring(1) : mStart;
+            mEnd = mEnd.startsWith("0") ? mEnd.substring(1) : mEnd;
+
+            // If a range shares a common AM/PM, append only on the end of the range. (Material Guideline)
+            int sl = mStart.length(), el = mEnd.length();
+            if (mStart.substring(sl - 2).equals(mEnd.substring(el - 2)))
+                timeRange = mStart.substring(0, sl - 3) + "-" + mEnd;
+            else
+                timeRange = mStart + "-" + mEnd;
+
         }
-
-        // Remove leading zero's
-        mStart = mStart.startsWith("0") ? mStart.substring(1) : mStart;
-        mEnd = mEnd.startsWith("0") ? mEnd.substring(1) : mEnd;
-
-        // If a range shares a common AM/PM, append only on the end of the range. (Material Guideline)
-        int sl = mStart.length(), el = mEnd.length();
-        if(mStart.substring(sl-2).equals(mEnd.substring(el-2)))
-            timeRange =mStart.substring(0,sl-3) + "-" + mEnd ;
-        else
-            timeRange =  mStart + "-" + mEnd ;
-
         return timeRange;
+    }
+
+    public static Period create(int id, String week_day, String name, String teacher, String room,
+                         String batch, String start_time, String end_time, Long last_updated) {
+        return new AutoValue_Period(id,week_day,name,teacher,room,batch,start_time,end_time, last_updated);
+    }
+
+    public static TypeAdapter<Period> typeAdapter(com.google.gson.Gson gson) {
+        return new AutoValue_Period.GsonTypeAdapter(gson);
     }
 }

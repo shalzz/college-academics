@@ -19,23 +19,38 @@
 
 package com.shalzz.attendance.data.model.local;
 
-import org.immutables.value.Value;
+import android.os.Parcelable;
+
+import com.google.auto.value.AutoValue;
 
 /**
  * Model class for the ExpandableListView footer.
  * @author shalzz
  *
  */
-@Value.Immutable
-public abstract class ListFooter {
+@AutoValue
+public abstract class ListFooter implements Parcelable {
 
 	public abstract Float getHeld();
 	public abstract Float getAttended();
 
-    @Value.Derived
+    private Float percentage;
+
 	public Float getPercentage() {
-        if(getHeld() > 0f)
-            return getAttended() / getHeld() * 100;
-        return 0.0f;
+        if(percentage == null) {
+            percentage = getHeld() > 0f ? getAttended() / getHeld() * 100 : 0.0f;
+        }
+        return percentage;
 	}
+
+    public static Builder builder() {
+        return new AutoValue_ListFooter.Builder();
+    }
+
+    @AutoValue.Builder
+    public abstract static class Builder {
+        public abstract Builder setHeld(Float value);
+        public abstract Builder setAttended(Float value);
+        public abstract ListFooter build();
+    }
 }

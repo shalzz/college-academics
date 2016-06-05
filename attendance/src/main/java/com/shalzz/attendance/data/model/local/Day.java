@@ -19,17 +19,20 @@
 
 package com.shalzz.attendance.data.model.local;
 
-import com.shalzz.attendance.data.model.remote.ImmutablePeriod;
+import android.os.Parcelable;
 
-import org.immutables.value.Value;
+import com.google.auto.value.AutoValue;
+import com.shalzz.attendance.data.model.remote.Period;
 
 import java.util.List;
 
-
-@Value.Immutable(builder = false, copy = false)
-@Value.Style(allParameters = true)
-public abstract class Day {
+@AutoValue
+public abstract class Day implements Parcelable {
 
     public abstract List<Integer> getSubjectIDs();
-    public abstract List<ImmutablePeriod> getPeriods();
+    public abstract List<Period> getPeriods();
+
+    public static Day create(List<Integer> subject_ids,List<Period> periods) {
+        return new AutoValue_Day(subject_ids, periods);
+    }
 }
