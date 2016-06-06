@@ -81,7 +81,6 @@ public class TimeTablePagerFragment extends Fragment {
     @Inject
     DataAPI api;
 
-    @Inject
     UserAccount userAccount;
 
     private int mPreviousPosition = 15;
@@ -92,9 +91,10 @@ public class TimeTablePagerFragment extends Fragment {
     private Unbinder unbinder;
 
     public void onCreate(Bundle savedInstanceState) {
-        MyApplication.getAppComponent().inject(this);
         super.onCreate(savedInstanceState);
+        MyApplication.getAppComponent().inject(this);
         mContext = getActivity();
+        userAccount = new UserAccount(mContext, api);
     }
 
     @Override

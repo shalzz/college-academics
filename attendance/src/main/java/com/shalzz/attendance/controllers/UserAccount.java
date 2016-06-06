@@ -35,8 +35,6 @@ import com.shalzz.attendance.data.network.DataAPI;
 import com.shalzz.attendance.wrapper.MyPreferencesManager;
 import com.shalzz.attendance.wrapper.MySyncManager;
 
-import javax.inject.Inject;
-
 import okhttp3.Credentials;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -59,13 +57,11 @@ public class UserAccount {
      * Constructor to set the Activity context.
      * @param context Context
      */
-    @Inject
     public UserAccount(Context context,
-                       DataAPI api,
-                       MyPreferencesManager prefs) {
+                       DataAPI api) {
         mContext = context;
         this.api = api;
-        preferencesManager = prefs;
+        preferencesManager = new MyPreferencesManager(mContext);
         misc = new Miscellaneous(context);
     }
 
@@ -114,12 +110,9 @@ public class UserAccount {
      * @return OnCancelListener
      */
     DialogInterface.OnCancelListener pdCancelListener() {
-        return new DialogInterface.OnCancelListener() {
-            @Override
-            public void onCancel(DialogInterface dialog) {
-                // Cancel all pending requests when user presses back button.
-                call.cancel();
-            }
+        return dialog -> {
+            // Cancel all pending requests when user presses back button.
+            call.cancel();
         };
 
     }

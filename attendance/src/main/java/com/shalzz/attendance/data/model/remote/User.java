@@ -47,7 +47,7 @@ import com.google.gson.annotations.SerializedName;
 @AutoValue
 public abstract class User implements UserModel, Parcelable {
     public static final Mapper<User> MAPPER =
-            new Mapper<>(User::create);
+            new Mapper<>((sap_id, name, course, password) -> create(name,course,password,sap_id));
 
     public static final class Marshal extends UserMarshal<Marshal> { }
 
@@ -56,8 +56,8 @@ public abstract class User implements UserModel, Parcelable {
     @SerializedName("sapid")
     public abstract String sap_id();
 
-    public static User create(String sap_id,String name,String course,String password) {
-        return new AutoValue_User(sap_id,name,course,password);
+    public static User create(String name, String course, String password, String sap_id) {
+        return new AutoValue_User(name, course, password, sap_id);
     }
 
     public static TypeAdapter<User> typeAdapter(Gson gson) {

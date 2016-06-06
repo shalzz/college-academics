@@ -24,10 +24,8 @@ import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.Toolbar;
-import android.view.KeyEvent;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
@@ -36,7 +34,6 @@ import com.shalzz.attendance.R;
 import com.shalzz.attendance.controllers.UserAccount;
 import com.shalzz.attendance.data.network.DataAPI;
 import com.shalzz.attendance.wrapper.MyApplication;
-import com.shalzz.attendance.wrapper.MyPreferencesManager;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -63,9 +60,6 @@ public class LoginActivity extends AppCompatActivity {
     @Inject
     DataAPI dataAPI;
 
-    @Inject
-    MyPreferencesManager preferencesManager;
-
     UserAccount userAccount;
 
     private EditText etSapid;
@@ -84,14 +78,13 @@ public class LoginActivity extends AppCompatActivity {
         // set toolbar as actionbar
         setSupportActionBar(mToolbar);
 
-        userAccount = new UserAccount(this,dataAPI, preferencesManager);
+        userAccount = new UserAccount(this,dataAPI);
         etSapid = textInputSapid.getEditText();
         etPass = textInputPass.getEditText();
 
         // Shows the CaptchaDialog when user presses 'Done' on keyboard.
-        etPass.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView view, int actionId, KeyEvent event) {
+        if (etPass != null) {
+            etPass.setOnEditorActionListener((view, actionId, event) -> {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
                     if (isValid()) {
                         Login();
@@ -99,8 +92,8 @@ public class LoginActivity extends AppCompatActivity {
                     return true;
                 }
                 return false;
-            }
-        });
+            });
+        }
     }
 
     @Override
