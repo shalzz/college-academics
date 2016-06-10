@@ -42,7 +42,7 @@ public class AuthInterceptor implements Interceptor{
     public Response intercept(Chain chain) throws IOException {
         Request originalRequest = chain.request();
 
-        if (originalRequest.body() == null || originalRequest.header("Authorization") != null) {
+        if (originalRequest.header("Authorization") != null) {
             return chain.proceed(originalRequest);
         }
 

@@ -125,6 +125,8 @@ public class PagerController {
                         if(BuildConfig.DEBUG)
                             e.printStackTrace();
                     }
+                } else {
+                    Miscellaneous.showSnackBar(mView.mSwipeRefreshLayout, response.raw().message());
                 }
             }
 

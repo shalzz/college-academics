@@ -175,12 +175,7 @@ public class AttendanceListFragment extends Fragment implements
         controller = new AttendanceController(mContext, this, api);
         mProgress.setVisibility(View.VISIBLE);
 
-        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                controller.updateSubjects();
-            }
-        });
+        mSwipeRefreshLayout.setOnRefreshListener(() -> controller.updateSubjects());
 
     }
 

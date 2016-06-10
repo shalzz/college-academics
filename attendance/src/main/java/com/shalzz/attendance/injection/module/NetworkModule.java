@@ -30,6 +30,7 @@ import com.shalzz.attendance.Miscellaneous;
 import com.shalzz.attendance.data.network.AuthInterceptor;
 import com.shalzz.attendance.data.network.DataAPI;
 import com.shalzz.attendance.data.network.HeaderInterceptor;
+import com.shalzz.attendance.data.network.LoggingInterceptor;
 import com.shalzz.attendance.wrapper.MyPreferencesManager;
 
 import javax.inject.Singleton;
@@ -54,9 +55,9 @@ public class NetworkModule {
     @Provides @Singleton @NonNull
     public static OkHttpClient provideClient(MyPreferencesManager preferences) {
         final OkHttpClient.Builder okHttpBuilder = new OkHttpClient.Builder()
-//                .addInterceptor(new LoggingInterceptor())
                 .addInterceptor(new HeaderInterceptor())
                 .addInterceptor(new AuthInterceptor(preferences))
+                .addNetworkInterceptor(new LoggingInterceptor())
                 .proxyAuthenticator(preferences.getProxyCredentials())
                 .proxySelector(Miscellaneous.getProxySelector());
         return okHttpBuilder.build();

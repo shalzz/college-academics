@@ -124,6 +124,8 @@ public class AttendanceController implements LoaderManager.LoaderCallbacks<List<
                         if(BuildConfig.DEBUG)
                             e.printStackTrace();
                     }
+                } else {
+                    Miscellaneous.showSnackBar(mView.mSwipeRefreshLayout, response.raw().message());
                 }
             }
 

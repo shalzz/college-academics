@@ -91,6 +91,9 @@ public class UserAccount {
                     Intent ourIntent = new Intent(mContext, MainActivity.class);
                     mContext.startActivity(ourIntent);
                     ((Activity) mContext).finish();
+                } else {
+                    Miscellaneous.showSnackBar(((Activity) mContext).findViewById(android.R.id.content),
+                            response.raw().message());
                 }
             }
 
