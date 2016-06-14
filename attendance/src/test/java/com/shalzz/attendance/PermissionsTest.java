@@ -2,7 +2,7 @@ package com.shalzz.attendance;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
+import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.annotation.Config;
 import org.robolectric.manifest.AndroidManifest;
 import org.robolectric.res.Fs;
@@ -11,8 +11,8 @@ import java.util.HashSet;
 
 import static com.google.common.truth.Truth.assertThat;
 
-@RunWith(RobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
+@RunWith(RobolectricGradleTestRunner.class)
+@Config(constants = BuildConfig.class, sdk = 21, packageName = "com.shalzz.attendance")
 public final class PermissionsTest {
 
     private static final String[] EXPECTED_PERMISSIONS = {
@@ -27,7 +27,8 @@ public final class PermissionsTest {
     };
 
     private static final String MERGED_MANIFEST =
-        "build/intermediates/manifests/full/prod/debug/AndroidManifest.xml";
+        "build/intermediates/manifests/full/" + BuildConfig.FLAVOR +
+                "/" + BuildConfig.BUILD_TYPE + "/AndroidManifest.xml";
 
     @Test
     public void shouldMatchPermissions() {
@@ -38,6 +39,6 @@ public final class PermissionsTest {
         );
 
         assertThat(new HashSet<>(manifest.getUsedPermissions())).
-                containsExactly(EXPECTED_PERMISSIONS);
+                containsExactly((Object[]) EXPECTED_PERMISSIONS);
     }
 }
