@@ -31,6 +31,7 @@ public final class MigrationTest {
     @Before
     public void setup() throws IOException {
         File baseDir = new File("build/tmp/migration");
+        baseDir.mkdir();
         FileUtils.cleanDirectory(baseDir);
         newFile = new File(baseDir, "new.db");
         upgradedFile = new File(baseDir, "upgraded.db");
