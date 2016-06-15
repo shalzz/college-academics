@@ -326,8 +326,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public int getSubjectCount() {
         SQLiteDatabase db = getReadableDatabase();
         try(Cursor cursor = db.rawQuery(Subject.SELECT_COUNT, null)) {
-            int rowCount = cursor.getCount();
-            cursor.close();
+            int rowCount = 0;
+            if(cursor.moveToNext())
+                rowCount = cursor.getInt(0);
 
             return rowCount;
         }
@@ -340,8 +341,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public int getUserCount() {
         SQLiteDatabase db = getReadableDatabase();
         try(Cursor cursor = db.rawQuery(User.SELECT_COUNT, null)) {
-            int rowCount = cursor.getCount();
-            cursor.close();
+            int rowCount = 0;
+            if(cursor.moveToNext())
+                rowCount = cursor.getInt(0);
 
             return rowCount;
         }
@@ -351,7 +353,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public int getPeriodCount() {
         SQLiteDatabase db = getReadableDatabase();
         try(Cursor cursor = db.rawQuery(Period.SELECT_COUNT, null)) {
-            int rowCount = cursor.getCount();
+            int rowCount = 0;
+            if(cursor.moveToNext())
+                rowCount = cursor.getInt(0);
             cursor.close();
 
             return rowCount;
