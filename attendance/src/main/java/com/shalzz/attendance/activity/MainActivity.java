@@ -146,8 +146,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
+    protected void onResume() {
+        super.onResume();
         showcaseView();
     }
 
@@ -203,19 +203,16 @@ public class MainActivity extends AppCompatActivity {
             }
         };
         mDrawerToggle.setDrawerIndicatorEnabled(true);
-        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int drawerLockMode = mDrawerLayout.getDrawerLockMode(GravityCompat.START);
-                // check if drawer is shown as up
-                if(drawerLockMode == DrawerLayout.LOCK_MODE_LOCKED_CLOSED) {
-                    onBackPressed();
-                } else if (mDrawerLayout.isDrawerVisible(GravityCompat.START)
-                        && (drawerLockMode != DrawerLayout.LOCK_MODE_LOCKED_OPEN)) {
-                    mDrawerLayout.closeDrawer(GravityCompat.START);
-                } else {
-                    mDrawerLayout.openDrawer(GravityCompat.START);
-                }
+        mToolbar.setNavigationOnClickListener(v -> {
+            int drawerLockMode = mDrawerLayout.getDrawerLockMode(GravityCompat.START);
+            // check if drawer is shown as up
+            if(drawerLockMode == DrawerLayout.LOCK_MODE_LOCKED_CLOSED) {
+                onBackPressed();
+            } else if (mDrawerLayout.isDrawerVisible(GravityCompat.START)
+                    && (drawerLockMode != DrawerLayout.LOCK_MODE_LOCKED_OPEN)) {
+                mDrawerLayout.closeDrawer(GravityCompat.START);
+            } else {
+                mDrawerLayout.openDrawer(GravityCompat.START);
             }
         });
         mDrawerLayout.addDrawerListener(mDrawerToggle);
@@ -239,15 +236,12 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        Target homeTarget = new Target() {
-            @Override
-            public Point getPoint() {
-                // Get approximate position of home icon's center
-                int actionBarSize = mToolbar.getHeight();
-                int x = actionBarSize / 2;
-                int y = actionBarSize / 2;
-                return new Point(x, y);
-            }
+        Target homeTarget = () -> {
+            // Get approximate position of home icon's center
+            int actionBarSize = mToolbar.getHeight();
+            int x = actionBarSize / 2;
+            int y = actionBarSize / 2;
+            return new Point(x, y);
         };
 
         final ShowcaseView sv = new ShowcaseView.Builder(this)
@@ -258,15 +252,12 @@ public class MainActivity extends AppCompatActivity {
                 .setContentText(getString(R.string.sv_main_activity_content))
                 .build();
 
-        sv.overrideButtonClick(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(mDrawerLayout != null)
-                    mDrawerLayout.closeDrawer(mNavigationView);
-                sv.hide();
-                if(fragment instanceof AttendanceListFragment) {
-                    ((AttendanceListFragment) fragment).showcaseView();
-                }
+        sv.overrideButtonClick(v -> {
+            if(mDrawerLayout != null)
+                mDrawerLayout.closeDrawer(mNavigationView);
+            sv.hide();
+            if(fragment instanceof AttendanceListFragment) {
+                ((AttendanceListFragment) fragment).showcaseView();
             }
         });
     }

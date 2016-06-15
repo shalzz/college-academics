@@ -136,7 +136,7 @@ public class TimeTablePagerFragment extends Fragment {
         mController = new PagerController(mContext, this, getActivity().getSupportFragmentManager
                 (),api);
         DatabaseHandler db = new DatabaseHandler(mContext);
-        if(db.getPeriodCount()<=0) {
+        if(db.getPeriodCount() == 0) {
             mController.updatePeriods();
             mProgress.setVisibility(View.VISIBLE);
             mViewPager.setVisibility(View.GONE);

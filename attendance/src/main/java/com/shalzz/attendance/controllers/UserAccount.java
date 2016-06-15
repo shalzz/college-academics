@@ -45,7 +45,7 @@ public class UserAccount {
 
     private final MyPreferencesManager preferencesManager;
     private final Miscellaneous misc;
-    private final DataAPI api;
+    private final DataAPI mAPI;
 
     /**
      * The activity context used to Log the user from
@@ -60,7 +60,7 @@ public class UserAccount {
     public UserAccount(Context context,
                        DataAPI api) {
         mContext = context;
-        this.api = api;
+        mAPI = api;
         preferencesManager = new MyPreferencesManager(mContext);
         misc = new Miscellaneous(context);
     }
@@ -75,7 +75,7 @@ public class UserAccount {
         String creds = Credentials.basic(username,Miscellaneous.md5(password));
         misc.showProgressDialog("Logging in...", false, pdCancelListener());
 
-        call = api.getUser(creds);
+        call = mAPI.getUser(creds);
         call.enqueue(new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
@@ -92,20 +92,23 @@ public class UserAccount {
                     mContext.startActivity(ourIntent);
                     ((Activity) mContext).finish();
                 } else {
-                    Miscellaneous.showSnackBar(((Activity) mContext).findViewById(android.R.id.content),
-                            response.raw().message());
+                    showError(response.raw().message());
                 }
             }
 
             @Override
             public void onFailure(Call<User> call, Throwable t) {
-
-                misc.dismissProgressDialog();
-                View view = ((Activity) mContext).getCurrentFocus();
-                Miscellaneous.showSnackBar(view, t.getLocalizedMessage());
+                showError(t.getLocalizedMessage());
                 t.printStackTrace();
             }
         });
+    }
+
+    private void showError(String message) {
+        misc.dismissProgressDialog();
+        View view = ((Activity) mContext).getCurrentFocus();
+        if(view != null)
+            Miscellaneous.showSnackBar(view, message);
     }
 
     /**

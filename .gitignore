@@ -10,3 +10,5 @@ attendance/*.txt
 *~
 *.patch
 local.properties
+
+captures/
