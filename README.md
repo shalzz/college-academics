@@ -1,4 +1,4 @@
-UPES Academics
+UPES Academics [![Build Status][ci-badge]][ci-link]
 ===========
 UPES Academics - a student attendance and timetable viewing application for <br> University of Petroleum and Energy studies
 
@@ -57,3 +57,5 @@ Please see the file called LICENSE.txt for more details.
 [1]: https://github.com/Shalzz/upes-academics/releases
 [2]: https://github.com/Shalzz/upes-academics/issues
 [3]: https://github.com/Shalzz/upes-academics/pulls
+[ci-badge]: https://travis-ci.com/Shalzz/upes-academics.svg?token=nx4dqxRMsSYNz6esnRsa&branch=dev
+[ci-link]: https://travis-ci.com/Shalzz/upes-academics
