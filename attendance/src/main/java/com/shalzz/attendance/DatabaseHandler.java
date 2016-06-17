@@ -175,7 +175,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return subjectList;
     }
 
-    @SuppressLint("NewApi")
     public List<Integer> getAbsentSubjects(Date date) {
         SQLiteDatabase db = this.getReadableDatabase();
         List<Integer> subjectIDs = new ArrayList<>();
@@ -195,7 +194,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
      * and deletes if any.
      * @return 1 if one or more subjects are purged else 0
      */
-    @SuppressLint("NewApi")
     public int purgeOldSubjects() {
         SQLiteDatabase db = getWritableDatabase();
         try(Cursor cursor = db.rawQuery( Subject.DELETE_OBSOLETE, null)) {
@@ -217,7 +215,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         );
     }
 
-    @SuppressLint("NewApi")
     public long getLastSync() {
         SQLiteDatabase db = this.getReadableDatabase();
         try(Cursor cursor = db.rawQuery(Subject.SELECT_LAST_SYNC, null)) {
@@ -232,7 +229,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         }
     }
 
-    @SuppressLint("NewApi")
     public User getUser() {
         SQLiteDatabase db = this.getReadableDatabase();
 
@@ -245,7 +241,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return null;
     }
 
-    @SuppressLint("NewApi")
     public ListFooter getListFooter() {
         SQLiteDatabase db = this.getReadableDatabase();
         ListFooter footer = null;
@@ -285,7 +280,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 SQLiteDatabase.CONFLICT_REPLACE);
     }
 
-    @SuppressLint("NewApi")
     public ArrayList<Period> getAllPeriods(Date date, AsyncTaskLoader callback) {
         String dayName = DateHelper.getShortWeekday(date);
         ArrayList<Period> periods = new ArrayList<>();
@@ -309,7 +303,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
      * and deletes if any.
      * @return 1 if one or more Periods are purged else 0
      */
-    @SuppressLint("NewApi")
     public int purgeOldPeriods() {
         SQLiteDatabase db = getWritableDatabase();
         try(Cursor cursor = db.rawQuery( Period.DELETE_OBSOLETE, null)) {
@@ -322,7 +315,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     /**
      * Check if the attendance data is in database.
      * */
-    @SuppressLint("NewApi")
     public int getSubjectCount() {
         SQLiteDatabase db = getReadableDatabase();
         try(Cursor cursor = db.rawQuery(Subject.SELECT_COUNT, null)) {
@@ -337,7 +329,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     /**
      * Check if the Student data is in database.
      * */
-    @SuppressLint("NewApi")
     public int getUserCount() {
         SQLiteDatabase db = getReadableDatabase();
         try(Cursor cursor = db.rawQuery(User.SELECT_COUNT, null)) {
@@ -349,7 +340,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         }
     }
 
-    @SuppressLint("NewApi")
     public int getPeriodCount() {
         SQLiteDatabase db = getReadableDatabase();
         try(Cursor cursor = db.rawQuery(Period.SELECT_COUNT, null)) {
