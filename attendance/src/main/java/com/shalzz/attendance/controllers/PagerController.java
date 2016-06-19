@@ -114,30 +114,38 @@ public class PagerController {
                             db.close();
                         } else {
                             String msg = mResources.getString(R.string.unavailable_timetable_error_msg);
-                            Miscellaneous.showSnackBar(mView.mSwipeRefreshLayout, msg);
+                            showError(msg);
                         }
                         // Update the drawer header
                         ((MainActivity) mView.getActivity()).updateLastSync();
                     }
                     catch (Exception e) {
-                        String msg = mResources.getString(R.string.unexpected_error);
-                        Miscellaneous.showSnackBar(mView.mSwipeRefreshLayout, msg);
                         if(BuildConfig.DEBUG)
                             e.printStackTrace();
+
+                        String msg = mResources.getString(R.string.unexpected_error);
+                        showError(msg);
                     }
                 } else {
-                    Miscellaneous.showSnackBar(mView.mSwipeRefreshLayout, response.raw().message());
+                    showError(response.raw().message());
                 }
             }
 
             @Override
             public void onFailure(Call<List<Period>> call, Throwable t) {
-                done();
-                Miscellaneous.showSnackBar(mView.mSwipeRefreshLayout, t.getLocalizedMessage());
                 if(BuildConfig.DEBUG)
                     t.printStackTrace();
+
+                done();
+                showError(t.getLocalizedMessage());
             }
         });
+    }
+
+    private void showError(String message) {
+        View view = mView.getActivity().getCurrentFocus();
+        if(view != null)
+            Miscellaneous.showSnackBar(view, message);
     }
 
     public void done() {
