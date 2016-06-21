@@ -106,7 +106,9 @@ public class UserAccount {
 
     private void showError(String message) {
         misc.dismissProgressDialog();
-        View view = ((Activity) mContext).getCurrentFocus();
+        if(mContext == null)
+            return;
+        View view = ((Activity) mContext).findViewById(android.R.id.content);
         if(view != null)
             Miscellaneous.showSnackBar(view, message);
     }

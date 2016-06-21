@@ -142,7 +142,9 @@ public class AttendanceController implements LoaderManager.LoaderCallbacks<List<
     }
 
     private void showError(String message) {
-        View view = mView.getActivity().getCurrentFocus();
+        if(mView == null || mView.getActivity() == null)
+            return;
+        View view = mView.getActivity().findViewById(android.R.id.content);
         if(view != null)
             Miscellaneous.showSnackBar(view, message);
     }
