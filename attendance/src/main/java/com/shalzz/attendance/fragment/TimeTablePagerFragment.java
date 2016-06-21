@@ -173,12 +173,7 @@ public class TimeTablePagerFragment extends Fragment {
                 .setContentText(getString(R.string.sv_timetable_content))
                 .build();
 
-        sv.overrideButtonClick(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                sv.hide();
-            }
-        });
+        sv.overrideButtonClick(v -> sv.hide());
     }
 
     @Override
@@ -240,13 +235,10 @@ public class TimeTablePagerFragment extends Fragment {
     }
 
     DatePickerDialog.OnDateSetListener onDateSetListener() {
-        return new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                Calendar date = Calendar.getInstance();
-                date.set(year, monthOfYear, dayOfMonth);
-                mController.setDate(date.getTime());
-            }
+        return (view, year, monthOfYear, dayOfMonth) -> {
+            Calendar date = Calendar.getInstance();
+            date.set(year, monthOfYear, dayOfMonth);
+            mController.setDate(date.getTime());
         };
     }
 

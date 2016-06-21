@@ -167,16 +167,15 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG, "previous fag found: " + mPreviousFragment );
             selectItem(mCurrentSelectedPosition);
             showFragment(fragment);
-        }
-        else if(getIntent().hasExtra(LAUNCH_FRAGMENT_EXTRA)) {
-            displayView(getIntent().getIntExtra(LAUNCH_FRAGMENT_EXTRA,
-                    Fragments.ATTENDANCE.getValue()));
-        }
-        else if(getIntent().getAction()!=null &&
-                getIntent().getAction().equals(Intent.ACTION_MANAGE_NETWORK_USAGE)) {
-            displayView(Fragments.SETTINGS.getValue());
-        }
-        else {
+        } else {
+
+            if (getIntent().hasExtra(LAUNCH_FRAGMENT_EXTRA)) {
+                mCurrentSelectedPosition = getIntent().getIntExtra(LAUNCH_FRAGMENT_EXTRA,
+                        Fragments.ATTENDANCE.getValue());
+            } else if (getIntent().getAction() != null &&
+                    getIntent().getAction().equals(Intent.ACTION_MANAGE_NETWORK_USAGE)) {
+                mCurrentSelectedPosition = Fragments.SETTINGS.getValue();
+            }
             displayView(mCurrentSelectedPosition);
         }
 
@@ -524,6 +523,13 @@ public class MainActivity extends AppCompatActivity {
         // Sync the toggle state after onRestoreInstanceState has occurred.
         if(mDrawerToggle != null)
             mDrawerToggle.syncState();
+
+        // Toolbar#setTitle is called by the system on onCreate and
+        // again over here which sets the activity label
+        // as the title.
+        // So we need to call setTitle again as well
+        // to show the correct title.
+        setTitle(mNavTitles[mCurrentSelectedPosition-1]);
     }
 
     /**
