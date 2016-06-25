@@ -22,7 +22,9 @@ package com.shalzz.attendance.controllers;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.preference.PreferenceManager;
@@ -30,6 +32,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 
+import com.malinskiy.materialicons.IconDrawable;
+import com.malinskiy.materialicons.Iconify;
 import com.shalzz.attendance.BuildConfig;
 import com.shalzz.attendance.DatabaseHandler;
 import com.shalzz.attendance.Miscellaneous;
@@ -37,9 +41,10 @@ import com.shalzz.attendance.R;
 import com.shalzz.attendance.activity.MainActivity;
 import com.shalzz.attendance.adapter.ExpandableListAdapter;
 import com.shalzz.attendance.data.model.remote.Subject;
-import com.shalzz.attendance.data.network.DataAPI;
 import com.shalzz.attendance.fragment.AttendanceListFragment;
 import com.shalzz.attendance.loader.SubjectAsyncTaskLoader;
+import com.shalzz.attendance.network.DataAPI;
+import com.shalzz.attendance.network.RetrofitException;
 
 import java.util.Date;
 import java.util.List;
@@ -93,52 +98,91 @@ public class AttendanceController implements LoaderManager.LoaderCallbacks<List<
             public void onResponse(Call<List<Subject>> call,
                                    Response<List<Subject>> response) {
                 done();
-                if(response.isSuccessful()) {
-                    List<Subject> subjects = response.body();
-                    try {
-                        if(subjects.size() > 0) {
-                            long now = new Date().getTime();
-                            for (Subject subject : subjects) {
-                                db.addSubject(subject, now);
-                            }
+                toggleEmptyViewVisibility(false);
 
-                            if (db.purgeOldSubjects() == 1) {
-                                if(BuildConfig.DEBUG)
-                                    Log.i(mTag, "Purging Subjects...");
-                                mAdapter.clear();
-                            }
+                List<Subject> subjects = response.body();
 
-                            db.close();
-                            mAdapter.addAll(subjects);
-                            mView.showcaseView();
-                        } else {
-                            String msg = mResources.getString(R.string.unavailable_data_error_msg);
-                            showError(msg);
-                        }
-                        // Update the drawer header
-                        ((MainActivity) mView.getActivity()).updateLastSync();
-                    }
-                    catch (Exception e) {
-                        if(BuildConfig.DEBUG)
-                            e.printStackTrace();
-
-                        String msg = mResources.getString(R.string.unexpected_error);
-                        showError(msg);
-                    }
-                } else {
-                    showError(response.raw().message());
+                long now = new Date().getTime();
+                for (Subject subject : subjects) {
+                    db.addSubject(subject, now);
                 }
+
+                if (db.purgeOldSubjects() == 1) {
+                    if(BuildConfig.DEBUG)
+                        Log.i(mTag, "Purging Subjects...");
+                    mAdapter.clear();
+                }
+
+                db.close();
+                mAdapter.addAll(subjects);
+                mView.showcaseView();
+                // Update the drawer header
+                ((MainActivity) mView.getActivity()).updateLastSync();
             }
 
             @Override
             public void onFailure(Call<List<Subject>> call, Throwable t) {
-                if(BuildConfig.DEBUG)
-                    t.printStackTrace();
+                RetrofitException error = (RetrofitException) t;
+                if (error.getKind() == RetrofitException.Kind.NETWORK) {
+                    if(db.getSubjectCount() > 0) {
+                        if(mView == null || mView.getActivity() == null)
+                            return;
+                        View view = mView.getActivity().findViewById(android.R.id.content);
+                        Snackbar.make(view, error.getMessage(), Snackbar.LENGTH_LONG)
+                                .setAction("Retry", v -> updateSubjects())
+                                .show();
+                    } else {
+                        Drawable emptyDrawable = new IconDrawable(mView.getContext(),
+                                Iconify.IconValue.zmdi_wifi_off)
+                                .colorRes(android.R.color.darker_gray);
+                        mView.mEmptyImageView.setImageDrawable(emptyDrawable);
+                        mView.mEmptyTitleTextView.setText(R.string.no_connection_title);
+                        mView.mEmptyContentTextView.setText(R.string.no_connection_content);
+                        mView.mEmptyButton.setOnClickListener( v -> updateSubjects());
+                        mView.mEmptyButton.setVisibility(View.VISIBLE);
 
+                        toggleEmptyViewVisibility(true);
+                    }
+                }
+                else if (error.getKind() == RetrofitException.Kind.EMPTY_RESPONSE) {
+                    Drawable emptyDrawable = new IconDrawable(mView.getContext(),
+                            Iconify.IconValue.zmdi_cloud_off)
+                            .colorRes(android.R.color.darker_gray);
+                    mView.mEmptyImageView.setImageDrawable(emptyDrawable);
+                    mView.mEmptyTitleTextView.setText(R.string.no_data_title);
+                    mView.mEmptyContentTextView.setText(R.string.no_data_content);
+                    mView.mEmptyButton.setVisibility(View.GONE);
+
+                    toggleEmptyViewVisibility(true);
+
+                    // Update the drawer header
+                    ((MainActivity) mView.getActivity()).updateLastSync();
+                }
+                else if (error.getKind() == RetrofitException.Kind.HTTP) {
+                    showError(error.getMessage());
+                }
+                else {
+                    if(BuildConfig.DEBUG)
+                        t.printStackTrace();
+
+                    String msg = mResources.getString(R.string.unexpected_error);
+                    showError(msg);
+                }
                 done();
-                showError(t.getLocalizedMessage());
             }
         });
+    }
+
+    private void toggleEmptyViewVisibility(boolean show) {
+        if(mView == null || mView.mRecyclerView == null || mView.mEmptyView == null)
+            return;
+        if(show) {
+            mView.mEmptyView.setVisibility(View.VISIBLE);
+            mView.mRecyclerView.setVisibility(View.GONE);
+        } else {
+            mView.mEmptyView.setVisibility(View.GONE);
+            mView.mRecyclerView.setVisibility(View.VISIBLE);
+        }
     }
 
     private void showError(String message) {

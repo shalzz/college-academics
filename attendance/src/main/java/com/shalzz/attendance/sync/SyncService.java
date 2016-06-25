@@ -23,7 +23,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 
-import com.shalzz.attendance.data.network.DataAPI;
+import com.shalzz.attendance.network.DataAPI;
 import com.shalzz.attendance.wrapper.MyApplication;
 import com.shalzz.attendance.wrapper.MyPreferencesManager;
 

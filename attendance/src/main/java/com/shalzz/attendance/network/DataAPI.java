@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.shalzz.attendance.data.network;
+package com.shalzz.attendance.network;
 
 import com.shalzz.attendance.data.model.remote.Period;
 import com.shalzz.attendance.data.model.remote.Subject;

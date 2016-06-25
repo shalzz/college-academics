@@ -29,7 +29,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -42,7 +41,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.ViewTarget;
@@ -55,7 +57,7 @@ import com.shalzz.attendance.R;
 import com.shalzz.attendance.adapter.ExpandableListAdapter;
 import com.shalzz.attendance.controllers.AttendanceController;
 import com.shalzz.attendance.controllers.UserAccount;
-import com.shalzz.attendance.data.network.DataAPI;
+import com.shalzz.attendance.network.DataAPI;
 import com.shalzz.attendance.wrapper.MultiSwipeRefreshLayout;
 import com.shalzz.attendance.wrapper.MyApplication;
 
@@ -84,6 +86,21 @@ public class AttendanceListFragment extends Fragment implements
 
     @BindView(R.id.atten_recycler_view)
     public RecyclerView mRecyclerView;
+
+    @BindView(R.id.empty_view)
+    public View mEmptyView;
+
+    @BindView(R.id.emptyStateImageView)
+    public ImageView mEmptyImageView;
+
+    @BindView(R.id.emptyStateTitleTextView)
+    public TextView mEmptyTitleTextView;
+
+    @BindView(R.id.emptyStateContentTextView)
+    public TextView mEmptyContentTextView;
+
+    @BindView(R.id.emptyStateButton)
+    public Button mEmptyButton;
 
     @BindBool(R.bool.use_grid_layout)
     boolean useGridLayout;
@@ -298,20 +315,16 @@ public class AttendanceListFragment extends Fragment implements
                 // scroll to make the view fully visible.
                 mRecyclerView.smoothScrollToPosition(viewHolder.position);
 
-                animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                animator.addUpdateListener(animator1 -> {
+                    Float value = (Float) animator1.getAnimatedValue();
 
-                    @Override
-                    public void onAnimationUpdate(ValueAnimator animator) {
-                        Float value = (Float) animator.getAnimatedValue();
-
-                        // For each value from 0 to 1, animate the various parts of the layout.
-                        view.getLayoutParams().height = (int) (value * distance + baseHeight);
-                        float z = mExpandedItemTranslationZ * value;
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                            view.setTranslationZ(z);
-                        }
-                        view.requestLayout();
+                    // For each value from 0 to 1, animate the various parts of the layout.
+                    view.getLayoutParams().height = (int) (value * distance + baseHeight);
+                    float z = mExpandedItemTranslationZ * value;
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        view.setTranslationZ(z);
                     }
+                    view.requestLayout();
                 });
 
                 // Set everything to their final values when the animation's done.

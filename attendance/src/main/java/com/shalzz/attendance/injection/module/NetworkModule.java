@@ -27,10 +27,11 @@ import com.google.gson.GsonBuilder;
 import com.ryanharter.auto.value.gson.AutoValueGsonTypeAdapterFactory;
 import com.shalzz.attendance.BuildConfig;
 import com.shalzz.attendance.Miscellaneous;
-import com.shalzz.attendance.data.network.AuthInterceptor;
-import com.shalzz.attendance.data.network.DataAPI;
-import com.shalzz.attendance.data.network.HeaderInterceptor;
-import com.shalzz.attendance.data.network.LoggingInterceptor;
+import com.shalzz.attendance.network.AuthInterceptor;
+import com.shalzz.attendance.network.DataAPI;
+import com.shalzz.attendance.network.ErrorHandlingCallAdapterFactory;
+import com.shalzz.attendance.network.HeaderInterceptor;
+import com.shalzz.attendance.network.LoggingInterceptor;
 import com.shalzz.attendance.wrapper.MyPreferencesManager;
 
 import javax.inject.Singleton;
@@ -57,9 +58,9 @@ public class NetworkModule {
         final OkHttpClient.Builder okHttpBuilder = new OkHttpClient.Builder()
                 .addInterceptor(new HeaderInterceptor())
                 .addInterceptor(new AuthInterceptor(preferences))
-                .addNetworkInterceptor(new LoggingInterceptor())
-                .proxyAuthenticator(preferences.getProxyCredentials())
-                .proxySelector(Miscellaneous.getProxySelector());
+                .addNetworkInterceptor(new LoggingInterceptor());
+//                .proxyAuthenticator(preferences.getProxyCredentials())
+//                .proxySelector(Miscellaneous.getProxySelector());
         return okHttpBuilder.build();
     }
 
@@ -70,6 +71,7 @@ public class NetworkModule {
                 .baseUrl(DataAPI.ENDPOINT)
                 .client(okHttpClient)
                 .addConverterFactory(GsonConverterFactory.create(gson))
+                .addCallAdapterFactory(ErrorHandlingCallAdapterFactory.create())
                 .validateEagerly(BuildConfig.DEBUG) // Fail early: check Retrofit configuration at creation time in Debug build.
                 .build()
                 .create(DataAPI.class);

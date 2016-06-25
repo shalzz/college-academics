@@ -58,11 +58,15 @@
     <string name="generic_error">Network error occurred.</string>
     <string name="proxy_error">Proxy Authentication failed. Please check your credentials.</string>
     <string name="unexpected_error">An unexpected error occurred</string>
-    <string name="unavailable_data_error_msg">No Data available at this time.</string>
-    <string name="unavailable_timetable_error_msg">No TimeTable available at this time.</string>
     <string name="form_sapid_error">SAP ID is invalid.</string>
     <string name="form_password_error">Password is required.</string>
     <string name="auth_error">SAP ID or Password is incorrect.</string>
+    <string name="no_data_title">Nothing Here</string>
+    <string name="no_data_content">No data available on the server right now.</string>
+    <string name="no_connection_title">No connection.</string>
+    <string name="no_connection_content">Please try again when you are connected to the internet
+        .</string>
+    <string name="empty_view_try_again">Try Again</string>
 
     <!--EditText's and TextView's-->
     <string name="no_classes">You don\'t have any classes on this day :)</string>

@@ -40,7 +40,7 @@ import com.shalzz.attendance.R;
 import com.shalzz.attendance.activity.MainActivity;
 import com.shalzz.attendance.data.model.remote.Period;
 import com.shalzz.attendance.data.model.remote.Subject;
-import com.shalzz.attendance.data.network.DataAPI;
+import com.shalzz.attendance.network.DataAPI;
 import com.shalzz.attendance.wrapper.MyPreferencesManager;
 
 import java.util.Date;

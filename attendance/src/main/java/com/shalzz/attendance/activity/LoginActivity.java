@@ -32,7 +32,7 @@ import com.google.android.gms.analytics.Tracker;
 import com.shalzz.attendance.Miscellaneous;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.controllers.UserAccount;
-import com.shalzz.attendance.data.network.DataAPI;
+import com.shalzz.attendance.network.DataAPI;
 import com.shalzz.attendance.wrapper.MyApplication;
 
 import javax.inject.Inject;

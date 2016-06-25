@@ -33,7 +33,9 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.DatePicker;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.Target;
@@ -44,7 +46,7 @@ import com.shalzz.attendance.DatabaseHandler;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.controllers.PagerController;
 import com.shalzz.attendance.controllers.UserAccount;
-import com.shalzz.attendance.data.network.DataAPI;
+import com.shalzz.attendance.network.DataAPI;
 import com.shalzz.attendance.wrapper.DateHelper;
 import com.shalzz.attendance.wrapper.MultiSwipeRefreshLayout;
 import com.shalzz.attendance.wrapper.MyApplication;
@@ -74,6 +76,21 @@ public class TimeTablePagerFragment extends Fragment {
 
     @BindView(R.id.pager)
     public ViewPager mViewPager;
+
+    @BindView(R.id.empty_view)
+    public View mEmptyView;
+
+    @BindView(R.id.emptyStateImageView)
+    public ImageView mEmptyImageView;
+
+    @BindView(R.id.emptyStateTitleTextView)
+    public TextView mEmptyTitleTextView;
+
+    @BindView(R.id.emptyStateContentTextView)
+    public TextView mEmptyContentTextView;
+
+    @BindView(R.id.emptyStateButton)
+    public Button mEmptyButton;
 
     @Inject @Named("app")
     Tracker t;

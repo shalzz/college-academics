@@ -21,10 +21,14 @@ package com.shalzz.attendance.controllers;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.View;
 
+import com.malinskiy.materialicons.IconDrawable;
+import com.malinskiy.materialicons.Iconify;
 import com.shalzz.attendance.BuildConfig;
 import com.shalzz.attendance.DatabaseHandler;
 import com.shalzz.attendance.Miscellaneous;
@@ -32,8 +36,9 @@ import com.shalzz.attendance.R;
 import com.shalzz.attendance.activity.MainActivity;
 import com.shalzz.attendance.adapter.TimeTablePagerAdapter;
 import com.shalzz.attendance.data.model.remote.Period;
-import com.shalzz.attendance.data.network.DataAPI;
+import com.shalzz.attendance.network.DataAPI;
 import com.shalzz.attendance.fragment.TimeTablePagerFragment;
+import com.shalzz.attendance.network.RetrofitException;
 
 import java.util.Date;
 import java.util.List;
@@ -93,53 +98,93 @@ public class PagerController {
             public void onResponse(Call<List<Period>> call,
                                    retrofit2.Response<List<Period>> response) {
                 done();
-                if(response.isSuccessful()) {
-                    List<Period> periods = response.body();
-                    try {
-                        if(periods.size() > 0) {
-                            long now = new Date().getTime();
-                            for (Period period : periods) {
-                                db.addPeriod(period, now);
-                            }
+                toggleEmptyViewVisibility(false);
 
-                            if (db.purgeOldPeriods() == 1) {
-                                if(BuildConfig.DEBUG)
-                                    Log.d(mTag, "Purging Periods...");
-                            }
+                List<Period> periods = response.body();
 
-                            // TODO: use an event bus or RxJava to update fragment contents
-
-                            setToday();
-                            mView.updateTitle(-1);
-                            db.close();
-                        } else {
-                            String msg = mResources.getString(R.string.unavailable_timetable_error_msg);
-                            showError(msg);
-                        }
-                        // Update the drawer header
-                        ((MainActivity) mView.getActivity()).updateLastSync();
-                    }
-                    catch (Exception e) {
-                        if(BuildConfig.DEBUG)
-                            e.printStackTrace();
-
-                        String msg = mResources.getString(R.string.unexpected_error);
-                        showError(msg);
-                    }
-                } else {
-                    showError(response.raw().message());
+                long now = new Date().getTime();
+                for (Period period : periods) {
+                    db.addPeriod(period, now);
                 }
+
+                if (db.purgeOldPeriods() == 1) {
+                    if(BuildConfig.DEBUG)
+                        Log.d(mTag, "Purging Periods...");
+                }
+
+                // TODO: use an event bus or RxJava to update fragment contents
+
+                setToday();
+                mView.updateTitle(-1);
+                db.close();
+
+                // Update the drawer header
+                ((MainActivity) mView.getActivity()).updateLastSync();
             }
 
             @Override
             public void onFailure(Call<List<Period>> call, Throwable t) {
-                if(BuildConfig.DEBUG)
-                    t.printStackTrace();
+                RetrofitException error = (RetrofitException) t;
+                if (error.getKind() == RetrofitException.Kind.NETWORK) {
+                    if(db.getPeriodCount() > 0) {
+                        if(mView == null || mView.getActivity() == null)
+                            return;
+                        View view = mView.getActivity().findViewById(android.R.id.content);
+                        Snackbar.make(view, error.getMessage(), Snackbar.LENGTH_LONG)
+                                .setAction("Retry", v -> updatePeriods())
+                                .show();
+                    } else {
+                        Drawable emptyDrawable = new IconDrawable(mView.getContext(),
+                                Iconify.IconValue.zmdi_wifi_off)
+                                .colorRes(android.R.color.darker_gray);
+                        mView.mEmptyImageView.setImageDrawable(emptyDrawable);
+                        mView.mEmptyTitleTextView.setText(R.string.no_connection_title);
+                        mView.mEmptyContentTextView.setText(R.string.no_connection_content);
+                        mView.mEmptyButton.setOnClickListener( v -> updatePeriods());
+                        mView.mEmptyButton.setVisibility(View.VISIBLE);
 
+                        toggleEmptyViewVisibility(true);
+                    }
+                }
+                else if (error.getKind() == RetrofitException.Kind.EMPTY_RESPONSE) {
+                    Drawable emptyDrawable = new IconDrawable(mView.getContext(),
+                            Iconify.IconValue.zmdi_cloud_off)
+                            .colorRes(android.R.color.darker_gray);
+                    mView.mEmptyImageView.setImageDrawable(emptyDrawable);
+                    mView.mEmptyTitleTextView.setText(R.string.no_data_title);
+                    mView.mEmptyContentTextView.setText(R.string.no_data_content);
+                    mView.mEmptyButton.setVisibility(View.GONE);
+
+                    toggleEmptyViewVisibility(true);
+
+                    // Update the drawer header
+                    ((MainActivity) mView.getActivity()).updateLastSync();
+                }
+                else if (error.getKind() == RetrofitException.Kind.HTTP) {
+                    showError(error.getMessage());
+                }
+                else {
+                    if(BuildConfig.DEBUG)
+                        t.printStackTrace();
+
+                    String msg = mResources.getString(R.string.unexpected_error);
+                    showError(msg);
+                }
                 done();
-                showError(t.getLocalizedMessage());
             }
         });
+    }
+
+    private void toggleEmptyViewVisibility(boolean show) {
+        if(mView == null || mView.mViewPager == null || mView.mEmptyView == null)
+            return;
+        if(show) {
+            mView.mEmptyView.setVisibility(View.VISIBLE);
+            mView.mViewPager.setVisibility(View.GONE);
+        } else {
+            mView.mEmptyView.setVisibility(View.GONE);
+            mView.mViewPager.setVisibility(View.VISIBLE);
+        }
     }
 
     private void showError(String message) {
