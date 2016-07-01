@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.shalzz.attendance.data.model.remote;
+package com.shalzz.attendance.model.remote;
 
 import android.os.Parcelable;
 import android.support.annotation.Nullable;

@@ -23,7 +23,7 @@ import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
 
 import com.shalzz.attendance.DatabaseHandler;
-import com.shalzz.attendance.data.model.local.Day;
+import com.shalzz.attendance.model.local.Day;
 
 import java.util.Date;
 

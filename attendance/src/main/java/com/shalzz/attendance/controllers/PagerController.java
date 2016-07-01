@@ -35,7 +35,7 @@ import com.shalzz.attendance.Miscellaneous;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.activity.MainActivity;
 import com.shalzz.attendance.adapter.TimeTablePagerAdapter;
-import com.shalzz.attendance.data.model.remote.Period;
+import com.shalzz.attendance.model.remote.Period;
 import com.shalzz.attendance.network.DataAPI;
 import com.shalzz.attendance.fragment.TimeTablePagerFragment;
 import com.shalzz.attendance.network.RetrofitException;

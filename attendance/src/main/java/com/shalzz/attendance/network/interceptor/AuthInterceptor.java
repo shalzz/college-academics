@@ -17,21 +17,37 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.shalzz.attendance.network;
+package com.shalzz.attendance.network.interceptor;
+
+import com.shalzz.attendance.wrapper.MyPreferencesManager;
 
 import java.io.IOException;
+
+import javax.inject.Inject;
 
 import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class HeaderInterceptor implements Interceptor{
+public class AuthInterceptor implements Interceptor{
+
+    private MyPreferencesManager preferencesManager;
+
+    @Inject
+    public AuthInterceptor(MyPreferencesManager preferencesManager) {
+        this.preferencesManager = preferencesManager;
+    }
+
     @Override
     public Response intercept(Chain chain) throws IOException {
         Request originalRequest = chain.request();
+
+        if (originalRequest.header("Authorization") != null) {
+            return chain.proceed(originalRequest);
+        }
+
         Request newRequest = originalRequest.newBuilder()
-                .header("Accept", "application/json")
-                .header("User-Agent","academics-android-app")
+                .header("Authorization", preferencesManager.getBasicAuthCredentials())
                 .build();
         return chain.proceed(newRequest);
     }

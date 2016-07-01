@@ -26,11 +26,11 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Build;
 import android.support.v4.content.AsyncTaskLoader;
 
-import com.shalzz.attendance.data.model.local.AbsentDate;
-import com.shalzz.attendance.data.model.local.ListFooter;
-import com.shalzz.attendance.data.model.remote.Period;
-import com.shalzz.attendance.data.model.remote.Subject;
-import com.shalzz.attendance.data.model.remote.User;
+import com.shalzz.attendance.model.local.AbsentDate;
+import com.shalzz.attendance.model.local.ListFooter;
+import com.shalzz.attendance.model.remote.Period;
+import com.shalzz.attendance.model.remote.Subject;
+import com.shalzz.attendance.model.remote.User;
 import com.shalzz.attendance.wrapper.DateHelper;
 
 import java.util.ArrayList;

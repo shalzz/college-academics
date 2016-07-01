@@ -17,38 +17,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.shalzz.attendance.network;
+package com.shalzz.attendance.network.interceptor;
 
-import com.shalzz.attendance.wrapper.MyPreferencesManager;
+import android.util.Log;
 
 import java.io.IOException;
-
-import javax.inject.Inject;
 
 import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class AuthInterceptor implements Interceptor{
+public class LoggingInterceptor implements Interceptor {
+  @Override public Response intercept(Interceptor.Chain chain) throws IOException {
+    Request request = chain.request();
 
-    private MyPreferencesManager preferencesManager;
+    long t1 = System.nanoTime();
+      Log.i("OkHTTP",String.format("Sending request %s on %s%n%s",
+        request.url(), chain.connection(), request.headers()));
 
-    @Inject
-    public AuthInterceptor(MyPreferencesManager preferencesManager) {
-        this.preferencesManager = preferencesManager;
-    }
+    Response response = chain.proceed(request);
 
-    @Override
-    public Response intercept(Chain chain) throws IOException {
-        Request originalRequest = chain.request();
+    long t2 = System.nanoTime();
+    Log.i("OkHTTP",String.format("Received response for %s in %.1fms%n%s",
+        response.request().url(), (t2 - t1) / 1e6d, response.headers()));
 
-        if (originalRequest.header("Authorization") != null) {
-            return chain.proceed(originalRequest);
-        }
-
-        Request newRequest = originalRequest.newBuilder()
-                .header("Authorization", preferencesManager.getBasicAuthCredentials())
-                .build();
-        return chain.proceed(newRequest);
-    }
+    return response;
+  }
 }

@@ -17,30 +17,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.shalzz.attendance.network;
+package com.shalzz.attendance.model.local;
 
-import android.util.Log;
+import android.os.Parcelable;
 
-import java.io.IOException;
+import com.google.auto.value.AutoValue;
+import com.shalzz.attendance.model.remote.Period;
 
-import okhttp3.Interceptor;
-import okhttp3.Request;
-import okhttp3.Response;
+import java.util.List;
 
-public class LoggingInterceptor implements Interceptor {
-  @Override public Response intercept(Interceptor.Chain chain) throws IOException {
-    Request request = chain.request();
+@AutoValue
+public abstract class Day implements Parcelable {
 
-    long t1 = System.nanoTime();
-      Log.i("OkHTTP",String.format("Sending request %s on %s%n%s",
-        request.url(), chain.connection(), request.headers()));
+    public abstract List<Integer> getSubjectIDs();
+    public abstract List<Period> getPeriods();
 
-    Response response = chain.proceed(request);
-
-    long t2 = System.nanoTime();
-    Log.i("OkHTTP",String.format("Received response for %s in %.1fms%n%s",
-        response.request().url(), (t2 - t1) / 1e6d, response.headers()));
-
-    return response;
-  }
+    public static Day create(List<Integer> subject_ids,List<Period> periods) {
+        return new AutoValue_Day(subject_ids, periods);
+    }
 }

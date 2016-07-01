@@ -17,22 +17,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.shalzz.attendance.data.model.local;
+package com.shalzz.attendance.network.interceptor;
 
-import android.os.Parcelable;
+import java.io.IOException;
 
-import com.google.auto.value.AutoValue;
-import com.shalzz.attendance.data.model.remote.Period;
+import okhttp3.Interceptor;
+import okhttp3.Request;
+import okhttp3.Response;
 
-import java.util.List;
-
-@AutoValue
-public abstract class Day implements Parcelable {
-
-    public abstract List<Integer> getSubjectIDs();
-    public abstract List<Period> getPeriods();
-
-    public static Day create(List<Integer> subject_ids,List<Period> periods) {
-        return new AutoValue_Day(subject_ids, periods);
+public class HeaderInterceptor implements Interceptor{
+    @Override
+    public Response intercept(Chain chain) throws IOException {
+        Request originalRequest = chain.request();
+        Request newRequest = originalRequest.newBuilder()
+                .header("Accept", "application/json")
+                .header("User-Agent","academics-android-app")
+                .build();
+        return chain.proceed(newRequest);
     }
 }

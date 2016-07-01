@@ -19,19 +19,17 @@
 
 package com.shalzz.attendance.injection.module;
 
-
 import android.support.annotation.NonNull;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.ryanharter.auto.value.gson.AutoValueGsonTypeAdapterFactory;
 import com.shalzz.attendance.BuildConfig;
-import com.shalzz.attendance.Miscellaneous;
-import com.shalzz.attendance.network.AuthInterceptor;
 import com.shalzz.attendance.network.DataAPI;
 import com.shalzz.attendance.network.ErrorHandlingCallAdapterFactory;
-import com.shalzz.attendance.network.HeaderInterceptor;
-import com.shalzz.attendance.network.LoggingInterceptor;
+import com.shalzz.attendance.network.interceptor.AuthInterceptor;
+import com.shalzz.attendance.network.interceptor.HeaderInterceptor;
+import com.shalzz.attendance.network.interceptor.LoggingInterceptor;
 import com.shalzz.attendance.wrapper.MyPreferencesManager;
 
 import javax.inject.Singleton;

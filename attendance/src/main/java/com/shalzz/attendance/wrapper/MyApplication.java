@@ -20,6 +20,7 @@
 package com.shalzz.attendance.wrapper;
 
 import android.app.Application;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.preference.PreferenceManager;
@@ -32,11 +33,13 @@ import com.shalzz.attendance.injection.module.ApplicationModule;
 public class MyApplication extends Application {
 
     private static ApplicationComponent mAppComponent;
+    private static Context context;
 
     @Override
     public void onCreate() {
         super.onCreate();
 
+        context = this;
         mAppComponent = DaggerApplicationComponent.builder()
                 .applicationModule(new ApplicationModule(this))
                 .build();
@@ -51,5 +54,9 @@ public class MyApplication extends Application {
 
     public static ApplicationComponent getAppComponent() {
         return mAppComponent;
+    }
+
+    public static Context getContext() {
+        return context;
     }
 }

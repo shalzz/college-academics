@@ -43,8 +43,8 @@ import android.widget.TextView;
 import com.shalzz.attendance.BuildConfig;
 import com.shalzz.attendance.DatabaseHandler;
 import com.shalzz.attendance.R;
-import com.shalzz.attendance.data.model.local.ListFooter;
-import com.shalzz.attendance.data.model.remote.Subject;
+import com.shalzz.attendance.model.local.ListFooter;
+import com.shalzz.attendance.model.remote.Subject;
 
 import java.util.ArrayList;
 import java.util.List;

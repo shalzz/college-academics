@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.shalzz.attendance.data.model.local;
+package com.shalzz.attendance.model.local;
 
 import android.content.ContentValues;
 import android.database.Cursor;

@@ -23,7 +23,7 @@ import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
 
 import com.shalzz.attendance.DatabaseHandler;
-import com.shalzz.attendance.data.model.remote.Subject;
+import com.shalzz.attendance.model.remote.Subject;
 
 import java.util.List;
 
