@@ -1,5 +1,8 @@
 package com.shalzz.attendance.network;
 
+import com.shalzz.attendance.R;
+import com.shalzz.attendance.wrapper.MyApplication;
+
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 
@@ -10,24 +13,32 @@ import retrofit2.Retrofit;
 
 public class RetrofitException extends RuntimeException {
     public static RetrofitException httpError(String url, Response response, Retrofit retrofit) {
-        String message = response.code() + " " + response.message();
+        String message;
 
         switch (response.code()) {
-            case 400:
-                message = "";
+            case 401:
+                message = MyApplication.getContext().getString(R.string.auth_error);
                 break;
+            case 404:
+            case 407:
+                message =  MyApplication.getContext().getString(R.string.proxy_error);
+                break;
+            default:
+                message =  MyApplication.getContext().getString(R.string.generic_server_down);
         }
 
         return new RetrofitException(message, url, response, Kind.HTTP, null, retrofit);
     }
 
     public static RetrofitException emptyResponseError(String url, Response response, Retrofit retrofit) {
-        return new RetrofitException(response.message(), url, response, Kind.EMPTY_RESPONSE,
-                null, null);
+        String message = MyApplication.getContext().getString(R.string.generic_error);
+        return new RetrofitException(message, url, response, Kind.EMPTY_RESPONSE,
+                null, retrofit);
     }
 
     public static RetrofitException networkError(IOException exception) {
-        return new RetrofitException(exception.getMessage(), null, null, Kind.NETWORK, exception, null);
+        String message = MyApplication.getContext().getString(R.string.no_internet);
+        return new RetrofitException(message, null, null, Kind.NETWORK, exception, null);
     }
 
     public static RetrofitException unexpectedError(Throwable exception) {
