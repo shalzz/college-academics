@@ -52,35 +52,35 @@ import retrofit2.Response;
 
 public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
-	// Global variables
-	private String myTag = "Sync Adapter";
-	private Context mContext;
+    // Global variables
+    private String myTag = "Sync Adapter";
+    private Context mContext;
 
     private final MyPreferencesManager preferencesManager;
     private final DataAPI api;
 
-	/**
-	 * Set up the sync adapter. This form of the
-	 * constructor maintains compatibility with Android 3.0
-	 * and later platform versions
-	 */
-	public SyncAdapter(
+    /**
+     * Set up the sync adapter. This form of the
+     * constructor maintains compatibility with Android 3.0
+     * and later platform versions
+     */
+    public SyncAdapter(
             Context context,
             boolean autoInitialize,
             boolean allowParallelSyncs, MyPreferencesManager preferencesManager, DataAPI api) {
-		super(context, autoInitialize, allowParallelSyncs);
+        super(context, autoInitialize, allowParallelSyncs);
 		/*
 		 * If your app uses a content resolver, get an instance of it
 		 * from the incoming Context
 		 */
-		mContext = context;
+        mContext = context;
         this.preferencesManager = preferencesManager;
         this.api = api;
     }
 
-	@Override
-	public void onPerformSync(Account account, Bundle extras, String authority,
-			ContentProviderClient provider, SyncResult syncResult) {
+    @Override
+    public void onPerformSync(Account account, Bundle extras, String authority,
+                              ContentProviderClient provider, SyncResult syncResult) {
 
         Call<List<Subject>> call = api.getAttendance(preferencesManager.getBasicAuthCredentials());
         call.enqueue(new Callback<List<Subject>>() {
@@ -148,7 +148,11 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                             Intent resultIntent = new Intent(mContext, MainActivity.class);
                             resultIntent.putExtra(MainActivity.LAUNCH_FRAGMENT_EXTRA, MainActivity
                                     .Fragments.TIMETABLE.getValue());
-                            resultIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            resultIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP |
+                                    Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                                    .setAction(Intent.ACTION_MAIN)
+                                    .addCategory(Intent.CATEGORY_LAUNCHER);
+
                             PendingIntent resultPendingIntent = PendingIntent.getActivity(mContext,
                                     0, resultIntent,PendingIntent.FLAG_UPDATE_CURRENT);
                             mBuilder.setContentIntent(resultPendingIntent);
@@ -170,5 +174,5 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                 t.printStackTrace();
             }
         });
-	}
+    }
 }
