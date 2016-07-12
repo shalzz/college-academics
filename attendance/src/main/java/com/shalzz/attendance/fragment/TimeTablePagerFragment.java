@@ -78,19 +78,21 @@ public class TimeTablePagerFragment extends Fragment {
     public ViewPager mViewPager;
 
     @BindView(R.id.empty_view)
-    public View mEmptyView;
+    public View emptyView;
 
-    @BindView(R.id.emptyStateImageView)
-    public ImageView mEmptyImageView;
+    public static class EmptyView {
+        @BindView(R.id.emptyStateImageView)
+        public ImageView ImageView;
 
-    @BindView(R.id.emptyStateTitleTextView)
-    public TextView mEmptyTitleTextView;
+        @BindView(R.id.emptyStateTitleTextView)
+        public TextView TitleTextView;
 
-    @BindView(R.id.emptyStateContentTextView)
-    public TextView mEmptyContentTextView;
+        @BindView(R.id.emptyStateContentTextView)
+        public TextView ContentTextView;
 
-    @BindView(R.id.emptyStateButton)
-    public Button mEmptyButton;
+        @BindView(R.id.emptyStateButton)
+        public Button Button;
+    }
 
     @Inject @Named("app")
     Tracker t;
@@ -106,6 +108,7 @@ public class TimeTablePagerFragment extends Fragment {
     private Context mContext;
     private ActionBar actionbar;
     private Unbinder unbinder;
+    public EmptyView mEmptyView = new EmptyView();
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -120,6 +123,16 @@ public class TimeTablePagerFragment extends Fragment {
 
         t.setScreenName(getClass().getSimpleName());
         t.send(new HitBuilders.ScreenViewBuilder().build());
+
+        DatabaseHandler db = new DatabaseHandler(mContext);
+        if(db.getPeriodCount() == 0) {
+            mController.updatePeriods();
+            mProgress.setVisibility(View.VISIBLE);
+            mViewPager.setVisibility(View.GONE);
+        }
+        else
+            mController.setToday();
+        db.close();
     }
 
     @Override
@@ -133,6 +146,7 @@ public class TimeTablePagerFragment extends Fragment {
         actionbar= ((AppCompatActivity)getActivity()).getSupportActionBar();
         final View view = inflater.inflate(R.layout.fragment_viewpager, container, false);
         unbinder = ButterKnife.bind(this, view);
+        ButterKnife.bind(mEmptyView, emptyView);
 
         mSwipeRefreshLayout.setSwipeableChildren(R.id.time_table_recycler_view);
 
@@ -152,16 +166,6 @@ public class TimeTablePagerFragment extends Fragment {
 
         mController = new PagerController(mContext, this, getActivity().getSupportFragmentManager
                 (),api);
-        DatabaseHandler db = new DatabaseHandler(mContext);
-        if(db.getPeriodCount() == 0) {
-            mController.updatePeriods();
-            mProgress.setVisibility(View.VISIBLE);
-            mViewPager.setVisibility(View.GONE);
-        }
-        else
-            mController.setToday();
-        db.close();
-
         mSwipeRefreshLayout.setOnRefreshListener(() -> mController.updatePeriods());
 
         // fix for oversensitive horizontal scroll of swipe view
@@ -177,6 +181,11 @@ public class TimeTablePagerFragment extends Fragment {
             return false;
         });
 
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
         showcaseView();
     }
 

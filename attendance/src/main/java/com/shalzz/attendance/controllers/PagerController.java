@@ -124,11 +124,12 @@ public class PagerController {
 
             @Override
             public void onFailure(Call<List<Period>> call, Throwable t) {
+                if(mView == null || mView.getActivity() == null)
+                    return;
+
                 RetrofitException error = (RetrofitException) t;
                 if (error.getKind() == RetrofitException.Kind.NETWORK) {
                     if(db.getPeriodCount() > 0) {
-                        if(mView == null || mView.getActivity() == null)
-                            return;
                         View view = mView.getActivity().findViewById(android.R.id.content);
                         Snackbar.make(view, error.getMessage(), Snackbar.LENGTH_LONG)
                                 .setAction("Retry", v -> updatePeriods())
@@ -137,11 +138,11 @@ public class PagerController {
                         Drawable emptyDrawable = new IconDrawable(mView.getContext(),
                                 Iconify.IconValue.zmdi_wifi_off)
                                 .colorRes(android.R.color.darker_gray);
-                        mView.mEmptyImageView.setImageDrawable(emptyDrawable);
-                        mView.mEmptyTitleTextView.setText(R.string.no_connection_title);
-                        mView.mEmptyContentTextView.setText(R.string.no_connection_content);
-                        mView.mEmptyButton.setOnClickListener( v -> updatePeriods());
-                        mView.mEmptyButton.setVisibility(View.VISIBLE);
+                        mView.mEmptyView.ImageView.setImageDrawable(emptyDrawable);
+                        mView.mEmptyView.TitleTextView.setText(R.string.no_connection_title);
+                        mView.mEmptyView.ContentTextView.setText(R.string.no_connection_content);
+                        mView.mEmptyView.Button.setOnClickListener( v -> updatePeriods());
+                        mView.mEmptyView.Button.setVisibility(View.VISIBLE);
 
                         toggleEmptyViewVisibility(true);
                     }
@@ -150,10 +151,10 @@ public class PagerController {
                     Drawable emptyDrawable = new IconDrawable(mView.getContext(),
                             Iconify.IconValue.zmdi_cloud_off)
                             .colorRes(android.R.color.darker_gray);
-                    mView.mEmptyImageView.setImageDrawable(emptyDrawable);
-                    mView.mEmptyTitleTextView.setText(R.string.no_data_title);
-                    mView.mEmptyContentTextView.setText(R.string.no_data_content);
-                    mView.mEmptyButton.setVisibility(View.GONE);
+                    mView.mEmptyView.ImageView.setImageDrawable(emptyDrawable);
+                    mView.mEmptyView.TitleTextView.setText(R.string.no_data_title);
+                    mView.mEmptyView.ContentTextView.setText(R.string.no_data_content);
+                    mView.mEmptyView.Button.setVisibility(View.GONE);
 
                     toggleEmptyViewVisibility(true);
 
@@ -179,10 +180,10 @@ public class PagerController {
         if(mView == null || mView.mViewPager == null || mView.mEmptyView == null)
             return;
         if(show) {
-            mView.mEmptyView.setVisibility(View.VISIBLE);
+            mView.emptyView.setVisibility(View.VISIBLE);
             mView.mViewPager.setVisibility(View.GONE);
         } else {
-            mView.mEmptyView.setVisibility(View.GONE);
+            mView.emptyView.setVisibility(View.GONE);
             mView.mViewPager.setVisibility(View.VISIBLE);
         }
     }

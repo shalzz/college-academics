@@ -88,19 +88,21 @@ public class AttendanceListFragment extends Fragment implements
     public RecyclerView mRecyclerView;
 
     @BindView(R.id.empty_view)
-    public View mEmptyView;
+    public View emptyView;
 
-    @BindView(R.id.emptyStateImageView)
-    public ImageView mEmptyImageView;
+    public static class EmptyView {
+        @BindView(R.id.emptyStateImageView)
+        public ImageView ImageView;
 
-    @BindView(R.id.emptyStateTitleTextView)
-    public TextView mEmptyTitleTextView;
+        @BindView(R.id.emptyStateTitleTextView)
+        public TextView TitleTextView;
 
-    @BindView(R.id.emptyStateContentTextView)
-    public TextView mEmptyContentTextView;
+        @BindView(R.id.emptyStateContentTextView)
+        public TextView ContentTextView;
 
-    @BindView(R.id.emptyStateButton)
-    public Button mEmptyButton;
+        @BindView(R.id.emptyStateButton)
+        public Button Button;
+    }
 
     @BindBool(R.bool.use_grid_layout)
     boolean useGridLayout;
@@ -135,6 +137,7 @@ public class AttendanceListFragment extends Fragment implements
     private final int mFadeOutDuration = 20;
     private final int mExpandCollapseDuration = 200;
     private Unbinder unbinder;
+    public EmptyView mEmptyView = new EmptyView();
 
     @Override
     public void onStart() {
@@ -156,6 +159,7 @@ public class AttendanceListFragment extends Fragment implements
         setHasOptionsMenu(true);
         View mView = inflater.inflate(R.layout.fragment_attendance, container, false);
         unbinder = ButterKnife.bind(this, mView);
+        ButterKnife.bind(mEmptyView, emptyView);
 
         mSwipeRefreshLayout.setSwipeableChildren(R.id.atten_recycler_view);
 

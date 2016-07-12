@@ -135,11 +135,11 @@ public class AttendanceController implements LoaderManager.LoaderCallbacks<List<
                         Drawable emptyDrawable = new IconDrawable(mView.getContext(),
                                 Iconify.IconValue.zmdi_wifi_off)
                                 .colorRes(android.R.color.darker_gray);
-                        mView.mEmptyImageView.setImageDrawable(emptyDrawable);
-                        mView.mEmptyTitleTextView.setText(R.string.no_connection_title);
-                        mView.mEmptyContentTextView.setText(R.string.no_connection_content);
-                        mView.mEmptyButton.setOnClickListener( v -> updateSubjects());
-                        mView.mEmptyButton.setVisibility(View.VISIBLE);
+                        mView.mEmptyView.ImageView.setImageDrawable(emptyDrawable);
+                        mView.mEmptyView.TitleTextView.setText(R.string.no_connection_title);
+                        mView.mEmptyView.ContentTextView.setText(R.string.no_connection_content);
+                        mView.mEmptyView.Button.setOnClickListener( v -> updateSubjects());
+                        mView.mEmptyView.Button.setVisibility(View.VISIBLE);
 
                         toggleEmptyViewVisibility(true);
                     }
@@ -148,10 +148,10 @@ public class AttendanceController implements LoaderManager.LoaderCallbacks<List<
                     Drawable emptyDrawable = new IconDrawable(mView.getContext(),
                             Iconify.IconValue.zmdi_cloud_off)
                             .colorRes(android.R.color.darker_gray);
-                    mView.mEmptyImageView.setImageDrawable(emptyDrawable);
-                    mView.mEmptyTitleTextView.setText(R.string.no_data_title);
-                    mView.mEmptyContentTextView.setText(R.string.no_data_content);
-                    mView.mEmptyButton.setVisibility(View.GONE);
+                    mView.mEmptyView.ImageView.setImageDrawable(emptyDrawable);
+                    mView.mEmptyView.TitleTextView.setText(R.string.no_data_title);
+                    mView.mEmptyView.ContentTextView.setText(R.string.no_data_content);
+                    mView.mEmptyView.Button.setVisibility(View.GONE);
 
                     toggleEmptyViewVisibility(true);
 
@@ -177,10 +177,10 @@ public class AttendanceController implements LoaderManager.LoaderCallbacks<List<
         if(mView == null || mView.mRecyclerView == null || mView.mEmptyView == null)
             return;
         if(show) {
-            mView.mEmptyView.setVisibility(View.VISIBLE);
+            mView.emptyView.setVisibility(View.VISIBLE);
             mView.mRecyclerView.setVisibility(View.GONE);
         } else {
-            mView.mEmptyView.setVisibility(View.GONE);
+            mView.emptyView.setVisibility(View.GONE);
             mView.mRecyclerView.setVisibility(View.VISIBLE);
         }
     }
