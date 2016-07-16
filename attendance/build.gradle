@@ -69,8 +69,7 @@ android {
             resValue "string", "contentAuthority", defaultConfig.applicationId + '.provider'
             resValue "string", "account_type", "com.shalzz"
             buildConfigField "String", "ACCOUNT_TYPE", '"com.shalzz"'
-            FileCollection proGuardFileCollection = files { file('./proguard').listFiles() }
-            proguardFiles(proGuardFileCollection)
+            proguardFiles(file('./proguard'))
             proguardFile getDefaultProguardFile('proguard-android-optimize.txt')
         }
     }
