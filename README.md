@@ -30,8 +30,8 @@ Bitcoin  - `1G6KuJST6whifh1CjksKF84Sbwj34RbcgR`
 [2]: https://github.com/Shalzz/upes-academics/issues
 [3]: https://github.com/Shalzz/upes-academics/pulls
 [play-store]: https://play.google.com/store/apps/details?id=com.shalzz.attendance
-[ci-badge]: https://travis-ci.com/Shalzz/upes-academics.svg?token=nx4dqxRMsSYNz6esnRsa&branch=dev
-[ci-link]: https://travis-ci.com/Shalzz/upes-academics
-[release-badge]:  	https://img.shields.io/github/release/shalzz/upes-academics.svg
+[ci-badge]: https://travis-ci.org/Shalzz/upes-academics.svg?branch=dev
+[ci-link]: https://travis-ci.org/Shalzz/upes-academics
+[release-badge]:https://img.shields.io/github/release/shalzz/upes-academics.svg
 [tag-badge]: https://img.shields.io/github/tag/shalzz/upes-academics.svg
 [license-badge]: https://img.shields.io/badge/license-GPLv3-blue.svg
