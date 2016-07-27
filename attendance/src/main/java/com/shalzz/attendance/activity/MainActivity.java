@@ -141,7 +141,6 @@ public class MainActivity extends AppCompatActivity {
         // Set the list's click listener
         mNavigationView.setNavigationItemSelectedListener(new NavigationItemSelectedListener());
 
-        initDrawer();
         init(savedInstanceState);
     }
 
@@ -149,6 +148,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         showcaseView();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        initDrawer();
     }
 
     /**

@@ -31,7 +31,7 @@ public class RetrofitException extends RuntimeException {
     }
 
     public static RetrofitException emptyResponseError(String url, Response response, Retrofit retrofit) {
-        String message = MyApplication.getContext().getString(R.string.generic_error);
+        String message = MyApplication.getContext().getString(R.string.no_data_content);
         return new RetrofitException(message, url, response, Kind.EMPTY_RESPONSE,
                 null, retrofit);
     }

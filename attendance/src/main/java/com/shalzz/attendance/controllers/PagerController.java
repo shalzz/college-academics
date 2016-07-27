@@ -128,13 +128,15 @@ public class PagerController {
                     return;
 
                 RetrofitException error = (RetrofitException) t;
-                if (error.getKind() == RetrofitException.Kind.NETWORK) {
-                    if(db.getPeriodCount() > 0) {
-                        View view = mView.getActivity().findViewById(android.R.id.content);
-                        Snackbar.make(view, error.getMessage(), Snackbar.LENGTH_LONG)
-                                .setAction("Retry", v -> updatePeriods())
-                                .show();
-                    } else {
+                if(db.getSubjectCount() > 0 &&
+                        (error.getKind() == RetrofitException.Kind.NETWORK ||
+                                error.getKind() == RetrofitException.Kind.EMPTY_RESPONSE)) {
+                    View view = mView.getActivity().findViewById(android.R.id.content);
+                    Snackbar.make(view, error.getMessage(), Snackbar.LENGTH_LONG)
+                            .setAction("Retry", v -> updatePeriods())
+                            .show();
+                }
+                else if (error.getKind() == RetrofitException.Kind.NETWORK) {
                         Drawable emptyDrawable = new IconDrawable(mView.getContext(),
                                 Iconify.IconValue.zmdi_wifi_off)
                                 .colorRes(android.R.color.darker_gray);
@@ -145,7 +147,6 @@ public class PagerController {
                         mView.mEmptyView.Button.setVisibility(View.VISIBLE);
 
                         toggleEmptyViewVisibility(true);
-                    }
                 }
                 else if (error.getKind() == RetrofitException.Kind.EMPTY_RESPONSE) {
                     Drawable emptyDrawable = new IconDrawable(mView.getContext(),

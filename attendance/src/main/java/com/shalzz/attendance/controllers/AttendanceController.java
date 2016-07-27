@@ -122,16 +122,19 @@ public class AttendanceController implements LoaderManager.LoaderCallbacks<List<
 
             @Override
             public void onFailure(Call<List<Subject>> call, Throwable t) {
+                if(mView == null || mView.getActivity() == null)
+                    return;
+
                 RetrofitException error = (RetrofitException) t;
-                if (error.getKind() == RetrofitException.Kind.NETWORK) {
-                    if(db.getSubjectCount() > 0) {
-                        if(mView == null || mView.getActivity() == null)
-                            return;
-                        View view = mView.getActivity().findViewById(android.R.id.content);
-                        Snackbar.make(view, error.getMessage(), Snackbar.LENGTH_LONG)
-                                .setAction("Retry", v -> updateSubjects())
-                                .show();
-                    } else {
+                if(db.getSubjectCount() > 0 &&
+                         (error.getKind() == RetrofitException.Kind.NETWORK ||
+                                error.getKind() == RetrofitException.Kind.EMPTY_RESPONSE)) {
+                    View view = mView.getActivity().findViewById(android.R.id.content);
+                    Snackbar.make(view, error.getMessage(), Snackbar.LENGTH_LONG)
+                            .setAction("Retry", v -> updateSubjects())
+                            .show();
+                }
+                else if (error.getKind() == RetrofitException.Kind.NETWORK) {
                         Drawable emptyDrawable = new IconDrawable(mView.getContext(),
                                 Iconify.IconValue.zmdi_wifi_off)
                                 .colorRes(android.R.color.darker_gray);
@@ -142,7 +145,6 @@ public class AttendanceController implements LoaderManager.LoaderCallbacks<List<
                         mView.mEmptyView.Button.setVisibility(View.VISIBLE);
 
                         toggleEmptyViewVisibility(true);
-                    }
                 }
                 else if (error.getKind() == RetrofitException.Kind.EMPTY_RESPONSE) {
                     Drawable emptyDrawable = new IconDrawable(mView.getContext(),
