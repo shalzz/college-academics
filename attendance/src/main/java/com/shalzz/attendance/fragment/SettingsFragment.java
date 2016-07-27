@@ -20,6 +20,7 @@
 package com.shalzz.attendance.fragment;
 
 import android.app.NotificationManager;
+import android.app.backup.BackupManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
@@ -85,6 +86,8 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnShar
     }
 
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        requestBackup();
+
         if(key.equals(key_sync_day_night)) {
             ListPreference connectionPref = (ListPreference) findPreference(key);
             connectionPref.setSummary(connectionPref.getEntry());
@@ -145,39 +148,38 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnShar
         PreferenceCategory prefCategory = (PreferenceCategory) getPreferenceScreen()
                 .getPreference(5);
         PreferenceScreen prefScreen =  (PreferenceScreen) prefCategory.getPreference(0);
-        prefScreen.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener(){
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                Fragment mFragment = new AboutSettingsFragment();
-                FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        prefScreen.setOnPreferenceClickListener(preference -> {
+            Fragment mFragment = new AboutSettingsFragment();
+            FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
-                transaction.replace(R.id.frame_container, mFragment, MainActivity.FRAGMENT_TAG);
-                transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-                transaction.addToBackStack(null);
-                ((MainActivity)getActivity()).mPopSettingsBackStack = true;
+            transaction.replace(R.id.frame_container, mFragment, MainActivity.FRAGMENT_TAG);
+            transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+            transaction.addToBackStack(null);
+            ((MainActivity)getActivity()).mPopSettingsBackStack = true;
 
-                transaction.commit();
-                return true;
-            }
+            transaction.commit();
+            return true;
         });
 
         PreferenceCategory proxyPrefCategory = (PreferenceCategory) getPreferenceScreen()
                 .getPreference(3);
         PreferenceScreen proxyPrefScreen =  (PreferenceScreen) proxyPrefCategory.getPreference(2);
-        proxyPrefScreen.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener(){
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                Fragment mFragment = new ProxySettingsFragment();
-                FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        proxyPrefScreen.setOnPreferenceClickListener(preference -> {
+            Fragment mFragment = new ProxySettingsFragment();
+            FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
-                transaction.replace(R.id.frame_container, mFragment, MainActivity.FRAGMENT_TAG);
-                transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-                transaction.addToBackStack(null);
-                ((MainActivity)getActivity()).mPopSettingsBackStack = true;
+            transaction.replace(R.id.frame_container, mFragment, MainActivity.FRAGMENT_TAG);
+            transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+            transaction.addToBackStack(null);
+            ((MainActivity)getActivity()).mPopSettingsBackStack = true;
 
-                transaction.commit();
-                return true;
-            }
+            transaction.commit();
+            return true;
         });
+    }
+
+    public void requestBackup() {
+        BackupManager bm = new BackupManager(mContext);
+        bm.dataChanged();
     }
 }

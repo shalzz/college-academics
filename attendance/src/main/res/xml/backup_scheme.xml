@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<full-backup-content>
+    <include domain="database" path="attendanceManager"/>
+    <include domain="database" path="google_analytics_v4.db"/>
+    <include domain="sharedpref" path="_has_set_default_values.xml"/>
+    <include domain="sharedpref" path="admob.xml"/>
+    <include domain="sharedpref" path="com.google.android.gms.analytics.prefs.xml"/>
+    <include domain="sharedpref" path="com.shalzz.attendance_preferences.xml"/>
+    <include domain="sharedpref" path="SETTINGS.xml"/>
+    <include domain="sharedpref" path="showcase_internal.xml"/>
+</full-backup-content>

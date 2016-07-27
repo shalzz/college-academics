@@ -41,17 +41,23 @@
 
     <application
         android:name=".wrapper.MyApplication"
-        android:allowBackup="true"
         android:allowClearUserData="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme"
         android:hardwareAccelerated="true"
-        android:supportsRtl="false" >
+        android:supportsRtl="false"
+        android:allowBackup="true"
+        android:backupAgent="MyBackupAgent"
+        android:fullBackupOnly="true"
+        android:fullBackupContent="@xml/backup_scheme">
 
         <!--This meta-data tag is required to use Google Play Services.-->
         <meta-data android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
+
+        <meta-data android:name="com.google.android.backup.api_key"
+                   android:value="AEdPqrEAAAAIBDAW2fQxJuS7rNRsQul_vvfk_9XNbzwvC_IgrQ" />
 
         <provider
         android:name=".sync.StubProvider"
