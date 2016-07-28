@@ -32,6 +32,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 
+import com.bugsnag.android.Bugsnag;
 import com.malinskiy.materialicons.IconDrawable;
 import com.malinskiy.materialicons.Iconify;
 import com.shalzz.attendance.BuildConfig;
@@ -169,6 +170,7 @@ public class AttendanceController implements LoaderManager.LoaderCallbacks<List<
 
                     String msg = mResources.getString(R.string.unexpected_error);
                     showError(msg);
+                    Bugsnag.notify(error);
                 }
                 done();
             }

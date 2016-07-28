@@ -16,12 +16,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 apply plugin: 'com.android.application'
 apply plugin: 'com.neenbedankt.android-apt'
 apply plugin: 'com.squareup.sqldelight'
 apply plugin: 'me.tatarka.retrolambda'
 apply plugin: 'com.github.triplet.play'
-apply plugin: 'bugsnag'
+apply plugin: 'com.bugsnag.android.gradle'
 
 bugsnag {
     apiKey '600a00bfd5bd72e5df7f288f74df8f9b'
@@ -69,6 +70,7 @@ android {
         debug {
             applicationIdSuffix '.debug'
             versionNameSuffix "-debug"
+            ext.enableBugsnag = false
             resValue "string", "app_name", "UPES Academics (debug)"
             resValue "string", "contentAuthority", defaultConfig.applicationId + '.debug.provider'
             resValue "string", "account_type", "com.shalzz.debug"
@@ -81,7 +83,8 @@ android {
             resValue "string", "contentAuthority", defaultConfig.applicationId + '.provider'
             resValue "string", "account_type", "com.shalzz"
             buildConfigField "String", "ACCOUNT_TYPE", '"com.shalzz"'
-            proguardFiles(file('./proguard'))
+            FileCollection proGuardFileCollection = files { file('./proguard').listFiles() }
+            proguardFiles(proGuardFileCollection)
             proguardFile getDefaultProguardFile('proguard-android-optimize.txt')
         }
     }

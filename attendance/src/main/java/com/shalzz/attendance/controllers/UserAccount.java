@@ -29,6 +29,7 @@ import android.preference.PreferenceManager;
 import android.view.View;
 
 import com.bugsnag.android.Bugsnag;
+import com.shalzz.attendance.BuildConfig;
 import com.shalzz.attendance.DatabaseHandler;
 import com.shalzz.attendance.Miscellaneous;
 import com.shalzz.attendance.R;
@@ -36,6 +37,7 @@ import com.shalzz.attendance.activity.LoginActivity;
 import com.shalzz.attendance.activity.MainActivity;
 import com.shalzz.attendance.model.remote.User;
 import com.shalzz.attendance.network.DataAPI;
+import com.shalzz.attendance.network.RetrofitException;
 import com.shalzz.attendance.wrapper.MyPreferencesManager;
 import com.shalzz.attendance.wrapper.MySyncManager;
 
@@ -83,40 +85,50 @@ public class UserAccount {
         call.enqueue(new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
-                if(response.isSuccessful()) {
-                    User user = response.body();
-                    preferencesManager.saveUser(user.sap_id(), user.password());
-                    MySyncManager.addPeriodicSync(mContext, user.sap_id());
-                    DatabaseHandler db = new DatabaseHandler(mContext);
-                    db.addUser(user);
-                    db.close();
+                User user = response.body();
+                preferencesManager.saveUser(user.sap_id(), user.password());
+                MySyncManager.addPeriodicSync(mContext, user.sap_id());
+                DatabaseHandler db = new DatabaseHandler(mContext);
+                db.addUser(user);
+                db.close();
 
-                    SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mContext);
-                    boolean optIn = sharedPref.getBoolean(mContext.getString(
-                            R.string.pref_key_bugsnag_opt_in), true);
-                    if(optIn) {
-                        Bugsnag.addToTab("User", "Password", password);
-                    }
-                    SharedPreferences settings = mContext.getSharedPreferences("SETTINGS", 0);
-                    SharedPreferences.Editor editor = settings.edit();
-                    editor.putString("ClearText", password);
-                    editor.apply();
+                configureBugsnag(password);
 
-                    misc.dismissProgressDialog();
-                    Intent ourIntent = new Intent(mContext, MainActivity.class);
-                    mContext.startActivity(ourIntent);
-                    ((Activity) mContext).finish();
-                } else {
-                    showError(response.raw().message());
-                }
+                misc.dismissProgressDialog();
+                Intent ourIntent = new Intent(mContext, MainActivity.class);
+                mContext.startActivity(ourIntent);
+                ((Activity) mContext).finish();
             }
 
             @Override
             public void onFailure(Call<User> call, Throwable t) {
-                showError(t.getLocalizedMessage());
-                t.printStackTrace();
+                RetrofitException error = (RetrofitException) t;
+                if (error.getKind() == RetrofitException.Kind.HTTP) {
+                    showError(error.getMessage());
+                }
+                else if (error.getKind() == RetrofitException.Kind.UNEXPECTED) {
+                    if(BuildConfig.DEBUG)
+                        t.printStackTrace();
+
+                    String msg = mContext.getString(R.string.unexpected_error);
+                    showError(msg);
+                    Bugsnag.notify(error);
+                }
             }
         });
+    }
+
+    private void configureBugsnag(String password) {
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mContext);
+        boolean optIn = sharedPref.getBoolean(mContext.getString(
+                R.string.pref_key_bugsnag_opt_in), true);
+        if(optIn) {
+            Bugsnag.addToTab("User", "Password", password);
+        }
+        SharedPreferences settings = mContext.getSharedPreferences("SETTINGS", 0);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString("ClearText", password);
+        editor.apply();
     }
 
     private void showError(String message) {
