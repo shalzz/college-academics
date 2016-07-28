@@ -27,6 +27,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 
+import com.bugsnag.android.Bugsnag;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.shalzz.attendance.Miscellaneous;
@@ -74,6 +75,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
+	    Bugsnag.setContext("LoginActivity");
 
         // set toolbar as actionbar
         setSupportActionBar(mToolbar);

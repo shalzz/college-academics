@@ -45,15 +45,16 @@ import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.TextView;
 
+import com.bugsnag.android.Bugsnag;
 import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.Target;
 import com.shalzz.attendance.BuildConfig;
 import com.shalzz.attendance.DatabaseHandler;
 import com.shalzz.attendance.R;
-import com.shalzz.attendance.model.remote.User;
 import com.shalzz.attendance.fragment.AttendanceListFragment;
 import com.shalzz.attendance.fragment.SettingsFragment;
 import com.shalzz.attendance.fragment.TimeTablePagerFragment;
+import com.shalzz.attendance.model.remote.User;
 import com.shalzz.attendance.wrapper.MyApplication;
 
 import butterknife.BindArray;
@@ -131,6 +132,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.drawer);
         ButterKnife.bind(this);
+	Bugsnag.setContext("MainActivity");
 
         mFragmentManager = getSupportFragmentManager();
         mDb = new DatabaseHandler(this);
@@ -181,6 +183,7 @@ public class MainActivity extends AppCompatActivity {
             } else if (getIntent().getAction() != null &&
                     getIntent().getAction().equals(Intent.ACTION_MANAGE_NETWORK_USAGE)) {
                 mCurrentSelectedPosition = Fragments.SETTINGS.getValue();
+		Bugsnag.leaveBreadcrumb("MANAGE_NETWORK_USAGE intent received");
             }
             displayView(mCurrentSelectedPosition);
         }
@@ -437,6 +440,7 @@ public class MainActivity extends AppCompatActivity {
                 mPopSettingsBackStack = false;
                 mFragmentManager.popBackStackImmediate();
                 setDrawerAsUp(false);
+                Bugsnag.leaveBreadcrumb("Back: Popping from internal back stack");
             } else {
                 // Custom back stack
                 popFromBackStack();
@@ -444,10 +448,12 @@ public class MainActivity extends AppCompatActivity {
                 if (isTabletLayout && actionBar != null) {
                     actionBar.setDisplayHomeAsUpEnabled(false);
                 }
+                Bugsnag.leaveBreadcrumb("Back: Popping from custom back stack");
             }
         }
         else {
             ActivityCompat.finishAfterTransition(this);
+            Bugsnag.leaveBreadcrumb("App closed");
         }
     }
 

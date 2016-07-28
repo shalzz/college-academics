@@ -25,6 +25,7 @@ import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.PreferenceScreen;
 
+import com.bugsnag.android.Bugsnag;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.shalzz.attendance.R;
@@ -51,6 +52,7 @@ public class AboutSettingsFragment extends PreferenceFragmentCompat {
     public void onCreatePreferences(Bundle bundle, String s) {
         MyApplication.getAppComponent().inject(this);
         mContext = getActivity();
+        Bugsnag.setContext("About");
         mainActivity = ((MainActivity) getActivity());
         mainActivity.setDrawerAsUp(true);
 

@@ -25,6 +25,8 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.PreferenceManager;
 
+import com.bugsnag.android.Bugsnag;
+import com.bugsnag.android.Severity;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.wrapper.MyApplication;
@@ -41,6 +43,7 @@ public class SplashActivity extends AppCompatActivity {
 	protected void onCreate(Bundle savedInstanceState) {
         MyApplication.getAppComponent().inject(this);
 		super.onCreate(savedInstanceState);
+		Bugsnag.setContext("SplashActivity");
 
 		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
 		boolean optIn = sharedPref.getBoolean(getString(R.string.pref_key_ga_opt_in), true);
@@ -51,6 +54,7 @@ public class SplashActivity extends AppCompatActivity {
             PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
             PreferenceManager.setDefaultValues(this, R.xml.pref_proxy, false);
         } catch (ClassCastException e) {
+	    Bugsnag.notify(e, Severity.INFO);
             preferencesManager.removeDefaultSharedPreferences();
             PreferenceManager.setDefaultValues(this, R.xml.preferences, true);
             PreferenceManager.setDefaultValues(this, R.xml.pref_proxy, true);

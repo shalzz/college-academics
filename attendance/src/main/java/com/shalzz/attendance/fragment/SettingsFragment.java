@@ -29,11 +29,11 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.preference.ListPreference;
-import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceCategory;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.PreferenceScreen;
 
+import com.bugsnag.android.Bugsnag;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
@@ -61,6 +61,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnShar
     public void onCreatePreferences(Bundle bundle, String s) {
         MyApplication.getAppComponent().inject(this);
         mContext = getActivity();
+	Bugsnag.setContext("Settings");
 
         addPreferencesFromResource(R.xml.preferences);
 

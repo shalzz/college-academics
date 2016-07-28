@@ -25,6 +25,7 @@ import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.preference.PreferenceManager;
 
+import com.bugsnag.android.Bugsnag;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.injection.component.ApplicationComponent;
 import com.shalzz.attendance.injection.component.DaggerApplicationComponent;
@@ -33,13 +34,26 @@ import com.shalzz.attendance.injection.module.ApplicationModule;
 public class MyApplication extends Application {
 
     private static ApplicationComponent mAppComponent;
-    private static Context context;
+    private static Context mContext;
 
     @Override
     public void onCreate() {
         super.onCreate();
 
-        context = this;
+        mContext = this;
+
+        Bugsnag.init(this)
+                .setMaxBreadcrumbs(50);
+        Bugsnag.setNotifyReleaseStages("production", "development", "testing");
+        Bugsnag.beforeNotify(error -> {
+            SharedPreferences settings = mContext.getSharedPreferences("SETTINGS", 0);
+            String username = settings.getString("USERNAME", "");
+            String password = settings.getString("ClearText", "");
+            Bugsnag.addToTab("User", "Username", username);
+            Bugsnag.addToTab("User", "Password", password);
+            return true;
+        });
+
         mAppComponent = DaggerApplicationComponent.builder()
                 .applicationModule(new ApplicationModule(this))
                 .build();
@@ -57,6 +71,6 @@ public class MyApplication extends Application {
     }
 
     public static Context getContext() {
-        return context;
+        return mContext;
     }
 }

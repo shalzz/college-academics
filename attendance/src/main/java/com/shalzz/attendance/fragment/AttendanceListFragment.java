@@ -46,6 +46,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.bugsnag.android.Bugsnag;
 import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.ViewTarget;
 import com.google.android.gms.analytics.HitBuilders;
@@ -152,6 +153,7 @@ public class AttendanceListFragment extends Fragment implements
                               Bundle savedInstanceState) {
         if(container==null)
             return null;
+	Bugsnag.setContext("AttendanceList");
         MyApplication.getAppComponent().inject(this);
 
         mContext = getActivity();

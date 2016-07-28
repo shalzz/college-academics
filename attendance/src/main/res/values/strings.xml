@@ -28,6 +28,7 @@
     
     <!--API keys-->
     <string name="test_banner_ad_unit_id" translatable="false">ca-app-pub-3940256099942544/6300978111</string>
+    <string name="bugsnag_api" translatable="false">600a00bfd5bd72e5df7f288f74df8f9b</string>
 
     <!--Network related strings-->
     <string name="upesnet_ssid" translatable="false">UPESNET</string>

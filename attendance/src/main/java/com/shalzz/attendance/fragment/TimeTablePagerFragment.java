@@ -37,6 +37,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bugsnag.android.Bugsnag;
 import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.Target;
 import com.google.android.gms.analytics.HitBuilders;
@@ -114,6 +115,7 @@ public class TimeTablePagerFragment extends Fragment {
         super.onCreate(savedInstanceState);
         MyApplication.getAppComponent().inject(this);
         mContext = getActivity();
+	Bugsnag.setContext("Timetable");
         userAccount = new UserAccount(mContext, api);
     }
 

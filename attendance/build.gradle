@@ -125,6 +125,7 @@ android {
         compile('de.psdev.licensesdialog:licensesdialog:1.8.0') {
             exclude module: 'support-v4'
         }
+	    compile 'com.bugsnag:bugsnag-android:3.+'
 
         testCompile "org.robolectric:robolectric:3.0"
         testCompile 'junit:junit:4.11'
