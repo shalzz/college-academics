@@ -24,9 +24,7 @@
     <string name="copyright_year" translatable="false">Copyright © 2013&#8211;2016</string>
     <string name="app_copyright" translatable="false">Shaleen Jain &#60;shaleen.jain95@gmail.com&#62;</string>
     <!--Semantic versioning: MAJOR.MINOR.PATCH-->
-    <!-- DON'T update this for PATCH release -->
-    <string name="user_version" translatable="false">2.5</string>
-    <string name="pref_version_summary" translatable="false">v2.6.4</string>
+    <string name="pref_version_summary" translatable="false">v2.7.0</string>
     
     <!--API keys-->
     <string name="test_banner_ad_unit_id" translatable="false">ca-app-pub-3940256099942544/6300978111</string>

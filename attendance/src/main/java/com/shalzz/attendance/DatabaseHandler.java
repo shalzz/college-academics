@@ -19,6 +19,7 @@
 
 package com.shalzz.attendance;
 
+import android.app.Application;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -32,6 +33,8 @@ import com.shalzz.attendance.model.remote.Period;
 import com.shalzz.attendance.model.remote.Subject;
 import com.shalzz.attendance.model.remote.User;
 import com.shalzz.attendance.wrapper.DateHelper;
+import com.shalzz.attendance.wrapper.MyApplication;
+import com.shalzz.attendance.wrapper.MyPreferencesManager;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -97,14 +100,28 @@ public class DatabaseHandler extends SQLiteOpenHelper {
      */
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        // Drop older table if existed
-        db.execSQL("DROP TABLE IF EXISTS " + Subject.TABLE_NAME);
-        db.execSQL("DROP TABLE IF EXISTS " + Period.TABLE_NAME);
-        db.execSQL("DROP TABLE IF EXISTS " + User.TABLE_NAME);
-        db.execSQL("DROP TABLE IF EXISTS " + AbsentDate.TABLE_NAME);
+        switch (oldVersion) {
+            case 1:
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+            case 6:
+            case 7:
+            case 8:
+                // remove conflicting shared preferences b/w versions
+                new MyPreferencesManager(MyApplication.getContext()).removeSettings();
 
-        // Create tables again
-        onCreate(db);
+                // Drop older table if existed
+                db.execSQL("DROP TABLE IF EXISTS " + Subject.TABLE_NAME);
+                db.execSQL("DROP TABLE IF EXISTS " + Period.TABLE_NAME);
+                db.execSQL("DROP TABLE IF EXISTS " + User.TABLE_NAME);
+                db.execSQL("DROP TABLE IF EXISTS " + AbsentDate.TABLE_NAME);
+
+                // Create tables again
+                onCreate(db);
+                break;
+        }
     }
 
     /**

@@ -57,7 +57,7 @@ public class NetworkModule {
                 .addInterceptor(new HeaderInterceptor())
                 .addInterceptor(new AuthInterceptor(preferences))
                 .addNetworkInterceptor(new LoggingInterceptor());
-//                .proxyAuthenticator(preferences.getProxyCredentials())
+//                .proxyAuthenticator(preferences.getProxyCredentials())//fixme: check when toapply
 //                .proxySelector(Miscellaneous.getProxySelector());
         return okHttpBuilder.build();
     }

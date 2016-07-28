@@ -60,7 +60,7 @@ public class MyPreferencesManager {
 
 		Log.i(mTag, "Getting Logged in state.");
 		SharedPreferences settings = mContext.getSharedPreferences("SETTINGS", 0);
-		boolean loggedin = settings.getBoolean("LOGGEDIN" + mContext.getResources().getString(R.string.user_version), false);
+		boolean loggedin = settings.getBoolean("LOGGEDIN", false);
 		Log.d(mTag, "Logged in state: " + loggedin);
 		return loggedin;
 	}
@@ -96,7 +96,7 @@ public class MyPreferencesManager {
 		Log.i(mTag, "Setting LOGGEDIN pref to true");
 		SharedPreferences settings = mContext.getSharedPreferences("SETTINGS", 0);
 		SharedPreferences.Editor editor = settings.edit();
-		editor.putBoolean("LOGGEDIN"+mContext.getResources().getString(R.string.user_version), true);
+		editor.putBoolean("LOGGEDIN", true);
 		editor.putString("USERNAME", username);
 		editor.putString("PASSWORD", password);
 		editor.commit();
@@ -110,14 +110,13 @@ public class MyPreferencesManager {
 		SharedPreferences settings = mContext.getSharedPreferences("SETTINGS", 0);
 		SharedPreferences.Editor editor = settings.edit();
         editor.remove(MainActivity.PREFERENCE_ACTIVATED_FRAGMENT);
-		editor.putBoolean("LOGGEDIN"+mContext.getResources().getString(R.string.user_version), false);
+		editor.putBoolean("LOGGEDIN", false);
 		editor.remove("USERNAME");
 		editor.remove("PASSWORD");
 		editor.commit();
 	}
 
     public void removeSettings() {
-        removeDefaultSharedPreferences();
         SharedPreferences settings = mContext.getSharedPreferences("SETTINGS", 0);
         SharedPreferences.Editor editor = settings.edit();
         editor.clear();
