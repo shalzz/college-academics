@@ -1,0 +1,11 @@
+The official UPES application that lets you view your current attendance and time table.
+
+Features:
+- One time login and no Captcha!
+- Off-line viewing of attendance and timetable
+- Ordered and detailed attendance list
+- Background syncing of attendance and time table.
+- Search: Jump straight to a subject to see its details.
+- Notifications!
+
+UPES Academics is an open source application, find the source here: https://github.com/Shalzz/upes-academics
