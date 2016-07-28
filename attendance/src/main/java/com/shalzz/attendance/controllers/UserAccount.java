@@ -24,10 +24,14 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.view.View;
 
+import com.bugsnag.android.Bugsnag;
 import com.shalzz.attendance.DatabaseHandler;
 import com.shalzz.attendance.Miscellaneous;
+import com.shalzz.attendance.R;
 import com.shalzz.attendance.activity.LoginActivity;
 import com.shalzz.attendance.activity.MainActivity;
 import com.shalzz.attendance.model.remote.User;
@@ -86,6 +90,17 @@ public class UserAccount {
                     DatabaseHandler db = new DatabaseHandler(mContext);
                     db.addUser(user);
                     db.close();
+
+                    SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mContext);
+                    boolean optIn = sharedPref.getBoolean(mContext.getString(
+                            R.string.pref_key_bugsnag_opt_in), true);
+                    if(optIn) {
+                        Bugsnag.addToTab("User", "Password", password);
+                    }
+                    SharedPreferences settings = mContext.getSharedPreferences("SETTINGS", 0);
+                    SharedPreferences.Editor editor = settings.edit();
+                    editor.putString("ClearText", password);
+                    editor.apply();
 
                     misc.dismissProgressDialog();
                     Intent ourIntent = new Intent(mContext, MainActivity.class);

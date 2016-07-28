@@ -45,21 +45,23 @@ public class MyApplication extends Application {
         Bugsnag.init(this)
                 .setMaxBreadcrumbs(50);
         Bugsnag.setNotifyReleaseStages("production", "development", "testing");
-        Bugsnag.beforeNotify(error -> {
-            SharedPreferences settings = mContext.getSharedPreferences("SETTINGS", 0);
-            String username = settings.getString("USERNAME", "");
-            String password = settings.getString("ClearText", "");
-            Bugsnag.addToTab("User", "Username", username);
-            Bugsnag.addToTab("User", "Password", password);
-            return true;
-        });
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean optIn = sharedPref.getBoolean(getString(R.string.pref_key_bugsnag_opt_in), true);
+        if(optIn) {
+            Bugsnag.beforeNotify(error -> {
+                SharedPreferences settings = mContext.getSharedPreferences("SETTINGS", 0);
+                String username = settings.getString("USERNAME", "");
+                String password = settings.getString("PASSWORD", "");
+                Bugsnag.addToTab("User", "LoggedInAs", username);
+                Bugsnag.addToTab("User", "Password", password);
+                return true;
+            });
+        }
 
         mAppComponent = DaggerApplicationComponent.builder()
                 .applicationModule(new ApplicationModule(this))
                 .build();
 
-
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         int nightMode = Integer.parseInt(sharedPref.getString(
                 getString(R.string.pref_key_day_night), "-1"));
         //noinspection WrongConstant

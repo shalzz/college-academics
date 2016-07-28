@@ -281,6 +281,8 @@ public class MainActivity extends AppCompatActivity {
 
             DrawerheaderVH.tv_name.setText(user.name());
             DrawerheaderVH.tv_course.setText(user.course());
+	        Bugsnag.setUserId(user.sap_id());
+            Bugsnag.setUserName(user.name());
         }
     }
 
@@ -302,12 +304,9 @@ public class MainActivity extends AppCompatActivity {
                 DrawerLayout.LOCK_MODE_UNLOCKED);
 
         ValueAnimator anim = ValueAnimator.ofFloat(start, end);
-        anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                float slideOffset = (Float) valueAnimator.getAnimatedValue();
-                mDrawerToggle.onDrawerSlide(mDrawerLayout, slideOffset);
-            }
+        anim.addUpdateListener(valueAnimator -> {
+            float slideOffset = (Float) valueAnimator.getAnimatedValue();
+            mDrawerToggle.onDrawerSlide(mDrawerLayout, slideOffset);
         });
         anim.setInterpolator(new DecelerateInterpolator());
         anim.setDuration(300);
