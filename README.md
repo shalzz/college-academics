@@ -32,4 +32,4 @@ Bitcoin  - `1G6KuJST6whifh1CjksKF84Sbwj34RbcgR`
 [ci-badge]: https://travis-ci.org/Shalzz/upes-academics.svg?branch=dev
 [ci-link]: https://travis-ci.org/Shalzz/upes-academics
 [release-badge]:https://img.shields.io/github/release/shalzz/upes-academics.svg
-[license-badge]: https://img.shields.io/badge/license-GPLv3-blue.svg
+[license-badge]: https://img.shields.io/badge/license-GPLv2-blue.svg
