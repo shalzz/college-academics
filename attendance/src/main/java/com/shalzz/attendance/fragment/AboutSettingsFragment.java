@@ -28,6 +28,7 @@ import android.support.v7.preference.PreferenceScreen;
 import com.bugsnag.android.Bugsnag;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
+import com.shalzz.attendance.BuildConfig;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.activity.MainActivity;
 import com.shalzz.attendance.wrapper.MyApplication;
@@ -97,5 +98,7 @@ public class AboutSettingsFragment extends PreferenceFragmentCompat {
                     .build().show();
             return true;
         });
+        Preference versionPref = prefScreen.getPreference(3);
+        versionPref.setSummary("v"+BuildConfig.VERSION_NAME);
     }
 }

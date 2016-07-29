@@ -56,16 +56,6 @@ android {
         uploadImages = true
     }
 
-    productFlavors {
-        dev {
-            minSdkVersion 23
-        }
-        prod {
-            // The actual minSdkVersion for the application.
-            minSdkVersion 14
-        }
-    }
-
     buildTypes {
         debug {
             applicationIdSuffix '.debug'
