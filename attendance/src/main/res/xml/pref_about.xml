@@ -36,6 +36,5 @@
     <android.support.v7.preference.Preference
         android:key="@string/pref_key_info_version"
         android:title="@string/pref_version"
-        android:summary="@string/pref_version_summary"
         android:persistent="false"/>
 </android.support.v7.preference.PreferenceScreen>
