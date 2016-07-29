@@ -26,15 +26,13 @@ import android.support.v4.content.Loader;
 import android.view.View;
 
 import com.shalzz.attendance.adapter.DayListAdapter;
+import com.shalzz.attendance.model.local.Day;
 import com.shalzz.attendance.fragment.DayFragment;
 import com.shalzz.attendance.loader.DayAsyncTaskLoader;
-import com.shalzz.attendance.model.DayModel;
-import com.shalzz.attendance.model.PeriodModel;
 
 import java.util.Date;
-import java.util.List;
 
-public class DayController implements LoaderManager.LoaderCallbacks<DayModel> {
+public class DayController implements LoaderManager.LoaderCallbacks<Day> {
 
     private Context mContext;
     private DayFragment mView;
@@ -48,14 +46,14 @@ public class DayController implements LoaderManager.LoaderCallbacks<DayModel> {
     }
 
     @Override
-    public Loader<DayModel> onCreateLoader(int id, Bundle args) {
+    public Loader<Day> onCreateLoader(int id, Bundle args) {
         Date date = args != null ? (Date) args
                 .getSerializable(DayFragment.ARG_DATE) : new Date();
         return new DayAsyncTaskLoader(mContext, date);
     }
 
     @Override
-    public void onLoadFinished(Loader<DayModel> loader, DayModel data) {
+    public void onLoadFinished(Loader<Day> loader, Day data) {
         if (data.getPeriods().size() == 0) {
             mView.mEmptyView.setVisibility(View.VISIBLE);
             mAdapter.clear();
@@ -66,7 +64,7 @@ public class DayController implements LoaderManager.LoaderCallbacks<DayModel> {
     }
 
     @Override
-    public void onLoaderReset(Loader<DayModel> loader) {
+    public void onLoaderReset(Loader<Day> loader) {
         // Loader reset, throw away our data,
         // unregister any listeners, etc.
         mAdapter.clear();

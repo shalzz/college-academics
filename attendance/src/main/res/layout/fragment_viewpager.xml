@@ -43,6 +43,8 @@
             android:layout_height="@dimen/material_progress_indeterminate"
             android:layout_gravity="center" />
 
+        <include layout="@layout/empty_view"/>
+
     </FrameLayout>
 
 </com.shalzz.attendance.wrapper.MultiSwipeRefreshLayout>

@@ -19,89 +19,74 @@
 
 package com.shalzz.attendance.activity;
 
-import android.animation.ValueAnimator;
 import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.Toolbar;
-import android.util.TypedValue;
-import android.view.KeyEvent;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.view.inputmethod.EditorInfo;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 
+import com.bugsnag.android.Bugsnag;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.shalzz.attendance.Miscellaneous;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.controllers.UserAccount;
-import com.shalzz.attendance.wrapper.MyVolley;
+import com.shalzz.attendance.network.DataAPI;
+import com.shalzz.attendance.wrapper.MyApplication;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+
+import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.OnClick;
 
 public class LoginActivity extends AppCompatActivity {
 
-    @InjectView(R.id.etSapid) TextInputLayout textInputSapid;
-    @InjectView(R.id.etPass) TextInputLayout textInputPass;
-    @SuppressWarnings("FieldCanBeLocal")
-    @InjectView(R.id.bLogin) Button bLogin;
+    @BindView(R.id.etSapid)
+    TextInputLayout textInputSapid;
+
+    @BindView(R.id.etPass)
+    TextInputLayout textInputPass;
+
+    @BindView(R.id.toolbar)
+    Toolbar mToolbar;
+
+    @Inject
+    @Named("app")
+    Tracker t;
+
+    @Inject
+    DataAPI dataAPI;
+
+    UserAccount userAccount;
+
     private EditText etSapid;
     private EditText etPass;
-    private Toolbar mToolbar;
-
-    private int mContentViewHeight;
-    private String myTag;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        MyApplication.getAppComponent().inject(this);
         if (savedInstanceState == null) {
             getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        ButterKnife.inject(this);
+        ButterKnife.bind(this);
+	    Bugsnag.setContext("LoginActivity");
 
         // set toolbar as actionbar
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        if(getIntent().hasExtra(SplashActivity.INTENT_EXTRA_STARTING_ACTIVITY)) {
-            mToolbar.getViewTreeObserver().addOnPreDrawListener(
-                    new ViewTreeObserver.OnPreDrawListener() {
-                        @Override
-                        public boolean onPreDraw() {
-                            mToolbar.getViewTreeObserver().removeOnPreDrawListener(this);
-                            final int widthSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
-                            final int heightSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
-
-                            mToolbar.measure(widthSpec, heightSpec);
-                            mContentViewHeight = mToolbar.getHeight();
-                            collapseToolbar();
-                            return true;
-                        }
-                    });
-        } else {
-            int toolBarHeight;
-            TypedValue tv = new TypedValue();
-            getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true);
-            toolBarHeight = TypedValue.complexToDimensionPixelSize(
-                    tv.data, getResources().getDisplayMetrics());
-            ViewGroup.LayoutParams lp = mToolbar.getLayoutParams();
-            lp.height = toolBarHeight;
-            mToolbar.setLayoutParams(lp);
-        }
         setSupportActionBar(mToolbar);
-        myTag = getLocalClassName();
 
+        userAccount = new UserAccount(this,dataAPI);
         etSapid = textInputSapid.getEditText();
         etPass = textInputPass.getEditText();
 
         // Shows the CaptchaDialog when user presses 'Done' on keyboard.
-        etPass.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView view, int actionId, KeyEvent event) {
+        if (etPass != null) {
+            etPass.setOnEditorActionListener((view, actionId, event) -> {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
                     if (isValid()) {
                         Login();
@@ -109,48 +94,25 @@ public class LoginActivity extends AppCompatActivity {
                     return true;
                 }
                 return false;
-            }
-        });
-
-        // OnClickListener event for the Login Button
-        bLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (isValid())
-                    Login();
-            }
-        });
+            });
+        }
     }
 
-    private void collapseToolbar() {
-        int toolBarHeight;
-        TypedValue tv = new TypedValue();
-        getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true);
-        toolBarHeight = TypedValue.complexToDimensionPixelSize(
-                tv.data, getResources().getDisplayMetrics());
+    @Override
+    public void onStart() {
+        super.onStart();
 
-        ValueAnimator valueHeightAnimator = ValueAnimator
-                .ofInt(mContentViewHeight, toolBarHeight);
-
-        valueHeightAnimator.addUpdateListener(
-                new ValueAnimator.AnimatorUpdateListener() {
-
-                    @Override
-                    public void onAnimationUpdate(ValueAnimator animation) {
-                        ViewGroup.LayoutParams lp = mToolbar.getLayoutParams();
-                        lp.height = (Integer) animation.getAnimatedValue();
-                        mToolbar.setLayoutParams(lp);
-                    }
-                });
-
-        valueHeightAnimator.start();
+        t.setScreenName(getClass().getSimpleName());
+        t.send(new HitBuilders.ScreenViewBuilder().build());
     }
 
+    @OnClick(R.id.bLogin)
     public void Login() {
+        if (!isValid())
+            return;
 
         Miscellaneous.closeKeyboard(this, etPass);
-        new UserAccount(LoginActivity.this)
-                .Login(etSapid.getText().toString(), etPass.getText().toString());
+        userAccount.Login(etSapid.getText().toString(), etPass.getText().toString());
     }
 
     /**
@@ -178,7 +140,7 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        MyVolley.getInstance().cancelPendingRequests(MyVolley.APPLICATION_NETWORK_TAG);
         super.onDestroy();
+        userAccount = null;
     }
 }

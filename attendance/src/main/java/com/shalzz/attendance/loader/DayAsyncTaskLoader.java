@@ -23,15 +23,15 @@ import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
 
 import com.shalzz.attendance.DatabaseHandler;
-import com.shalzz.attendance.model.DayModel;
+import com.shalzz.attendance.model.local.Day;
 
 import java.util.Date;
 
-public class DayAsyncTaskLoader extends AsyncTaskLoader<DayModel> {
+public class DayAsyncTaskLoader extends AsyncTaskLoader<Day> {
 
     private DatabaseHandler mDb;
     private Date mDate;
-    private DayModel mDay;
+    private Day mDay;
 
     public DayAsyncTaskLoader(Context context, Date date) {
         super(context);
@@ -52,14 +52,15 @@ public class DayAsyncTaskLoader extends AsyncTaskLoader<DayModel> {
     }
 
     @Override
-    public DayModel loadInBackground() {
+    public Day loadInBackground() {
         if(mDb == null)
             mDb = new DatabaseHandler(getContext());
-        return new DayModel(mDb.getAbsentSubjects(mDate), mDb.getAllPeriods(mDate, this));
+        return Day.create(mDb.getAbsentSubjects(mDate), mDb.getAllPeriods(mDate,
+                this));
     }
 
     @Override
-    public void deliverResult(DayModel data) {
+    public void deliverResult(Day data) {
         // We’ll save the data for later retrieval
         mDay = data;
         // We can do any pre-processing we want here
@@ -80,7 +81,7 @@ public class DayAsyncTaskLoader extends AsyncTaskLoader<DayModel> {
     }
 
     @Override
-    public void onCanceled(DayModel data) {
+    public void onCanceled(Day data) {
         super.onCanceled(data);
         if(mDb != null) {
             mDb.close();

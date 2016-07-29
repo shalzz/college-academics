@@ -28,85 +28,88 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.shalzz.attendance.R;
-import com.shalzz.attendance.model.DayModel;
-import com.shalzz.attendance.model.PeriodModel;
+import com.shalzz.attendance.model.local.Day;
+import com.shalzz.attendance.model.remote.Period;
 
-import java.text.ParseException;
 import java.util.List;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.InjectView;
 
 public class DayListAdapter extends RecyclerView.Adapter<DayListAdapter.ViewHolder>{
 
-    private SortedList<PeriodModel> mPeriods;
+    private SortedList<Period> mPeriods;
     private List<Integer> subjectIDs;
-    private SortedListAdapterCallback<PeriodModel> callback;
+    private SortedListAdapterCallback<Period> callback;
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
     // you provide access to all the views for a data item in a view holder
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        @InjectView(R.id.tvSubjectName) TextView tvSubjectName;
-        @InjectView(R.id.tvTime) TextView tvTime;
-        @InjectView(R.id.tvTeacher) TextView tvTeacher;
-        @InjectView(R.id.tvRoom) TextView tvRoom;
-        @InjectView(R.id.tvMarkedAbsent) TextView tvMarkedAbsent;
+        @BindView(R.id.tvSubjectName) TextView tvSubjectName;
+        @BindView(R.id.tvTime) TextView tvTime;
+        @BindView(R.id.tvTeacher) TextView tvTeacher;
+        @BindView(R.id.tvRoom) TextView tvRoom;
+        @BindView(R.id.tvMarkedAbsent) TextView tvMarkedAbsent;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            ButterKnife.inject(this,itemView);
+            ButterKnife.bind(this, itemView);
         }
     }
 
     public DayListAdapter(){
-        callback = new SortedListAdapterCallback<PeriodModel>(this) {
+        callback = new SortedListAdapterCallback<Period>(this) {
             @Override
-            public int compare(PeriodModel o1, PeriodModel o2) {
+            public int compare(Period o1, Period o2) {
                 return (o1.getStartDate().compareTo(o2.getStartDate()));
             }
 
             @SuppressWarnings("SimplifiableIfStatement")
             @Override
-            public boolean areContentsTheSame(PeriodModel oldItem, PeriodModel newItem) {
-                if(oldItem.getId() != newItem.getId()) {
+            public boolean areContentsTheSame(Period oldItem, Period newItem) {
+                if(oldItem.id() != newItem.id()) {
                     return false;
                 }
-                if(oldItem.getDay().equals(newItem.getDay())) {
+                if(!oldItem.week_day().equals(newItem.week_day())) {
                     return false;
                 }
-                if(!oldItem.getSubjectName().equals(newItem.getSubjectName())) {
+                if(!oldItem.name().equals(newItem.name())) {
                     return false;
                 }
-                if(oldItem.getTeacher().equals(newItem.getTeacher())) {
+                if(!oldItem.teacher().equals(newItem.teacher())) {
                     return false;
                 }
-                if(oldItem.getTime().equals(newItem.getTime())) {
+                if(!oldItem.start_time().equals(newItem.start_time())) {
                     return false;
                 }
-                if(oldItem.getRoom().equals(newItem.getRoom())) {
+                if(!oldItem.end_time().equals(newItem.end_time())) {
                     return false;
                 }
-                return oldItem.getBatch().equals(newItem.getBatch());
+                if((oldItem.batch() != null && newItem.batch() != null)
+                        && !oldItem.batch().equals(newItem.batch())) {
+                    return false;
+                }
+                return oldItem.room().equals(newItem.room());
             }
 
             @Override
-            public boolean areItemsTheSame(PeriodModel item1, PeriodModel item2) {
-                return item1.getId() == item2.getId();
+            public boolean areItemsTheSame(Period item1, Period item2) {
+                return item1.id() == item2.id();
             }
         };
 
-        mPeriods = new SortedList<>(PeriodModel.class, callback);
+        mPeriods = new SortedList<>(Period.class, callback);
     }
 
-    public void update(DayModel day) {
-        List<PeriodModel> periods = day.getPeriods();
-        subjectIDs = day.getAbsentSubjects();
+    public void update(Day day) {
+        List<Period> periods = day.getPeriods();
+        subjectIDs = day.getSubjectIDs();
         mPeriods.beginBatchedUpdates();
         for (int i = 0; i < mPeriods.size(); i++) {
-            PeriodModel existingObject = mPeriods.get(i);
+            Period existingObject = mPeriods.get(i);
             boolean found = false;
-            for (PeriodModel newObject : periods) {
+            for (Period newObject : periods) {
                 if (callback.areItemsTheSame(existingObject, newObject)) {
                     found = true;
                     break;
@@ -141,18 +144,13 @@ public class DayListAdapter extends RecyclerView.Adapter<DayListAdapter.ViewHold
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
 
-        PeriodModel period = mPeriods.get(position);
-        holder.tvSubjectName.setText(period.getSubjectName());
-        holder.tvRoom.setText(period.getRoom());
-        holder.tvTeacher.setText(period.getTeacher());
-        try {
-            holder.tvTime.setText(period.getTimein12hr());
-        } catch (ParseException e) {
-            holder.tvTime.setText(period.getTime());
-            e.printStackTrace();
-        }
+        Period period = mPeriods.get(position);
+        holder.tvSubjectName.setText(period.name());
+        holder.tvRoom.setText(period.room());
+        holder.tvTeacher.setText(period.teacher());
+        holder.tvTime.setText(period.getTimein12hr());
 
-        if(subjectIDs.contains(period.getId()))
+        if(subjectIDs.contains(period.id()))
             holder.tvMarkedAbsent.setVisibility(View.VISIBLE);
         else {
             holder.tvMarkedAbsent.setVisibility(View.GONE);

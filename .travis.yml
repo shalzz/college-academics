@@ -1,0 +1,41 @@
+# https://docs.travis-ci.com/user/languages/android
+language: android
+
+jdk: oraclejdk8
+
+android:
+  components:
+  - tools
+  - platform-tools
+  - build-tools-23.0.3
+  - android-23
+  - extra-android-m2repository
+  - extra-google-google_play_services
+  - extra-google-m2repository
+  - extra-google-analytics_sdk_v2
+  - extra-google-admob_ads_sdk
+
+before_cache:
+- rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
+
+cache:
+  directories:
+  - "$HOME/.gradle/caches/"
+  - "$HOME/.gradle/wrapper/"
+
+script: "./gradlew build connectedCheck --no-daemon --stacktrace"
+
+sudo: required
+
+deploy:
+  provider: releases
+  api_key:
+    secure: hsJZfp8qLQxvBbY2CcqVdp9d3q5xN9cSSJZbz225GOaSgr5953qXULYMBk0RJKdDF6bp/Lu7h+W8RT+3WfuNbC19CmgwHcnmCh6zffq9ogJ7u5FjmvI4ujvGof9d9+1y05CDJtpZrVX+M5+cNTDDNsLYvNOl+HuKyQa47A/OnkOWxg7czIR5cfVszYv8bDmE8Yw7yIZRKVfJqFURv2SHqmtDN9pEHX7ABlhO7NM9skfFpgcI5EN6CW433SzuPbPKw0GpEWb7kI0IcBLn+p/xfxYv9pppL+hZiqL6j+BlJ20AxV6jGporDGAUtHutHxDHg6asG8DAE/yNRcb6w6aiO/E1d+6Toquu4kKEDpaRvQ9sxvUocCA2A1pkgW96ZAP0ivdRwqDUqQNoaBvez3wgcSXmCA60doW8HMnQ8mjHeGfX5mSufRu3mY8pV088p1G2DEbQjkdRxZeFAczz1tU6WbZ/eh+hKwvNlCsg9NYGX9sLokay4NHO0YoARLCRwfFfq5oQj4waa1uRQvphSttqr8sF55Tm+T3m7DxgIHmUeRNOW/O50koRC7t60wxQMWiaGDHH1G0slH+lEmJ5kt3Rux8p2KChQcFAzFCMDwjpW0WLzXG2yrxCtb8im7VSO+UH4taAJ9+xGN6DTQkcwTtRi9bErOqIJZ4L4+BKuNs9n0E=
+  file: attendance-prod-release.apk
+  skip_cleanup: true
+  on:
+    tags: true
+    branch: release
+
+after_deploy: "./gradlew publishProdRelease --no-daemon --stacktrace"
+

@@ -26,18 +26,33 @@ import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.PreferenceManager;
 
+import com.bugsnag.android.Bugsnag;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.shalzz.attendance.R;
-import com.shalzz.attendance.wrapper.MyVolley;
+import com.shalzz.attendance.activity.MainActivity;
+import com.shalzz.attendance.wrapper.MyApplication;
+
+import javax.inject.Inject;
+import javax.inject.Named;
 
 public class ProxySettingsFragment extends PreferenceFragmentCompat implements SharedPreferences.OnSharedPreferenceChangeListener {
 
+    private static final String TAG = "Proxy fragment";
     private String key_proxy_username;
+    private MainActivity mainActivity;
+
+    @Inject
+    @Named("app")
+    Tracker t;
 
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
+        MyApplication.getAppComponent().inject(this);
         Context mContext = getActivity();
+        Bugsnag.setContext("ProxySettings");
+        mainActivity = ((MainActivity) getActivity());
+        mainActivity.setDrawerAsUp(true);
 
         addPreferencesFromResource(R.xml.pref_proxy);
 
@@ -50,8 +65,6 @@ public class ProxySettingsFragment extends PreferenceFragmentCompat implements S
     @Override
     public void onStart() {
         super.onStart();
-        Tracker t = ((MyVolley) getActivity().getApplication()).getTracker(
-                MyVolley.TrackerName.APP_TRACKER);
 
         t.setScreenName(getClass().getSimpleName());
         t.send(new HitBuilders.ScreenViewBuilder().build());
@@ -77,6 +90,7 @@ public class ProxySettingsFragment extends PreferenceFragmentCompat implements S
     @Override
     public void onResume() {
         super.onResume();
+        mainActivity.setTitle(getString(R.string.proxy_settings_title));
         // Set up a listener whenever a key changes
         getPreferenceScreen().getSharedPreferences()
                 .registerOnSharedPreferenceChangeListener(this);

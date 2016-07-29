@@ -21,49 +21,61 @@ package com.shalzz.attendance.controllers;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.View;
 
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
+import com.bugsnag.android.Bugsnag;
+import com.malinskiy.materialicons.IconDrawable;
+import com.malinskiy.materialicons.Iconify;
 import com.shalzz.attendance.BuildConfig;
 import com.shalzz.attendance.DatabaseHandler;
 import com.shalzz.attendance.Miscellaneous;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.activity.MainActivity;
 import com.shalzz.attendance.adapter.TimeTablePagerAdapter;
-import com.shalzz.attendance.fragment.TimeTablePagerFragment;
-import com.shalzz.attendance.model.PeriodModel;
+import com.shalzz.attendance.model.remote.Period;
 import com.shalzz.attendance.network.DataAPI;
-import com.shalzz.attendance.wrapper.MyVolley;
-import com.shalzz.attendance.wrapper.MyVolleyErrorHelper;
+import com.shalzz.attendance.fragment.TimeTablePagerFragment;
+import com.shalzz.attendance.network.RetrofitException;
 
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+import retrofit2.Call;
+import retrofit2.Callback;
 
 public class PagerController {
 
     private TimeTablePagerFragment mView;
     public TimeTablePagerAdapter mAdapter;
     private DatabaseHandler db;
-    private Context mContext;
     private Resources mResources;
     private String mTag = "Pager Controller";
     private Date mToday = new Date();
+    private final DataAPI api;
 
-    public PagerController(Context context, TimeTablePagerFragment view, FragmentManager fm) {
-        mContext = context;
-        mResources = MyVolley.getMyResources();
+    @Inject
+    public PagerController(@Singleton Context context,
+                           TimeTablePagerFragment view,
+                           FragmentManager fm,
+                           DataAPI api) {
+        mResources = context.getResources();
         mView = view;
-        db = new DatabaseHandler(mContext);
-        mAdapter = new TimeTablePagerAdapter(fm, mContext);
+        db = new DatabaseHandler(context);
+        mAdapter = new TimeTablePagerAdapter(fm, context);
         mView.mViewPager.setAdapter(mAdapter);
+        this.api = api;
     }
 
     public void setDate(Date date) {
         mAdapter.setDate(date);
-        mView.updateTitle();
+        mView.updateTitle(-1);
         scrollToDate(date);
     }
 
@@ -81,61 +93,110 @@ public class PagerController {
     }
 
     public void updatePeriods() {
-        DataAPI.getTimeTable(successListener(), errorListener());
-    }
-
-    public Response.Listener<ArrayList<PeriodModel>> successListener() {
-        return new Response.Listener<ArrayList<PeriodModel>>() {
+        Call<List<Period>> call = api.getTimetable();
+        call.enqueue(new Callback<List<Period>>() {
             @Override
-            public void onResponse(ArrayList<PeriodModel> response) {
-                try {
+            public void onResponse(Call<List<Period>> call,
+                                   retrofit2.Response<List<Period>> response) {
+                done();
+                toggleEmptyViewVisibility(false);
 
-                    done();
-                    if(response.size() > 0) {
-                        long now = new Date().getTime();
-                        for (PeriodModel period : response) {
-                            db.addOrUpdatePeriod(period, now);
-                        }
+                List<Period> periods = response.body();
 
-                        if (db.purgeOldPeriods() == 1) {
-                            if(BuildConfig.DEBUG)
-                                Log.d(mTag, "Purging Periods...");
-                        }
+                long now = new Date().getTime();
+                for (Period period : periods) {
+                    db.addPeriod(period, now);
+                }
 
-                        // TODO: use an event bus or RxJava to update fragment contents
+                if (db.purgeOldPeriods() == 1) {
+                    if(BuildConfig.DEBUG)
+                        Log.d(mTag, "Purging Periods...");
+                }
 
-                        setToday();
-                        mView.updateTitle();
-                        db.close();
-                    } else {
-                        String msg = mResources.getString(R.string.unavailable_timetable_error_msg);
-                        Miscellaneous.showSnackBar(mView.mSwipeRefreshLayout, msg);
-                    }
+                // TODO: use an event bus or RxJava to update fragment contents
+
+                setToday();
+                mView.updateTitle(-1);
+                db.close();
+
+                // Update the drawer header
+                ((MainActivity) mView.getActivity()).updateLastSync();
+            }
+
+            @Override
+            public void onFailure(Call<List<Period>> call, Throwable t) {
+                if(mView == null || mView.getActivity() == null)
+                    return;
+
+                RetrofitException error = (RetrofitException) t;
+                if(db.getSubjectCount() > 0 &&
+                        (error.getKind() == RetrofitException.Kind.NETWORK ||
+                                error.getKind() == RetrofitException.Kind.EMPTY_RESPONSE)) {
+                    View view = mView.getActivity().findViewById(android.R.id.content);
+                    Snackbar.make(view, error.getMessage(), Snackbar.LENGTH_LONG)
+                            .setAction("Retry", v -> updatePeriods())
+                            .show();
+                }
+                else if (error.getKind() == RetrofitException.Kind.NETWORK) {
+                        Drawable emptyDrawable = new IconDrawable(mView.getContext(),
+                                Iconify.IconValue.zmdi_wifi_off)
+                                .colorRes(android.R.color.darker_gray);
+                        mView.mEmptyView.ImageView.setImageDrawable(emptyDrawable);
+                        mView.mEmptyView.TitleTextView.setText(R.string.no_connection_title);
+                        mView.mEmptyView.ContentTextView.setText(R.string.no_connection_content);
+                        mView.mEmptyView.Button.setOnClickListener( v -> updatePeriods());
+                        mView.mEmptyView.Button.setVisibility(View.VISIBLE);
+
+                        toggleEmptyViewVisibility(true);
+                }
+                else if (error.getKind() == RetrofitException.Kind.EMPTY_RESPONSE) {
+                    Drawable emptyDrawable = new IconDrawable(mView.getContext(),
+                            Iconify.IconValue.zmdi_cloud_off)
+                            .colorRes(android.R.color.darker_gray);
+                    mView.mEmptyView.ImageView.setImageDrawable(emptyDrawable);
+                    mView.mEmptyView.TitleTextView.setText(R.string.no_data_title);
+                    mView.mEmptyView.ContentTextView.setText(R.string.no_data_content);
+                    mView.mEmptyView.Button.setVisibility(View.GONE);
+
+                    toggleEmptyViewVisibility(true);
+
                     // Update the drawer header
                     ((MainActivity) mView.getActivity()).updateLastSync();
                 }
-                catch (Exception e) {
-                    String msg = mResources.getString(R.string.unexpected_error);
-                    Miscellaneous.showSnackBar(mView.mSwipeRefreshLayout, msg);
-                    if(BuildConfig.DEBUG)
-                        e.printStackTrace();
+                else if (error.getKind() == RetrofitException.Kind.HTTP) {
+                    showError(error.getMessage());
                 }
+                else {
+                    if(BuildConfig.DEBUG)
+                        t.printStackTrace();
+
+                    String msg = mResources.getString(R.string.unexpected_error);
+                    showError(msg);
+                    Bugsnag.notify(error);
+                }
+                done();
             }
-        };
+        });
     }
 
-    public Response.ErrorListener errorListener() {
-        return new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
+    private void toggleEmptyViewVisibility(boolean show) {
+        if(mView == null || mView.mViewPager == null || mView.mEmptyView == null)
+            return;
+        if(show) {
+            mView.emptyView.setVisibility(View.VISIBLE);
+            mView.mViewPager.setVisibility(View.GONE);
+        } else {
+            mView.emptyView.setVisibility(View.GONE);
+            mView.mViewPager.setVisibility(View.VISIBLE);
+        }
+    }
 
-                done();
-                String msg = MyVolleyErrorHelper.getMessage(error, mContext);
-                Miscellaneous.showSnackBar(mView.mSwipeRefreshLayout, msg);
-                if(BuildConfig.DEBUG)
-                    error.printStackTrace();
-            }
-        };
+    private void showError(String message) {
+        if(mView == null || mView.getActivity() == null)
+            return;
+        View view = mView.getActivity().findViewById(android.R.id.content);
+        if(view != null)
+            Miscellaneous.showSnackBar(view, message);
     }
 
     public void done() {

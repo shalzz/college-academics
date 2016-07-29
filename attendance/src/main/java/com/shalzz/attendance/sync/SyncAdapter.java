@@ -34,96 +34,101 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v7.app.NotificationCompat;
 import android.support.v7.preference.PreferenceManager;
-import android.util.Log;
 
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
+import com.bugsnag.android.Bugsnag;
+import com.shalzz.attendance.BuildConfig;
 import com.shalzz.attendance.DatabaseHandler;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.activity.MainActivity;
-import com.shalzz.attendance.model.PeriodModel;
-import com.shalzz.attendance.model.SubjectModel;
+import com.shalzz.attendance.model.remote.Period;
+import com.shalzz.attendance.model.remote.Subject;
 import com.shalzz.attendance.network.DataAPI;
-import com.shalzz.attendance.wrapper.MyVolleyErrorHelper;
+import com.shalzz.attendance.network.RetrofitException;
+import com.shalzz.attendance.wrapper.MyPreferencesManager;
 
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
-	// Global variables
-	private String myTag = "Sync Adapter";
-	private Context mContext;
-	
-	/**
-	 * Set up the sync adapter
-	 */
-	public SyncAdapter(Context context, boolean autoInitialize) {
-		super(context, autoInitialize);
+    // Global variables
+    private String myTag = "Sync Adapter";
+    private Context mContext;
+
+    private final MyPreferencesManager preferencesManager;
+    private final DataAPI api;
+
+    /**
+     * Set up the sync adapter. This form of the
+     * constructor maintains compatibility with Android 3.0
+     * and later platform versions
+     */
+    public SyncAdapter(
+            Context context,
+            boolean autoInitialize,
+            boolean allowParallelSyncs, MyPreferencesManager preferencesManager, DataAPI api) {
+        super(context, autoInitialize, allowParallelSyncs);
 		/*
 		 * If your app uses a content resolver, get an instance of it
 		 * from the incoming Context
 		 */
-		mContext = context;
-	}
+        mContext = context;
+        this.preferencesManager = preferencesManager;
+        this.api = api;
+        Bugsnag.setContext("Sync Adapter");
+    }
 
-	/**
-	 * Set up the sync adapter. This form of the
-	 * constructor maintains compatibility with Android 3.0
-	 * and later platform versions
-	 */
-	@SuppressLint("NewApi")
-	public SyncAdapter(
-			Context context,
-			boolean autoInitialize,
-			boolean allowParallelSyncs) {
-		super(context, autoInitialize, allowParallelSyncs);
-		/*
-		 * If your app uses a content resolver, get an instance of it
-		 * from the incoming Context
-		 */
-		mContext = context;
-	}
+    @Override
+    public void onPerformSync(Account account, Bundle extras, String authority,
+                              ContentProviderClient provider, SyncResult syncResult) {
+	    Bugsnag.leaveBreadcrumb("Running sync adapter");
 
-	@Override
-	public void onPerformSync(Account account, Bundle extras, String authority,
-			ContentProviderClient provider, SyncResult syncResult) {
-
-		DataAPI.getAttendance(attendanceSuccessListener(), myErrorListener());
-		DataAPI.getTimeTable(timeTableSuccessListener(), myErrorListener());
-	}
-
-	private Response.Listener<ArrayList<SubjectModel>> attendanceSuccessListener() {
-		return new Response.Listener<ArrayList<SubjectModel>>() {
-			@Override
-			public void onResponse(ArrayList<SubjectModel> response) {
+        Call<List<Subject>> call = api.getAttendance(preferencesManager.getBasicAuthCredentials());
+        call.enqueue(new Callback<List<Subject>>() {
+            @Override
+            public void onResponse(Call<List<Subject>> call, Response<List<Subject>> response) {
                 try {
-					DatabaseHandler db = new DatabaseHandler(mContext);
+                    DatabaseHandler db = new DatabaseHandler(mContext);
                     long now = new Date().getTime();
-                    for (SubjectModel subject : response) {
-                        db.addOrUpdateSubject(subject, now);
+                    for (Subject subject : response.body()) {
+                        db.addSubject(subject, now);
                     }
                     db.purgeOldSubjects();
-					db.close();
+                    db.close();
                 }
                 catch(Exception e) {
-                    e.printStackTrace();
+                    Bugsnag.notify(e);
+                    if(BuildConfig.DEBUG)
+                        e.printStackTrace();
                 }
-			}
-		};
-	}
+            }
 
-    @SuppressLint("InlinedApi")
-	private Response.Listener<ArrayList<PeriodModel>> timeTableSuccessListener() {
-		return new Response.Listener<ArrayList<PeriodModel>>() {
-			@Override
-			public void onResponse(ArrayList<PeriodModel> response) {
+            @Override
+            public void onFailure(Call<List<Subject>> call, Throwable t) {
+                RetrofitException error = (RetrofitException) t;
+                if (error.getKind() == RetrofitException.Kind.UNEXPECTED) {
+                    Bugsnag.notify(error);
+                    if(BuildConfig.DEBUG)
+                        t.printStackTrace();
+                }
+            }
+        });
+
+        Call<List<Period>> call2 = api.getTimetable(preferencesManager.getBasicAuthCredentials());
+        call2.enqueue(new Callback<List<Period>>() {
+            @Override
+            @SuppressLint("InlinedApi")
+            public void onResponse(Call<List<Period>> call, Response<List<Period>> response) {
                 try {
-					DatabaseHandler db = new DatabaseHandler(mContext);
+                    DatabaseHandler db = new DatabaseHandler(mContext);
                     long now = new Date().getTime();
-					for(PeriodModel period : response) {
-						db.addOrUpdatePeriod(period, now);
-					}
+                    for(Period period : response.body()) {
+                        db.addPeriod(period, now);
+                    }
                     SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences
                             (mContext);
                     boolean notify = sharedPref.getBoolean(mContext.getString(
@@ -131,51 +136,61 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                             true);
 
                     notify = db.purgeOldPeriods() == 1 && notify;
+                    if(notify) showNotification();
 
-                    // Show a notification since our timetable has changed.
-                    if (notify) {
-                        NotificationCompat.Builder mBuilder =
-                                (NotificationCompat.Builder) new NotificationCompat.Builder(mContext)
-                                        .setSmallIcon(R.drawable.ic_stat_human)
-                                        .setLargeIcon(BitmapFactory.decodeResource(
-                                                        mContext.getResources(),
-                                                        R.mipmap.ic_launcher))
-                                        .setAutoCancel(true)
-                                        .setPriority(Notification.PRIORITY_LOW)
-                                        .setCategory(Notification.CATEGORY_RECOMMENDATION)
-                                        .setContentTitle(mContext.getString(
-                                                R.string.notify_timetable_changed_title))
-                                        .setContentText(mContext.getString(
-                                                R.string.notify_timetable_changed_text));
-
-                        Intent resultIntent = new Intent(mContext, MainActivity.class);
-                        resultIntent.putExtra(MainActivity.LAUNCH_FRAGMENT_EXTRA, MainActivity
-                                .Fragments.TIMETABLE.getValue());
-                        resultIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        PendingIntent resultPendingIntent = PendingIntent.getActivity(mContext,
-                                0, resultIntent,PendingIntent.FLAG_UPDATE_CURRENT);
-                        mBuilder.setContentIntent(resultPendingIntent);
-                        NotificationManager mNotificationManager =
-                                (NotificationManager) mContext.getSystemService(
-                                        Context.NOTIFICATION_SERVICE);
-                        mNotificationManager.notify(0, mBuilder.build());
-                    }
-					db.close();
+                    db.close();
                 }
                 catch(Exception e) {
-                    e.printStackTrace();
+                    Bugsnag.notify(e);
+                    if(BuildConfig.DEBUG)
+                        e.printStackTrace();
                 }
-			}
-		};
-	}
+            }
 
-	private Response.ErrorListener myErrorListener() {
-		return new Response.ErrorListener() {
-			@Override
-			public void onErrorResponse(VolleyError error) {
-				String msg = MyVolleyErrorHelper.getMessage(error, mContext);
-				Log.e(myTag, msg);
-			}
-		};
-	}
+            @Override
+            public void onFailure(Call<List<Period>> call, Throwable t) {
+                RetrofitException error = (RetrofitException) t;
+                if (error.getKind() == RetrofitException.Kind.UNEXPECTED) {
+                    Bugsnag.notify(error);
+                    if(BuildConfig.DEBUG)
+                        t.printStackTrace();
+                }
+            }
+        });
+    }
+
+    /**
+     * Notifies the user that their timetable has changed.
+     */
+    private void showNotification() {
+        NotificationCompat.Builder mBuilder =
+                (NotificationCompat.Builder) new NotificationCompat.Builder(mContext)
+                        .setSmallIcon(R.drawable.ic_stat_human)
+                        .setLargeIcon(BitmapFactory.decodeResource(
+                                mContext.getResources(),
+                                R.mipmap.ic_launcher))
+                        .setAutoCancel(true)
+                        .setPriority(Notification.PRIORITY_LOW)
+                        .setCategory(Notification.CATEGORY_RECOMMENDATION)
+                        .setContentTitle(mContext.getString(
+                                R.string.notify_timetable_changed_title))
+                        .setContentText(mContext.getString(
+                                R.string.notify_timetable_changed_text));
+
+        Intent resultIntent = new Intent(mContext, MainActivity.class);
+        resultIntent.putExtra(MainActivity.LAUNCH_FRAGMENT_EXTRA, MainActivity
+                .Fragments.TIMETABLE.getValue());
+        resultIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP |
+                Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                .setAction(Intent.ACTION_MAIN)
+                .addCategory(Intent.CATEGORY_LAUNCHER);
+
+        PendingIntent resultPendingIntent = PendingIntent.getActivity(mContext,
+                0, resultIntent,PendingIntent.FLAG_UPDATE_CURRENT);
+        mBuilder.setContentIntent(resultPendingIntent);
+        NotificationManager mNotificationManager =
+                (NotificationManager) mContext.getSystemService(
+                        Context.NOTIFICATION_SERVICE);
+        mNotificationManager.notify(0, mBuilder.build());
+    }
 }

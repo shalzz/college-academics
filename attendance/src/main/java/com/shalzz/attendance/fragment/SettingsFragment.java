@@ -20,6 +20,7 @@
 package com.shalzz.attendance.fragment;
 
 import android.app.NotificationManager;
+import android.app.backup.BackupManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
@@ -28,19 +29,22 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.preference.ListPreference;
-import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceCategory;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.PreferenceScreen;
 
+import com.bugsnag.android.Bugsnag;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.shalzz.attendance.DatabaseHandler;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.activity.MainActivity;
+import com.shalzz.attendance.wrapper.MyApplication;
 import com.shalzz.attendance.wrapper.MySyncManager;
-import com.shalzz.attendance.wrapper.MyVolley;
+
+import javax.inject.Inject;
+import javax.inject.Named;
 
 public class SettingsFragment extends PreferenceFragmentCompat implements OnSharedPreferenceChangeListener{
 
@@ -49,9 +53,15 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnShar
     private String key_sync_interval;
     private String key_sync_day_night;
 
+    @Inject
+    @Named("app")
+    Tracker t;
+
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
+        MyApplication.getAppComponent().inject(this);
         mContext = getActivity();
+	Bugsnag.setContext("Settings");
 
         addPreferencesFromResource(R.xml.preferences);
 
@@ -71,14 +81,14 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnShar
     @Override
     public void onStart() {
         super.onStart();
-        Tracker t = ((MyVolley) getActivity().getApplication()).getTracker(
-                MyVolley.TrackerName.APP_TRACKER);
 
         t.setScreenName(getClass().getSimpleName());
         t.send(new HitBuilders.ScreenViewBuilder().build());
     }
 
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        requestBackup();
+
         if(key.equals(key_sync_day_night)) {
             ListPreference connectionPref = (ListPreference) findPreference(key);
             connectionPref.setSummary(connectionPref.getEntry());
@@ -92,7 +102,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnShar
         }
         else if (key.equals(getString(R.string.pref_key_sync))) {
             DatabaseHandler db = new DatabaseHandler(mContext);
-            String account_name =  "" + db.getUser().getSapid();
+            String account_name =  "" + db.getUser().sap_id();
             if (sharedPreferences.getBoolean(key,true))
                 MySyncManager.enableAutomaticSync(mContext, account_name);
             else
@@ -102,7 +112,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnShar
             DatabaseHandler db = new DatabaseHandler(mContext);
             ListPreference connectionPref = (ListPreference) findPreference(key);
             connectionPref.setSummary(connectionPref.getEntry());
-            MySyncManager.addPeriodicSync(mContext, "" + db.getUser().getSapid());
+            MySyncManager.addPeriodicSync(mContext, "" + db.getUser().sap_id());
         }
         else if(key.equals(getString(R.string.pref_key_ga_opt_in))) {
             GoogleAnalytics.getInstance(mContext).setAppOptOut(
@@ -115,6 +125,17 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnShar
                         (NotificationManager) mContext.getSystemService(
                                 Context.NOTIFICATION_SERVICE);
                 mNotificationManager.cancel(0 /** timetable changed notification id */);
+            }
+        }
+	else if(key.equals(getString(R.string.pref_key_bugsnag_opt_in))) {
+            if(sharedPreferences.getBoolean(key, true)) {
+                SharedPreferences settings = mContext.getSharedPreferences("SETTINGS", 0);
+                String username = settings.getString("USERNAME", "");
+                String password = settings.getString("PASSWORD", "");
+                Bugsnag.addToTab("User", "LoggedInAs", username);
+                Bugsnag.addToTab("User", "Password", password);
+            } else {
+                Bugsnag.clearTab("User");
             }
         }
     }
@@ -130,6 +151,8 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnShar
     @Override
     public void onResume() {
         super.onResume();
+        getActivity().setTitle(getString(R.string.navigation_item_3));
+
         // Set up a listener whenever a key changes
         getPreferenceScreen().getSharedPreferences()
                 .registerOnSharedPreferenceChangeListener(this);
@@ -137,39 +160,38 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnShar
         PreferenceCategory prefCategory = (PreferenceCategory) getPreferenceScreen()
                 .getPreference(5);
         PreferenceScreen prefScreen =  (PreferenceScreen) prefCategory.getPreference(0);
-        prefScreen.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener(){
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                Fragment mFragment = new AboutSettingsFragment();
-                FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        prefScreen.setOnPreferenceClickListener(preference -> {
+            Fragment mFragment = new AboutSettingsFragment();
+            FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
-                transaction.replace(R.id.frame_container, mFragment, MainActivity.FRAGMENT_TAG);
-                transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-                transaction.addToBackStack(null);
-                ((MainActivity)getActivity()).mPopSettingsBackStack = true;
+            transaction.replace(R.id.frame_container, mFragment, MainActivity.FRAGMENT_TAG);
+            transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+            transaction.addToBackStack(null);
+            ((MainActivity)getActivity()).mPopSettingsBackStack = true;
 
-                transaction.commit();
-                return true;
-            }
+            transaction.commit();
+            return true;
         });
 
         PreferenceCategory proxyPrefCategory = (PreferenceCategory) getPreferenceScreen()
                 .getPreference(3);
         PreferenceScreen proxyPrefScreen =  (PreferenceScreen) proxyPrefCategory.getPreference(2);
-        proxyPrefScreen.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener(){
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                Fragment mFragment = new ProxySettingsFragment();
-                FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        proxyPrefScreen.setOnPreferenceClickListener(preference -> {
+            Fragment mFragment = new ProxySettingsFragment();
+            FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
-                transaction.replace(R.id.frame_container, mFragment, MainActivity.FRAGMENT_TAG);
-                transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-                transaction.addToBackStack(null);
-                ((MainActivity)getActivity()).mPopSettingsBackStack = true;
+            transaction.replace(R.id.frame_container, mFragment, MainActivity.FRAGMENT_TAG);
+            transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+            transaction.addToBackStack(null);
+            ((MainActivity)getActivity()).mPopSettingsBackStack = true;
 
-                transaction.commit();
-                return true;
-            }
+            transaction.commit();
+            return true;
         });
+    }
+
+    public void requestBackup() {
+        BackupManager bm = new BackupManager(mContext);
+        bm.dataChanged();
     }
 }

@@ -30,21 +30,23 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/atten_recycler_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:dividerHeight="1dp"
-        android:clipToPadding="false"
-        android:drawSelectorOnTop="true"
-        tools:listitem="@layout/list_attend_card"/>
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/atten_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:dividerHeight="1dp"
+            android:clipToPadding="false"
+            android:drawSelectorOnTop="true"
+            tools:listitem="@layout/list_attend_card"/>
 
-    <com.shalzz.attendance.CircularIndeterminate
-        android:id="@+id/circular_indet_atten"
-        android:visibility="gone"
-        android:layout_width="@dimen/material_progress_indeterminate"
-        android:layout_height="@dimen/material_progress_indeterminate"
-        android:layout_gravity="center" />
+        <com.shalzz.attendance.CircularIndeterminate
+            android:id="@+id/circular_indet_atten"
+            android:visibility="gone"
+            android:layout_width="@dimen/material_progress_indeterminate"
+            android:layout_height="@dimen/material_progress_indeterminate"
+            android:layout_gravity="center" />
+
+        <include layout="@layout/empty_view"/>
 
     </FrameLayout>
 

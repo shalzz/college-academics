@@ -1,0 +1,19 @@
+CREATE TABLE user (
+    sap_id TEXT PRIMARY KEY NOT NULL,
+    name TEXT NOT NULL,
+    course TEXT NOT NULL,
+    password TEXT NOT NULL
+);
+
+select_all:
+SELECT *
+FROM user;
+
+select_by_id:
+SELECT *
+FROM user
+WHERE sap_id = ? ;
+
+select_count:
+SELECT count(*)
+FROM user;

@@ -20,7 +20,6 @@
 
 <resources>
     <!-- A light Holo shade of blue -->
-    <color name="holo_blue_light">#33b5e5</color>
     <!-- A light Holo shade of green -->
     <color name="holo_green_light">#99cc00</color>
     <!-- A light Holo shade of red -->
@@ -38,11 +37,8 @@
     <!-- A dark Holo shade of orange -->
     <color name="holo_orange_dark">#ff8800</color>
     <!-- A really bright Holo shade of blue -->
-    <color name="holo_blue_bright">#00ddff</color>
 
-    <color name="white">#ffffff</color>
     <color name="list_item_title">#fff</color>
-    <color name="list_background">#303030</color>
     <color name="tint">@color/secondary_text_default_material_light</color>
 
     <color name="absent">@color/holo_red_dark</color>
@@ -52,10 +48,7 @@
     <!-- Main theme colors -->
     <color name="primary_dark">#00796B</color>
     <color name="primary">#009688</color>
-    <color name="primary_32">#28009688</color>
     <color name="accent">#FF9800</color>
-    <color name="accent_dark">#e28200</color>
-    <color name="accent_32">#20FF9800</color>
 
     <color name="swipe_color_1">@color/holo_red_dark</color>
     <color name="swipe_color_2">@color/holo_green_dark</color>

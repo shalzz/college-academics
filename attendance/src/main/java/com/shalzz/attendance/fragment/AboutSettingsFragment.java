@@ -25,10 +25,15 @@ import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.PreferenceScreen;
 
+import com.bugsnag.android.Bugsnag;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.shalzz.attendance.R;
-import com.shalzz.attendance.wrapper.MyVolley;
+import com.shalzz.attendance.activity.MainActivity;
+import com.shalzz.attendance.wrapper.MyApplication;
+
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import de.psdev.licensesdialog.LicensesDialog;
 import de.psdev.licensesdialog.licenses.GnuGeneralPublicLicense20;
@@ -38,10 +43,18 @@ import de.psdev.licensesdialog.model.Notice;
 public class AboutSettingsFragment extends PreferenceFragmentCompat {
 
     private Context mContext;
+    private MainActivity mainActivity;
+
+    @Inject @Named("app")
+    Tracker t;
 
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
+        MyApplication.getAppComponent().inject(this);
         mContext = getActivity();
+        Bugsnag.setContext("About");
+        mainActivity = ((MainActivity) getActivity());
+        mainActivity.setDrawerAsUp(true);
 
         addPreferencesFromResource(R.xml.pref_about);
     }
@@ -49,8 +62,6 @@ public class AboutSettingsFragment extends PreferenceFragmentCompat {
     @Override
     public void onStart() {
         super.onStart();
-        Tracker t = ((MyVolley) getActivity().getApplication()).getTracker(
-                MyVolley.TrackerName.APP_TRACKER);
 
         t.setScreenName(getClass().getSimpleName());
         t.send(new HitBuilders.ScreenViewBuilder().build());
@@ -59,6 +70,7 @@ public class AboutSettingsFragment extends PreferenceFragmentCompat {
     @Override
     public void onResume() {
         super.onResume();
+        mainActivity.setTitle(getString(R.string.about_settings_title));
 
         PreferenceScreen prefScreen =  getPreferenceScreen();
         Preference auth = prefScreen.getPreference(0);
@@ -69,28 +81,21 @@ public class AboutSettingsFragment extends PreferenceFragmentCompat {
         }
         auth.setSummary(getString(R.string.copyright_year)+ " " +String.valueOf(x));
         Preference pref = prefScreen.getPreference(1);
-        pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener(){
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                final String name = getString(R.string.app_name);
-                final String url = getString(R.string.app_url);
-                final String copyright = getString(R.string.copyright_year) + " "
-                                            + getString(R.string.app_copyright);
-                final License license = new GnuGeneralPublicLicense20();
-                final Notice notice = new Notice(name, url, copyright, license);
-                new LicensesDialog.Builder(mContext).setNotices(notice).setShowFullLicenseText(true).build().show();
-                return true;
-            }
+        pref.setOnPreferenceClickListener(preference -> {
+            final String name = getString(R.string.app_name);
+            final String url = getString(R.string.app_url);
+            final String copyright = getString(R.string.copyright_year) + " "
+                                        + getString(R.string.app_copyright);
+            final License license = new GnuGeneralPublicLicense20();
+            final Notice notice = new Notice(name, url, copyright, license);
+            new LicensesDialog.Builder(mContext).setNotices(notice).setShowFullLicenseText(true).build().show();
+            return true;
         });
         Preference noticePref = prefScreen.getPreference(2);
-        noticePref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener(){
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                new LicensesDialog.Builder(mContext).setNotices(R.raw.notices).setIncludeOwnLicense(true)
-                        .build().show();
-                return true;
-            }
+        noticePref.setOnPreferenceClickListener(preference -> {
+            new LicensesDialog.Builder(mContext).setNotices(R.raw.notices).setIncludeOwnLicense(true)
+                    .build().show();
+            return true;
         });
     }
-
 }

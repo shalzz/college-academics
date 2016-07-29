@@ -19,8 +19,6 @@
 
 package com.shalzz.attendance.activity;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -28,24 +26,26 @@ import android.content.res.Configuration;
 import android.graphics.Point;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.TextView;
 
+import com.bugsnag.android.Bugsnag;
 import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.Target;
 import com.shalzz.attendance.BuildConfig;
@@ -54,38 +54,36 @@ import com.shalzz.attendance.R;
 import com.shalzz.attendance.fragment.AttendanceListFragment;
 import com.shalzz.attendance.fragment.SettingsFragment;
 import com.shalzz.attendance.fragment.TimeTablePagerFragment;
-import com.shalzz.attendance.model.UserModel;
-import com.shalzz.attendance.wrapper.MyVolley;
+import com.shalzz.attendance.model.remote.User;
+import com.shalzz.attendance.wrapper.MyApplication;
 
+import butterknife.BindArray;
+import butterknife.BindBool;
+import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.InjectView;
-import butterknife.Optional;
 
 public class MainActivity extends AppCompatActivity {
 
     /**
-     * Reference to fragment positions
+     * Null on tablets
      */
-    public enum Fragments {
-        ATTENDANCE(1),
-        TIMETABLE(2),
-        SETTINGS(3);
+    @Nullable @BindView(R.id.drawer_layout)
+    DrawerLayout mDrawerLayout;
 
-        private final int value;
+    @BindView(R.id.list_slidermenu)
+    NavigationView mNavigationView;
 
-        Fragments(int value) {
-            this.value = value;
-        }
-
-        public int getValue() {
-            return value;
-        }
-    }
+    @BindView(R.id.toolbar)
+    Toolbar mToolbar;
 
     /**
      * Drawer lock state. True for tablets, false otherwise .
      */
-    private boolean isDrawerLocked = false;
+    @BindBool(R.bool.tablet_layout)
+    boolean isTabletLayout;
+
+    @BindArray(R.array.drawer_array)
+    String[] mNavTitles;
 
     /**
      * To prevent saving the drawer position when logging out.
@@ -104,17 +102,11 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String PREVIOUS_FRAGMENT_TAG = "MainActivity.PREVIOUS_FRAGMENT";
 
-    private static final String mTag = "MainActivity";
+    private static final String TAG = "MainActivity";
 
     public boolean mPopSettingsBackStack =  false;
 
-    // Views
-    @Optional @InjectView(R.id.drawer_layout) DrawerLayout mDrawerLayout;
-    @InjectView(R.id.list_slidermenu) NavigationView mNavigationView;
-
-    private int mContentViewHeight;
     private int mCurrentSelectedPosition = Fragments.ATTENDANCE.getValue();
-    private String[] mNavTitles;
     private ActionBarDrawerToggle mDrawerToggle;
     private DrawerHeaderViewHolder DrawerheaderVH;
     private FragmentManager mFragmentManager;
@@ -122,122 +114,77 @@ public class MainActivity extends AppCompatActivity {
     private DatabaseHandler mDb;
     // Our custom poor-man's back stack which has only one entry at maximum.
     private Fragment mPreviousFragment;
-    private Toolbar mToolbar;
-    private Bundle mSavedInstanceState;
-    private ValueAnimator mToolbarHeightAnimator;
-    private boolean mResumed = false;
-    private boolean initialised = false;
 
     public static class DrawerHeaderViewHolder extends RecyclerView.ViewHolder {
-        @InjectView(R.id.drawer_header_name) TextView tv_name;
-        @InjectView(R.id.drawer_header_course) TextView tv_course;
-        @InjectView(R.id.last_refreshed) TextView last_refresh;
+        @BindView(R.id.drawer_header_name) TextView tv_name;
+        @BindView(R.id.drawer_header_course) TextView tv_course;
+        @BindView(R.id.last_refreshed) TextView last_refresh;
 
         public DrawerHeaderViewHolder(View itemView) {
             super(itemView);
-            ButterKnife.inject(this,itemView);
+            ButterKnife.bind(this, itemView);
         }
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        MyApplication.getAppComponent().inject(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.drawer);
-        ButterKnife.inject(this);
+        ButterKnife.bind(this);
+	Bugsnag.setContext("MainActivity");
 
-        mSavedInstanceState = savedInstanceState;
-        isDrawerLocked = getResources().getBoolean(R.bool.tablet_layout);
-        mNavTitles = getResources().getStringArray(R.array.drawer_array);
         mFragmentManager = getSupportFragmentManager();
         mDb = new DatabaseHandler(this);
         DrawerheaderVH = new DrawerHeaderViewHolder(mNavigationView.getHeaderView(0));
 
-        /**     ------------- Toolbar init -----------           */
-
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        if(getIntent().hasExtra(SplashActivity.INTENT_EXTRA_STARTING_ACTIVITY)) {
-            mToolbar.getViewTreeObserver().addOnPreDrawListener(
-                    new ViewTreeObserver.OnPreDrawListener() {
-                        @Override
-                        public boolean onPreDraw() {
-                            mToolbar.getViewTreeObserver().removeOnPreDrawListener(this);
-                            final int widthSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
-                            final int heightSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
-
-                            mToolbar.measure(widthSpec, heightSpec);
-                            mContentViewHeight = mToolbar.getHeight();
-                            collapseToolbar();
-                            return true;
-                        }
-                    });
-        } else {
-            int toolBarHeight;
-            TypedValue tv = new TypedValue();
-            getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true);
-            toolBarHeight = TypedValue.complexToDimensionPixelSize(
-                    tv.data, getResources().getDisplayMetrics());
-            ViewGroup.LayoutParams lp = mToolbar.getLayoutParams();
-            lp.height = toolBarHeight;
-            mToolbar.setLayoutParams(lp);
-        }
         setSupportActionBar(mToolbar);
-
-        /**     ------------- Toolbar init ends -----------           */
 
         // Set the list's click listener
         mNavigationView.setNavigationItemSelectedListener(new NavigationItemSelectedListener());
 
-        if(!isDrawerLocked)
-            initDrawer();
+        init(savedInstanceState);
     }
 
     @Override
-    protected void onResumeFragments() {
-        super.onResumeFragments();
-        mResumed = true;
-        if(mToolbarHeightAnimator == null || !mToolbarHeightAnimator.isRunning()) {
-            init();
-        }
+    protected void onResume() {
+        super.onResume();
+        showcaseView();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        showcaseView();
+
+        initDrawer();
     }
 
     /**
      * Initialise a fragment
      **/
-    public void init() {
-        if(initialised) {
-           return;
-        }
-        initialised = true;
-
-        Log.d(mTag, "init: running!");
+    public void init(Bundle bundle) {
 
         // Select either the default item (Fragments.ATTENDANCE) or the last selected item.
         mCurrentSelectedPosition = reloadCurrentFragment();
 
         // Recycle fragment
-        if(mSavedInstanceState != null) {
+        if(bundle != null) {
             fragment =  mFragmentManager.findFragmentByTag(FRAGMENT_TAG);
-            mPreviousFragment = mFragmentManager.getFragment(mSavedInstanceState, PREVIOUS_FRAGMENT_TAG);
-            Log.d(mTag, "current fag found: " + fragment );
-            Log.d(mTag, "previous fag found: " + mPreviousFragment );
+            mPreviousFragment = mFragmentManager.getFragment(bundle, PREVIOUS_FRAGMENT_TAG);
+            Log.d(TAG, "current fag found: " + fragment );
+            Log.d(TAG, "previous fag found: " + mPreviousFragment );
             selectItem(mCurrentSelectedPosition);
             showFragment(fragment);
-        }
-        else if(getIntent().hasExtra(LAUNCH_FRAGMENT_EXTRA)) {
-            displayView(getIntent().getIntExtra(LAUNCH_FRAGMENT_EXTRA,
-                    Fragments.ATTENDANCE.getValue()));
-        }
-        else if(getIntent().getAction()!=null &&
-                getIntent().getAction().equals(Intent.ACTION_MANAGE_NETWORK_USAGE)) {
-            displayView(Fragments.SETTINGS.getValue());
-        }
-        else {
+        } else {
+
+            if (getIntent().hasExtra(LAUNCH_FRAGMENT_EXTRA)) {
+                mCurrentSelectedPosition = getIntent().getIntExtra(LAUNCH_FRAGMENT_EXTRA,
+                        Fragments.ATTENDANCE.getValue());
+            } else if (getIntent().getAction() != null &&
+                    getIntent().getAction().equals(Intent.ACTION_MANAGE_NETWORK_USAGE)) {
+                mCurrentSelectedPosition = Fragments.SETTINGS.getValue();
+		Bugsnag.leaveBreadcrumb("MANAGE_NETWORK_USAGE intent received");
+            }
             displayView(mCurrentSelectedPosition);
         }
 
@@ -245,6 +192,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initDrawer() {
+        if(mDrawerLayout == null)
+            return;
+
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar,
                 R.string.drawer_open, R.string.drawer_close) {
 
@@ -261,6 +211,18 @@ public class MainActivity extends AppCompatActivity {
             }
         };
         mDrawerToggle.setDrawerIndicatorEnabled(true);
+        mToolbar.setNavigationOnClickListener(v -> {
+            int drawerLockMode = mDrawerLayout.getDrawerLockMode(GravityCompat.START);
+            // check if drawer is shown as up
+            if(drawerLockMode == DrawerLayout.LOCK_MODE_LOCKED_CLOSED) {
+                onBackPressed();
+            } else if (mDrawerLayout.isDrawerVisible(GravityCompat.START)
+                    && (drawerLockMode != DrawerLayout.LOCK_MODE_LOCKED_OPEN)) {
+                mDrawerLayout.closeDrawer(GravityCompat.START);
+            } else {
+                mDrawerLayout.openDrawer(GravityCompat.START);
+            }
+        });
         mDrawerLayout.addDrawerListener(mDrawerToggle);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -273,58 +235,21 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void collapseToolbar() {
-        int toolBarHeight;
-        TypedValue tv = new TypedValue();
-        getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true);
-        toolBarHeight = TypedValue.complexToDimensionPixelSize(
-                tv.data, getResources().getDisplayMetrics());
-
-        mToolbarHeightAnimator = ValueAnimator
-                .ofInt(mContentViewHeight, toolBarHeight);
-
-        mToolbarHeightAnimator.addUpdateListener(
-                new ValueAnimator.AnimatorUpdateListener() {
-
-                    @Override
-                    public void onAnimationUpdate(ValueAnimator animation) {
-                        ViewGroup.LayoutParams lp = mToolbar.getLayoutParams();
-                        lp.height = (Integer) animation.getAnimatedValue();
-                        mToolbar.setLayoutParams(lp);
-                    }
-                });
-
-        mToolbarHeightAnimator.start();
-        mToolbarHeightAnimator.addListener(
-                new AnimatorListenerAdapter() {
-
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        super.onAnimationEnd(animation);
-                        if(mResumed)
-                            init();
-                    }
-                });
-    }
-
     void showcaseView() {
 
-        if(isDrawerLocked ) {
+        if(isTabletLayout) {
             if(fragment instanceof AttendanceListFragment) {
                 ((AttendanceListFragment) fragment).showcaseView();
             }
             return;
         }
 
-        Target homeTarget = new Target() {
-            @Override
-            public Point getPoint() {
-                // Get approximate position of home icon's center
-                int actionBarSize = mToolbar.getHeight();
-                int x = actionBarSize / 2;
-                int y = actionBarSize / 2;
-                return new Point(x, y);
-            }
+        Target homeTarget = () -> {
+            // Get approximate position of home icon's center
+            int actionBarSize = mToolbar.getHeight();
+            int x = actionBarSize / 2;
+            int y = actionBarSize / 2;
+            return new Point(x, y);
         };
 
         final ShowcaseView sv = new ShowcaseView.Builder(this)
@@ -335,15 +260,12 @@ public class MainActivity extends AppCompatActivity {
                 .setContentText(getString(R.string.sv_main_activity_content))
                 .build();
 
-        sv.overrideButtonClick(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(!isDrawerLocked )
-                    mDrawerLayout.closeDrawer(mNavigationView);
-                sv.hide();
-                if(fragment instanceof AttendanceListFragment) {
-                    ((AttendanceListFragment) fragment).showcaseView();
-                }
+        sv.overrideButtonClick(v -> {
+            if(mDrawerLayout != null)
+                mDrawerLayout.closeDrawer(mNavigationView);
+            sv.hide();
+            if(fragment instanceof AttendanceListFragment) {
+                ((AttendanceListFragment) fragment).showcaseView();
             }
         });
     }
@@ -355,33 +277,41 @@ public class MainActivity extends AppCompatActivity {
 
     public void updateUserDetails() {
         if(mDb.getUserCount()>0) {
-            UserModel user = mDb.getUser();
+            User user = mDb.getUser();
 
-            DrawerheaderVH.tv_name.setText(user.getName());
-            DrawerheaderVH.tv_course.setText(user.getCourse());
+            DrawerheaderVH.tv_name.setText(user.name());
+            DrawerheaderVH.tv_course.setText(user.course());
+	        Bugsnag.setUserId(user.sap_id());
+            Bugsnag.setUserName(user.name());
         }
     }
 
     public void updateLastSync() {
-        if(mDb.getRowCount()>0) {
+        if(mDb.getSubjectCount()>0) {
             int time = (int) mDb.getLastSync();
             DrawerheaderVH.last_refresh.setText(
                     getResources().getQuantityString(R.plurals.tv_last_refresh, time, time));
         }
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home && !isDrawerLocked ) {
-            if (mDrawerLayout.isDrawerOpen(mNavigationView)) {
-                mDrawerLayout.closeDrawer(mNavigationView);
-            } else {
-                mDrawerLayout.openDrawer(mNavigationView);
-            }
-        }
-        return super.onOptionsItemSelected(item);
-    }
+    public void setDrawerAsUp(boolean enabled) {
+        if(mDrawerLayout == null)
+            return ;
 
+        float start = enabled ? 0f : 1f ;
+        float end = enabled ? 1f : 0f ;
+        mDrawerLayout.setDrawerLockMode(enabled ? DrawerLayout.LOCK_MODE_LOCKED_CLOSED :
+                DrawerLayout.LOCK_MODE_UNLOCKED);
+
+        ValueAnimator anim = ValueAnimator.ofFloat(start, end);
+        anim.addUpdateListener(valueAnimator -> {
+            float slideOffset = (Float) valueAnimator.getAnimatedValue();
+            mDrawerToggle.onDrawerSlide(mDrawerLayout, slideOffset);
+        });
+        anim.setInterpolator(new DecelerateInterpolator());
+        anim.setDuration(300);
+        anim.start();
+    }
 
     private class NavigationItemSelectedListener implements NavigationView.OnNavigationItemSelectedListener {
         @Override
@@ -392,6 +322,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void displayView(int position) {
+        ActionBar actionBar = getSupportActionBar();
         // update the main content by replacing fragments
         switch (position) {
             case 0:
@@ -399,13 +330,22 @@ public class MainActivity extends AppCompatActivity {
             case 1:
                 fragment = new AttendanceListFragment();
                 mPreviousFragment = null; // GC
+                if (isTabletLayout && actionBar != null) {
+                    actionBar.setDisplayHomeAsUpEnabled(false);
+                }
                 break;
             case 2:
                 fragment = new TimeTablePagerFragment();
                 mPreviousFragment = null; // GC
+                if (isTabletLayout && actionBar != null) {
+                    actionBar.setDisplayHomeAsUpEnabled(false);
+                }
                 break;
             case 3:
                 fragment = new SettingsFragment();
+                if (isTabletLayout && actionBar != null) {
+                    actionBar.setDisplayHomeAsUpEnabled(true);
+                }
                 break;
             default:
                 break;
@@ -414,9 +354,8 @@ public class MainActivity extends AppCompatActivity {
         if (fragment != null) {
             selectItem(position);
             showFragment(fragment);
-            mPopSettingsBackStack = false;
         } else {
-            Log.e(mTag, "Error in creating fragment");
+            Log.e(TAG, "Error in creating fragment");
         }
     }
 
@@ -428,7 +367,7 @@ public class MainActivity extends AppCompatActivity {
         mCurrentSelectedPosition = position;
         mNavigationView.getMenu().getItem(position-1).setChecked(true);
         setTitle(mNavTitles[position-1]);
-        if(!isDrawerLocked && mDrawerLayout.isDrawerOpen(mNavigationView))
+        if(mDrawerLayout != null && mDrawerLayout.isDrawerOpen(mNavigationView))
             mDrawerLayout.closeDrawer(mNavigationView);
     }
 
@@ -452,7 +391,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (mPreviousFragment != null) {
             if (BuildConfig.DEBUG) {
-                Log.d(mTag, this + " showFragment: destroying previous fragment "
+                Log.d(TAG, this + " showFragment: destroying previous fragment "
                         + mPreviousFragment.getClass().getSimpleName());
             }
             ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
@@ -473,26 +412,47 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // called by the activity on tablets,
+        // as we do not set a onClick listener
+        // on the toolbar navigation icon
+        // while on a tablet
+        if(item.getItemId() == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public void onBackPressed() {
         // close drawer if it is open
-        if (!isDrawerLocked && mDrawerLayout.isDrawerOpen(mNavigationView)) {
+        if (mDrawerLayout != null && mDrawerLayout.isDrawerOpen(mNavigationView)) {
             mDrawerLayout.closeDrawer(mNavigationView);
         }
         else if (shouldPopFromBackStack()) {
             if(BuildConfig.DEBUG)
-                Log.i(mTag,"popping from back stack");
+                Log.i(TAG,"popping from back stack");
             if(mPopSettingsBackStack) {
                 if(BuildConfig.DEBUG)
-                    Log.i(mTag,"popping nested settings fragment");
+                    Log.i(TAG,"popping nested settings fragment");
                 mPopSettingsBackStack = false;
                 mFragmentManager.popBackStackImmediate();
+                setDrawerAsUp(false);
+                Bugsnag.leaveBreadcrumb("Back: Popping from internal back stack");
             } else {
                 // Custom back stack
                 popFromBackStack();
+                ActionBar actionBar = getSupportActionBar();
+                if (isTabletLayout && actionBar != null) {
+                    actionBar.setDisplayHomeAsUpEnabled(false);
+                }
+                Bugsnag.leaveBreadcrumb("Back: Popping from custom back stack");
             }
         }
         else {
             ActivityCompat.finishAfterTransition(this);
+            Bugsnag.leaveBreadcrumb("App closed");
         }
     }
 
@@ -526,7 +486,7 @@ public class MainActivity extends AppCompatActivity {
         final FragmentTransaction ft = mFragmentManager.beginTransaction();
         final Fragment installed = getInstalledFragment();
         int position = Fragments.ATTENDANCE.getValue() ;
-        Log.i(mTag, this + " backstack: [pop] " + installed.getClass().getSimpleName() + " -> "
+        Log.i(TAG, this + " backstack: [pop] " + installed.getClass().getSimpleName() + " -> "
                 + mPreviousFragment.getClass().getSimpleName());
 
         ft.remove(installed);
@@ -574,7 +534,13 @@ public class MainActivity extends AppCompatActivity {
         // Sync the toggle state after onRestoreInstanceState has occurred.
         if(mDrawerToggle != null)
             mDrawerToggle.syncState();
-        mSavedInstanceState = savedInstanceState;
+
+        // Toolbar#setTitle is called by the system on onCreate and
+        // again over here which sets the activity label
+        // as the title.
+        // So we need to call setTitle again as well
+        // to show the correct title.
+        setTitle(mNavTitles[mCurrentSelectedPosition-1]);
     }
 
     /**
@@ -600,11 +566,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        mResumed = false;
         // for orientation changes, etc.
         if (mPreviousFragment != null) {
             mFragmentManager.putFragment(outState, PREVIOUS_FRAGMENT_TAG, mPreviousFragment);
-            Log.d(mTag, "previous fag saved: " + mPreviousFragment.getClass().getSimpleName());
+            Log.d(TAG, "previous fag saved: " + mPreviousFragment.getClass().getSimpleName());
         }
     }
 
@@ -623,11 +588,29 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onDestroy() {
-        if(!isDrawerLocked)
+        if(mDrawerLayout != null)
             mDrawerLayout.removeDrawerListener(mDrawerToggle);
-        MyVolley.getInstance().cancelAllPendingRequests();
         mDb.close();
         super.onDestroy();
+    }
+
+    /**
+     * Reference to fragment positions
+     */
+    public enum Fragments {
+        ATTENDANCE(1),
+        TIMETABLE(2),
+        SETTINGS(3);
+
+        private final int value;
+
+        Fragments(int value) {
+            this.value = value;
+        }
+
+        public int getValue() {
+            return value;
+        }
     }
 
 }

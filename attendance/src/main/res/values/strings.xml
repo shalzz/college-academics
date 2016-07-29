@@ -24,23 +24,14 @@
     <string name="copyright_year" translatable="false">Copyright © 2013&#8211;2016</string>
     <string name="app_copyright" translatable="false">Shaleen Jain &#60;shaleen.jain95@gmail.com&#62;</string>
     <!--Semantic versioning: MAJOR.MINOR.PATCH-->
-    <!-- DON'T update this for PATCH release -->
-    <string name="user_version" translatable="false">2.5</string>
-    <string name="pref_version_summary" translatable="false">v2.6.4</string>
+    <string name="pref_version_summary" translatable="false">v2.7.0</string>
     
     <!--API keys-->
     <string name="test_banner_ad_unit_id" translatable="false">ca-app-pub-3940256099942544/6300978111</string>
+    <string name="bugsnag_api" translatable="false">600a00bfd5bd72e5df7f288f74df8f9b</string>
 
     <!--Network related strings-->
-    <string name="UserAgent" translatable="false">Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.57 Safari/537.36</string>
-    <string name="proxy_host" translatable="false">proxy1.ddn.upes.ac.in</string>
-    <string name="proxy_port" translatable="false">8080</string>
     <string name="upesnet_ssid" translatable="false">UPESNET</string>
-
-    <!--URL's-->
-    <string name="URL_user" translatable="false">https://upes.winnou.net/api/v1/me</string>
-    <string name="URL_attendance" translatable="false">https://upes.winnou.net/api/v1/me/attendance</string>
-    <string name="URL_timetable" translatable="false">https://upes.winnou.net/api/v1/me/timetable</string>
 
     <!--Preference Keys-->
     <string name="pref_key_sub_limit">subjects_expanded_limit</string>
@@ -57,6 +48,7 @@
     <string name="pref_key_notify_timetable_changed">notify_timetable_changed</string>
     <string name="pref_key_show_weekends">show_weekends</string>
     <string name="pref_key_day_night">day_night</string>
+    <string name="pref_key_bugsnag_opt_in">bugsnag_opt_in</string>
 
     <!--////  Actual user visible text ////-->
 
@@ -66,18 +58,26 @@
     <string name="generic_error">Network error occurred.</string>
     <string name="proxy_error">Proxy Authentication failed. Please check your credentials.</string>
     <string name="unexpected_error">An unexpected error occurred</string>
-    <string name="unavailable_data_error_msg">No Data available at this time.</string>
-    <string name="unavailable_timetable_error_msg">No TimeTable available at this time.</string>
     <string name="form_sapid_error">SAP ID is invalid.</string>
     <string name="form_password_error">Password is required.</string>
     <string name="auth_error">SAP ID or Password is incorrect.</string>
+    <string name="no_data_title">Nothing Here</string>
+    <string name="no_data_content">No data available on the server right now.</string>
+    <string name="no_connection_title">No connection.</string>
+    <string name="no_connection_content">Please try again when you are connected to the internet
+        .</string>
+    <string name="empty_view_try_again">Try Again</string>
 
     <!--EditText's and TextView's-->
     <string name="no_classes">You don\'t have any classes on this day :)</string>
     <string name="swipe_info">To switch to any other day, either swipe across the screen or
-        click the jump to date in the top right corner.</string>
-    <string name="atten_list_footer_total">Total Attendance:</string>
+        click the scroll to date in the top right corner.</string>
     <string name="day_list_marked_absent">Absent!</string>
+    <string name="atten_list_footer_total">Total Attendance:</string>
+    <string name="atten_list_days_absent">"Days Absent: <xliff:g id="absent_dates">%s</xliff:g>"
+    </string>
+    <string name="atten_list_percentage"><xliff:g id="percentage">%.2f</xliff:g>%%</string>
+    <string name="atten_list_attended_upon_held"><xliff:g id="attended">%d</xliff:g>/<xliff:g id="held">%d</xliff:g></string>
 
     <!--Plurals-->
     <plurals name="tv_last_refresh">
@@ -127,6 +127,9 @@
     <string name="pref_show_weekends_summary_off">Display only weekdays</string>
     <string name="pref_day_night">Day/Night Theme</string>
     <string name="pref_day_night_dialog">Select Night Mode</string>
+    <string name="pref_bugsnag_opt_in">Crash Reports</string>
+    <string name="pref_bugsnag_opt_in_summary">Send crash reports with diagnostic
+        information to help debug and improve the app</string>
 
     <!--Showcase View-->
     <string name="sv_attendance_title">Expandable item</string>
@@ -157,6 +160,8 @@
     <string name="navigation_item_1">Attendance</string>
     <string name="navigation_item_2">Timetable</string>
     <string name="navigation_item_3">Settings</string>
+    <string name="proxy_settings_title">Proxy</string>
+    <string name="about_settings_title">About</string>
 
     <!--Notifications-->
     <string name="notify_timetable_changed_title">Timetable has changed</string>

@@ -28,46 +28,75 @@ import android.util.Log;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.activity.MainActivity;
 
+import java.io.IOException;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+import okhttp3.Authenticator;
+import okhttp3.Credentials;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.Route;
+
 @SuppressLint("CommitPrefEdits")
+@Singleton
 public class MyPreferencesManager {
 
-	/**
-	 * The activity context.
-	 */
-	private static Context mContext = MyVolley.getAppContext();
+	private static Context mContext;
 
 	private static String mTag  = "MyPreferencesManager";
+
+    @Inject
+    public MyPreferencesManager(Context context) {
+        mContext = context;
+    }
 
 	/**
 	 * Gets the login status from the preferences
 	 * @return true if logged in else false
 	 */
-	public static boolean getLoginStatus() {
+	public boolean getLoginStatus() {
 
 		Log.i(mTag, "Getting Logged in state.");
 		SharedPreferences settings = mContext.getSharedPreferences("SETTINGS", 0);
-		boolean loggedin = settings.getBoolean("LOGGEDIN" + mContext.getResources().getString(R.string.user_version), false);
+		boolean loggedin = settings.getBoolean("LOGGEDIN", false);
 		Log.d(mTag, "Logged in state: " + loggedin);
 		return loggedin;
 	}
 
-	public static String getUser() {
+	public String getBasicAuthCredentials() {
 		SharedPreferences settings = mContext.getSharedPreferences("SETTINGS", 0);
-
-		return String.format("%s:%s", settings.getString("USERNAME", null)
-				, settings.getString("PASSWORD", null));
+        return Credentials.basic(settings.getString("USERNAME", null),
+                settings.getString("PASSWORD", null));
 	}
+
+    public Authenticator getProxyCredentials() {
+        return new Authenticator() {
+            @Override
+            public Request authenticate(Route route, Response response) throws IOException {
+                SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mContext);
+                final String username = sharedPref.getString(
+                        mContext.getString(R.string.pref_key_proxy_username), "");
+                final String password = sharedPref.getString(
+                        mContext.getString(R.string.pref_key_proxy_password), "");
+                return response.request().newBuilder()
+                        .header("Proxy-Authorization", Credentials.basic(username,password))
+                        .build();
+            }
+        };
+    }
 
 	/**
 	 * Saves the user details in shared preferences and sets login status to true.
 	 * @param username Username
 	 * @param password Password
 	 */
-	public static void saveUser(String username, String password) {
+	public void saveUser(String username, String password) {
 		Log.i(mTag, "Setting LOGGEDIN pref to true");
 		SharedPreferences settings = mContext.getSharedPreferences("SETTINGS", 0);
 		SharedPreferences.Editor editor = settings.edit();
-		editor.putBoolean("LOGGEDIN"+mContext.getResources().getString(R.string.user_version), true);
+		editor.putBoolean("LOGGEDIN", true);
 		editor.putString("USERNAME", username);
 		editor.putString("PASSWORD", password);
 		editor.commit();
@@ -76,26 +105,25 @@ public class MyPreferencesManager {
 	/**
 	 * Removes the user details from the shared preferences and sets login status to false.
 	 */
-	public static void removeUser() {
+	public void removeUser() {
 		Log.i(mTag, "Setting LOGGEDIN pref to false");
 		SharedPreferences settings = mContext.getSharedPreferences("SETTINGS", 0);
 		SharedPreferences.Editor editor = settings.edit();
         editor.remove(MainActivity.PREFERENCE_ACTIVATED_FRAGMENT);
-		editor.putBoolean("LOGGEDIN"+mContext.getResources().getString(R.string.user_version), false);
+		editor.putBoolean("LOGGEDIN", false);
 		editor.remove("USERNAME");
 		editor.remove("PASSWORD");
 		editor.commit();
 	}
 
-    public static void removeSettings() {
-        removeDefaultSharedPreferences();
+    public void removeSettings() {
         SharedPreferences settings = mContext.getSharedPreferences("SETTINGS", 0);
         SharedPreferences.Editor editor = settings.edit();
         editor.clear();
         editor.commit();
     }
     
-    public static void removeDefaultSharedPreferences() {
+    public void removeDefaultSharedPreferences() {
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(mContext);
         SharedPreferences.Editor editor = settings.edit();
         editor.clear();

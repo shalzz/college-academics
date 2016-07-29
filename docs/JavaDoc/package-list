@@ -4,7 +4,7 @@ com.shalzz.attendance.adapter
 com.shalzz.attendance.controllers
 com.shalzz.attendance.fragment
 com.shalzz.attendance.loader
-com.shalzz.attendance.model
+com.shalzz.attendance.data.model
 com.shalzz.attendance.network
 com.shalzz.attendance.sync
 com.shalzz.attendance.wrapper

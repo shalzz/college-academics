@@ -43,32 +43,29 @@ import android.widget.TextView;
 import com.shalzz.attendance.BuildConfig;
 import com.shalzz.attendance.DatabaseHandler;
 import com.shalzz.attendance.R;
-import com.shalzz.attendance.model.ListFooterModel;
-import com.shalzz.attendance.model.SubjectModel;
-import com.shalzz.attendance.wrapper.MyVolley;
+import com.shalzz.attendance.model.local.ListFooter;
+import com.shalzz.attendance.model.remote.Subject;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.InjectView;
 
 public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private Context mContext;
     private Resources mResources;
+    private Bitmap mBitmap;
     private final List<Long> mExpandedIds = new ArrayList<>();
     private float mExpandedTranslationZ;
     private int mLimit = -1;
-    private Bitmap mBitmap;
     private String mTag = "ExpandableList Adapter";
 
     //our items
-    private final SortedList<SubjectModel> mSubjects;
-    private ListFooterModel mFooter;
-    //headers
+    private final SortedList<Subject> mSubjects;
+    private ListFooter mFooter;
     private List<View> headers = new ArrayList<>();
-    //footers
     private List<View> footers = new ArrayList<>();
 
     public static final int TYPE_HEADER = 111;
@@ -109,45 +106,45 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                                  SubjectItemExpandedListener subjectItemExpandedListener) {
 
         mContext = context;
-        mResources = MyVolley.getMyResources();
+        mResources = context.getResources();
         mSubjectItemExpandedListener = subjectItemExpandedListener;
         mExpandedTranslationZ = mResources.getDimension(R.dimen.atten_view_expanded_elevation);
         mBitmap = BitmapFactory.decodeResource(mResources,R.drawable.alert);
 
-        mSubjects = new SortedList<>(SubjectModel.class,
-                new SortedListAdapterCallback<SubjectModel>(this) {
+        mSubjects = new SortedList<>(Subject.class,
+                new SortedListAdapterCallback<Subject>(this) {
                     @Override
-                    public int compare(SubjectModel o1, SubjectModel o2) {
-                        return o1.getName().compareTo(o2.getName());
+                    public int compare(Subject o1, Subject o2) {
+                        return o1.name().compareTo(o2.name());
                     }
 
                     @SuppressWarnings("SimplifiableIfStatement")
                     @Override
-                    public boolean areContentsTheSame(SubjectModel oldItem, SubjectModel newItem) {
-                        if(oldItem.getID() != newItem.getID()) {
+                    public boolean areContentsTheSame(Subject oldItem, Subject newItem) {
+                        if(oldItem.id() != newItem.id()) {
                             return false;
                         }
-                        if(!oldItem.getName().equals(newItem.getName())) {
+                        if(!oldItem.name().equals(newItem.name())) {
                             return false;
                         }
-                        if(oldItem.getClassesAttended().compareTo(newItem.getClassesAttended())
+                        if(oldItem.attended().compareTo(newItem.attended())
                                 != 0) {
                             return false;
                         }
-                        if(oldItem.getClassesHeld().compareTo(newItem.getClassesHeld()) != 0) {
+                        if(oldItem.held().compareTo(newItem.held()) != 0) {
                             return false;
                         }
-                        return oldItem.getAbsentDatesAsString().equals(newItem.getAbsentDatesAsString());
+                        return oldItem.absent_dates().equals(newItem.absent_dates());
                     }
 
                     @Override
-                    public boolean areItemsTheSame(SubjectModel item1, SubjectModel item2) {
-                        return item1.getID() == item2.getID();
+                    public boolean areItemsTheSame(Subject item1, Subject item2) {
+                        return item1.id() == item2.id();
                     }
                 });
     }
 
-    public void addAll(List<SubjectModel> subjects) {
+    public void addAll(List<Subject> subjects) {
         mSubjects.addAll(subjects);
         updateFooter();
     }
@@ -164,7 +161,7 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
 
     public void updateFooter() {
         DatabaseHandler db = new DatabaseHandler(mContext);
-        ListFooterModel footer = db.getListFooter();
+        ListFooter footer = db.getListFooter();
         if(!footer.equals(mFooter)) {
             mFooter = footer;
             notifyItemChanged(getItemCount()-1);
@@ -177,10 +174,10 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     public static class GenericViewHolder extends RecyclerView.ViewHolder {
         public int position = -1;
 
-        @InjectView(R.id.tvSubj) TextView subject;
-        @InjectView(R.id.tvPercent) TextView percentage;
-        @InjectView(R.id.tvClasses) TextView classes;
-        @InjectView(R.id.pbPercent) ProgressBar percent;
+        @BindView(R.id.tvSubj) TextView subject;
+        @BindView(R.id.tvPercent) TextView percentage;
+        @BindView(R.id.tvClasses) TextView classes;
+        @BindView(R.id.pbPercent) ProgressBar percent;
 
         //child views
         public RelativeLayout childView;
@@ -190,7 +187,7 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
 
         public GenericViewHolder(View itemView) {
             super(itemView);
-            ButterKnife.inject(this,itemView);
+            ButterKnife.bind(this,itemView);
         }
 
     }
@@ -384,17 +381,19 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         }
     }
 
+    @SuppressWarnings("deprecation")
     public void bindChildView(GenericViewHolder holder, int position) {
 
         TextView tvAbsent = holder.tvAbsent;
         TextView tvReach = holder.tvReach;
         ImageView ivAlert = holder.ivAlert;
 
-        int held = mSubjects.get(position).getClassesHeld().intValue();
-        int attend = mSubjects.get(position).getClassesAttended().intValue();
+        int held = mSubjects.get(position).held().intValue();
+        int attend = mSubjects.get(position).attended().intValue();
         int percent = Math.round(mSubjects.get(position).getPercentage());
 
-        tvAbsent.setText("Days Absent: " + mSubjects.get(position).getAbsentDatesAsString());
+        tvAbsent.setText(mResources.getString(R.string.atten_list_days_absent,
+                mSubjects.get(position).getAbsentDatesAsString()));
 
         if (percent<67 && held!=0) {
             int x = (2*held) - (3*attend);
@@ -404,7 +403,11 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                 ivAlert.setImageBitmap(null);
             } else {
                 tvReach.setText(mResources.getQuantityString(R.plurals.tv_classes_to_67,x,x));
-                tvReach.setTextColor(mResources.getColor(R.color.attend));
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    tvReach.setTextColor(mResources.getColor(R.color.attend, mContext.getTheme()));
+                } else {
+                    tvReach.setTextColor(mResources.getColor(R.color.attend));
+                }
                 tvReach.setVisibility(View.VISIBLE);
                 ivAlert.setVisibility(View.VISIBLE);
                 ivAlert.setImageBitmap(mBitmap);
@@ -418,7 +421,11 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                 ivAlert.setImageBitmap(null);
             } else {
                 tvReach.setText(mResources.getQuantityString(R.plurals.tv_classes_to_75, x, x));
-                tvReach.setTextColor(mResources.getColor(R.color.attend));
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    tvReach.setTextColor(mResources.getColor(R.color.attend, mContext.getTheme()));
+                } else {
+                    tvReach.setTextColor(mResources.getColor(R.color.attend));
+                }
                 tvReach.setVisibility(View.VISIBLE);
                 ivAlert.setVisibility(View.VISIBLE);
                 ivAlert.setImageBitmap(mBitmap);
@@ -429,7 +436,11 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                 tvReach.setVisibility(View.GONE);
             } else {
                 tvReach.setText(mResources.getQuantityString(R.plurals.tv_miss_classes, x, x));
-                tvReach.setTextColor(mResources.getColor(R.color.skip));
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    tvReach.setTextColor(mResources.getColor(R.color.skip, mContext.getTheme()));
+                } else {
+                    tvReach.setTextColor(mResources.getColor(R.color.skip));
+                }
                 tvReach.setVisibility(View.VISIBLE);
             }
             ivAlert.setVisibility(View.GONE);
@@ -465,8 +476,11 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         TextView tvPercent = (TextView) view.findViewById(R.id.tvTotalPercent);
         TextView tvClasses = (TextView) view.findViewById(R.id.tvClass);
         ProgressBar pbPercent = (ProgressBar) view.findViewById(R.id.pbTotalPercent);
-        tvPercent.setText(mFooter.getPercentage()+"%");
-        tvClasses.setText(mFooter.getAttended().intValue() + "/" + mFooter.getHeld().intValue());
+        tvPercent.setText(mResources.getString(R.string.atten_list_percentage,
+                mFooter.getPercentage()));
+        tvClasses.setText(mResources.getString(R.string.atten_list_attended_upon_held,
+                mFooter.getAttended().intValue(),
+                mFooter.getHeld().intValue()));
         pbPercent.setProgress(percent.intValue());
         Drawable d = pbPercent.getProgressDrawable();
         d.setLevel(percent.intValue() * 100);
@@ -480,10 +494,12 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
         Float percent = mSubjects.get(position).getPercentage();
-        holder.subject.setText(mSubjects.get(position).getName());
-        holder.percentage.setText(mSubjects.get(position).getPercentage().toString()+"%");
-        holder.classes.setText(mSubjects.get(position).getClassesAttended().intValue() + "/"
-                + mSubjects.get(position).getClassesHeld().intValue());
+        holder.subject.setText(mSubjects.get(position).name());
+        holder.percentage.setText(mResources.getString(R.string.atten_list_percentage,
+                mSubjects.get(position).getPercentage()));
+        holder.classes.setText(mResources.getString(R.string.atten_list_attended_upon_held,
+                mSubjects.get(position).attended().intValue(),
+                mSubjects.get(position).held().intValue()));
         Drawable d = holder.percent.getProgressDrawable();
         if(percent > 0f)
             d.setLevel(percent.intValue()*100);

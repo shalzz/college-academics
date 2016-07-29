@@ -47,13 +47,12 @@
     <dimen name="material_progress_indeterminate">42dp</dimen>
 
     <!-- Text size for action bar titles -->
-    <dimen name="action_bar_title_text_size">18sp</dimen>
     <!-- Text size for action bar subtitles -->
     <dimen name="action_bar_subtitle_text_size">13sp</dimen>
     <!-- Top margin for action bar subtitles -->
-    <dimen name="action_bar_subtitle_top_margin">-3dp</dimen>
     <!-- Bottom margin for action bar subtitles -->
-    <dimen name="action_bar_subtitle_bottom_margin">5dip</dimen>
+
+    <dimen name="status_bar_height">25dp</dimen>
 
     <dimen name="toolbar_elevation">4dp</dimen>
     <dimen name="shadow_depth">4dp</dimen>

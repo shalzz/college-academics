@@ -23,6 +23,8 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.AbsListView;
 
+import javax.inject.Inject;
+
 /**
  * A descendant of {@link android.support.v4.widget.SwipeRefreshLayout} which supports multiple
  * child views triggering a refresh gesture. You set the views which can trigger the gesture via
@@ -32,6 +34,7 @@ public class MultiSwipeRefreshLayout extends SwipeRefreshLayout {
 
     private View[] mSwipeableChildren;
 
+    @Inject
     public MultiSwipeRefreshLayout(Context context) {
         super(context);
     }

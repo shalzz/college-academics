@@ -47,7 +47,7 @@ public class TimeTablePagerAdapter extends FragmentStatePagerAdapter {
 		super(fm);
         mContext = context;
         DatabaseHandler db = new DatabaseHandler(mContext);
-        if(db.getTimetableCount()<=0) {
+        if(db.getPeriodCount()<=0) {
             mCount = 0;
         } else {
             mCount = 31;

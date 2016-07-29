@@ -1,0 +1,38 @@
+CREATE TABLE subject (
+    id INTEGER AS Integer PRIMARY KEY NOT NULL,
+    name TEXT NOT NULL,
+    attended REAL AS 'java.lang.Float' NOT NULL,
+    held REAL AS 'java.lang.Float' NOT NULL,
+    last_updated INTEGER
+);
+
+select_all:
+SELECT *
+FROM subject;
+
+select_like_name:
+SELECT *
+FROM subject
+WHERE name LIKE '%?%' ;
+
+delete_obsolete:
+DELETE
+FROM subject
+WHERE last_updated != (
+    SELECT max(last_updated)
+    FROM subject
+    );
+
+select_last_sync:
+SELECT max(last_updated)
+FROM (
+    SELECT last_updated
+        FROM subject
+    union all
+    SELECT last_updated
+        FROM period
+    ) t;
+
+select_count:
+SELECT count(*)
+FROM subject;
