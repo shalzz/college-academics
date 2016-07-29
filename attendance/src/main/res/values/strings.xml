@@ -60,10 +60,9 @@
     <string name="form_password_error">Password is required.</string>
     <string name="auth_error">SAP ID or Password is incorrect.</string>
     <string name="no_data_title">Nothing Here</string>
-    <string name="no_data_content">No data available on the server right now.</string>
+    <string name="no_data_content">No data available on the server right now</string>
     <string name="no_connection_title">No connection.</string>
-    <string name="no_connection_content">Please try again when you are connected to the internet
-        .</string>
+    <string name="no_connection_content">Please try again when you are connected to the internet</string>
     <string name="empty_view_try_again">Try Again</string>
 
     <!--EditText's and TextView's-->

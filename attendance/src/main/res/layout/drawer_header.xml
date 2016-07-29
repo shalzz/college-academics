@@ -20,21 +20,25 @@
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent"
-                android:layout_height="96dp"
+                android:layout_height="wrap_content"
+                android:minHeight="96dp"
+                xmlns:tools="http://schemas.android.com/tools"
                 android:layout_marginLeft="@dimen/activity_vertical_margin"
                 android:layout_marginStart="@dimen/activity_vertical_margin"
                 android:layout_marginRight="@dimen/activity_vertical_margin"
                 android:layout_marginEnd="@dimen/activity_vertical_margin"
                 android:paddingBottom="5dp"
                 android:theme="@style/ThemeOverlay.AppCompat.Dark"
+                tools:background="#ff303030"
                 android:gravity="bottom">
 
     <TextView
         android:id="@+id/drawer_header_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="28dp"
         android:paddingTop="5dp"
-        android:text="SAP Id "
+        android:text="Name"
         android:textColor="@color/list_item_title"
         android:textAppearance="@style/TextAppearance.AppCompat.Title"
         android:textSize="18sp" />
