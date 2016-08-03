@@ -46,6 +46,7 @@ public class MySyncManager {
 	 * @param context The application context
 	 */
 	public static Account CreateSyncAccount(Context context, String accountName) {
+        Timber.i("Creating a sync account");
 		// Create the account type and default account
 		Account newAccount = new Account(accountName, ACCOUNT_TYPE);
 		// Get an instance of the Android account manager
@@ -74,6 +75,7 @@ public class MySyncManager {
 	}
 
 	public static void removeSyncAccount(Context mContext) {
+        Timber.i("Removing the sync account");
 		AccountManager accountManager = AccountManager.get(mContext);
         Account account = getSyncAccount(mContext);
         if(account!=null)
@@ -117,6 +119,7 @@ public class MySyncManager {
 	}
 
 	public static void enableAutomaticSync(Context mContext,String accountName) {
+        Timber.i("Sync account enabled");
         Account mAccount = getSyncAccount(mContext);
         if(mAccount==null)
             mAccount = CreateSyncAccount(mContext,accountName);
@@ -125,6 +128,7 @@ public class MySyncManager {
 	}
 
     public static void disableAutomaticSync(Context mContext,String accountName) {
+        Timber.i("Sync account disabled");
         Account mAccount = getSyncAccount(mContext);
         if(mAccount==null)
             mAccount = CreateSyncAccount(mContext,accountName);
