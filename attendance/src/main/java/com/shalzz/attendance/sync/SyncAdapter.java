@@ -36,7 +36,6 @@ import android.support.v7.app.NotificationCompat;
 import android.support.v7.preference.PreferenceManager;
 
 import com.bugsnag.android.Bugsnag;
-import com.shalzz.attendance.BuildConfig;
 import com.shalzz.attendance.DatabaseHandler;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.activity.MainActivity;
@@ -52,11 +51,11 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import timber.log.Timber;
 
 public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
     // Global variables
-    private String myTag = "Sync Adapter";
     private Context mContext;
 
     private final MyPreferencesManager preferencesManager;
@@ -85,7 +84,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     @Override
     public void onPerformSync(Account account, Bundle extras, String authority,
                               ContentProviderClient provider, SyncResult syncResult) {
-	    Bugsnag.leaveBreadcrumb("Running sync adapter");
+        Timber.i("Running sync adapter");
 
         Call<List<Subject>> call = api.getAttendance(preferencesManager.getBasicAuthCredentials());
         call.enqueue(new Callback<List<Subject>>() {
@@ -101,9 +100,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                     db.close();
                 }
                 catch(Exception e) {
-                    Bugsnag.notify(e);
-                    if(BuildConfig.DEBUG)
-                        e.printStackTrace();
+                    Timber.e(e, mContext.getString(R.string.unexpected_error));
                 }
             }
 
@@ -111,9 +108,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
             public void onFailure(Call<List<Subject>> call, Throwable t) {
                 RetrofitException error = (RetrofitException) t;
                 if (error.getKind() == RetrofitException.Kind.UNEXPECTED) {
-                    Bugsnag.notify(error);
-                    if(BuildConfig.DEBUG)
-                        t.printStackTrace();
+                    Timber.e(t, error.getMessage());
                 }
             }
         });
@@ -141,9 +136,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                     db.close();
                 }
                 catch(Exception e) {
-                    Bugsnag.notify(e);
-                    if(BuildConfig.DEBUG)
-                        e.printStackTrace();
+                    Timber.e(e, mContext.getString(R.string.unexpected_error));
                 }
             }
 
@@ -151,9 +144,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
             public void onFailure(Call<List<Period>> call, Throwable t) {
                 RetrofitException error = (RetrofitException) t;
                 if (error.getKind() == RetrofitException.Kind.UNEXPECTED) {
-                    Bugsnag.notify(error);
-                    if(BuildConfig.DEBUG)
-                        t.printStackTrace();
+                    Timber.e(t, error.getMessage());
                 }
             }
         });

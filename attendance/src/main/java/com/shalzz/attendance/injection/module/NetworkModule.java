@@ -55,10 +55,14 @@ public class NetworkModule {
     public static OkHttpClient provideClient(MyPreferencesManager preferences) {
         final OkHttpClient.Builder okHttpBuilder = new OkHttpClient.Builder()
                 .addInterceptor(new HeaderInterceptor())
-                .addInterceptor(new AuthInterceptor(preferences))
-                .addNetworkInterceptor(new LoggingInterceptor());
+                .addInterceptor(new AuthInterceptor(preferences));
+
+                if(BuildConfig.DEBUG)
+                    okHttpBuilder.addNetworkInterceptor(new LoggingInterceptor());
+
 //                .proxyAuthenticator(preferences.getProxyCredentials())//fixme: check when toapply
 //                .proxySelector(Miscellaneous.getProxySelector());
+
         return okHttpBuilder.build();
     }
 

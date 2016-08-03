@@ -38,6 +38,7 @@ import okhttp3.Credentials;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.Route;
+import timber.log.Timber;
 
 @SuppressLint("CommitPrefEdits")
 @Singleton
@@ -58,10 +59,10 @@ public class MyPreferencesManager {
 	 */
 	public boolean getLoginStatus() {
 
-		Log.i(mTag, "Getting Logged in state.");
+		Timber.i("Getting Logged in state.");
 		SharedPreferences settings = mContext.getSharedPreferences("SETTINGS", 0);
 		boolean loggedin = settings.getBoolean("LOGGEDIN", false);
-		Log.d(mTag, "Logged in state: " + loggedin);
+		Timber.i("Logged in state: %s", loggedin);
 		return loggedin;
 	}
 
@@ -93,7 +94,7 @@ public class MyPreferencesManager {
 	 * @param password Password
 	 */
 	public void saveUser(String username, String password) {
-		Log.i(mTag, "Setting LOGGEDIN pref to true");
+		Timber.i("Setting LOGGEDIN pref to true");
 		SharedPreferences settings = mContext.getSharedPreferences("SETTINGS", 0);
 		SharedPreferences.Editor editor = settings.edit();
 		editor.putBoolean("LOGGEDIN", true);
@@ -106,7 +107,7 @@ public class MyPreferencesManager {
 	 * Removes the user details from the shared preferences and sets login status to false.
 	 */
 	public void removeUser() {
-		Log.i(mTag, "Setting LOGGEDIN pref to false");
+		Timber.i("Setting LOGGEDIN pref to false");
 		SharedPreferences settings = mContext.getSharedPreferences("SETTINGS", 0);
 		SharedPreferences.Editor editor = settings.edit();
         editor.remove(MainActivity.PREFERENCE_ACTIVATED_FRAGMENT);

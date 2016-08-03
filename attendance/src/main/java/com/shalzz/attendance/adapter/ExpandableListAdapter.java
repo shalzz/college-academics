@@ -51,6 +51,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import timber.log.Timber;
 
 public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
@@ -155,7 +156,7 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
 
     public void clear() {
         if(BuildConfig.DEBUG)
-            Log.i(mTag, "Data set cleared.");
+            Timber.i("Data set cleared.");
         mSubjects.clear();
     }
 
