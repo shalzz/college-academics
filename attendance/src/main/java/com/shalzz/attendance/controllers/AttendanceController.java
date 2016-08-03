@@ -28,7 +28,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.preference.PreferenceManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 
@@ -55,6 +54,7 @@ import javax.inject.Inject;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import timber.log.Timber;
 
 public class AttendanceController implements LoaderManager.LoaderCallbacks<List<Subject>> {
 
@@ -65,7 +65,6 @@ public class AttendanceController implements LoaderManager.LoaderCallbacks<List<
     private DatabaseHandler db;
     private Context mContext;
     private Resources mResources;
-    private String mTag = "Attendance Controller";
     private View mFooter;
     private final DataAPI api;
 
@@ -110,7 +109,7 @@ public class AttendanceController implements LoaderManager.LoaderCallbacks<List<
 
                 if (db.purgeOldSubjects() == 1) {
                     if(BuildConfig.DEBUG)
-                        Log.i(mTag, "Purging Subjects...");
+                        Timber.i("Purging Subjects...");
                     mAdapter.clear();
                 }
 

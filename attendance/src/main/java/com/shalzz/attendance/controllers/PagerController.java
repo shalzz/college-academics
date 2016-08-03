@@ -24,7 +24,6 @@ import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
-import android.util.Log;
 import android.view.View;
 
 import com.bugsnag.android.Bugsnag;
@@ -49,6 +48,7 @@ import javax.inject.Singleton;
 
 import retrofit2.Call;
 import retrofit2.Callback;
+import timber.log.Timber;
 
 public class PagerController {
 
@@ -56,7 +56,6 @@ public class PagerController {
     public TimeTablePagerAdapter mAdapter;
     private DatabaseHandler db;
     private Resources mResources;
-    private String mTag = "Pager Controller";
     private Date mToday = new Date();
     private final DataAPI api;
 
@@ -109,8 +108,7 @@ public class PagerController {
                 }
 
                 if (db.purgeOldPeriods() == 1) {
-                    if(BuildConfig.DEBUG)
-                        Log.d(mTag, "Purging Periods...");
+                    Timber.i("Purging Periods...");
                 }
 
                 // TODO: use an event bus or RxJava to update fragment contents

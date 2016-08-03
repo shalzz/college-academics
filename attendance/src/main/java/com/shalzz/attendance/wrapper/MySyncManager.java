@@ -27,10 +27,11 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.preference.PreferenceManager;
-import android.util.Log;
 
 import com.shalzz.attendance.BuildConfig;
 import com.shalzz.attendance.R;
+
+import timber.log.Timber;
 
 public class MySyncManager {
 
@@ -38,9 +39,6 @@ public class MySyncManager {
 	public static final long SECONDS_PER_MINUTE = 60L;
 	public static final String AUTHORITY = BuildConfig.APPLICATION_ID + ".provider";
 	public static final String ACCOUNT_TYPE = BuildConfig.ACCOUNT_TYPE;
-	@SuppressWarnings("FieldCanBeLocal")
-    private static String mTag = "Sync Manager";
-
 
 	/**
 	 * Create a new dummy account for the sync adapter
@@ -62,7 +60,7 @@ public class MySyncManager {
 			 * The account exists or some other error occurred. Log this, report it,
 			 * or handle it internally.
 			 */
-            Log.e(mTag,"Account already exits!");
+            Timber.e("Account already exits!");
 		}
 		return newAccount;
 	}
@@ -91,10 +89,10 @@ public class MySyncManager {
 		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mContext);
 		final boolean sync = sharedPref.getBoolean(
                 mContext.getString(R.string.pref_key_sync), true);
-		Log.d(mTag,"Enable sync: "+sync);
+		Timber.i("Enable sync: %b", sync);
 		final long SYNC_INTERVAL_IN_MINUTES = Long.parseLong(sharedPref.getString(
                 mContext.getString(R.string.pref_key_sync_interval), "480"));
-		Log.d(mTag,"Sync Interval set to: "+SYNC_INTERVAL_IN_MINUTES);
+        Timber.i("Sync Interval set to: %d", SYNC_INTERVAL_IN_MINUTES);
 		
 		Account mAccount = getSyncAccount(mContext);
 		

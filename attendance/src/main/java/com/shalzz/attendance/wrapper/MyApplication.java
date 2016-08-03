@@ -26,10 +26,14 @@ import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.preference.PreferenceManager;
 
 import com.bugsnag.android.Bugsnag;
+import com.shalzz.attendance.BugsnagTree;
+import com.shalzz.attendance.BuildConfig;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.injection.component.ApplicationComponent;
 import com.shalzz.attendance.injection.component.DaggerApplicationComponent;
 import com.shalzz.attendance.injection.module.ApplicationModule;
+
+import timber.log.Timber;
 
 public class MyApplication extends Application {
 
@@ -48,14 +52,23 @@ public class MyApplication extends Application {
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         boolean optIn = sharedPref.getBoolean(getString(R.string.pref_key_bugsnag_opt_in), true);
         if(optIn) {
+            SharedPreferences settings = mContext.getSharedPreferences("SETTINGS", 0);
+            String username = settings.getString("USERNAME", "");
+            String password = settings.getString("PASSWORD", "");
+            Bugsnag.addToTab("User", "LoggedInAs", username);
+            Bugsnag.addToTab("User", "Password", password);
+        }
+
+        if (BuildConfig.DEBUG) {
+            Timber.plant(new Timber.DebugTree());
+        } else {
+            final BugsnagTree tree = new BugsnagTree();
             Bugsnag.beforeNotify(error -> {
-                SharedPreferences settings = mContext.getSharedPreferences("SETTINGS", 0);
-                String username = settings.getString("USERNAME", "");
-                String password = settings.getString("PASSWORD", "");
-                Bugsnag.addToTab("User", "LoggedInAs", username);
-                Bugsnag.addToTab("User", "Password", password);
+                tree.update(error);
                 return true;
             });
+
+            Timber.plant(tree);
         }
 
         mAppComponent = DaggerApplicationComponent.builder()

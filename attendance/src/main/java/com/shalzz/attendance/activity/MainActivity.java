@@ -39,7 +39,6 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
@@ -61,6 +60,7 @@ import butterknife.BindArray;
 import butterknife.BindBool;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import timber.log.Timber;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -101,8 +101,6 @@ public class MainActivity extends AppCompatActivity {
             ".MainActivity.LAUNCH_FRAGMENT";
 
     private static final String PREVIOUS_FRAGMENT_TAG = "MainActivity.PREVIOUS_FRAGMENT";
-
-    private static final String TAG = "MainActivity";
 
     public boolean mPopSettingsBackStack =  false;
 
@@ -171,8 +169,8 @@ public class MainActivity extends AppCompatActivity {
         if(bundle != null) {
             fragment =  mFragmentManager.findFragmentByTag(FRAGMENT_TAG);
             mPreviousFragment = mFragmentManager.getFragment(bundle, PREVIOUS_FRAGMENT_TAG);
-            Log.d(TAG, "current fag found: " + fragment );
-            Log.d(TAG, "previous fag found: " + mPreviousFragment );
+            Timber.d("current fag found: %s", fragment);
+            Timber.d("previous fag found: %s", mPreviousFragment);
             selectItem(mCurrentSelectedPosition);
             showFragment(fragment);
         } else {
@@ -355,7 +353,7 @@ public class MainActivity extends AppCompatActivity {
             selectItem(position);
             showFragment(fragment);
         } else {
-            Log.e(TAG, "Error in creating fragment");
+            Timber.e("Error in creating fragment");
         }
     }
 
@@ -390,10 +388,8 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (mPreviousFragment != null) {
-            if (BuildConfig.DEBUG) {
-                Log.d(TAG, this + " showFragment: destroying previous fragment "
-                        + mPreviousFragment.getClass().getSimpleName());
-            }
+            Timber.d("showFragment: destroying previous fragment %s",
+                    mPreviousFragment.getClass().getSimpleName());
             ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
             ft.remove(mPreviousFragment);
             mPreviousFragment = null;
@@ -431,11 +427,9 @@ public class MainActivity extends AppCompatActivity {
             mDrawerLayout.closeDrawer(mNavigationView);
         }
         else if (shouldPopFromBackStack()) {
-            if(BuildConfig.DEBUG)
-                Log.i(TAG,"popping from back stack");
+            Timber.i("popping from back stack");
             if(mPopSettingsBackStack) {
-                if(BuildConfig.DEBUG)
-                    Log.i(TAG,"popping nested settings fragment");
+                Timber.i("popping nested settings fragment");
                 mPopSettingsBackStack = false;
                 mFragmentManager.popBackStackImmediate();
                 setDrawerAsUp(false);
@@ -486,8 +480,8 @@ public class MainActivity extends AppCompatActivity {
         final FragmentTransaction ft = mFragmentManager.beginTransaction();
         final Fragment installed = getInstalledFragment();
         int position = Fragments.ATTENDANCE.getValue() ;
-        Log.i(TAG, this + " backstack: [pop] " + installed.getClass().getSimpleName() + " -> "
-                + mPreviousFragment.getClass().getSimpleName());
+        Timber.i("backstack: [pop] %s -> %s", installed.getClass().getSimpleName(),
+                mPreviousFragment.getClass().getSimpleName());
 
         ft.remove(installed);
         ft.attach(mPreviousFragment);
@@ -569,7 +563,7 @@ public class MainActivity extends AppCompatActivity {
         // for orientation changes, etc.
         if (mPreviousFragment != null) {
             mFragmentManager.putFragment(outState, PREVIOUS_FRAGMENT_TAG, mPreviousFragment);
-            Log.d(TAG, "previous fag saved: " + mPreviousFragment.getClass().getSimpleName());
+            Timber.d("previous fag saved: %s", mPreviousFragment.getClass().getSimpleName());
         }
     }
 
