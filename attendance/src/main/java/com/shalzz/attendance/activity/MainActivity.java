@@ -181,7 +181,7 @@ public class MainActivity extends AppCompatActivity {
             } else if (getIntent().getAction() != null &&
                     getIntent().getAction().equals(Intent.ACTION_MANAGE_NETWORK_USAGE)) {
                 mCurrentSelectedPosition = Fragments.SETTINGS.getValue();
-		Bugsnag.leaveBreadcrumb("MANAGE_NETWORK_USAGE intent received");
+                Timber.i("MANAGE_NETWORK_USAGE intent received");
             }
             displayView(mCurrentSelectedPosition);
         }
@@ -427,26 +427,24 @@ public class MainActivity extends AppCompatActivity {
             mDrawerLayout.closeDrawer(mNavigationView);
         }
         else if (shouldPopFromBackStack()) {
-            Timber.i("popping from back stack");
             if(mPopSettingsBackStack) {
-                Timber.i("popping nested settings fragment");
+                Timber.i("Back: Popping from internal back stack");
                 mPopSettingsBackStack = false;
                 mFragmentManager.popBackStackImmediate();
                 setDrawerAsUp(false);
-                Bugsnag.leaveBreadcrumb("Back: Popping from internal back stack");
             } else {
+                Timber.i("Back: Popping from custom back stack");
                 // Custom back stack
                 popFromBackStack();
                 ActionBar actionBar = getSupportActionBar();
                 if (isTabletLayout && actionBar != null) {
                     actionBar.setDisplayHomeAsUpEnabled(false);
                 }
-                Bugsnag.leaveBreadcrumb("Back: Popping from custom back stack");
             }
         }
         else {
             ActivityCompat.finishAfterTransition(this);
-            Bugsnag.leaveBreadcrumb("App closed");
+            Timber.i("Back: App closed");
         }
     }
 

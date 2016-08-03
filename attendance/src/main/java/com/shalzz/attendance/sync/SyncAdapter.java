@@ -84,7 +84,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     @Override
     public void onPerformSync(Account account, Bundle extras, String authority,
                               ContentProviderClient provider, SyncResult syncResult) {
-	    Bugsnag.leaveBreadcrumb("Running sync adapter");
+        Timber.i("Running sync adapter");
 
         Call<List<Subject>> call = api.getAttendance(preferencesManager.getBasicAuthCredentials());
         call.enqueue(new Callback<List<Subject>>() {
