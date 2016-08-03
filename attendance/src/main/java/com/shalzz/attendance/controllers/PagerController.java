@@ -26,18 +26,16 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.view.View;
 
-import com.bugsnag.android.Bugsnag;
 import com.malinskiy.materialicons.IconDrawable;
 import com.malinskiy.materialicons.Iconify;
-import com.shalzz.attendance.BuildConfig;
 import com.shalzz.attendance.DatabaseHandler;
 import com.shalzz.attendance.Miscellaneous;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.activity.MainActivity;
 import com.shalzz.attendance.adapter.TimeTablePagerAdapter;
+import com.shalzz.attendance.fragment.TimeTablePagerFragment;
 import com.shalzz.attendance.model.remote.Period;
 import com.shalzz.attendance.network.DataAPI;
-import com.shalzz.attendance.fragment.TimeTablePagerFragment;
 import com.shalzz.attendance.network.RetrofitException;
 
 import java.util.Date;
@@ -165,12 +163,9 @@ public class PagerController {
                     showError(error.getMessage());
                 }
                 else {
-                    if(BuildConfig.DEBUG)
-                        t.printStackTrace();
-
                     String msg = mResources.getString(R.string.unexpected_error);
                     showError(msg);
-                    Bugsnag.notify(error);
+                    Timber.e(t, msg);
                 }
                 done();
             }

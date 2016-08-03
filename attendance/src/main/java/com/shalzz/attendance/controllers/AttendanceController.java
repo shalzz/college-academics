@@ -31,18 +31,16 @@ import android.support.v7.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 
-import com.bugsnag.android.Bugsnag;
 import com.malinskiy.materialicons.IconDrawable;
 import com.malinskiy.materialicons.Iconify;
-import com.shalzz.attendance.BuildConfig;
 import com.shalzz.attendance.DatabaseHandler;
 import com.shalzz.attendance.Miscellaneous;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.activity.MainActivity;
 import com.shalzz.attendance.adapter.ExpandableListAdapter;
-import com.shalzz.attendance.model.remote.Subject;
 import com.shalzz.attendance.fragment.AttendanceListFragment;
 import com.shalzz.attendance.loader.SubjectAsyncTaskLoader;
+import com.shalzz.attendance.model.remote.Subject;
 import com.shalzz.attendance.network.DataAPI;
 import com.shalzz.attendance.network.RetrofitException;
 
@@ -108,8 +106,7 @@ public class AttendanceController implements LoaderManager.LoaderCallbacks<List<
                 }
 
                 if (db.purgeOldSubjects() == 1) {
-                    if(BuildConfig.DEBUG)
-                        Timber.i("Purging Subjects...");
+                    Timber.i("Purging Subjects...");
                     mAdapter.clear();
                 }
 
@@ -164,12 +161,9 @@ public class AttendanceController implements LoaderManager.LoaderCallbacks<List<
                     showError(error.getMessage());
                 }
                 else {
-                    if(BuildConfig.DEBUG)
-                        t.printStackTrace();
-
                     String msg = mResources.getString(R.string.unexpected_error);
                     showError(msg);
-                    Bugsnag.notify(error);
+                    Timber.e(t, msg);
                 }
                 done();
             }

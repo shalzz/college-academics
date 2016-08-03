@@ -29,7 +29,6 @@ import android.preference.PreferenceManager;
 import android.view.View;
 
 import com.bugsnag.android.Bugsnag;
-import com.shalzz.attendance.BuildConfig;
 import com.shalzz.attendance.DatabaseHandler;
 import com.shalzz.attendance.Miscellaneous;
 import com.shalzz.attendance.R;
@@ -45,6 +44,7 @@ import okhttp3.Credentials;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import timber.log.Timber;
 
 
 public class UserAccount {
@@ -107,12 +107,9 @@ public class UserAccount {
                     showError(error.getMessage());
                 }
                 else if (error.getKind() == RetrofitException.Kind.UNEXPECTED) {
-                    if(BuildConfig.DEBUG)
-                        t.printStackTrace();
-
                     String msg = mContext.getString(R.string.unexpected_error);
                     showError(msg);
-                    Bugsnag.notify(error);
+                    Timber.e(t, msg);
                 }
             }
         });
