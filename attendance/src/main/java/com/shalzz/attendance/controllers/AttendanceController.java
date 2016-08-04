@@ -111,6 +111,10 @@ public class AttendanceController implements LoaderManager.LoaderCallbacks<List<
                 }
 
                 db.close();
+
+                // Don't update the view, if there isn't one.
+                if(mView == null)
+                    return;
                 mAdapter.addAll(subjects);
                 mView.showcaseView();
                 // Update the drawer header

@@ -108,12 +108,15 @@ public class PagerController {
                 if (db.purgeOldPeriods() == 1) {
                     Timber.i("Purging Periods...");
                 }
+                db.close();
+
+                // Don't update the view, if there isn't one.
+                if(mView == null)
+                    return;
 
                 // TODO: use an event bus or RxJava to update fragment contents
-
                 setToday();
                 mView.updateTitle(-1);
-                db.close();
 
                 // Update the drawer header
                 ((MainActivity) mView.getActivity()).updateLastSync();

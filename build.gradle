@@ -26,10 +26,12 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:2.1.2'
         classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
-        classpath 'com.squareup.sqldelight:gradle-plugin:0.3.1'
+        classpath 'com.squareup.sqldelight:gradle-plugin:0.4.3'
         classpath 'me.tatarka:gradle-retrolambda:3.2.5'
         classpath 'me.tatarka.retrolambda.projectlombok:lombok.ast:0.2.3.a2'
         classpath 'com.github.triplet.gradle:play-publisher:1.1.4'
+
+	    //noinspection GradleDynamicVersion
 	    classpath 'com.bugsnag:bugsnag-android-gradle-plugin:+'
     }
 

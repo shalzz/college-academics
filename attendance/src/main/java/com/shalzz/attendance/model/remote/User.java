@@ -26,6 +26,7 @@ import com.google.auto.value.AutoValue;
 import com.google.gson.Gson;
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.SerializedName;
+import com.squareup.sqldelight.RowMapper;
 
 /** Field names need to be the same
  *  as that of the fields in the
@@ -46,10 +47,10 @@ import com.google.gson.annotations.SerializedName;
  */
 @AutoValue
 public abstract class User implements UserModel, Parcelable {
-    public static final Mapper<User> MAPPER =
-            new Mapper<>((sap_id, name, course, password) -> create(name,course,password,sap_id));
+    public static final Factory<User> FACTORY =
+            new Factory<>((sap_id, name, course, password) -> create(name,course,password,sap_id));
 
-    public static final class Marshal extends UserMarshal<Marshal> { }
+    public static final RowMapper<User> MAPPER = FACTORY.select_allMapper();
 
     @NonNull
     @Override

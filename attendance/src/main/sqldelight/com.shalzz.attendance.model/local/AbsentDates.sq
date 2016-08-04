@@ -1,6 +1,6 @@
 CREATE TABLE absent (
     subject_id INTEGER AS Integer,
-    absent_date TEXT AS 'java.util.Date',
+    absent_date TEXT AS java.util.Date,
     UNIQUE(subject_id, absent_date),
     FOREIGN KEY (subject_id) REFERENCES subject(id) ON DELETE CASCADE
 );

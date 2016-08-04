@@ -25,6 +25,7 @@ import android.support.annotation.Nullable;
 import com.google.auto.value.AutoValue;
 import com.google.gson.TypeAdapter;
 import com.shalzz.attendance.wrapper.DateHelper;
+import com.squareup.sqldelight.RowMapper;
 
 import org.immutables.gson.Gson;
 
@@ -56,7 +57,7 @@ import java.util.Locale;
  */
 @AutoValue
 public abstract class Subject implements SubjectModel, Parcelable {
-    public static final Mapper<Subject> MAPPER = new SubjectModel.Mapper<>(
+    public static final Factory<Subject> FACTORY = new Factory<>(
             (id, name, attended, held, last_updated) -> Subject.builder()
                     .id(id)
                     .name(name)
@@ -66,7 +67,7 @@ public abstract class Subject implements SubjectModel, Parcelable {
                     .build()
     );
 
-    public static final class Marshal extends SubjectMarshal<Marshal> { }
+    public static final RowMapper<Subject> MAPPER = FACTORY.select_allMapper();
 
     @Nullable
     @Override

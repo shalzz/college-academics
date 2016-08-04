@@ -26,6 +26,7 @@ import android.os.Parcelable;
 import com.google.auto.value.AutoValue;
 import com.shalzz.attendance.wrapper.DateHelper;
 import com.squareup.sqldelight.ColumnAdapter;
+import com.squareup.sqldelight.RowMapper;
 
 import java.util.Date;
 
@@ -43,14 +44,10 @@ public abstract class AbsentDate implements AbsentDatesModel, Parcelable {
         }
     };
 
-    public static final Mapper<AbsentDate> MAPPER = new Mapper<>((Mapper.Creator<AbsentDate>)
+    public static final Factory<AbsentDate> FACTORY = new Factory<>(
             AbsentDate::create, DATE_ADAPTER);
 
-    public static final class Marshal extends AbsentDatesMarshal<Marshal> {
-        public Marshal() {
-            super(DATE_ADAPTER);
-        }
-    }
+    public static final RowMapper<AbsentDate> MAPPER = FACTORY.select_by_idMapper();
 
     public static AbsentDate create(Integer subject_id, Date absent_date) {
         return new AutoValue_AbsentDate(subject_id, absent_date);
