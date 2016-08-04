@@ -54,6 +54,11 @@ public class DateHelper {
         return Week.getFullDay(weekday - 1);
     }
 
+    public static String getFormatedCurrentTime() {
+        DateFormat format = new SimpleDateFormat("HH:mm:ss.SSS", Locale.US);
+        return format.format(new Date());
+    }
+
     public static Date parseDate(String datestr) {
         Date date = null;
         try {

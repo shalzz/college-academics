@@ -27,6 +27,7 @@ import com.google.auto.value.AutoValue;
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.SerializedName;
 import com.shalzz.attendance.wrapper.DateHelper;
+import com.squareup.sqldelight.RowMapper;
 
 import org.immutables.gson.Gson;
 
@@ -56,10 +57,10 @@ import java.util.Date;
  */
 @AutoValue
 public abstract class Period implements PeriodModel, Parcelable {
-    public static final Mapper<Period> MAPPER =
-            new Mapper<>(Period::create);
+    public static final Factory<Period> FACTORY =
+            new Factory<>(Period::create);
 
-    public static final class Marshal extends PeriodMarshal<Marshal> { }
+    public static final RowMapper<Period> MAPPER = FACTORY.select_by_week_dayMapper();
 
     @Override
     public abstract int id();

@@ -3,6 +3,8 @@ package com.shalzz.attendance;
 import android.util.Log;
 import com.bugsnag.android.Bugsnag;
 import com.bugsnag.android.Error;
+import com.shalzz.attendance.wrapper.DateHelper;
+
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Locale;
@@ -19,7 +21,11 @@ public final class BugsnagTree extends Timber.Tree {
 
     @Override
     protected void log(int priority, String tag, String message, Throwable t) {
-        message = System.currentTimeMillis() + " " + priorityToString(priority) + " " + message;
+        message = String.format("%s %s %s",
+                DateHelper.getFormatedCurrentTime(),
+                priorityToString(priority),
+                message);
+
         synchronized (buffer) {
             buffer.addLast(message);
             if (buffer.size() > BUFFER_SIZE) {

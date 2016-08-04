@@ -19,7 +19,6 @@
 
 package com.shalzz.attendance;
 
-import android.app.Application;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -131,7 +130,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public void addSubject(Subject subject, long timestamp) {
         SQLiteDatabase db = getWritableDatabase();
 
-        db.insertWithOnConflict(Subject.TABLE_NAME,null, new Subject.Marshal()
+        db.insertWithOnConflict(Subject.TABLE_NAME,null, Subject.FACTORY.marshal()
                         .id(subject.id())
                         .name(subject.name())
                         .attended(subject.attended())
@@ -142,7 +141,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         // Store the dates in another table corresponding to the same id
         for(Date date : subject.absent_dates()) {
-            db.insertWithOnConflict(AbsentDate.TABLE_NAME, null, new AbsentDate.Marshal()
+            db.insertWithOnConflict(AbsentDate.TABLE_NAME, null, AbsentDate.FACTORY.marshal()
                             .subject_id(subject.id())
                             .absent_date(date)
                             .asContentValues(),
@@ -159,8 +158,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor;
 
-        if (filter != null) {
-            cursor = db.rawQuery(Subject.SELECT_LIKE_NAME, new String[] {filter});
+        if (filter != null && !filter.isEmpty()) {
+            cursor = db.rawQuery(Subject.SELECT_LIKE_NAME, new String[] {'%'+filter+'%'});
         } else {
             cursor = db.rawQuery(Subject.SELECT_ALL,null);
         }
@@ -221,7 +220,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     public void addUser(User user) {
         SQLiteDatabase db = this.getWritableDatabase();
-        db.insertWithOnConflict(User.TABLE_NAME, null, new User.Marshal()
+        db.insertWithOnConflict(User.TABLE_NAME, null, User.FACTORY.marshal()
                         .sap_id(user.sap_id())
                         .name(user.name())
                         .course(user.course())
@@ -282,7 +281,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     public void addPeriod(Period period, long timestamp) {
         SQLiteDatabase db = this.getWritableDatabase();
-        db.insertWithOnConflict(Period.TABLE_NAME, null, new Period.Marshal()
+        db.insertWithOnConflict(Period.TABLE_NAME, null, Period.FACTORY.marshal()
                         .id(period.id())
                         .name(period.name())
                         .week_day(period.week_day())

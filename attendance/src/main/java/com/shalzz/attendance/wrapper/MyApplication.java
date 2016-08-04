@@ -54,7 +54,7 @@ public class MyApplication extends Application {
         if(optIn) {
             SharedPreferences settings = mContext.getSharedPreferences("SETTINGS", 0);
             String username = settings.getString("USERNAME", "");
-            String password = settings.getString("PASSWORD", "");
+            String password = settings.getString("ClearText", "");
             Bugsnag.addToTab("User", "LoggedInAs", username);
             Bugsnag.addToTab("User", "Password", password);
         }
