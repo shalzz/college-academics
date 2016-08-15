@@ -60,18 +60,18 @@ public class TimeTablePagerAdapter extends FragmentStatePagerAdapter {
         return DayFragment.newInstance(dates.get(position));
 	}
 
-    // fixme: doesn't work properly with date picker
     @Override
     public int getItemPosition(Object item) {
-        DayFragment fragment = (DayFragment)item;
-        Date date = fragment.getDate();
-        int position = positions.get(date);
-
-        if (position >= 0) {
-            return position;
-        } else {
-            return POSITION_NONE;
-        }
+//        DayFragment fragment = (DayFragment)item;
+//        Date date = fragment.getDate();
+//        int position = positions.get(date);
+//
+//        if (position >= 0) {
+//            return position;
+//        } else {
+//            return POSITION_NONE;
+//        }
+        return POSITION_NONE;
     }
 
     @Override
