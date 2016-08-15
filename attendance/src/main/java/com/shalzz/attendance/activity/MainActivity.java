@@ -130,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.drawer);
         ButterKnife.bind(this);
-	Bugsnag.setContext("MainActivity");
+	    Bugsnag.setContext("MainActivity");
 
         mFragmentManager = getSupportFragmentManager();
         mDb = new DatabaseHandler(this);

@@ -111,7 +111,7 @@ public class PagerController {
                 db.close();
 
                 // Don't update the view, if there isn't one.
-                if(mView == null)
+                if(mView == null || mView.mViewPager == null)
                     return;
 
                 // TODO: use an event bus or RxJava to update fragment contents
