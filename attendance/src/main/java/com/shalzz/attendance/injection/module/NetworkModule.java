@@ -25,6 +25,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.ryanharter.auto.value.gson.AutoValueGsonTypeAdapterFactory;
 import com.shalzz.attendance.BuildConfig;
+import com.shalzz.attendance.Miscellaneous;
 import com.shalzz.attendance.network.DataAPI;
 import com.shalzz.attendance.network.ErrorHandlingCallAdapterFactory;
 import com.shalzz.attendance.network.interceptor.AuthInterceptor;
@@ -44,7 +45,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class NetworkModule {
 
     @Provides @Singleton
-    public static Gson provideGson() {
+    static Gson provideGson() {
         return new GsonBuilder()
                 .registerTypeAdapterFactory(new AutoValueGsonTypeAdapterFactory())
                 .setDateFormat("yyyy-MM-dd")
@@ -52,23 +53,23 @@ public class NetworkModule {
     }
 
     @Provides @Singleton @NonNull
-    public static OkHttpClient provideClient(MyPreferencesManager preferences) {
+    static OkHttpClient provideClient(MyPreferencesManager preferences) {
         final OkHttpClient.Builder okHttpBuilder = new OkHttpClient.Builder()
                 .addInterceptor(new HeaderInterceptor())
-                .addInterceptor(new AuthInterceptor(preferences));
+                .addInterceptor(new AuthInterceptor(preferences))
+                .addNetworkInterceptor(new LoggingInterceptor());
 
-                if(BuildConfig.DEBUG)
-                    okHttpBuilder.addNetworkInterceptor(new LoggingInterceptor());
-
-//                .proxyAuthenticator(preferences.getProxyCredentials())//fixme: check when toapply
-//                .proxySelector(Miscellaneous.getProxySelector());
+        if(Miscellaneous.useProxy()) {
+            okHttpBuilder.proxyAuthenticator(preferences.getProxyCredentials());
+            okHttpBuilder.proxySelector(Miscellaneous.getProxySelector());
+        }
 
         return okHttpBuilder.build();
     }
 
     @Provides @Singleton @NonNull
-    public static DataAPI provideApi(@NonNull OkHttpClient okHttpClient,
-                                     @NonNull Gson gson) {
+    static DataAPI provideApi(@NonNull OkHttpClient okHttpClient,
+                              @NonNull Gson gson) {
         return new Retrofit.Builder()
                 .baseUrl(DataAPI.ENDPOINT)
                 .client(okHttpClient)
