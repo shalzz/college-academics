@@ -1,11 +1,13 @@
 deploy: check-env
+	git push
 	git checkout master
-	git merge dev
+	git merge dev --log --no-edit
 	git push
 	git checkout release
-	git merge master
+	git merge master --log --no-edit
 	git tag -s $(TAG)
 	git push && git push --tags
+	git checkout dev
 
 check-env:
 ifndef TAG
