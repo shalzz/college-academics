@@ -45,7 +45,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class NetworkModule {
 
     @Provides @Singleton
-    public static Gson provideGson() {
+    static Gson provideGson() {
         return new GsonBuilder()
                 .registerTypeAdapterFactory(new AutoValueGsonTypeAdapterFactory())
                 .setDateFormat("yyyy-MM-dd")
@@ -53,7 +53,7 @@ public class NetworkModule {
     }
 
     @Provides @Singleton @NonNull
-    public static OkHttpClient provideClient(MyPreferencesManager preferences) {
+    static OkHttpClient provideClient(MyPreferencesManager preferences) {
         final OkHttpClient.Builder okHttpBuilder = new OkHttpClient.Builder()
                 .addInterceptor(new HeaderInterceptor())
                 .addInterceptor(new AuthInterceptor(preferences))
@@ -68,8 +68,8 @@ public class NetworkModule {
     }
 
     @Provides @Singleton @NonNull
-    public static DataAPI provideApi(@NonNull OkHttpClient okHttpClient,
-                                     @NonNull Gson gson) {
+    static DataAPI provideApi(@NonNull OkHttpClient okHttpClient,
+                              @NonNull Gson gson) {
         return new Retrofit.Builder()
                 .baseUrl(DataAPI.ENDPOINT)
                 .client(okHttpClient)

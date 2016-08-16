@@ -37,7 +37,7 @@ import dagger.Provides;
 @Module
 public class ApplicationModule {
 
-    protected final Application mApplication;
+    private final Application mApplication;
 
     /**
      * Enum used to identify the tracker that needs to be used for tracking.
@@ -52,7 +52,7 @@ public class ApplicationModule {
         ECOMMERCE_TRACKER, // Tracker used by all ecommerce transactions from a company.
     }
 
-    HashMap<TrackerName, Tracker> mTrackers = new HashMap<TrackerName, Tracker>();
+    private HashMap<TrackerName, Tracker> mTrackers = new HashMap<TrackerName, Tracker>();
 
     public ApplicationModule(Application application) {
         mApplication = application;
@@ -70,7 +70,7 @@ public class ApplicationModule {
 
     @Provides @Named("app")
     @Singleton
-    public synchronized Tracker provideTracker(Context context) {
+    synchronized Tracker provideTracker(Context context) {
         TrackerName trackerId = TrackerName.APP_TRACKER;
         if (!mTrackers.containsKey(trackerId)) {
             GoogleAnalytics analytics = GoogleAnalytics.getInstance(context);
