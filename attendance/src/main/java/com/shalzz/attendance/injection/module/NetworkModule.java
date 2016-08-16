@@ -25,6 +25,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.ryanharter.auto.value.gson.AutoValueGsonTypeAdapterFactory;
 import com.shalzz.attendance.BuildConfig;
+import com.shalzz.attendance.Miscellaneous;
 import com.shalzz.attendance.network.DataAPI;
 import com.shalzz.attendance.network.ErrorHandlingCallAdapterFactory;
 import com.shalzz.attendance.network.interceptor.AuthInterceptor;
@@ -55,13 +56,13 @@ public class NetworkModule {
     public static OkHttpClient provideClient(MyPreferencesManager preferences) {
         final OkHttpClient.Builder okHttpBuilder = new OkHttpClient.Builder()
                 .addInterceptor(new HeaderInterceptor())
-                .addInterceptor(new AuthInterceptor(preferences));
+                .addInterceptor(new AuthInterceptor(preferences))
+                .addNetworkInterceptor(new LoggingInterceptor());
 
-                if(BuildConfig.DEBUG)
-                    okHttpBuilder.addNetworkInterceptor(new LoggingInterceptor());
-
-//                .proxyAuthenticator(preferences.getProxyCredentials())//fixme: check when toapply
-//                .proxySelector(Miscellaneous.getProxySelector());
+        if(Miscellaneous.useProxy()) {
+            okHttpBuilder.proxyAuthenticator(preferences.getProxyCredentials());
+            okHttpBuilder.proxySelector(Miscellaneous.getProxySelector());
+        }
 
         return okHttpBuilder.build();
     }
