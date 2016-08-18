@@ -1,12 +1,10 @@
 deploy: check-env
-	git push
 	git checkout master
-	git merge dev --log --no-edit
-	git push
+	git merge dev --no-edit
 	git checkout release
-	git merge master --log --no-edit
+	git merge master --no-edit
 	git tag -s $(TAG)
-	git push && git push --tags
+	git push --all && git push --tags
 	git checkout dev
 
 check-env:

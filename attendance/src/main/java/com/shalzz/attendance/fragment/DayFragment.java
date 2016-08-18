@@ -113,7 +113,7 @@ public class DayFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        assert unbinder!=null;
-        unbinder.unbind();
+        if(unbinder!=null)
+            unbinder.unbind();
     }
 }

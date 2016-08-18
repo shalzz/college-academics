@@ -47,6 +47,7 @@ import android.widget.TextView;
 import com.bugsnag.android.Bugsnag;
 import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.Target;
+import com.google.android.gms.analytics.Tracker;
 import com.shalzz.attendance.BuildConfig;
 import com.shalzz.attendance.DatabaseHandler;
 import com.shalzz.attendance.R;
@@ -55,6 +56,9 @@ import com.shalzz.attendance.fragment.SettingsFragment;
 import com.shalzz.attendance.fragment.TimeTablePagerFragment;
 import com.shalzz.attendance.model.remote.User;
 import com.shalzz.attendance.wrapper.MyApplication;
+
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import butterknife.BindArray;
 import butterknife.BindBool;
@@ -84,6 +88,10 @@ public class MainActivity extends AppCompatActivity {
 
     @BindArray(R.array.drawer_array)
     String[] mNavTitles;
+
+    @Inject
+    @Named("app")
+    Tracker mTracker;
 
     /**
      * To prevent saving the drawer position when logging out.
@@ -281,6 +289,8 @@ public class MainActivity extends AppCompatActivity {
             DrawerheaderVH.tv_course.setText(user.course());
 	        Bugsnag.setUserId(user.sap_id());
             Bugsnag.setUserName(user.name());
+            mTracker.set("&uid", user.sap_id());
+
         }
     }
 

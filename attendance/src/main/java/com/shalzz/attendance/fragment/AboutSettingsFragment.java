@@ -47,7 +47,7 @@ public class AboutSettingsFragment extends PreferenceFragmentCompat {
     private MainActivity mainActivity;
 
     @Inject @Named("app")
-    Tracker t;
+    Tracker mTracker;
 
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
@@ -64,8 +64,8 @@ public class AboutSettingsFragment extends PreferenceFragmentCompat {
     public void onStart() {
         super.onStart();
 
-        t.setScreenName(getClass().getSimpleName());
-        t.send(new HitBuilders.ScreenViewBuilder().build());
+        mTracker.setScreenName(getClass().getSimpleName());
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
     }
 
     @Override
@@ -81,6 +81,14 @@ public class AboutSettingsFragment extends PreferenceFragmentCompat {
             x[i] = (char) (x[i] + trans[i]);
         }
         auth.setSummary(getString(R.string.copyright_year)+ " " +String.valueOf(x));
+        auth.setOnPreferenceClickListener(preference -> {
+            mTracker.send(new HitBuilders.EventBuilder()
+                    .setCategory("Click")
+                    .setAction("Author")
+                    .build());
+            return true;
+        });
+
         Preference pref = prefScreen.getPreference(1);
         pref.setOnPreferenceClickListener(preference -> {
             final String name = getString(R.string.app_name);
@@ -89,16 +97,42 @@ public class AboutSettingsFragment extends PreferenceFragmentCompat {
                                         + getString(R.string.app_copyright);
             final License license = new GnuGeneralPublicLicense20();
             final Notice notice = new Notice(name, url, copyright, license);
-            new LicensesDialog.Builder(mContext).setNotices(notice).setShowFullLicenseText(true).build().show();
+            new LicensesDialog.Builder(mContext)
+                    .setNotices(notice)
+                    .setShowFullLicenseText(true)
+                    .build()
+                    .show();
+
+            mTracker.send(new HitBuilders.EventBuilder()
+                    .setCategory("Click")
+                    .setAction("License")
+                    .build());
             return true;
         });
+
         Preference noticePref = prefScreen.getPreference(2);
         noticePref.setOnPreferenceClickListener(preference -> {
-            new LicensesDialog.Builder(mContext).setNotices(R.raw.notices).setIncludeOwnLicense(true)
-                    .build().show();
+            new LicensesDialog.Builder(mContext)
+                    .setNotices(R.raw.notices)
+                    .setIncludeOwnLicense(true)
+                    .build()
+                    .show();
+
+            mTracker.send(new HitBuilders.EventBuilder()
+                    .setCategory("Click")
+                    .setAction("OSS License")
+                    .build());
             return true;
         });
+
         Preference versionPref = prefScreen.getPreference(3);
         versionPref.setSummary("v"+BuildConfig.VERSION_NAME);
+        versionPref.setOnPreferenceClickListener(preference -> {
+            mTracker.send(new HitBuilders.EventBuilder()
+                    .setCategory("Click")
+                    .setAction("Version")
+                    .build());
+            return true;
+        });
     }
 }

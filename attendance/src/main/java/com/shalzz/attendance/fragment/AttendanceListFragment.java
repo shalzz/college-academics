@@ -115,7 +115,7 @@ public class AttendanceListFragment extends Fragment implements
     String hint_search_view;
 
     @Inject @Named("app")
-    Tracker t;
+    Tracker mTracker;
 
     @Inject
     DataAPI api;
@@ -144,8 +144,8 @@ public class AttendanceListFragment extends Fragment implements
     public void onStart() {
         super.onStart();
 
-        t.setScreenName(getClass().getSimpleName());
-        t.send(new HitBuilders.ScreenViewBuilder().build());
+        mTracker.setScreenName(getClass().getSimpleName());
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
     }
 
     @Override
@@ -265,6 +265,12 @@ public class AttendanceListFragment extends Fragment implements
             }
             return true;
         }
+        else if(item.getItemId() == R.id.menu_search) {
+            mTracker.send(new HitBuilders.EventBuilder()
+                    .setCategory("Action")
+                    .setAction("Search")
+                    .build());
+        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -279,7 +285,7 @@ public class AttendanceListFragment extends Fragment implements
         observer.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
             @Override
             public boolean onPreDraw() {
-                // We don't want to continue getting called for every draw.
+                // We don'mTracker want to continue getting called for every draw.
                 if (observer.isAlive()) {
                     observer.removeOnPreDrawListener(this);
                 }
