@@ -19,6 +19,7 @@
 
 package com.shalzz.attendance.injection.module;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 
 import com.google.gson.Gson;
@@ -53,13 +54,13 @@ public class NetworkModule {
     }
 
     @Provides @Singleton @NonNull
-    static OkHttpClient provideClient(MyPreferencesManager preferences) {
+    static OkHttpClient provideClient(MyPreferencesManager preferences, Miscellaneous misc) {
         final OkHttpClient.Builder okHttpBuilder = new OkHttpClient.Builder()
                 .addInterceptor(new HeaderInterceptor())
                 .addInterceptor(new AuthInterceptor(preferences))
                 .addNetworkInterceptor(new LoggingInterceptor());
 
-        if(Miscellaneous.useProxy()) {
+        if(misc.useProxy()) {
             okHttpBuilder.proxyAuthenticator(preferences.getProxyCredentials());
             okHttpBuilder.proxySelector(Miscellaneous.getProxySelector());
         }
@@ -69,12 +70,13 @@ public class NetworkModule {
 
     @Provides @Singleton @NonNull
     static DataAPI provideApi(@NonNull OkHttpClient okHttpClient,
-                              @NonNull Gson gson) {
+                              @NonNull Gson gson,
+                              Context context) {
         return new Retrofit.Builder()
                 .baseUrl(DataAPI.ENDPOINT)
                 .client(okHttpClient)
                 .addConverterFactory(GsonConverterFactory.create(gson))
-                .addCallAdapterFactory(ErrorHandlingCallAdapterFactory.create())
+                .addCallAdapterFactory(ErrorHandlingCallAdapterFactory.create(context))
                 .validateEagerly(BuildConfig.DEBUG) // Fail early: check Retrofit configuration at creation time in Debug build.
                 .build()
                 .create(DataAPI.class);

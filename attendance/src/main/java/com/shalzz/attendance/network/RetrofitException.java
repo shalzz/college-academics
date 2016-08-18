@@ -1,5 +1,7 @@
 package com.shalzz.attendance.network;
 
+import android.content.Context;
+
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.wrapper.MyApplication;
 
@@ -11,37 +13,41 @@ import retrofit2.Converter;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
+import static com.google.android.gms.analytics.internal.zzy.g;
+
 public class RetrofitException extends RuntimeException {
-    public static RetrofitException httpError(String url, Response response, Retrofit retrofit) {
+    static RetrofitException httpError(String url, Response response, Retrofit retrofit,
+                                              Context context) {
         String message;
 
         switch (response.code()) {
             case 401:
-                message = MyApplication.getContext().getString(R.string.auth_error);
+                message = context.getString(R.string.auth_error);
                 break;
             case 404:
             case 407:
-                message =  MyApplication.getContext().getString(R.string.proxy_error);
+                message =  context.getString(R.string.proxy_error);
                 break;
             default:
-                message =  MyApplication.getContext().getString(R.string.generic_server_down);
+                message =  context.getString(R.string.generic_server_down);
         }
 
         return new RetrofitException(message, url, response, Kind.HTTP, null, retrofit);
     }
 
-    public static RetrofitException emptyResponseError(String url, Response response, Retrofit retrofit) {
-        String message = MyApplication.getContext().getString(R.string.no_data_content);
+    static RetrofitException emptyResponseError(String url, Response response,
+                                                       Retrofit retrofit, Context context) {
+        String message = context.getString(R.string.no_data_content);
         return new RetrofitException(message, url, response, Kind.EMPTY_RESPONSE,
                 null, retrofit);
     }
 
-    public static RetrofitException networkError(IOException exception) {
-        String message = MyApplication.getContext().getString(R.string.no_internet);
+    static RetrofitException networkError(IOException exception, Context context) {
+        String message = context.getString(R.string.no_internet);
         return new RetrofitException(message, null, null, Kind.NETWORK, exception, null);
     }
 
-    public static RetrofitException unexpectedError(Throwable exception) {
+    static RetrofitException unexpectedError(Throwable exception) {
         return new RetrofitException(exception.getMessage(), null, null, Kind.UNEXPECTED, exception, null);
     }
 
@@ -65,7 +71,8 @@ public class RetrofitException extends RuntimeException {
     private final Kind kind;
     private final Retrofit retrofit;
 
-    RetrofitException(String message, String url, Response response, Kind kind, Throwable exception, Retrofit retrofit) {
+    private RetrofitException(String message, String url, Response response, Kind kind, Throwable
+            exception, Retrofit retrofit) {
         super(message, exception);
         this.url = url;
         this.response = response;
