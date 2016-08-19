@@ -3,7 +3,6 @@ package com.shalzz.attendance.network;
 import android.content.Context;
 
 import com.shalzz.attendance.R;
-import com.shalzz.attendance.wrapper.MyApplication;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
@@ -12,8 +11,6 @@ import okhttp3.ResponseBody;
 import retrofit2.Converter;
 import retrofit2.Response;
 import retrofit2.Retrofit;
-
-import static com.google.android.gms.analytics.internal.zzy.g;
 
 public class RetrofitException extends RuntimeException {
     static RetrofitException httpError(String url, Response response, Retrofit retrofit,

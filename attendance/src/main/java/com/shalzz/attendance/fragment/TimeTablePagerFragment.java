@@ -21,7 +21,6 @@ package com.shalzz.attendance.fragment;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
@@ -63,8 +62,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnPageChange;
 import butterknife.Unbinder;
-
-import static com.google.android.gms.analytics.internal.zzy.o;
 
 public class TimeTablePagerFragment extends Fragment {
 

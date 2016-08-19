@@ -40,9 +40,6 @@ import javax.inject.Named;
 
 import timber.log.Timber;
 
-import static com.google.android.gms.analytics.internal.zzy.t;
-import static com.shalzz.attendance.R.string.pref_key_use_proxy;
-
 public class SplashActivity extends AppCompatActivity {
 
     @Inject

@@ -32,8 +32,6 @@ import com.shalzz.attendance.model.remote.Period;
 import com.shalzz.attendance.model.remote.Subject;
 import com.shalzz.attendance.model.remote.User;
 import com.shalzz.attendance.wrapper.DateHelper;
-import com.shalzz.attendance.wrapper.MyApplication;
-import com.shalzz.attendance.wrapper.MyPreferencesManager;
 
 import java.util.ArrayList;
 import java.util.Date;
