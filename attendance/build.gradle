@@ -87,8 +87,8 @@ android {
         final SUPPORT_LIBRARY_VERSION = '23.2.1'
 
         // google support libraries
-        compile 'com.google.android.gms:play-services-analytics:8.+'
-        compile 'com.google.android.gms:play-services-ads:8.+'
+        compile 'com.google.android.gms:play-services-analytics:9.+'
+        compile 'com.google.android.gms:play-services-ads:9.+'
         compile "com.android.support:recyclerview-v7:$SUPPORT_LIBRARY_VERSION"
         compile "com.android.support:design:$SUPPORT_LIBRARY_VERSION"
         compile "com.android.support:support-v4:$SUPPORT_LIBRARY_VERSION"

@@ -34,7 +34,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.shalzz.attendance.wrapper.MyApplication;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -54,6 +53,10 @@ import javax.inject.Inject;
 import timber.log.Timber;
 
 public class Miscellaneous {
+
+    // Google Analytics Custom Dimensions
+    public static final int CUSTOM_DIMENSION_THEME = 1;
+    public static final int CUSTOM_DIMENSION_PROXY = 2;
 
     private MaterialDialog.Builder builder = null;
     private MaterialDialog pd = null;
@@ -199,19 +202,18 @@ public class Miscellaneous {
      * Determines whether to use proxy host or not.
      * @return true or false.
      */
-    public static boolean useProxy() {
-        Context context = MyApplication.getContext();
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
-        boolean useProxy = sharedPref.getBoolean(context.getString(R.string.pref_key_use_proxy), false);
+    public boolean useProxy() {
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mContext);
+        boolean useProxy = sharedPref.getBoolean(mContext.getString(R.string.pref_key_use_proxy), false);
         if(useProxy) {
-            ConnectivityManager connManager = (ConnectivityManager) context
+            ConnectivityManager connManager = (ConnectivityManager) mContext
                     .getSystemService(Context.CONNECTIVITY_SERVICE);
             NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
             if (mWifi.isConnectedOrConnecting()) {
-                WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+                WifiManager wifiManager = (WifiManager) mContext.getSystemService(Context.WIFI_SERVICE);
                 WifiInfo wifiInfo = wifiManager.getConnectionInfo();
                 Timber.d("Wifi changed to %s", wifiInfo.getSSID());
-                return wifiInfo.getSSID().equals(context.getString(R.string.upesnet_ssid));
+                return wifiInfo.getSSID().equals(mContext.getString(R.string.upesnet_ssid));
             }
         }
         return false;

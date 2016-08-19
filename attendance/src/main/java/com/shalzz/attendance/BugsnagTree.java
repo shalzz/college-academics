@@ -1,6 +1,7 @@
 package com.shalzz.attendance;
 
 import android.util.Log;
+
 import com.bugsnag.android.Bugsnag;
 import com.bugsnag.android.Error;
 import com.shalzz.attendance.wrapper.DateHelper;
@@ -8,6 +9,7 @@ import com.shalzz.attendance.wrapper.DateHelper;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Locale;
+
 import timber.log.Timber;
 
 /**

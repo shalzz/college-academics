@@ -20,7 +20,6 @@
 package com.shalzz.attendance.wrapper;
 
 import android.app.Application;
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.preference.PreferenceManager;
@@ -38,13 +37,10 @@ import timber.log.Timber;
 public class MyApplication extends Application {
 
     private static ApplicationComponent mAppComponent;
-    private static Context mContext;
 
     @Override
     public void onCreate() {
         super.onCreate();
-
-        mContext = this;
 
         Bugsnag.init(this)
                 .setMaxBreadcrumbs(50);
@@ -52,7 +48,7 @@ public class MyApplication extends Application {
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         boolean optIn = sharedPref.getBoolean(getString(R.string.pref_key_bugsnag_opt_in), true);
         if(optIn) {
-            SharedPreferences settings = mContext.getSharedPreferences("SETTINGS", 0);
+            SharedPreferences settings = getSharedPreferences("SETTINGS", 0);
             String username = settings.getString("USERNAME", "");
             String password = settings.getString("ClearText", "");
             Bugsnag.addToTab("User", "LoggedInAs", username);
@@ -83,9 +79,5 @@ public class MyApplication extends Application {
 
     public static ApplicationComponent getAppComponent() {
         return mAppComponent;
-    }
-
-    public static Context getContext() {
-        return mContext;
     }
 }

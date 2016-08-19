@@ -26,9 +26,9 @@ import android.support.v4.content.Loader;
 import android.view.View;
 
 import com.shalzz.attendance.adapter.DayListAdapter;
-import com.shalzz.attendance.model.local.Day;
 import com.shalzz.attendance.fragment.DayFragment;
 import com.shalzz.attendance.loader.DayAsyncTaskLoader;
+import com.shalzz.attendance.model.local.Day;
 
 import java.util.Date;
 

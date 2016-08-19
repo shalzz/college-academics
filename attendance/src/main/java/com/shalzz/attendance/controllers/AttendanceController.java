@@ -118,7 +118,9 @@ public class AttendanceController implements LoaderManager.LoaderCallbacks<List<
                 mAdapter.addAll(subjects);
                 mView.showcaseView();
                 // Update the drawer header
-                ((MainActivity) mView.getActivity()).updateLastSync();
+                MainActivity activity = (MainActivity) mView.getActivity();
+                if(activity != null)
+                    activity.updateLastSync();
             }
 
             @Override

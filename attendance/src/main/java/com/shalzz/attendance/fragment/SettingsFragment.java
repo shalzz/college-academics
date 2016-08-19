@@ -46,6 +46,8 @@ import com.shalzz.attendance.wrapper.MySyncManager;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import timber.log.Timber;
+
 public class SettingsFragment extends PreferenceFragmentCompat implements OnSharedPreferenceChangeListener{
 
     private Context mContext;
@@ -55,13 +57,13 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnShar
 
     @Inject
     @Named("app")
-    Tracker t;
+    Tracker mTracker;
 
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
         MyApplication.getAppComponent().inject(this);
         mContext = getActivity();
-	Bugsnag.setContext("Settings");
+	    Bugsnag.setContext("Settings");
 
         addPreferencesFromResource(R.xml.preferences);
 
@@ -82,8 +84,8 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnShar
     public void onStart() {
         super.onStart();
 
-        t.setScreenName(getClass().getSimpleName());
-        t.send(new HitBuilders.ScreenViewBuilder().build());
+        mTracker.setScreenName(getClass().getSimpleName());
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
     }
 
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
@@ -115,8 +117,10 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnShar
             MySyncManager.addPeriodicSync(mContext, "" + db.getUser().sap_id());
         }
         else if(key.equals(getString(R.string.pref_key_ga_opt_in))) {
+            boolean optIn = sharedPreferences.getBoolean(key, true);
             GoogleAnalytics.getInstance(mContext).setAppOptOut(
-                    !sharedPreferences.getBoolean(key, true));
+                    !optIn);
+            Timber.i("Opted out of Google Analytics: %b", !optIn);
         }
         else if(key.equals(getString(R.string.pref_key_notify_timetable_changed))) {
             if(!sharedPreferences.getBoolean(key, true)) {
@@ -170,6 +174,10 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnShar
             ((MainActivity)getActivity()).mPopSettingsBackStack = true;
 
             transaction.commit();
+            mTracker.send(new HitBuilders.EventBuilder()
+                    .setCategory("Click")
+                    .setAction("About")
+                    .build());
             return true;
         });
 

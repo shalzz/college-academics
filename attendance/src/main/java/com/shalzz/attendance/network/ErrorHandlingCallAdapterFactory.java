@@ -1,5 +1,6 @@
 package com.shalzz.attendance.network;
 
+import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
@@ -20,13 +21,15 @@ import retrofit2.Retrofit;
 
 public class ErrorHandlingCallAdapterFactory extends CallAdapter.Factory {
     private final Executor callbackExecutor;
+    private final Context context;
 
-    ErrorHandlingCallAdapterFactory(Executor callbackExecutor) {
+    private ErrorHandlingCallAdapterFactory(Executor callbackExecutor,Context context) {
         this.callbackExecutor = callbackExecutor;
+        this.context = context;
     }
     
-    public static CallAdapter.Factory create() {
-        return new ErrorHandlingCallAdapterFactory(new MainThreadExecutor());
+    public static CallAdapter.Factory create(Context context) {
+        return new ErrorHandlingCallAdapterFactory(new MainThreadExecutor(),context);
     }
 
     @Override
@@ -44,20 +47,24 @@ public class ErrorHandlingCallAdapterFactory extends CallAdapter.Factory {
 
             @Override
             public <R> Call<R> adapt(Call<R> call) {
-                return new ExecutorCallbackCall<>(callbackExecutor, call, retrofit);
+                return new ExecutorCallbackCall<>(callbackExecutor, call, retrofit, context);
             }
         };
     }
 
-    static final class ExecutorCallbackCall<T> implements Call<T> {
+    private static final class ExecutorCallbackCall<T> implements Call<T> {
         private final Executor callbackExecutor;
         private final Call<T> delegate;
         private final Retrofit retrofit;
+        private final Context context;
 
-        ExecutorCallbackCall(Executor callbackExecutor, Call<T> delegate, Retrofit retrofit) {
+
+        ExecutorCallbackCall(Executor callbackExecutor, Call<T> delegate, Retrofit retrofit,
+                             Context context) {
             this.callbackExecutor = callbackExecutor;
             this.delegate = delegate;
             this.retrofit = retrofit;
+            this.context = context;
         }
 
         @Override
@@ -67,7 +74,7 @@ public class ErrorHandlingCallAdapterFactory extends CallAdapter.Factory {
 
         @Override
         public void enqueue(Callback<T> callback) {
-            delegate.enqueue(new ExecutorCallback<>(callbackExecutor, callback, retrofit));
+            delegate.enqueue(new ExecutorCallback<>(callbackExecutor, callback, retrofit, context));
         }
 
         @Override
@@ -88,7 +95,7 @@ public class ErrorHandlingCallAdapterFactory extends CallAdapter.Factory {
         @SuppressWarnings("CloneDoesntCallSuperClone") // Performing deep clone.
         @Override
         public Call<T> clone() {
-            return new ExecutorCallbackCall<>(callbackExecutor, delegate.clone(), retrofit);
+            return new ExecutorCallbackCall<>(callbackExecutor, delegate.clone(), retrofit, context);
         }
 
         @Override
@@ -97,15 +104,18 @@ public class ErrorHandlingCallAdapterFactory extends CallAdapter.Factory {
         }
     }
 
-    static final class ExecutorCallback<T> implements Callback<T> {
+    private static final class ExecutorCallback<T> implements Callback<T> {
         private final Executor callbackExecutor;
         private final Callback<T> delegate;
         private final Retrofit retrofit;
+        private final Context context;
 
-        ExecutorCallback(Executor callbackExecutor, Callback<T> delegate, Retrofit retrofit) {
+        ExecutorCallback(Executor callbackExecutor, Callback<T> delegate, Retrofit retrofit,
+                         Context context) {
             this.callbackExecutor = callbackExecutor;
             this.delegate = delegate;
             this.retrofit = retrofit;
+            this.context = context;
         }
 
         @Override
@@ -116,7 +126,8 @@ public class ErrorHandlingCallAdapterFactory extends CallAdapter.Factory {
                             RetrofitException.emptyResponseError(
                                     response.raw().request().url().toString(),
                                     response,
-                                    retrofit)
+                                    retrofit,
+                                    context)
                     ));
                 } else {
                     callbackExecutor.execute(() -> delegate.onResponse(call, response));
@@ -124,8 +135,9 @@ public class ErrorHandlingCallAdapterFactory extends CallAdapter.Factory {
             } else {
                 callbackExecutor.execute(() -> delegate.onFailure(call,
                         RetrofitException.httpError(response.raw().request().url().toString(),
-                        response,
-                        retrofit)
+                                response,
+                                retrofit,
+                                context)
                 ));
             }
         }
@@ -134,7 +146,7 @@ public class ErrorHandlingCallAdapterFactory extends CallAdapter.Factory {
         public void onFailure(Call<T> call, Throwable throwable) {
             RetrofitException exception;
             if (throwable instanceof IOException) {
-                exception = RetrofitException.networkError((IOException) throwable);
+                exception = RetrofitException.networkError((IOException) throwable, context);
             } else {
                 exception = RetrofitException.unexpectedError(throwable);
             }
@@ -143,7 +155,7 @@ public class ErrorHandlingCallAdapterFactory extends CallAdapter.Factory {
         }
     }
 
-    public static class MainThreadExecutor implements Executor {
+    private static class MainThreadExecutor implements Executor {
         private final Handler handler = new Handler(Looper.getMainLooper());
 
         @Override

@@ -96,7 +96,7 @@ public class TimeTablePagerFragment extends Fragment {
     }
 
     @Inject @Named("app")
-    Tracker t;
+    Tracker mTracker;
 
     @Inject
     DataAPI api;
@@ -123,8 +123,8 @@ public class TimeTablePagerFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
-        t.setScreenName(getClass().getSimpleName());
-        t.send(new HitBuilders.ScreenViewBuilder().build());
+        mTracker.setScreenName(getClass().getSimpleName());
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
 
         DatabaseHandler db = new DatabaseHandler(mContext);
         if(db.getPeriodCount() == 0) {
@@ -237,11 +237,28 @@ public class TimeTablePagerFragment extends Fragment {
                     ,today.get(Calendar.YEAR)
                     ,today.get(Calendar.MONTH)
                     ,today.get(Calendar.DAY_OF_MONTH));
+            mDatePickerDialog.setOnCancelListener(dialog -> {
+                mTracker.send(new HitBuilders.EventBuilder()
+                        .setCategory("Scroll to Date")
+                        .setAction("Button")
+                        .setLabel("Cancel")
+                        .build());
+            });
             mDatePickerDialog.show();
+
+            mTracker.send(new HitBuilders.EventBuilder()
+                    .setCategory("Action")
+                    .setAction("Scroll to Date")
+                    .build());
             return true;
         }
         else if(item.getItemId() == R.id.menu_today) {
             mController.setToday();
+
+            mTracker.send(new HitBuilders.EventBuilder()
+                    .setCategory("Action")
+                    .setAction("Scroll to Today")
+                    .build());
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -267,6 +284,12 @@ public class TimeTablePagerFragment extends Fragment {
             Calendar date = Calendar.getInstance();
             date.set(year, monthOfYear, dayOfMonth);
             mController.setDate(date.getTime());
+            mTracker.send(new HitBuilders.EventBuilder()
+                    .setCategory("Scroll to Date")
+                    .setAction("Button")
+                    .setLabel("OK")
+                    .setValue(date.getTimeInMillis())
+                    .build());
         };
     }
 

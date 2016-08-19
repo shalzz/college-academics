@@ -77,6 +77,10 @@ public class ApplicationModule {
             Tracker t = analytics.newTracker(R.xml.app_tracker);
             mTrackers.put(trackerId, t);
         }
-        return mTrackers.get(trackerId);
+        Tracker t = mTrackers.get(trackerId);
+        t.enableAdvertisingIdCollection(true);
+        t.enableExceptionReporting(false);
+        t.setAnonymizeIp(true);
+        return t;
     }
 }

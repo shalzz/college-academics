@@ -32,8 +32,6 @@ import com.shalzz.attendance.model.remote.Period;
 import com.shalzz.attendance.model.remote.Subject;
 import com.shalzz.attendance.model.remote.User;
 import com.shalzz.attendance.wrapper.DateHelper;
-import com.shalzz.attendance.wrapper.MyApplication;
-import com.shalzz.attendance.wrapper.MyPreferencesManager;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -108,8 +106,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             case 6:
             case 7:
             case 8:
-                // remove conflicting shared preferences b/w versions
-                new MyPreferencesManager(MyApplication.getContext()).removeSettings();
 
                 // Drop older table if existed
                 db.execSQL("DROP TABLE IF EXISTS " + Subject.TABLE_NAME);
