@@ -54,6 +54,7 @@ android {
     play {
         jsonFile = file('../play-service-account-key.json')
         uploadImages = true
+	track = 'beta'
     }
 
     buildTypes {
