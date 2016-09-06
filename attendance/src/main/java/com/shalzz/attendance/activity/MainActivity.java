@@ -47,9 +47,11 @@ import android.widget.TextView;
 import com.bugsnag.android.Bugsnag;
 import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.Target;
+import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.shalzz.attendance.BuildConfig;
 import com.shalzz.attendance.DatabaseHandler;
+import com.shalzz.attendance.Miscellaneous;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.fragment.AttendanceListFragment;
 import com.shalzz.attendance.fragment.SettingsFragment;
@@ -290,6 +292,9 @@ public class MainActivity extends AppCompatActivity {
 	        Bugsnag.setUserId(user.sap_id());
             Bugsnag.setUserName(user.name());
             mTracker.set("&uid", user.sap_id());
+            mTracker.send(new HitBuilders.ScreenViewBuilder()
+                    .setCustomDimension(Miscellaneous.CUSTOM_DIMENSION_USER_ID, user.sap_id())
+                    .build());
 
         }
     }

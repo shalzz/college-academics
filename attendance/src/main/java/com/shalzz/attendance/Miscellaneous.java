@@ -57,6 +57,7 @@ public class Miscellaneous {
     // Google Analytics Custom Dimensions
     public static final int CUSTOM_DIMENSION_THEME = 1;
     public static final int CUSTOM_DIMENSION_PROXY = 2;
+    public static final int CUSTOM_DIMENSION_USER_ID = 3;
 
     private MaterialDialog.Builder builder = null;
     private MaterialDialog pd = null;
