@@ -54,6 +54,16 @@ android {
     play {
         jsonFile = file('../play-service-account-key.json')
         uploadImages = true
+	    track = 'beta'
+    }
+
+    signingConfigs {
+        release {
+            storeFile file("./android.keystore")
+            keyAlias "attendance keystore"
+            storePassword "$System.env.APP_KEY"
+            keyPassword "$System.env.APP_KEY"
+        }
     }
 
     buildTypes {
@@ -76,6 +86,7 @@ android {
             FileCollection proGuardFileCollection = files { file('./proguard').listFiles() }
             proguardFiles(proGuardFileCollection)
             proguardFile getDefaultProguardFile('proguard-android-optimize.txt')
+            signingConfig signingConfigs.release
         }
     }
 
@@ -86,8 +97,9 @@ android {
     dependencies {
         final SUPPORT_LIBRARY_VERSION = '23.2.1'
 
-        // google support libraries
+        //noinspection GradleDynamicVersion
         compile 'com.google.android.gms:play-services-analytics:9.+'
+        //noinspection GradleDynamicVersion
         compile 'com.google.android.gms:play-services-ads:9.+'
         compile "com.android.support:recyclerview-v7:$SUPPORT_LIBRARY_VERSION"
         compile "com.android.support:design:$SUPPORT_LIBRARY_VERSION"
@@ -121,6 +133,7 @@ android {
         compile('de.psdev.licensesdialog:licensesdialog:1.8.0') {
             exclude module: 'support-v4'
         }
+	    //noinspection GradleDynamicVersion
 	    compile 'com.bugsnag:bugsnag-android:3.+'
 
         testCompile "org.robolectric:robolectric:3.0"

@@ -43,7 +43,7 @@ public class MyApplication extends Application {
         super.onCreate();
 
         Bugsnag.init(this)
-                .setMaxBreadcrumbs(50);
+                .setMaxBreadcrumbs(100);
         Bugsnag.setNotifyReleaseStages("production", "development", "testing");
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         boolean optIn = sharedPref.getBoolean(getString(R.string.pref_key_bugsnag_opt_in), true);
@@ -58,13 +58,7 @@ public class MyApplication extends Application {
         if (BuildConfig.DEBUG) {
             Timber.plant(new Timber.DebugTree());
         } else {
-            final BugsnagTree tree = new BugsnagTree();
-            Bugsnag.beforeNotify(error -> {
-                tree.update(error);
-                return true;
-            });
-
-            Timber.plant(tree);
+            Timber.plant(new BugsnagTree());
         }
 
         mAppComponent = DaggerApplicationComponent.builder()

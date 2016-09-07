@@ -2,6 +2,7 @@ package com.shalzz.attendance;
 
 import android.util.Log;
 
+import com.bugsnag.android.BreadcrumbType;
 import com.bugsnag.android.Bugsnag;
 import com.bugsnag.android.Error;
 import com.shalzz.attendance.wrapper.DateHelper;
@@ -12,39 +13,20 @@ import java.util.Locale;
 
 import timber.log.Timber;
 
-/**
- * A logging implementation which buffers the last 200 messages and notifies on error exceptions.
- */
-public final class BugsnagTree extends Timber.Tree {
-    private static final int BUFFER_SIZE = 200;
+import static com.google.android.gms.analytics.internal.zzy.s;
 
-    // Adding one to the initial size accounts for the add before remove.
-    private final Deque<String> buffer = new ArrayDeque<>(BUFFER_SIZE + 1);
+public final class BugsnagTree extends Timber.Tree {
 
     @Override
     protected void log(int priority, String tag, String message, Throwable t) {
-        message = String.format("%s %s %s",
-                DateHelper.getFormatedCurrentTime(),
+        message = String.format("%s %s",
                 priorityToString(priority),
                 message);
 
-        synchronized (buffer) {
-            buffer.addLast(message);
-            if (buffer.size() > BUFFER_SIZE) {
-                buffer.removeFirst();
-            }
-        }
+        Bugsnag.leaveBreadcrumb(message);
+
         if (t != null && priority == Log.ERROR) {
             Bugsnag.notify(t);
-        }
-    }
-
-    public void update(Error error) {
-        synchronized (buffer) {
-            int i = 1;
-            for (String message : buffer) {
-                error.addToTab("Log", String.format(Locale.US, "%03d", i++), message);
-            }
         }
     }
 
