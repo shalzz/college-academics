@@ -1,0 +1,73 @@
+{
+  "project_info": {
+    "project_number": "266643851647",
+    "firebase_url": "https://upes-academics.firebaseio.com",
+    "project_id": "upes-academics",
+    "storage_bucket": "upes-academics.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:266643851647:android:b118c157fb2148fb",
+        "android_client_info": {
+          "package_name": "com.shalzz.attendance"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "266643851647-ununrco4nr77ap7fhjn9actfs3lsq4p6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDKrLXqVt9BQN8urcQOx1eqYGzeeWcOb7k"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:266643851647:android:e8a36c474a772de4",
+        "android_client_info": {
+          "package_name": "com.shalzz.attendance.debug"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "266643851647-ununrco4nr77ap7fhjn9actfs3lsq4p6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDKrLXqVt9BQN8urcQOx1eqYGzeeWcOb7k"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

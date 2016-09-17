@@ -95,12 +95,13 @@ android {
     }
 
     dependencies {
+        compile(name:'admobadapter-release', ext:'aar')
+
         final SUPPORT_LIBRARY_VERSION = '23.2.1'
 
-        //noinspection GradleDynamicVersion
-        compile 'com.google.android.gms:play-services-analytics:9.+'
-        //noinspection GradleDynamicVersion
-        compile 'com.google.android.gms:play-services-ads:9.+'
+        compile 'com.google.firebase:firebase-core:9.4.0'
+        compile 'com.google.firebase:firebase-ads:9.4.0'
+        compile 'com.google.android.gms:play-services-analytics:9.4.0'
         compile "com.android.support:recyclerview-v7:$SUPPORT_LIBRARY_VERSION"
         compile "com.android.support:design:$SUPPORT_LIBRARY_VERSION"
         compile "com.android.support:support-v4:$SUPPORT_LIBRARY_VERSION"
@@ -143,3 +144,6 @@ android {
         testCompile 'org.xerial:sqlite-jdbc:3.8.10.1'
     }
 }
+
+// ADD THIS AT THE BOTTOM
+apply plugin: 'com.google.gms.google-services'

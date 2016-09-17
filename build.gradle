@@ -30,6 +30,7 @@ buildscript {
         classpath 'me.tatarka:gradle-retrolambda:3.2.5'
         classpath 'me.tatarka.retrolambda.projectlombok:lombok.ast:0.2.3.a2'
         classpath 'com.github.triplet.gradle:play-publisher:1.1.4'
+        classpath 'com.google.gms:google-services:3.0.0'
 
 	    //noinspection GradleDynamicVersion
 	    classpath 'com.bugsnag:bugsnag-android-gradle-plugin:+'
@@ -45,5 +46,8 @@ allprojects {
         mavenCentral()
         maven{ url 'https://jitpack.io' }
         maven{ url 'https://oss.sonatype.org/content/repositories/snapshots' }
+        flatDir {
+            dirs 'libs'
+        }
     }
 }
