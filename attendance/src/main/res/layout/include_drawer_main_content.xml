@@ -30,7 +30,6 @@
         android:id="@+id/frame_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/adFragment"
         android:layout_below="@+id/drop_shadow"/>
 
 </RelativeLayout>
