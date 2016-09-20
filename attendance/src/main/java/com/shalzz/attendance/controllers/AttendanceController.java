@@ -21,6 +21,7 @@ package com.shalzz.attendance.controllers;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -31,6 +32,8 @@ import android.support.v7.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 
+import com.clockbyte.admobadapter.expressads.AdmobExpressRecyclerAdapterWrapper;
+import com.google.android.gms.ads.AdSize;
 import com.malinskiy.materialicons.IconDrawable;
 import com.malinskiy.materialicons.Iconify;
 import com.shalzz.attendance.DatabaseHandler;
@@ -65,6 +68,7 @@ public class AttendanceController implements LoaderManager.LoaderCallbacks<List<
     private Resources mResources;
     private View mFooter;
     private final DataAPI api;
+    private final AdmobExpressRecyclerAdapterWrapper adapterWrapper;
 
     @Inject
     public AttendanceController(Context context,
@@ -86,7 +90,31 @@ public class AttendanceController implements LoaderManager.LoaderCallbacks<List<
         mFooter = inflater.inflate(R.layout.list_footer, mView.mRecyclerView, false);
         mFooter.setVisibility(View.INVISIBLE);
         mAdapter.addFooter(mFooter);
-        mView.mRecyclerView.setAdapter(mAdapter);
+
+        String unit_id ;
+        int currentNightMode = mContext.getResources().getConfiguration().uiMode
+                & Configuration.UI_MODE_NIGHT_MASK;
+
+        if(currentNightMode == Configuration.UI_MODE_NIGHT_YES)
+            unit_id = mContext.getString(R.string.native_black_attendance_ad);
+        else
+            unit_id = mContext.getString(R.string.native_white_attendance_ad);
+
+        adapterWrapper = new AdmobExpressRecyclerAdapterWrapper(mContext,
+                unit_id,
+                new AdSize(AdSize.FULL_WIDTH, 100));
+
+        adapterWrapper.setAdapter(mAdapter);
+
+        adapterWrapper.setLimitOfAds(1);
+        adapterWrapper.setNoOfDataBetweenAds(5);
+        adapterWrapper.setFirstAdIndex(5);
+
+        mView.mRecyclerView.setAdapter(adapterWrapper);
+    }
+
+    public void destroyAds() {
+        adapterWrapper.destroyAds();
     }
 
     public void updateSubjects() {

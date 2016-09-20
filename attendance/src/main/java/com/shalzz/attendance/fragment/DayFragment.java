@@ -115,5 +115,6 @@ public class DayFragment extends Fragment {
         super.onDestroyView();
         if(unbinder!=null)
             unbinder.unbind();
+        mController.destroyAds();
     }
 }

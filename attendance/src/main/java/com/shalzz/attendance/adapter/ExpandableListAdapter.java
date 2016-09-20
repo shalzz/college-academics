@@ -60,7 +60,6 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     private final List<Long> mExpandedIds = new ArrayList<>();
     private float mExpandedTranslationZ;
     private int mLimit = -1;
-    private String mTag = "ExpandableList Adapter";
 
     //our items
     private final SortedList<Subject> mSubjects;
@@ -68,9 +67,9 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     private List<View> headers = new ArrayList<>();
     private List<View> footers = new ArrayList<>();
 
-    public static final int TYPE_HEADER = 111;
-    public static final int TYPE_FOOTER = 222;
-    public static final int TYPE_ITEM = 333;
+    private static final int TYPE_HEADER = 111;
+    private static final int TYPE_FOOTER = 222;
+    private static final int TYPE_ITEM = 333;
 
     /** Constant used to indicate no row is expanded. */
     private static final long NONE_EXPANDED = -1;
@@ -159,7 +158,7 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         mSubjects.clear();
     }
 
-    public void updateFooter() {
+    private void updateFooter() {
         DatabaseHandler db = new DatabaseHandler(mContext);
         ListFooter footer = db.getListFooter();
         if(!footer.equals(mFooter)) {
@@ -181,11 +180,11 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
 
         //child views
         public RelativeLayout childView;
-        public TextView tvAbsent;
-        public TextView tvReach;
-        public ImageView ivAlert;
+        TextView tvAbsent;
+        TextView tvReach;
+        ImageView ivAlert;
 
-        public GenericViewHolder(View itemView) {
+        GenericViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this,itemView);
         }
@@ -382,7 +381,7 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     }
 
     @SuppressWarnings("deprecation")
-    public void bindChildView(GenericViewHolder holder, int position) {
+    private void bindChildView(GenericViewHolder holder, int position) {
 
         TextView tvAbsent = holder.tvAbsent;
         TextView tvReach = holder.tvReach;
@@ -568,7 +567,7 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     public static class HeaderFooterViewHolder extends RecyclerView.ViewHolder{
         FrameLayout base;
 
-        public HeaderFooterViewHolder(View itemView) {
+        HeaderFooterViewHolder(View itemView) {
             super(itemView);
             this.base = (FrameLayout) itemView;
         }

@@ -153,7 +153,7 @@ public class AttendanceListFragment extends Fragment implements
                               Bundle savedInstanceState) {
         if(container==null)
             return null;
-	Bugsnag.setContext("AttendanceList");
+	    Bugsnag.setContext("AttendanceList");
         MyApplication.getAppComponent().inject(this);
 
         mContext = getActivity();
@@ -412,5 +412,6 @@ public class AttendanceListFragment extends Fragment implements
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
+        controller.destroyAds();
     }
 }

@@ -36,7 +36,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class DayListAdapter extends RecyclerView.Adapter<DayListAdapter.ViewHolder>{
+public class DayListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
 
     private SortedList<Period> mPeriods;
     private List<Integer> subjectIDs;
@@ -52,7 +52,7 @@ public class DayListAdapter extends RecyclerView.Adapter<DayListAdapter.ViewHold
         @BindView(R.id.tvRoom) TextView tvRoom;
         @BindView(R.id.tvMarkedAbsent) TextView tvMarkedAbsent;
 
-        public ViewHolder(View itemView) {
+        ViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
@@ -130,7 +130,7 @@ public class DayListAdapter extends RecyclerView.Adapter<DayListAdapter.ViewHold
 
     // Create new views (invoked by the layout manager)
     @Override
-    public DayListAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent,
                                                         int viewType) {
         // create a new view
         View v = LayoutInflater.from(parent.getContext())
@@ -140,10 +140,11 @@ public class DayListAdapter extends RecyclerView.Adapter<DayListAdapter.ViewHold
 
     // Replace the contents of a view (invoked by the layout manager)
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
 
+        DayListAdapter.ViewHolder holder = (DayListAdapter.ViewHolder) viewHolder;
         Period period = mPeriods.get(position);
         holder.tvSubjectName.setText(period.name());
         holder.tvRoom.setText(period.room());

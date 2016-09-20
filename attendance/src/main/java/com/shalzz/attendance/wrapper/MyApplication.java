@@ -25,6 +25,7 @@ import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.preference.PreferenceManager;
 
 import com.bugsnag.android.Bugsnag;
+import com.google.android.gms.ads.MobileAds;
 import com.shalzz.attendance.BugsnagTree;
 import com.shalzz.attendance.BuildConfig;
 import com.shalzz.attendance.R;
@@ -42,6 +43,7 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
+        MobileAds.initialize(getApplicationContext(), getString(R.string.admob_app_id));
         Bugsnag.init(this)
                 .setMaxBreadcrumbs(100);
         Bugsnag.setNotifyReleaseStages("production", "development", "testing");
