@@ -39,6 +39,9 @@
 
     <!-- Remove optional permission added by Google Analytics-->
     <uses-permission android:name="android.permission.WAKE_LOCK" tools:node="remove" />
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" tools:node="remove"/>
+    <uses-permission android:name="${applicationId}.permission.C2D_MESSAGE" tools:node="remove"/>
+    android:name = com.shalzz.attendance.debug
 
     <supports-screens
         android:smallScreens="true"
