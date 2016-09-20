@@ -23,7 +23,8 @@ public final class PermissionsTest {
             "android.permission.WRITE_SYNC_SETTINGS",
             "android.permission.AUTHENTICATE_ACCOUNTS",
             "android.permission.GET_ACCOUNTS",
-            "android.permission.MANAGE_ACCOUNTS"
+            "android.permission.MANAGE_ACCOUNTS",
+            "com.android.vending.BILLING"
     };
 
     private static final String MERGED_MANIFEST =
