@@ -20,15 +20,11 @@
 package com.shalzz.attendance.controllers;
 
 import android.content.Context;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.view.View;
 
-import com.clockbyte.admobadapter.expressads.AdmobExpressRecyclerAdapterWrapper;
-import com.google.android.gms.ads.AdSize;
-import com.shalzz.attendance.R;
 import com.shalzz.attendance.adapter.DayListAdapter;
 import com.shalzz.attendance.fragment.DayFragment;
 import com.shalzz.attendance.loader.DayAsyncTaskLoader;
@@ -41,34 +37,12 @@ public class DayController implements LoaderManager.LoaderCallbacks<Day> {
     private Context mContext;
     private DayFragment mView;
     private DayListAdapter mAdapter;
-    private final AdmobExpressRecyclerAdapterWrapper adapterWrapper;
 
     public DayController(Context context, DayFragment view)  {
         mContext = context;
         mView = view;
         mAdapter = new DayListAdapter();
-        String unit_id ;
-        int currentNightMode = mContext.getResources().getConfiguration().uiMode
-                & Configuration.UI_MODE_NIGHT_MASK;
-
-        if(currentNightMode == Configuration.UI_MODE_NIGHT_YES)
-            unit_id = mContext.getString(R.string.native_black_timetable_ad);
-        else
-            unit_id = mContext.getString(R.string.native_white_timetable_ad);
-
-        adapterWrapper = new AdmobExpressRecyclerAdapterWrapper(mContext,
-                unit_id,
-                new AdSize(AdSize.FULL_WIDTH, 80));
-
-        adapterWrapper.setAdapter(mAdapter);
-
-        adapterWrapper.setLimitOfAds(1);
-        adapterWrapper.setFirstAdIndex(3);
-        mView.mRecyclerView.setAdapter(adapterWrapper);
-    }
-
-    public void destroyAds() {
-        adapterWrapper.destroyAds();
+        mView.mRecyclerView.setAdapter(mAdapter);
     }
 
     @Override

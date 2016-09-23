@@ -413,6 +413,5 @@ public class AttendanceListFragment extends Fragment implements
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
-        controller.destroyAds();
     }
 }
