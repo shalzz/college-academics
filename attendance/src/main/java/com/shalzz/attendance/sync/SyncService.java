@@ -51,7 +51,7 @@ public class SyncService extends Service {
      */
     @Override
     public void onCreate() {
-        MyApplication.getAppComponent().inject(this);
+        MyApplication.get(this).getComponent().inject(this);
         /*
          * Create the sync adapter as a singleton.
          * Set the sync adapter as syncable

@@ -22,7 +22,6 @@ package com.shalzz.attendance.activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.PreferenceManager;
 
 import com.bugsnag.android.Bugsnag;
@@ -32,7 +31,6 @@ import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.shalzz.attendance.Miscellaneous;
 import com.shalzz.attendance.R;
-import com.shalzz.attendance.wrapper.MyApplication;
 import com.shalzz.attendance.wrapper.MyPreferencesManager;
 
 import javax.inject.Inject;
@@ -40,7 +38,7 @@ import javax.inject.Named;
 
 import timber.log.Timber;
 
-public class SplashActivity extends AppCompatActivity {
+public class SplashActivity extends BaseActivity {
 
     @Inject
     MyPreferencesManager preferencesManager;
@@ -51,8 +49,8 @@ public class SplashActivity extends AppCompatActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-        MyApplication.getAppComponent().inject(this);
-		super.onCreate(savedInstanceState);
+        super.onCreate(savedInstanceState);
+        activityComponent().inject(this);
 		Bugsnag.setContext("SplashActivity");
 
 		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);

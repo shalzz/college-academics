@@ -45,6 +45,7 @@ import com.shalzz.attendance.wrapper.MySyncManager;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Singleton;
 
 import timber.log.Timber;
 
@@ -61,7 +62,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnShar
 
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
-        MyApplication.getAppComponent().inject(this);
+        ((MainActivity) getActivity()).activityComponent().inject(this);
         mContext = getActivity();
 	    Bugsnag.setContext("Settings");
 

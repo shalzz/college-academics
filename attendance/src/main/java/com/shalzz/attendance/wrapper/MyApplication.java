@@ -20,6 +20,7 @@
 package com.shalzz.attendance.wrapper;
 
 import android.app.Application;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.preference.PreferenceManager;
@@ -37,7 +38,7 @@ import timber.log.Timber;
 
 public class MyApplication extends Application {
 
-    private static ApplicationComponent mAppComponent;
+    private static ApplicationComponent mApplicationComponent;
 
     @Override
     public void onCreate() {
@@ -63,17 +64,27 @@ public class MyApplication extends Application {
             Timber.plant(new BugsnagTree());
         }
 
-        mAppComponent = DaggerApplicationComponent.builder()
-                .applicationModule(new ApplicationModule(this))
-                .build();
-
         int nightMode = Integer.parseInt(sharedPref.getString(
                 getString(R.string.pref_key_day_night), "-1"));
         //noinspection WrongConstant
         AppCompatDelegate.setDefaultNightMode(nightMode);
     }
 
-    public static ApplicationComponent getAppComponent() {
-        return mAppComponent;
+    public static MyApplication get(Context context) {
+        return (MyApplication) context.getApplicationContext();
+    }
+
+    public ApplicationComponent getComponent() {
+        if (mApplicationComponent == null) {
+            mApplicationComponent = DaggerApplicationComponent.builder()
+                    .applicationModule(new ApplicationModule(this))
+                    .build();
+        }
+        return mApplicationComponent;
+    }
+
+    // Needed to replace the component with a test specific one
+    public void setComponent(ApplicationComponent applicationComponent) {
+        mApplicationComponent = applicationComponent;
     }
 }

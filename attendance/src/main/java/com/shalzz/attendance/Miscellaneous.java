@@ -34,6 +34,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.shalzz.attendance.injection.ActivityContext;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -64,7 +65,7 @@ public class Miscellaneous {
     private Context mContext;
 
     @Inject
-    public Miscellaneous(Context context) {
+    public Miscellaneous(@ActivityContext Context context) {
         mContext = context;
     }
 
@@ -203,18 +204,18 @@ public class Miscellaneous {
      * Determines whether to use proxy host or not.
      * @return true or false.
      */
-    public boolean useProxy() {
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mContext);
-        boolean useProxy = sharedPref.getBoolean(mContext.getString(R.string.pref_key_use_proxy), false);
+    public static boolean useProxy(Context context) {
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
+        boolean useProxy = sharedPref.getBoolean(context.getString(R.string.pref_key_use_proxy), false);
         if(useProxy) {
-            ConnectivityManager connManager = (ConnectivityManager) mContext
+            ConnectivityManager connManager = (ConnectivityManager) context
                     .getSystemService(Context.CONNECTIVITY_SERVICE);
             NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
             if (mWifi.isConnectedOrConnecting()) {
-                WifiManager wifiManager = (WifiManager) mContext.getSystemService(Context.WIFI_SERVICE);
+                WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
                 WifiInfo wifiInfo = wifiManager.getConnectionInfo();
                 Timber.d("Wifi changed to %s", wifiInfo.getSSID());
-                return wifiInfo.getSSID().equals(mContext.getString(R.string.upesnet_ssid));
+                return wifiInfo.getSSID().equals(context.getString(R.string.upesnet_ssid));
             }
         }
         return false;

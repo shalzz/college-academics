@@ -26,6 +26,7 @@ import android.support.v7.preference.PreferenceManager;
 
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.activity.MainActivity;
+import com.shalzz.attendance.injection.ApplicationContext;
 
 import java.io.IOException;
 
@@ -48,7 +49,7 @@ public class MyPreferencesManager {
 	private static String mTag  = "MyPreferencesManager";
 
     @Inject
-    public MyPreferencesManager(Context context) {
+    public MyPreferencesManager(@ApplicationContext Context context) {
         mContext = context;
     }
 

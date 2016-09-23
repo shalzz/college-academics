@@ -19,39 +19,39 @@
 
 package com.shalzz.attendance.injection.component;
 
-import com.shalzz.attendance.activity.LoginActivity;
-import com.shalzz.attendance.activity.MainActivity;
-import com.shalzz.attendance.activity.SplashActivity;
-import com.shalzz.attendance.fragment.AboutSettingsFragment;
-import com.shalzz.attendance.fragment.AttendanceListFragment;
-import com.shalzz.attendance.fragment.ProxySettingsFragment;
-import com.shalzz.attendance.fragment.SettingsFragment;
-import com.shalzz.attendance.fragment.TimeTablePagerFragment;
+import android.app.Application;
+import android.content.Context;
+
+import com.google.android.gms.analytics.Tracker;
+import com.google.gson.Gson;
+import com.shalzz.attendance.DatabaseHandler;
+import com.shalzz.attendance.injection.ApplicationContext;
 import com.shalzz.attendance.injection.module.ApplicationModule;
 import com.shalzz.attendance.injection.module.NetworkModule;
+import com.shalzz.attendance.network.DataAPI;
 import com.shalzz.attendance.sync.SyncService;
+import com.shalzz.attendance.wrapper.MyPreferencesManager;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Component;
+import okhttp3.OkHttpClient;
 
 @Singleton
 @Component(modules = {ApplicationModule.class, NetworkModule.class})
 public interface ApplicationComponent {
 
-    void inject(SplashActivity activity);
-    void inject(LoginActivity activity);
-    void inject(MainActivity activity);
-
-    void inject(TimeTablePagerFragment timeTablePagerFragment);
-
-    void inject(AttendanceListFragment attendanceListFragment);
-
-    void inject(AboutSettingsFragment aboutSettingsFragment);
-
-    void inject(ProxySettingsFragment proxySettingsFragment);
-
-    void inject(SettingsFragment settingsFragment);
+    @ApplicationContext
+    Context context();
+    Application application();
+    @Named("app")
+    Tracker tracker();
+    DataAPI dataApi();
+    Gson gson();
+    OkHttpClient okHttpclient();
+    MyPreferencesManager preferenceManager();
+    DatabaseHandler databaseHandler();
 
     void inject(SyncService syncService);
 }

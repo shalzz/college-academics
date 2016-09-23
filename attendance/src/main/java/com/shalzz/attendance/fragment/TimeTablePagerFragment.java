@@ -45,6 +45,7 @@ import com.google.android.gms.analytics.Tracker;
 import com.shalzz.attendance.CircularIndeterminate;
 import com.shalzz.attendance.DatabaseHandler;
 import com.shalzz.attendance.R;
+import com.shalzz.attendance.activity.MainActivity;
 import com.shalzz.attendance.controllers.PagerController;
 import com.shalzz.attendance.controllers.UserAccount;
 import com.shalzz.attendance.network.DataAPI;
@@ -113,9 +114,9 @@ public class TimeTablePagerFragment extends Fragment {
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        MyApplication.getAppComponent().inject(this);
+        ((MainActivity) getActivity()).activityComponent().inject(this);
         mContext = getActivity();
-	Bugsnag.setContext("Timetable");
+	    Bugsnag.setContext("Timetable");
         userAccount = new UserAccount(mContext, api);
     }
 

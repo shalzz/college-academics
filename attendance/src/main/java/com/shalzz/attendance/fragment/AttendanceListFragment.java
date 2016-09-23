@@ -55,6 +55,7 @@ import com.shalzz.attendance.CircularIndeterminate;
 import com.shalzz.attendance.DividerItemDecoration;
 import com.shalzz.attendance.Miscellaneous;
 import com.shalzz.attendance.R;
+import com.shalzz.attendance.activity.MainActivity;
 import com.shalzz.attendance.adapter.ExpandableListAdapter;
 import com.shalzz.attendance.controllers.AttendanceController;
 import com.shalzz.attendance.controllers.UserAccount;
@@ -154,7 +155,7 @@ public class AttendanceListFragment extends Fragment implements
         if(container==null)
             return null;
 	    Bugsnag.setContext("AttendanceList");
-        MyApplication.getAppComponent().inject(this);
+        ((MainActivity) getActivity()).activityComponent().inject(this);
 
         mContext = getActivity();
         userAccount = new UserAccount(mContext,api);

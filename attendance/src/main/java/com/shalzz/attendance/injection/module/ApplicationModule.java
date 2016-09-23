@@ -25,6 +25,8 @@ import android.content.Context;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
 import com.shalzz.attendance.R;
+import com.shalzz.attendance.injection.ActivityContext;
+import com.shalzz.attendance.injection.ApplicationContext;
 
 import java.util.HashMap;
 
@@ -33,6 +35,8 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+
+import static com.google.android.gms.analytics.internal.zzy.s;
 
 @Module
 public class ApplicationModule {
@@ -58,19 +62,21 @@ public class ApplicationModule {
         mApplication = application;
     }
 
-    @Provides @Singleton
-    Application providesApplication() {
+    @Provides
+    Application provideApplication() {
         return mApplication;
     }
 
-    @Provides @Singleton
+    @Provides
+    @ApplicationContext
     Context provideContext() {
         return mApplication;
     }
 
-    @Provides @Named("app")
+    @Provides
+    @Named("app")
     @Singleton
-    synchronized Tracker provideTracker(Context context) {
+    synchronized Tracker provideTracker(@ApplicationContext Context context) {
         TrackerName trackerId = TrackerName.APP_TRACKER;
         if (!mTrackers.containsKey(trackerId)) {
             GoogleAnalytics analytics = GoogleAnalytics.getInstance(context);

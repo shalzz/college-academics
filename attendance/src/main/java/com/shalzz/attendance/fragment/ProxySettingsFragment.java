@@ -48,7 +48,7 @@ public class ProxySettingsFragment extends PreferenceFragmentCompat implements S
 
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
-        MyApplication.getAppComponent().inject(this);
+        ((MainActivity) getActivity()).activityComponent().inject(this);
         Context mContext = getActivity();
         Bugsnag.setContext("ProxySettings");
         mainActivity = ((MainActivity) getActivity());

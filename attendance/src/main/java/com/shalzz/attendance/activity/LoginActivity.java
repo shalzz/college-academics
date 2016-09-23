@@ -21,7 +21,6 @@ package com.shalzz.attendance.activity;
 
 import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.Toolbar;
 import android.view.inputmethod.EditorInfo;
@@ -34,7 +33,6 @@ import com.shalzz.attendance.Miscellaneous;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.controllers.UserAccount;
 import com.shalzz.attendance.network.DataAPI;
-import com.shalzz.attendance.wrapper.MyApplication;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -43,7 +41,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends BaseActivity {
 
     @BindView(R.id.etSapid)
     TextInputLayout textInputSapid;
@@ -68,11 +66,11 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        MyApplication.getAppComponent().inject(this);
         if (savedInstanceState == null) {
             getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         }
         super.onCreate(savedInstanceState);
+        activityComponent().inject(this);
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
 	    Bugsnag.setContext("LoginActivity");

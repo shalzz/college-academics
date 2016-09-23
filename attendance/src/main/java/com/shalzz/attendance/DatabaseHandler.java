@@ -26,6 +26,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Build;
 import android.support.v4.content.AsyncTaskLoader;
 
+import com.shalzz.attendance.injection.ApplicationContext;
 import com.shalzz.attendance.model.local.AbsentDate;
 import com.shalzz.attendance.model.local.ListFooter;
 import com.shalzz.attendance.model.remote.Period;
@@ -68,7 +69,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
      * Constructor.
      */
     @Inject
-    public DatabaseHandler(Context context) {
+    public DatabaseHandler(@ApplicationContext Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 

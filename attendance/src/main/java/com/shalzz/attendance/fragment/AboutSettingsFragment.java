@@ -51,7 +51,7 @@ public class AboutSettingsFragment extends PreferenceFragmentCompat {
 
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
-        MyApplication.getAppComponent().inject(this);
+        ((MainActivity) getActivity()).activityComponent().inject(this);
         mContext = getActivity();
         Bugsnag.setContext("About");
         mainActivity = ((MainActivity) getActivity());

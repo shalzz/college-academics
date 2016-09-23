@@ -36,7 +36,6 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
@@ -57,7 +56,6 @@ import com.shalzz.attendance.fragment.AttendanceListFragment;
 import com.shalzz.attendance.fragment.SettingsFragment;
 import com.shalzz.attendance.fragment.TimeTablePagerFragment;
 import com.shalzz.attendance.model.remote.User;
-import com.shalzz.attendance.wrapper.MyApplication;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -68,7 +66,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import timber.log.Timber;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
 
     /**
      * Null on tablets
@@ -136,8 +134,8 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        MyApplication.getAppComponent().inject(this);
         super.onCreate(savedInstanceState);
+        activityComponent().inject(this);
         setContentView(R.layout.drawer);
         ButterKnife.bind(this);
 	    Bugsnag.setContext("MainActivity");
