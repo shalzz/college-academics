@@ -49,21 +49,16 @@ import android.widget.TextView;
 import com.bugsnag.android.Bugsnag;
 import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.ViewTarget;
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
+import com.shalzz.attendance.R;
+import com.shalzz.attendance.network.DataAPI;
+import com.shalzz.attendance.ui.login.UserAccount;
+import com.shalzz.attendance.ui.main.MainActivity;
 import com.shalzz.attendance.utils.CircularIndeterminate;
 import com.shalzz.attendance.utils.DividerItemDecoration;
 import com.shalzz.attendance.utils.Miscellaneous;
-import com.shalzz.attendance.R;
-import com.shalzz.attendance.ui.main.MainActivity;
-import com.shalzz.attendance.ui.attendance.ExpandableListAdapter;
-import com.shalzz.attendance.ui.attendance.AttendanceController;
-import com.shalzz.attendance.ui.login.UserAccount;
-import com.shalzz.attendance.network.DataAPI;
 import com.shalzz.attendance.wrapper.MultiSwipeRefreshLayout;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 import butterknife.BindBool;
 import butterknife.BindDimen;
@@ -114,9 +109,6 @@ public class AttendanceListFragment extends Fragment implements
     @BindString(R.string.hint_search)
     String hint_search_view;
 
-    @Inject @Named("app")
-    Tracker mTracker;
-
     @Inject
     DataAPI api;
 
@@ -139,14 +131,6 @@ public class AttendanceListFragment extends Fragment implements
     private final int mExpandCollapseDuration = 200;
     private Unbinder unbinder;
     public EmptyView mEmptyView = new EmptyView();
-
-    @Override
-    public void onStart() {
-        super.onStart();
-
-        mTracker.setScreenName(getClass().getSimpleName());
-        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
-    }
 
     @Override
     public View onCreateView( @NonNull LayoutInflater inflater, ViewGroup container,
@@ -263,12 +247,6 @@ public class AttendanceListFragment extends Fragment implements
                 controller.updateSubjects();
             }
             return true;
-        }
-        else if(item.getItemId() == R.id.menu_search) {
-            mTracker.send(new HitBuilders.EventBuilder()
-                    .setCategory("Action")
-                    .setAction("Search")
-                    .build());
         }
         return super.onOptionsItemSelected(item);
     }

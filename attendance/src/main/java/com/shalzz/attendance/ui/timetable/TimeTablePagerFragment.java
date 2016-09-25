@@ -40,14 +40,12 @@ import android.widget.TextView;
 import com.bugsnag.android.Bugsnag;
 import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.Target;
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
-import com.shalzz.attendance.utils.CircularIndeterminate;
 import com.shalzz.attendance.DatabaseHandler;
 import com.shalzz.attendance.R;
-import com.shalzz.attendance.ui.main.MainActivity;
-import com.shalzz.attendance.ui.login.UserAccount;
 import com.shalzz.attendance.network.DataAPI;
+import com.shalzz.attendance.ui.login.UserAccount;
+import com.shalzz.attendance.ui.main.MainActivity;
+import com.shalzz.attendance.utils.CircularIndeterminate;
 import com.shalzz.attendance.wrapper.DateHelper;
 import com.shalzz.attendance.wrapper.MultiSwipeRefreshLayout;
 
@@ -55,7 +53,6 @@ import java.util.Calendar;
 import java.util.Date;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -94,9 +91,6 @@ public class TimeTablePagerFragment extends Fragment {
         public Button Button;
     }
 
-    @Inject @Named("app")
-    Tracker mTracker;
-
     @Inject
     DataAPI api;
 
@@ -113,10 +107,6 @@ public class TimeTablePagerFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-
-        mTracker.setScreenName(getClass().getSimpleName());
-        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
-
         DatabaseHandler db = new DatabaseHandler(mContext);
         if(db.getPeriodCount() == 0) {
             mController.updatePeriods();
@@ -231,28 +221,10 @@ public class TimeTablePagerFragment extends Fragment {
                     ,today.get(Calendar.YEAR)
                     ,today.get(Calendar.MONTH)
                     ,today.get(Calendar.DAY_OF_MONTH));
-            mDatePickerDialog.setOnCancelListener(dialog -> {
-                mTracker.send(new HitBuilders.EventBuilder()
-                        .setCategory("Scroll to Date")
-                        .setAction("Button")
-                        .setLabel("Cancel")
-                        .build());
-            });
-            mDatePickerDialog.show();
-
-            mTracker.send(new HitBuilders.EventBuilder()
-                    .setCategory("Action")
-                    .setAction("Scroll to Date")
-                    .build());
             return true;
         }
         else if(item.getItemId() == R.id.menu_today) {
             mController.setToday();
-
-            mTracker.send(new HitBuilders.EventBuilder()
-                    .setCategory("Action")
-                    .setAction("Scroll to Today")
-                    .build());
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -278,12 +250,6 @@ public class TimeTablePagerFragment extends Fragment {
             Calendar date = Calendar.getInstance();
             date.set(year, monthOfYear, dayOfMonth);
             mController.setDate(date.getTime());
-            mTracker.send(new HitBuilders.EventBuilder()
-                    .setCategory("Scroll to Date")
-                    .setAction("Button")
-                    .setLabel("OK")
-                    .setValue(date.getTimeInMillis())
-                    .build());
         };
     }
 

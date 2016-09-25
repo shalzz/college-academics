@@ -26,15 +26,9 @@ import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.PreferenceScreen;
 
 import com.bugsnag.android.Bugsnag;
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
 import com.shalzz.attendance.BuildConfig;
-import com.shalzz.attendance.MyApplication;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.ui.main.MainActivity;
-
-import javax.inject.Inject;
-import javax.inject.Named;
 
 import de.psdev.licensesdialog.LicensesDialog;
 import de.psdev.licensesdialog.licenses.GnuGeneralPublicLicense20;
@@ -46,13 +40,9 @@ public class AboutSettingsFragment extends PreferenceFragmentCompat {
     private Context mContext;
     private MainActivity mainActivity;
 
-    @Inject @Named("app")
-    Tracker mTracker;
-
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
         mContext = getActivity();
-        MyApplication.get(mContext).getComponent().inject(this);
         Bugsnag.setContext("About");
         mainActivity = ((MainActivity) getActivity());
         mainActivity.setDrawerAsUp(true);
@@ -63,9 +53,6 @@ public class AboutSettingsFragment extends PreferenceFragmentCompat {
     @Override
     public void onStart() {
         super.onStart();
-
-        mTracker.setScreenName(getClass().getSimpleName());
-        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
     }
 
     @Override
@@ -81,13 +68,6 @@ public class AboutSettingsFragment extends PreferenceFragmentCompat {
             x[i] = (char) (x[i] + trans[i]);
         }
         auth.setSummary(getString(R.string.copyright_year)+ " " +String.valueOf(x));
-        auth.setOnPreferenceClickListener(preference -> {
-            mTracker.send(new HitBuilders.EventBuilder()
-                    .setCategory("Click")
-                    .setAction("Author")
-                    .build());
-            return true;
-        });
 
         Preference pref = prefScreen.getPreference(1);
         pref.setOnPreferenceClickListener(preference -> {
@@ -102,11 +82,6 @@ public class AboutSettingsFragment extends PreferenceFragmentCompat {
                     .setShowFullLicenseText(true)
                     .build()
                     .show();
-
-            mTracker.send(new HitBuilders.EventBuilder()
-                    .setCategory("Click")
-                    .setAction("License")
-                    .build());
             return true;
         });
 
@@ -117,22 +92,10 @@ public class AboutSettingsFragment extends PreferenceFragmentCompat {
                     .setIncludeOwnLicense(true)
                     .build()
                     .show();
-
-            mTracker.send(new HitBuilders.EventBuilder()
-                    .setCategory("Click")
-                    .setAction("OSS License")
-                    .build());
             return true;
         });
 
         Preference versionPref = prefScreen.getPreference(3);
         versionPref.setSummary("v"+BuildConfig.VERSION_NAME);
-        versionPref.setOnPreferenceClickListener(preference -> {
-            mTracker.send(new HitBuilders.EventBuilder()
-                    .setCategory("Click")
-                    .setAction("Version")
-                    .build());
-            return true;
-        });
     }
 }

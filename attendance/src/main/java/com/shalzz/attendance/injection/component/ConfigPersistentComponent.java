@@ -1,8 +1,8 @@
 package com.shalzz.attendance.injection.component;
 
-import com.shalzz.attendance.ui.base.BaseActivity;
 import com.shalzz.attendance.injection.ConfigPersistent;
 import com.shalzz.attendance.injection.module.ActivityModule;
+import com.shalzz.attendance.ui.base.BaseActivity;
 
 import dagger.Component;
 

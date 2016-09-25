@@ -34,13 +34,13 @@ import android.view.View;
 import com.malinskiy.materialicons.IconDrawable;
 import com.malinskiy.materialicons.Iconify;
 import com.shalzz.attendance.DatabaseHandler;
-import com.shalzz.attendance.utils.Miscellaneous;
 import com.shalzz.attendance.R;
-import com.shalzz.attendance.ui.main.MainActivity;
 import com.shalzz.attendance.loader.SubjectAsyncTaskLoader;
 import com.shalzz.attendance.model.remote.Subject;
 import com.shalzz.attendance.network.DataAPI;
 import com.shalzz.attendance.network.RetrofitException;
+import com.shalzz.attendance.ui.main.MainActivity;
+import com.shalzz.attendance.utils.Miscellaneous;
 
 import java.util.Date;
 import java.util.List;

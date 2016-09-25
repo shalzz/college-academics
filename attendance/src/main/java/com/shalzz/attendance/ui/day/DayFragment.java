@@ -29,8 +29,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.shalzz.attendance.utils.DividerItemDecoration;
 import com.shalzz.attendance.R;
+import com.shalzz.attendance.utils.DividerItemDecoration;
 
 import java.util.Date;
 

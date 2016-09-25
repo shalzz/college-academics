@@ -25,8 +25,8 @@ import android.content.SharedPreferences;
 import android.support.v7.preference.PreferenceManager;
 
 import com.shalzz.attendance.R;
-import com.shalzz.attendance.ui.main.MainActivity;
 import com.shalzz.attendance.injection.ApplicationContext;
+import com.shalzz.attendance.ui.main.MainActivity;
 
 import java.io.IOException;
 

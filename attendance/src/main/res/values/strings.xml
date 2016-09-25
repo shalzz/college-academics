@@ -41,7 +41,6 @@
     <string name="pref_key_use_proxy">pref_key_use_proxy</string>
     <string name="pref_key_proxy_username">pref_key_proxy_username</string>
     <string name="pref_key_proxy_password">pref_key_proxy_password</string>
-    <string name="pref_key_ga_opt_in">ga_opt_in</string>
     <string name="pref_key_notify_timetable_changed">notify_timetable_changed</string>
     <string name="pref_key_show_weekends">show_weekends</string>
     <string name="pref_key_day_night">day_night</string>
@@ -113,8 +112,6 @@
     <string name="pref_notice">Open Source License</string>
     <string name="pref_notice_summary">License details for open source softwares</string>
     <string name="pref_version">Build Version</string>
-    <string name="pref_ga_opt_in">Google Analytics</string>
-    <string name="pref_ga_opt_in_summary">Collect and send anonymous data to help improve the app</string>
     <string name="pref_notify_timetable_changed">Notifications</string>
     <string name="pref_notify_timetable_changed_summary">Receive a notification when your
         timetable changes</string>

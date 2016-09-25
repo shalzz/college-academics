@@ -38,11 +38,11 @@ import android.support.v7.preference.PreferenceManager;
 import com.bugsnag.android.Bugsnag;
 import com.shalzz.attendance.DatabaseHandler;
 import com.shalzz.attendance.R;
-import com.shalzz.attendance.ui.main.MainActivity;
 import com.shalzz.attendance.model.remote.Period;
 import com.shalzz.attendance.model.remote.Subject;
 import com.shalzz.attendance.network.DataAPI;
 import com.shalzz.attendance.network.RetrofitException;
+import com.shalzz.attendance.ui.main.MainActivity;
 import com.shalzz.attendance.wrapper.MyPreferencesManager;
 
 import java.util.Date;

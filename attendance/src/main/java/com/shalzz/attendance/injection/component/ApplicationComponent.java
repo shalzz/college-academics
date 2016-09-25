@@ -22,7 +22,6 @@ package com.shalzz.attendance.injection.component;
 import android.app.Application;
 import android.content.Context;
 
-import com.google.android.gms.analytics.Tracker;
 import com.google.gson.Gson;
 import com.shalzz.attendance.DatabaseHandler;
 import com.shalzz.attendance.injection.ApplicationContext;
@@ -48,8 +47,6 @@ public interface ApplicationComponent {
     @ApplicationContext
     Context context();
     Application application();
-    @Named("app")
-    Tracker tracker();
     DataAPI dataApi();
     Gson gson();
     OkHttpClient okHttpclient();

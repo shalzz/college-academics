@@ -34,19 +34,11 @@ import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.PreferenceScreen;
 
 import com.bugsnag.android.Bugsnag;
-import com.google.android.gms.analytics.GoogleAnalytics;
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
 import com.shalzz.attendance.DatabaseHandler;
 import com.shalzz.attendance.MyApplication;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.ui.main.MainActivity;
 import com.shalzz.attendance.wrapper.MySyncManager;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-
-import timber.log.Timber;
 
 public class SettingsFragment extends PreferenceFragmentCompat implements OnSharedPreferenceChangeListener{
 
@@ -54,10 +46,6 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnShar
     private String key_sub_limit;
     private String key_sync_interval;
     private String key_sync_day_night;
-
-    @Inject
-    @Named("app")
-    Tracker mTracker;
 
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
@@ -78,14 +66,6 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnShar
         key_sync_interval = getString(R.string.pref_key_sync_interval);
         ListPreference synclistPref = (ListPreference) findPreference(key_sync_interval);
         synclistPref.setSummary(synclistPref.getEntry());
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-
-        mTracker.setScreenName(getClass().getSimpleName());
-        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
     }
 
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
@@ -115,12 +95,6 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnShar
             ListPreference connectionPref = (ListPreference) findPreference(key);
             connectionPref.setSummary(connectionPref.getEntry());
             MySyncManager.addPeriodicSync(mContext, "" + db.getUser().sap_id());
-        }
-        else if(key.equals(getString(R.string.pref_key_ga_opt_in))) {
-            boolean optIn = sharedPreferences.getBoolean(key, true);
-            GoogleAnalytics.getInstance(mContext).setAppOptOut(
-                    !optIn);
-            Timber.i("Opted out of Google Analytics: %b", !optIn);
         }
         else if(key.equals(getString(R.string.pref_key_notify_timetable_changed))) {
             if(!sharedPreferences.getBoolean(key, true)) {
@@ -174,10 +148,6 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnShar
             ((MainActivity)getActivity()).mPopSettingsBackStack = true;
 
             transaction.commit();
-            mTracker.send(new HitBuilders.EventBuilder()
-                    .setCategory("Click")
-                    .setAction("About")
-                    .build());
             return true;
         });
 

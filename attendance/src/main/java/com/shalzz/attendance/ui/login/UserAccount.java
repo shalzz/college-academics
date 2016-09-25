@@ -30,14 +30,13 @@ import android.view.View;
 
 import com.bugsnag.android.Bugsnag;
 import com.shalzz.attendance.DatabaseHandler;
-import com.shalzz.attendance.utils.Miscellaneous;
 import com.shalzz.attendance.R;
-import com.shalzz.attendance.ui.login.LoginActivity;
-import com.shalzz.attendance.ui.main.MainActivity;
 import com.shalzz.attendance.injection.ActivityContext;
 import com.shalzz.attendance.model.remote.User;
 import com.shalzz.attendance.network.DataAPI;
 import com.shalzz.attendance.network.RetrofitException;
+import com.shalzz.attendance.ui.main.MainActivity;
+import com.shalzz.attendance.utils.Miscellaneous;
 import com.shalzz.attendance.wrapper.MyPreferencesManager;
 import com.shalzz.attendance.wrapper.MySyncManager;
 

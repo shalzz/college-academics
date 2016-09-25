@@ -27,24 +27,14 @@ import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.PreferenceManager;
 
 import com.bugsnag.android.Bugsnag;
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
 import com.shalzz.attendance.MyApplication;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.ui.main.MainActivity;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-
 public class ProxySettingsFragment extends PreferenceFragmentCompat implements SharedPreferences.OnSharedPreferenceChangeListener {
 
-    private static final String TAG = "Proxy fragment";
     private String key_proxy_username;
     private MainActivity mainActivity;
-
-    @Inject
-    @Named("app")
-    Tracker t;
 
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
@@ -60,14 +50,6 @@ public class ProxySettingsFragment extends PreferenceFragmentCompat implements S
         Preference connectionPref = findPreference(key_proxy_username);
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mContext);
         connectionPref.setSummary(sharedPref.getString(key_proxy_username, ""));
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-
-        t.setScreenName(getClass().getSimpleName());
-        t.send(new HitBuilders.ScreenViewBuilder().build());
     }
 
     @Override
