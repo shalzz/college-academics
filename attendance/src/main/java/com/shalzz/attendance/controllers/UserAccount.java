@@ -34,18 +34,21 @@ import com.shalzz.attendance.Miscellaneous;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.activity.LoginActivity;
 import com.shalzz.attendance.activity.MainActivity;
+import com.shalzz.attendance.injection.ActivityContext;
+import com.shalzz.attendance.injection.ConfigPersistent;
 import com.shalzz.attendance.model.remote.User;
 import com.shalzz.attendance.network.DataAPI;
 import com.shalzz.attendance.network.RetrofitException;
 import com.shalzz.attendance.wrapper.MyPreferencesManager;
 import com.shalzz.attendance.wrapper.MySyncManager;
 
+import javax.inject.Inject;
+
 import okhttp3.Credentials;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import timber.log.Timber;
-
 
 public class UserAccount {
 
@@ -63,7 +66,8 @@ public class UserAccount {
      * Constructor to set the Activity context.
      * @param context Context
      */
-    public UserAccount(Context context,
+    @Inject
+    public UserAccount(@ActivityContext Context context,
                        DataAPI api) {
         mContext = context;
         mAPI = api;

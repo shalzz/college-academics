@@ -32,7 +32,6 @@ import com.google.android.gms.analytics.Tracker;
 import com.shalzz.attendance.Miscellaneous;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.controllers.UserAccount;
-import com.shalzz.attendance.network.DataAPI;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -57,9 +56,7 @@ public class LoginActivity extends BaseActivity {
     Tracker t;
 
     @Inject
-    DataAPI dataAPI;
-
-    UserAccount userAccount;
+    UserAccount mUserAccount;
 
     private EditText etSapid;
     private EditText etPass;
@@ -78,7 +75,6 @@ public class LoginActivity extends BaseActivity {
         // set toolbar as actionbar
         setSupportActionBar(mToolbar);
 
-        userAccount = new UserAccount(this,dataAPI);
         etSapid = textInputSapid.getEditText();
         etPass = textInputPass.getEditText();
 
@@ -110,7 +106,7 @@ public class LoginActivity extends BaseActivity {
             return;
 
         Miscellaneous.closeKeyboard(this, etPass);
-        userAccount.Login(etSapid.getText().toString(), etPass.getText().toString());
+        mUserAccount.Login(etSapid.getText().toString(), etPass.getText().toString());
     }
 
     /**
@@ -139,6 +135,6 @@ public class LoginActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        userAccount = null;
+        mUserAccount = null;
     }
 }

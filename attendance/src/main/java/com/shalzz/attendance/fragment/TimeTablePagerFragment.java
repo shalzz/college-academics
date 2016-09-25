@@ -51,7 +51,6 @@ import com.shalzz.attendance.controllers.UserAccount;
 import com.shalzz.attendance.network.DataAPI;
 import com.shalzz.attendance.wrapper.DateHelper;
 import com.shalzz.attendance.wrapper.MultiSwipeRefreshLayout;
-import com.shalzz.attendance.wrapper.MyApplication;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -102,11 +101,11 @@ public class TimeTablePagerFragment extends Fragment {
     @Inject
     DataAPI api;
 
-    UserAccount userAccount;
+    @Inject
+    UserAccount mUserAccount;
 
     private int mPreviousPosition = 15;
     private PagerController mController;
-    private String myTag = "Pager Fragment";
     private Context mContext;
     private ActionBar actionbar;
     private Unbinder unbinder;
@@ -117,7 +116,6 @@ public class TimeTablePagerFragment extends Fragment {
         ((MainActivity) getActivity()).activityComponent().inject(this);
         mContext = getActivity();
 	    Bugsnag.setContext("Timetable");
-        userAccount = new UserAccount(mContext, api);
     }
 
     @Override
@@ -220,7 +218,7 @@ public class TimeTablePagerFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId() == R.id.menu_logout) {
-            userAccount.Logout();
+            mUserAccount.Logout();
             return true;
         }
         else if(item.getItemId() == R.id.menu_refresh) {

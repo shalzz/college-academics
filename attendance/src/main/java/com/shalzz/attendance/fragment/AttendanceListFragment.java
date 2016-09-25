@@ -61,7 +61,6 @@ import com.shalzz.attendance.controllers.AttendanceController;
 import com.shalzz.attendance.controllers.UserAccount;
 import com.shalzz.attendance.network.DataAPI;
 import com.shalzz.attendance.wrapper.MultiSwipeRefreshLayout;
-import com.shalzz.attendance.wrapper.MyApplication;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -121,7 +120,8 @@ public class AttendanceListFragment extends Fragment implements
     @Inject
     DataAPI api;
 
-    UserAccount userAccount;
+    @Inject
+    UserAccount mUserAccount;
 
     @Nullable
     private LinearLayoutManager mLinearLayoutManager;
@@ -130,7 +130,6 @@ public class AttendanceListFragment extends Fragment implements
     private StaggeredGridLayoutManager mGridLayoutManager;
 
     private Context mContext;
-    private String mTag = "Attendance List Fragment";
     private AttendanceController controller;
 
     private final int GRID_LAYOUT_SPAN_COUNT = 2;
@@ -158,7 +157,6 @@ public class AttendanceListFragment extends Fragment implements
         ((MainActivity) getActivity()).activityComponent().inject(this);
 
         mContext = getActivity();
-        userAccount = new UserAccount(mContext,api);
         setHasOptionsMenu(true);
         View mView = inflater.inflate(R.layout.fragment_attendance, container, false);
         unbinder = ButterKnife.bind(this, mView);
@@ -255,7 +253,7 @@ public class AttendanceListFragment extends Fragment implements
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId() == R.id.menu_logout) {
-            userAccount.Logout();
+            mUserAccount.Logout();
             return true;
         }
         else if(item.getItemId() == R.id.menu_refresh) {
