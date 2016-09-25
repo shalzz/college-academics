@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.shalzz.attendance.adapter;
+package com.shalzz.attendance.ui.timetable;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -28,7 +28,7 @@ import android.support.v7.preference.PreferenceManager;
 
 import com.shalzz.attendance.DatabaseHandler;
 import com.shalzz.attendance.R;
-import com.shalzz.attendance.fragment.DayFragment;
+import com.shalzz.attendance.ui.day.DayFragment;
 
 import java.util.Calendar;
 import java.util.Date;

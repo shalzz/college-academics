@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.shalzz.attendance.fragment;
+package com.shalzz.attendance.ui.timetable;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
@@ -42,12 +42,11 @@ import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.Target;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
-import com.shalzz.attendance.CircularIndeterminate;
+import com.shalzz.attendance.utils.CircularIndeterminate;
 import com.shalzz.attendance.DatabaseHandler;
 import com.shalzz.attendance.R;
-import com.shalzz.attendance.activity.MainActivity;
-import com.shalzz.attendance.controllers.PagerController;
-import com.shalzz.attendance.controllers.UserAccount;
+import com.shalzz.attendance.ui.main.MainActivity;
+import com.shalzz.attendance.ui.login.UserAccount;
 import com.shalzz.attendance.network.DataAPI;
 import com.shalzz.attendance.wrapper.DateHelper;
 import com.shalzz.attendance.wrapper.MultiSwipeRefreshLayout;
@@ -111,13 +110,6 @@ public class TimeTablePagerFragment extends Fragment {
     private Unbinder unbinder;
     public EmptyView mEmptyView = new EmptyView();
 
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        ((MainActivity) getActivity()).activityComponent().inject(this);
-        mContext = getActivity();
-	    Bugsnag.setContext("Timetable");
-    }
-
     @Override
     public void onStart() {
         super.onStart();
@@ -141,6 +133,9 @@ public class TimeTablePagerFragment extends Fragment {
                              Bundle savedInstanceState) {
         if(container==null)
             return null;
+        mContext = getActivity();
+        Bugsnag.setContext("Timetable");
+        ((MainActivity) getActivity()).activityComponent().inject(this);
 
         setHasOptionsMenu(true);
         setRetainInstance(false);

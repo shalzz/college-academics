@@ -26,7 +26,7 @@
               android:orientation="vertical"
               android:background="@drawable/background"
               tools:ignore="RtlHardcoded,UnknownIdInLayout"
-              tools:context=".activity.LoginActivity">
+              tools:context=".ui.login.LoginActivity">
 
     <include layout="@layout/include_toolbar"/>
 

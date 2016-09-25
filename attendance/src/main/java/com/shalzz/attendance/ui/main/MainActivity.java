@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.shalzz.attendance.activity;
+package com.shalzz.attendance.ui.main;
 
 import android.animation.ValueAnimator;
 import android.content.Intent;
@@ -50,11 +50,12 @@ import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.shalzz.attendance.BuildConfig;
 import com.shalzz.attendance.DatabaseHandler;
-import com.shalzz.attendance.Miscellaneous;
+import com.shalzz.attendance.ui.base.BaseActivity;
+import com.shalzz.attendance.utils.Miscellaneous;
 import com.shalzz.attendance.R;
-import com.shalzz.attendance.fragment.AttendanceListFragment;
-import com.shalzz.attendance.fragment.SettingsFragment;
-import com.shalzz.attendance.fragment.TimeTablePagerFragment;
+import com.shalzz.attendance.ui.attendance.AttendanceListFragment;
+import com.shalzz.attendance.ui.settings.SettingsFragment;
+import com.shalzz.attendance.ui.timetable.TimeTablePagerFragment;
 import com.shalzz.attendance.model.remote.User;
 
 import javax.inject.Inject;

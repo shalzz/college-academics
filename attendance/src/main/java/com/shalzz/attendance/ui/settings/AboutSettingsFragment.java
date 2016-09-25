@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.shalzz.attendance.fragment;
+package com.shalzz.attendance.ui.settings;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -29,9 +29,9 @@ import com.bugsnag.android.Bugsnag;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.shalzz.attendance.BuildConfig;
+import com.shalzz.attendance.MyApplication;
 import com.shalzz.attendance.R;
-import com.shalzz.attendance.activity.MainActivity;
-import com.shalzz.attendance.wrapper.MyApplication;
+import com.shalzz.attendance.ui.main.MainActivity;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -51,8 +51,8 @@ public class AboutSettingsFragment extends PreferenceFragmentCompat {
 
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
-        ((MainActivity) getActivity()).activityComponent().inject(this);
         mContext = getActivity();
+        MyApplication.get(mContext).getComponent().inject(this);
         Bugsnag.setContext("About");
         mainActivity = ((MainActivity) getActivity());
         mainActivity.setDrawerAsUp(true);

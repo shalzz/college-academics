@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.shalzz.attendance.fragment;
+package com.shalzz.attendance.ui.attendance;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -51,14 +51,14 @@ import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.ViewTarget;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
-import com.shalzz.attendance.CircularIndeterminate;
-import com.shalzz.attendance.DividerItemDecoration;
-import com.shalzz.attendance.Miscellaneous;
+import com.shalzz.attendance.utils.CircularIndeterminate;
+import com.shalzz.attendance.utils.DividerItemDecoration;
+import com.shalzz.attendance.utils.Miscellaneous;
 import com.shalzz.attendance.R;
-import com.shalzz.attendance.activity.MainActivity;
-import com.shalzz.attendance.adapter.ExpandableListAdapter;
-import com.shalzz.attendance.controllers.AttendanceController;
-import com.shalzz.attendance.controllers.UserAccount;
+import com.shalzz.attendance.ui.main.MainActivity;
+import com.shalzz.attendance.ui.attendance.ExpandableListAdapter;
+import com.shalzz.attendance.ui.attendance.AttendanceController;
+import com.shalzz.attendance.ui.login.UserAccount;
 import com.shalzz.attendance.network.DataAPI;
 import com.shalzz.attendance.wrapper.MultiSwipeRefreshLayout;
 

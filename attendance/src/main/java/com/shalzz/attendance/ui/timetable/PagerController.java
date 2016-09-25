@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.shalzz.attendance.controllers;
+package com.shalzz.attendance.ui.timetable;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -29,11 +29,9 @@ import android.view.View;
 import com.malinskiy.materialicons.IconDrawable;
 import com.malinskiy.materialicons.Iconify;
 import com.shalzz.attendance.DatabaseHandler;
-import com.shalzz.attendance.Miscellaneous;
+import com.shalzz.attendance.utils.Miscellaneous;
 import com.shalzz.attendance.R;
-import com.shalzz.attendance.activity.MainActivity;
-import com.shalzz.attendance.adapter.TimeTablePagerAdapter;
-import com.shalzz.attendance.fragment.TimeTablePagerFragment;
+import com.shalzz.attendance.ui.main.MainActivity;
 import com.shalzz.attendance.model.remote.Period;
 import com.shalzz.attendance.network.DataAPI;
 import com.shalzz.attendance.network.RetrofitException;

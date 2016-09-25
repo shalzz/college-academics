@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.shalzz.attendance.wrapper;
+package com.shalzz.attendance;
 
 import android.app.Application;
 import android.content.Context;
@@ -26,9 +26,7 @@ import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.preference.PreferenceManager;
 
 import com.bugsnag.android.Bugsnag;
-import com.shalzz.attendance.BugsnagTree;
-import com.shalzz.attendance.BuildConfig;
-import com.shalzz.attendance.R;
+import com.shalzz.attendance.utils.BugsnagTree;
 import com.shalzz.attendance.injection.component.ApplicationComponent;
 import com.shalzz.attendance.injection.component.DaggerApplicationComponent;
 import com.shalzz.attendance.injection.module.ApplicationModule;

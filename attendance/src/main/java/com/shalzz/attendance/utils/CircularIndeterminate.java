@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.shalzz.attendance;
+package com.shalzz.attendance.utils;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -25,6 +25,8 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.view.View;
+
+import com.shalzz.attendance.R;
 
 /**
  * Simplest custom view possible, using CircularProgressDrawable

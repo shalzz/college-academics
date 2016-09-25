@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.shalzz.attendance.activity;
+package com.shalzz.attendance.ui.splash;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -29,7 +29,10 @@ import com.bugsnag.android.Severity;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
-import com.shalzz.attendance.Miscellaneous;
+import com.shalzz.attendance.ui.base.BaseActivity;
+import com.shalzz.attendance.ui.login.LoginActivity;
+import com.shalzz.attendance.ui.main.MainActivity;
+import com.shalzz.attendance.utils.Miscellaneous;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.wrapper.MyPreferencesManager;
 

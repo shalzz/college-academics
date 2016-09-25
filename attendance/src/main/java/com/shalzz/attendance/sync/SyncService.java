@@ -24,7 +24,7 @@ import android.content.Intent;
 import android.os.IBinder;
 
 import com.shalzz.attendance.network.DataAPI;
-import com.shalzz.attendance.wrapper.MyApplication;
+import com.shalzz.attendance.MyApplication;
 import com.shalzz.attendance.wrapper.MyPreferencesManager;
 
 import javax.inject.Inject;

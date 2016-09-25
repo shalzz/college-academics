@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.shalzz.attendance;
+package com.shalzz.attendance.utils;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -34,6 +34,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.shalzz.attendance.R;
 import com.shalzz.attendance.injection.ActivityContext;
 
 import java.io.IOException;

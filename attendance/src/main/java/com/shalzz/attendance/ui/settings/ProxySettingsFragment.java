@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.shalzz.attendance.fragment;
+package com.shalzz.attendance.ui.settings;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -29,9 +29,9 @@ import android.support.v7.preference.PreferenceManager;
 import com.bugsnag.android.Bugsnag;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
+import com.shalzz.attendance.MyApplication;
 import com.shalzz.attendance.R;
-import com.shalzz.attendance.activity.MainActivity;
-import com.shalzz.attendance.wrapper.MyApplication;
+import com.shalzz.attendance.ui.main.MainActivity;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -48,8 +48,8 @@ public class ProxySettingsFragment extends PreferenceFragmentCompat implements S
 
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
-        ((MainActivity) getActivity()).activityComponent().inject(this);
         Context mContext = getActivity();
+        MyApplication.get(mContext).getComponent().inject(this);
         Bugsnag.setContext("ProxySettings");
         mainActivity = ((MainActivity) getActivity());
         mainActivity.setDrawerAsUp(true);

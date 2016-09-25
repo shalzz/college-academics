@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.shalzz.attendance.controllers;
+package com.shalzz.attendance.ui.login;
 
 import android.app.Activity;
 import android.app.NotificationManager;
@@ -30,12 +30,11 @@ import android.view.View;
 
 import com.bugsnag.android.Bugsnag;
 import com.shalzz.attendance.DatabaseHandler;
-import com.shalzz.attendance.Miscellaneous;
+import com.shalzz.attendance.utils.Miscellaneous;
 import com.shalzz.attendance.R;
-import com.shalzz.attendance.activity.LoginActivity;
-import com.shalzz.attendance.activity.MainActivity;
+import com.shalzz.attendance.ui.login.LoginActivity;
+import com.shalzz.attendance.ui.main.MainActivity;
 import com.shalzz.attendance.injection.ActivityContext;
-import com.shalzz.attendance.injection.ConfigPersistent;
 import com.shalzz.attendance.model.remote.User;
 import com.shalzz.attendance.network.DataAPI;
 import com.shalzz.attendance.network.RetrofitException;

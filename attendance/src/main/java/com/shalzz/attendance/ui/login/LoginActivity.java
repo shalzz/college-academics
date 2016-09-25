@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.shalzz.attendance.activity;
+package com.shalzz.attendance.ui.login;
 
 import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
@@ -29,9 +29,9 @@ import android.widget.EditText;
 import com.bugsnag.android.Bugsnag;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
-import com.shalzz.attendance.Miscellaneous;
+import com.shalzz.attendance.ui.base.BaseActivity;
+import com.shalzz.attendance.utils.Miscellaneous;
 import com.shalzz.attendance.R;
-import com.shalzz.attendance.controllers.UserAccount;
 
 import javax.inject.Inject;
 import javax.inject.Named;

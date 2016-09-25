@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.shalzz.attendance.controllers;
+package com.shalzz.attendance.ui.attendance;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -34,11 +34,9 @@ import android.view.View;
 import com.malinskiy.materialicons.IconDrawable;
 import com.malinskiy.materialicons.Iconify;
 import com.shalzz.attendance.DatabaseHandler;
-import com.shalzz.attendance.Miscellaneous;
+import com.shalzz.attendance.utils.Miscellaneous;
 import com.shalzz.attendance.R;
-import com.shalzz.attendance.activity.MainActivity;
-import com.shalzz.attendance.adapter.ExpandableListAdapter;
-import com.shalzz.attendance.fragment.AttendanceListFragment;
+import com.shalzz.attendance.ui.main.MainActivity;
 import com.shalzz.attendance.loader.SubjectAsyncTaskLoader;
 import com.shalzz.attendance.model.remote.Subject;
 import com.shalzz.attendance.network.DataAPI;

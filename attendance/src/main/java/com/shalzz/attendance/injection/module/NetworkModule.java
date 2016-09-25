@@ -26,7 +26,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.ryanharter.auto.value.gson.AutoValueGsonTypeAdapterFactory;
 import com.shalzz.attendance.BuildConfig;
-import com.shalzz.attendance.Miscellaneous;
+import com.shalzz.attendance.utils.Miscellaneous;
 import com.shalzz.attendance.injection.ApplicationContext;
 import com.shalzz.attendance.network.DataAPI;
 import com.shalzz.attendance.network.ErrorHandlingCallAdapterFactory;

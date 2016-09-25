@@ -1,13 +1,13 @@
 package com.shalzz.attendance.injection.component;
 
-import com.shalzz.attendance.activity.LoginActivity;
-import com.shalzz.attendance.activity.MainActivity;
-import com.shalzz.attendance.activity.SplashActivity;
-import com.shalzz.attendance.fragment.AboutSettingsFragment;
-import com.shalzz.attendance.fragment.AttendanceListFragment;
-import com.shalzz.attendance.fragment.ProxySettingsFragment;
-import com.shalzz.attendance.fragment.SettingsFragment;
-import com.shalzz.attendance.fragment.TimeTablePagerFragment;
+import com.shalzz.attendance.ui.login.LoginActivity;
+import com.shalzz.attendance.ui.main.MainActivity;
+import com.shalzz.attendance.ui.splash.SplashActivity;
+import com.shalzz.attendance.ui.settings.AboutSettingsFragment;
+import com.shalzz.attendance.ui.attendance.AttendanceListFragment;
+import com.shalzz.attendance.ui.settings.ProxySettingsFragment;
+import com.shalzz.attendance.ui.settings.SettingsFragment;
+import com.shalzz.attendance.ui.timetable.TimeTablePagerFragment;
 import com.shalzz.attendance.injection.PerActivity;
 import com.shalzz.attendance.injection.module.ActivityModule;
 

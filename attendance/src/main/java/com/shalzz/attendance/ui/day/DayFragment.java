@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.shalzz.attendance.fragment;
+package com.shalzz.attendance.ui.day;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -29,9 +29,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.shalzz.attendance.DividerItemDecoration;
+import com.shalzz.attendance.utils.DividerItemDecoration;
 import com.shalzz.attendance.R;
-import com.shalzz.attendance.controllers.DayController;
 
 import java.util.Date;
 

@@ -38,7 +38,7 @@ import android.support.v7.preference.PreferenceManager;
 import com.bugsnag.android.Bugsnag;
 import com.shalzz.attendance.DatabaseHandler;
 import com.shalzz.attendance.R;
-import com.shalzz.attendance.activity.MainActivity;
+import com.shalzz.attendance.ui.main.MainActivity;
 import com.shalzz.attendance.model.remote.Period;
 import com.shalzz.attendance.model.remote.Subject;
 import com.shalzz.attendance.network.DataAPI;

@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.shalzz.attendance.adapter;
+package com.shalzz.attendance.ui.day;
 
 import android.support.v7.util.SortedList;
 import android.support.v7.widget.RecyclerView;

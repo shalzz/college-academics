@@ -28,22 +28,22 @@
     <bool name="ga_reportUncaughtExceptions">false</bool>
 
     <!-- The screen names that will appear in reports -->
-    <screenName name="com.shalzz.attendance.fragment.AttendanceListFragment">
+    <screenName name="com.shalzz.attendance.ui.attendance.AttendanceListFragment">
         AttendanceScreen
     </screenName>
-    <screenName name="com.shalzz.attendance.fragment.TimeTablePagerFragment">
+    <screenName name="com.shalzz.attendance.ui.timetable.TimeTablePagerFragment">
         TimeTableScreen
     </screenName>
-    <screenName name="com.shalzz.attendance.fragment.SettingsFragment">
+    <screenName name="com.shalzz.attendance.ui.settings.SettingsFragment">
         SettingsScreen
     </screenName>
-    <screenName name="com.shalzz.attendance.fragment.AboutSettingsFragment">
+    <screenName name="com.shalzz.attendance.ui.settings.AboutSettingsFragment">
         AboutScreen
     </screenName>
-    <screenName name="com.shalzz.attendance.fragment.ProxySettingsFragment">
+    <screenName name="com.shalzz.attendance.ui.settings.ProxySettingsFragment">
         ProxyScreen
     </screenName>
-    <screenName name="com.shalzz.attendance.activity.LoginActivity">
+    <screenName name="com.shalzz.attendance.ui.login.LoginActivity">
         LoginScreen
     </screenName>
 

@@ -1,4 +1,4 @@
-package com.shalzz.attendance;
+package com.shalzz.attendance.utils;
 
 /*
 * Copyright (C) 2014 The Android Open Source Project
