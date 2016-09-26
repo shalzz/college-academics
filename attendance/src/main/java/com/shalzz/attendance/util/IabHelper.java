@@ -28,7 +28,6 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.android.vending.billing.IInAppBillingService;
 
@@ -36,6 +35,8 @@ import org.json.JSONException;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import timber.log.Timber;
 
 
 /**
@@ -72,10 +73,6 @@ import java.util.List;
  *
  */
 public class IabHelper {
-    // Is debug logging enabled?
-    boolean mDebugLog = false;
-    String mDebugTag = "IabHelper";
-
     // Is setup done?
     boolean mSetupDone = false;
 
@@ -177,20 +174,6 @@ public class IabHelper {
         mContext = ctx.getApplicationContext();
         mSignatureBase64 = base64PublicKey;
         logDebug("IAB helper created.");
-    }
-
-    /**
-     * Enables or disable debug logging through LogCat.
-     */
-    public void enableDebugLogging(boolean enable, String tag) {
-        checkNotDisposed();
-        mDebugLog = enable;
-        mDebugTag = tag;
-    }
-
-    public void enableDebugLogging(boolean enable) {
-        checkNotDisposed();
-        mDebugLog = enable;
     }
 
     /**
@@ -1103,14 +1086,14 @@ public class IabHelper {
     }
 
     void logDebug(String msg) {
-        if (mDebugLog) Log.d(mDebugTag, msg);
+        Timber.d(msg);
     }
 
     void logError(String msg) {
-        Log.e(mDebugTag, "In-app billing error: " + msg);
+        Timber.e("In-app billing error: %s", msg);
     }
 
     void logWarn(String msg) {
-        Log.w(mDebugTag, "In-app billing warning: " + msg);
+        Timber.w("In-app billing warning: %s", msg);
     }
 }

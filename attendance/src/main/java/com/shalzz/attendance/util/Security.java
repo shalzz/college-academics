@@ -17,7 +17,6 @@ package com.shalzz.attendance.util;
 
 import android.text.TextUtils;
 import android.util.Base64;
-import android.util.Log;
 
 import java.security.InvalidKeyException;
 import java.security.KeyFactory;
@@ -27,6 +26,8 @@ import java.security.Signature;
 import java.security.SignatureException;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
+
+import timber.log.Timber;
 
 /**
  * Security-related methods. For a secure implementation, all of this code
@@ -38,7 +39,6 @@ import java.security.spec.X509EncodedKeySpec;
  * purchases as verified.
  */
 public class Security {
-    private static final String TAG = "IABUtil/Security";
 
     private static final String KEY_FACTORY_ALGORITHM = "RSA";
     private static final String SIGNATURE_ALGORITHM = "SHA1withRSA";
@@ -55,7 +55,7 @@ public class Security {
     public static boolean verifyPurchase(String base64PublicKey, String signedData, String signature) {
         if (TextUtils.isEmpty(signedData) || TextUtils.isEmpty(base64PublicKey) ||
                 TextUtils.isEmpty(signature)) {
-            Log.e(TAG, "Purchase verification failed: missing data.");
+            Timber.e("Purchase verification failed: missing data.");
             return false;
         }
 
@@ -78,7 +78,7 @@ public class Security {
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         } catch (InvalidKeySpecException e) {
-            Log.e(TAG, "Invalid key specification.");
+            Timber.e("Invalid key specification.");
             throw new IllegalArgumentException(e);
         }
     }
@@ -97,7 +97,7 @@ public class Security {
         try {
             signatureBytes = Base64.decode(signature, Base64.DEFAULT);
         } catch (IllegalArgumentException e) {
-            Log.e(TAG, "Base64 decoding failed.");
+            Timber.e("Base64 decoding failed.");
             return false;
         }
         try {
@@ -105,16 +105,16 @@ public class Security {
             sig.initVerify(publicKey);
             sig.update(signedData.getBytes());
             if (!sig.verify(signatureBytes)) {
-                Log.e(TAG, "Signature verification failed.");
+                Timber.e("Signature verification failed.");
                 return false;
             }
             return true;
         } catch (NoSuchAlgorithmException e) {
-            Log.e(TAG, "NoSuchAlgorithmException.");
+            Timber.e("NoSuchAlgorithmException.");
         } catch (InvalidKeyException e) {
-            Log.e(TAG, "Invalid key specification.");
+            Timber.e("Invalid key specification.");
         } catch (SignatureException e) {
-            Log.e(TAG, "Signature exception.");
+            Timber.e("Signature exception.");
         }
         return false;
     }

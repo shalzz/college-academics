@@ -19,13 +19,16 @@
 
 package com.shalzz.attendance.wrapper;
 
+import android.Manifest;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.preference.PreferenceManager;
 
 import com.shalzz.attendance.BuildConfig;
@@ -35,43 +38,46 @@ import timber.log.Timber;
 
 public class MySyncManager {
 
-	// Sync interval constants
-	public static final long SECONDS_PER_MINUTE = 60L;
-	public static final String AUTHORITY = BuildConfig.APPLICATION_ID + ".provider";
-	public static final String ACCOUNT_TYPE = BuildConfig.ACCOUNT_TYPE;
+    // Sync interval constants
+    private static final long SECONDS_PER_MINUTE = 60L;
+    private static final String AUTHORITY = BuildConfig.APPLICATION_ID + ".provider";
+    private static final String ACCOUNT_TYPE = BuildConfig.ACCOUNT_TYPE;
 
-	/**
-	 * Create a new dummy account for the sync adapter
-	 *
-	 * @param context The application context
-	 */
-	public static Account CreateSyncAccount(Context context, String accountName) {
+    /**
+     * Create a new dummy account for the sync adapter
+     *
+     * @param context The application context
+     */
+    private static Account CreateSyncAccount(Context context, String accountName) {
         Timber.i("Creating a sync account");
-		// Create the account type and default account
-		Account newAccount = new Account(accountName, ACCOUNT_TYPE);
-		// Get an instance of the Android account manager
-		AccountManager accountManager =
-				(AccountManager) context.getSystemService(Context.ACCOUNT_SERVICE);
+        // Create the account type and default account
+        Account newAccount = new Account(accountName, ACCOUNT_TYPE);
+        // Get an instance of the Android account manager
+        AccountManager accountManager =
+                (AccountManager) context.getSystemService(Context.ACCOUNT_SERVICE);
 		/*
 		 * Add the account and account type, no password or user data
 		 * If successful, return the Account object, otherwise report an error.
 		 */
-		if (!accountManager.addAccountExplicitly(newAccount, null, null)) {
+        if (!accountManager.addAccountExplicitly(newAccount, null, null)) {
 			/*
 			 * The account exists or some other error occurred. Log this, report it,
 			 * or handle it internally.
 			 */
             Timber.e("Account already exits!");
-		}
-		return newAccount;
-	}
-	
-	public static Account getSyncAccount(Context mContext) {
-		AccountManager accountManager = AccountManager.get(mContext);
-		Account[] accounts = accountManager.getAccountsByType(ACCOUNT_TYPE);
-		if(accounts.length==1)
-			return accounts[0];
-		return null;
+        }
+        return newAccount;
+    }
+
+    private static Account getSyncAccount(Context mContext) {
+        AccountManager accountManager = AccountManager.get(mContext);
+        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.GET_ACCOUNTS) !=
+                PackageManager.PERMISSION_GRANTED) {
+            Timber.d("GET_ACCOUNTS permission denied");
+            return null;
+        }
+        Account[] accounts = accountManager.getAccountsByType(ACCOUNT_TYPE);
+		return accounts.length==1 ? accounts[0] : null;
 	}
 
 	public static void removeSyncAccount(Context mContext) {

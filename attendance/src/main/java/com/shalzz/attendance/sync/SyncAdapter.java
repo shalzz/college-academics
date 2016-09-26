@@ -161,8 +161,8 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                                 mContext.getResources(),
                                 R.mipmap.ic_launcher))
                         .setAutoCancel(true)
-                        .setPriority(Notification.PRIORITY_LOW)
-                        .setCategory(Notification.CATEGORY_RECOMMENDATION)
+                        .setPriority(NotificationCompat.PRIORITY_LOW)
+                        .setCategory(NotificationCompat.CATEGORY_RECOMMENDATION)
                         .setContentTitle(mContext.getString(
                                 R.string.notify_timetable_changed_title))
                         .setContentText(mContext.getString(
