@@ -19,14 +19,19 @@
 
 package com.shalzz.attendance.ui.settings;
 
+import android.Manifest;
 import android.app.NotificationManager;
 import android.app.backup.BackupManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v14.preference.SwitchPreference;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.preference.ListPreference;
 import android.support.v7.preference.PreferenceCategory;
@@ -40,12 +45,16 @@ import com.shalzz.attendance.R;
 import com.shalzz.attendance.ui.main.MainActivity;
 import com.shalzz.attendance.wrapper.MySyncManager;
 
-public class SettingsFragment extends PreferenceFragmentCompat implements OnSharedPreferenceChangeListener{
+public class SettingsFragment extends PreferenceFragmentCompat implements
+        OnSharedPreferenceChangeListener {
+
+    private final int MY_PERMISSIONS_REQUEST_GET_CONTACTS = 1;
 
     private Context mContext;
     private String key_sub_limit;
     private String key_sync_interval;
     private String key_sync_day_night;
+    private SwitchPreference syncPref;
 
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
@@ -66,6 +75,13 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnShar
         key_sync_interval = getString(R.string.pref_key_sync_interval);
         ListPreference synclistPref = (ListPreference) findPreference(key_sync_interval);
         synclistPref.setSummary(synclistPref.getEntry());
+
+        syncPref = (SwitchPreference) findPreference(getString(R.string.pref_key_sync));
+        if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.GET_ACCOUNTS) !=
+                PackageManager.PERMISSION_GRANTED) {
+            toggleSync(false);
+            syncPref.setChecked(false);
+        }
     }
 
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
@@ -83,12 +99,13 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnShar
             connectionPref.setSummary(connectionPref.getEntry());
         }
         else if (key.equals(getString(R.string.pref_key_sync))) {
-            DatabaseHandler db = new DatabaseHandler(mContext);
-            String account_name =  "" + db.getUser().sap_id();
-            if (sharedPreferences.getBoolean(key,true))
-                MySyncManager.enableAutomaticSync(mContext, account_name);
-            else
-                MySyncManager.disableAutomaticSync(mContext, account_name);
+            if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.GET_ACCOUNTS) !=
+                    PackageManager.PERMISSION_GRANTED) {
+                    requestPermissions( new String[] {Manifest.permission.GET_ACCOUNTS},
+                        MY_PERMISSIONS_REQUEST_GET_CONTACTS);
+            } else {
+                toggleSync(sharedPreferences.getBoolean(key,true));
+            }
         }
         else if(key.equals(key_sync_interval)) {
             DatabaseHandler db = new DatabaseHandler(mContext);
@@ -114,6 +131,35 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnShar
                 Bugsnag.addToTab("User", "Password", password);
             } else {
                 Bugsnag.clearTab("User");
+            }
+        }
+    }
+
+    private void toggleSync(boolean sync) {
+        DatabaseHandler db = new DatabaseHandler(mContext);
+        String account_name =  "" + db.getUser().sap_id();
+        db.close();
+        if (sync)
+            MySyncManager.enableAutomaticSync(mContext, account_name);
+        else
+            MySyncManager.disableAutomaticSync(mContext, account_name);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_GET_CONTACTS: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    toggleSync(true);
+                } else {
+                    toggleSync(false);
+                    syncPref.setChecked(false);
+                }
+                break;
             }
         }
     }
