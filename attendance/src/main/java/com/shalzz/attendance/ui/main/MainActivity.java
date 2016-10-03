@@ -491,8 +491,6 @@ public class MainActivity extends BaseActivity {
         } else if (mPreviousFragment instanceof TimeTablePagerFragment) {
             position = Fragments.TIMETABLE.getValue();
             //((TimeTablePagerFragment) mPreviousFragment).updateFragmentsData();
-            // fixme: this is a crude hack for viewpager not redrawing itself
-            showFragment(new TimeTablePagerFragment());
         }
         selectItem(position);
         mPreviousFragment = null;

@@ -108,12 +108,11 @@ public class TimeTablePagerFragment extends Fragment {
     public void onStart() {
         super.onStart();
         DatabaseHandler db = new DatabaseHandler(mContext);
-        if(db.getPeriodCount() == 0) {
+        if (db.getPeriodCount() == 0) {
             mController.updatePeriods();
             mProgress.setVisibility(View.VISIBLE);
             mViewPager.setVisibility(View.GONE);
-        }
-        else
+        } else
             mController.setToday();
         db.close();
     }
@@ -121,7 +120,7 @@ public class TimeTablePagerFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        if(container==null)
+        if (container == null)
             return null;
         mContext = getActivity();
         Bugsnag.setContext("Timetable");
@@ -129,7 +128,7 @@ public class TimeTablePagerFragment extends Fragment {
 
         setHasOptionsMenu(true);
         setRetainInstance(false);
-        actionbar= ((AppCompatActivity)getActivity()).getSupportActionBar();
+        actionbar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         final View view = inflater.inflate(R.layout.fragment_viewpager, container, false);
         unbinder = ButterKnife.bind(this, view);
         ButterKnife.bind(mEmptyView, emptyView);
@@ -150,8 +149,7 @@ public class TimeTablePagerFragment extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mController = new PagerController(mContext, this, getActivity().getSupportFragmentManager
-                (),api);
+        mController = new PagerController(mContext, this, getChildFragmentManager(), api);
         mSwipeRefreshLayout.setOnRefreshListener(() -> mController.updatePeriods());
 
         // fix for oversensitive horizontal scroll of swipe view
@@ -202,29 +200,26 @@ public class TimeTablePagerFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId() == R.id.menu_logout) {
+        if (item.getItemId() == R.id.menu_logout) {
             mUserAccount.Logout();
             return true;
-        }
-        else if(item.getItemId() == R.id.menu_refresh) {
+        } else if (item.getItemId() == R.id.menu_refresh) {
             // We make sure that the SwipeRefreshLayout is displaying it's refreshing indicator
             if (!mSwipeRefreshLayout.isRefreshing()) {
                 mSwipeRefreshLayout.setRefreshing(true);
                 mController.updatePeriods();
                 return true;
             }
-        }
-        else if(item.getItemId() == R.id.menu_date) {
+        } else if (item.getItemId() == R.id.menu_date) {
             Calendar today = Calendar.getInstance();
             today.setTime(new Date());
             DatePickerDialog mDatePickerDialog = new DatePickerDialog(mContext, onDateSetListener()
-                    ,today.get(Calendar.YEAR)
-                    ,today.get(Calendar.MONTH)
-                    ,today.get(Calendar.DAY_OF_MONTH));
+                    , today.get(Calendar.YEAR)
+                    , today.get(Calendar.MONTH)
+                    , today.get(Calendar.DAY_OF_MONTH));
             mDatePickerDialog.show();
             return true;
-        }
-        else if(item.getItemId() == R.id.menu_today) {
+        } else if (item.getItemId() == R.id.menu_today) {
             mController.setToday();
             return true;
         }
@@ -233,14 +228,15 @@ public class TimeTablePagerFragment extends Fragment {
 
     /**
      * Update action bar title and subtitle
+     *
      * @param position to update for, -1 for current page
      */
     @OnPageChange(R.id.pager)
     public void updateTitle(int position) {
-        if(position > 0)
+        if (position > 0)
             mPreviousPosition = position;
-        Date mDate  = mController.getDateForPosition(mPreviousPosition);
-        if(mDate!=null) {
+        Date mDate = mController.getDateForPosition(mPreviousPosition);
+        if (mDate != null) {
             actionbar.setTitle(DateHelper.getProperWeekday(mDate));
             actionbar.setSubtitle(DateHelper.formatToProperFormat(mDate));
         }
