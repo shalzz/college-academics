@@ -105,19 +105,6 @@ public class TimeTablePagerFragment extends Fragment {
     public EmptyView mEmptyView = new EmptyView();
 
     @Override
-    public void onStart() {
-        super.onStart();
-        DatabaseHandler db = new DatabaseHandler(mContext);
-        if (db.getPeriodCount() == 0) {
-            mController.updatePeriods();
-            mProgress.setVisibility(View.VISIBLE);
-            mViewPager.setVisibility(View.GONE);
-        } else
-            mController.setToday();
-        db.close();
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         if (container == null)
@@ -165,6 +152,14 @@ public class TimeTablePagerFragment extends Fragment {
             return false;
         });
 
+        DatabaseHandler db = new DatabaseHandler(mContext);
+        if (db.getPeriodCount() == 0) {
+            mController.updatePeriods();
+            mProgress.setVisibility(View.VISIBLE);
+            mViewPager.setVisibility(View.GONE);
+        } else
+            mController.setToday();
+        db.close();
     }
 
     @Override
