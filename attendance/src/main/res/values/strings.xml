@@ -73,7 +73,7 @@
     </string>
     <string name="atten_list_percentage"><xliff:g id="percentage">%.2f</xliff:g>%%</string>
     <string name="atten_list_attended_upon_held"><xliff:g id="attended">%d</xliff:g>/<xliff:g id="held">%d</xliff:g></string>
-    <string name="login_all_caps">LOGIN</string>
+
     <!--Plurals-->
     <plurals name="tv_last_refresh">
         <item quantity="zero" >Last refreshed few moments ago</item>

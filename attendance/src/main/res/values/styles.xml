@@ -64,11 +64,6 @@
 
     </style>
 
-    <style name="HintTextAppearance">
-        <item name="colorControlActivated">@color/primary</item>
-        <item name="colorControlHighlight">@color/primary</item>
-    </style>
-
     <!-- Showcase View Styles -->
 
     <style name="ShowcaseTheme" parent="ShowcaseView">
