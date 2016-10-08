@@ -25,11 +25,6 @@
     <string name="app_copyright" translatable="false">Shaleen Jain &#60;shaleen.jain95@gmail.com&#62;</string>
     
     <!--API keys-->
-    <string name="admob_app_id">ca-app-pub-4430276599804177~3324960647</string>
-    <string name="native_white_attendance_ad" translatable="false">ca-app-pub-4430276599804177/3369623442</string>
-    <string name="native_black_attendance_ad" translatable="false">ca-app-pub-4430276599804177/4846356649</string>
-    <string name="native_white_timetable_ad" translatable="false">ca-app-pub-4430276599804177/9996409842</string>
-    <string name="native_black_timetable_ad" translatable="false">ca-app-pub-4430276599804177/3949876247</string>
     <string name="bugsnag_api" translatable="false">600a00bfd5bd72e5df7f288f74df8f9b</string>
 
     <!--Network related strings-->
@@ -46,7 +41,6 @@
     <string name="pref_key_use_proxy">pref_key_use_proxy</string>
     <string name="pref_key_proxy_username">pref_key_proxy_username</string>
     <string name="pref_key_proxy_password">pref_key_proxy_password</string>
-    <string name="pref_key_ga_opt_in">ga_opt_in</string>
     <string name="pref_key_notify_timetable_changed">notify_timetable_changed</string>
     <string name="pref_key_show_weekends">show_weekends</string>
     <string name="pref_key_day_night">day_night</string>
@@ -116,10 +110,8 @@
     <string name="pref_about_summary">Details about the app and its author</string>
     <string name="pref_author">Author</string>
     <string name="pref_notice">Open Source License</string>
-    <string name="pref_notice_summary">License details for open source software\'s</string>
+    <string name="pref_notice_summary">License details for open source softwares</string>
     <string name="pref_version">Build Version</string>
-    <string name="pref_ga_opt_in">Google Analytics</string>
-    <string name="pref_ga_opt_in_summary">Collect and send anonymous data to help improve the app</string>
     <string name="pref_notify_timetable_changed">Notifications</string>
     <string name="pref_notify_timetable_changed_summary">Receive a notification when your
         timetable changes</string>

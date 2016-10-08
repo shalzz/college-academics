@@ -23,8 +23,8 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 
+import com.shalzz.attendance.MyApplication;
 import com.shalzz.attendance.network.DataAPI;
-import com.shalzz.attendance.wrapper.MyApplication;
 import com.shalzz.attendance.wrapper.MyPreferencesManager;
 
 import javax.inject.Inject;
@@ -43,7 +43,7 @@ public class SyncService extends Service {
     DataAPI api;
 
     // Storage for an instance of the sync adapter
-    private static SyncAdapter sSyncAdapter = null;
+    private SyncAdapter sSyncAdapter = null;
     // Object to use as a thread-safe lock
     private static final Object sSyncAdapterLock = new Object();
     /*
@@ -51,7 +51,7 @@ public class SyncService extends Service {
      */
     @Override
     public void onCreate() {
-        MyApplication.getAppComponent().inject(this);
+        MyApplication.get(this).getComponent().inject(this);
         /*
          * Create the sync adapter as a singleton.
          * Set the sync adapter as syncable

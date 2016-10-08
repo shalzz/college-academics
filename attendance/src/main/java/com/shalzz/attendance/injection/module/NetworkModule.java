@@ -26,12 +26,13 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.ryanharter.auto.value.gson.AutoValueGsonTypeAdapterFactory;
 import com.shalzz.attendance.BuildConfig;
-import com.shalzz.attendance.Miscellaneous;
+import com.shalzz.attendance.injection.ApplicationContext;
 import com.shalzz.attendance.network.DataAPI;
 import com.shalzz.attendance.network.ErrorHandlingCallAdapterFactory;
 import com.shalzz.attendance.network.interceptor.AuthInterceptor;
 import com.shalzz.attendance.network.interceptor.HeaderInterceptor;
 import com.shalzz.attendance.network.interceptor.LoggingInterceptor;
+import com.shalzz.attendance.utils.Miscellaneous;
 import com.shalzz.attendance.wrapper.MyPreferencesManager;
 
 import javax.inject.Singleton;
@@ -54,13 +55,14 @@ public class NetworkModule {
     }
 
     @Provides @Singleton @NonNull
-    static OkHttpClient provideClient(MyPreferencesManager preferences, Miscellaneous misc) {
+    static OkHttpClient provideClient(MyPreferencesManager preferences,
+                                      @ApplicationContext Context context) {
         final OkHttpClient.Builder okHttpBuilder = new OkHttpClient.Builder()
                 .addInterceptor(new HeaderInterceptor())
                 .addInterceptor(new AuthInterceptor(preferences))
                 .addNetworkInterceptor(new LoggingInterceptor());
 
-        if(misc.useProxy()) {
+        if(Miscellaneous.useProxy(context)) {
             okHttpBuilder.proxyAuthenticator(preferences.getProxyCredentials());
             okHttpBuilder.proxySelector(Miscellaneous.getProxySelector());
         }
@@ -71,7 +73,7 @@ public class NetworkModule {
     @Provides @Singleton @NonNull
     static DataAPI provideApi(@NonNull OkHttpClient okHttpClient,
                               @NonNull Gson gson,
-                              Context context) {
+                              @ApplicationContext Context context) {
         return new Retrofit.Builder()
                 .baseUrl(DataAPI.ENDPOINT)
                 .client(okHttpClient)

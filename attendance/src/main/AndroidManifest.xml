@@ -22,10 +22,9 @@
 <!-- Version Code: MAJOR * 1,000,000 + MINOR * 1000 + PATCH -->
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          xmlns:tools="http://schemas.android.com/tools"
           package="com.shalzz.attendance"
-          android:versionCode="2007009"
-          android:versionName="2.7.9">
+          android:versionCode="2007010"
+          android:versionName="2.7.10">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -37,12 +36,6 @@
     <uses-permission android:name="android.permission.MANAGE_ACCOUNTS"/>
     <uses-permission android:name="com.android.vending.BILLING" />
 
-    <!-- Remove optional permission added by Google Analytics-->
-    <uses-permission android:name="android.permission.WAKE_LOCK" tools:node="remove" />
-    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" tools:node="remove"/>
-    <uses-permission android:name="${applicationId}.permission.C2D_MESSAGE" tools:node="remove"/>
-    android:name = com.shalzz.attendance.debug
-
     <supports-screens
         android:smallScreens="true"
         android:normalScreens="true"
@@ -51,7 +44,7 @@
         android:anyDensity="true"/>
 
     <application
-        android:name=".wrapper.MyApplication"
+        android:name=".MyApplication"
         android:allowClearUserData="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -59,13 +52,9 @@
         android:hardwareAccelerated="true"
         android:supportsRtl="false"
         android:allowBackup="true"
-        android:backupAgent="MyBackupAgent"
+        android:backupAgent=".utils.MyBackupAgent"
         android:fullBackupOnly="true"
         android:fullBackupContent="@xml/backup_scheme">
-
-        <!--This meta-data tag is required to use Google Play Services.-->
-        <meta-data android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version" />
 
         <!--BackUp Agent API Key for backwards compatibility -->
         <meta-data android:name="com.google.android.backup.api_key"
@@ -101,7 +90,7 @@
     	</service>
     	
         <activity
-            android:name=".activity.SplashActivity"
+            android:name=".ui.splash.SplashActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.Launcher" >
             <intent-filter >
@@ -111,13 +100,13 @@
         </activity>
         
         <activity
-            android:name=".activity.LoginActivity"
+            android:name=".ui.login.LoginActivity"
             android:label="Login"
             android:theme="@style/AppTheme" >
         </activity>
         
         <activity
-            android:name=".activity.MainActivity"
+            android:name=".ui.main.MainActivity"
             android:label="@string/app_name"
             android:theme="@style/DrawerActivityTheme"
             android:launchMode="singleTop">
@@ -127,10 +116,5 @@
             </intent-filter>
 
         </activity>
-
-        <!--Include the AdActivity configChanges and theme. -->
-        <activity android:name="com.google.android.gms.ads.AdActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
-            android:theme="@android:style/Theme.Translucent" />
     </application>
 </manifest>

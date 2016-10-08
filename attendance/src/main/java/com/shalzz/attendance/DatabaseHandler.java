@@ -26,11 +26,13 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Build;
 import android.support.v4.content.AsyncTaskLoader;
 
+import com.shalzz.attendance.injection.ApplicationContext;
 import com.shalzz.attendance.model.local.AbsentDate;
 import com.shalzz.attendance.model.local.ListFooter;
 import com.shalzz.attendance.model.remote.Period;
 import com.shalzz.attendance.model.remote.Subject;
 import com.shalzz.attendance.model.remote.User;
+import com.shalzz.attendance.utils.Miscellaneous;
 import com.shalzz.attendance.wrapper.DateHelper;
 
 import java.util.ArrayList;
@@ -68,7 +70,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
      * Constructor.
      */
     @Inject
-    public DatabaseHandler(Context context) {
+    public DatabaseHandler(@ApplicationContext Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
@@ -291,17 +293,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 SQLiteDatabase.CONFLICT_REPLACE);
     }
 
-    public ArrayList<Period> getAllPeriods(Date date, AsyncTaskLoader callback) {
+    public ArrayList<Period> getAllPeriods(Date date) {
         String dayName = DateHelper.getShortWeekday(date);
         ArrayList<Period> periods = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
         try(Cursor cursor = db.rawQuery(Period.SELECT_BY_WEEK_DAY, new String[] {dayName})) {
 
             while (cursor.moveToNext()) {
-                // Check isLoadInBackgroundCanceled() to cancel out early
-                if (callback != null && callback.isLoadInBackgroundCanceled()) {
-                    break;
-                }
                 periods.add(Period.MAPPER.map(cursor));
             }
         }

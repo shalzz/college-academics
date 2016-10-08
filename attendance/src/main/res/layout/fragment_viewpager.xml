@@ -24,7 +24,7 @@
     android:id="@+id/swiperefresh"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragment.TimeTablePagerFragment">
+    tools:context=".ui.timetable.TimeTablePagerFragment">
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -36,7 +36,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-        <com.shalzz.attendance.CircularIndeterminate
+        <com.shalzz.attendance.utils.CircularIndeterminate
             android:id="@+id/circular_indet"
             android:visibility="gone"
             android:layout_width="@dimen/material_progress_indeterminate"

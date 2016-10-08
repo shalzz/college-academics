@@ -25,30 +25,24 @@ import android.content.SharedPreferences;
 import android.support.v7.preference.PreferenceManager;
 
 import com.shalzz.attendance.R;
-import com.shalzz.attendance.activity.MainActivity;
-
-import java.io.IOException;
+import com.shalzz.attendance.injection.ApplicationContext;
+import com.shalzz.attendance.ui.main.MainActivity;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import okhttp3.Authenticator;
 import okhttp3.Credentials;
-import okhttp3.Request;
-import okhttp3.Response;
-import okhttp3.Route;
 import timber.log.Timber;
 
 @SuppressLint("CommitPrefEdits")
 @Singleton
 public class MyPreferencesManager {
 
-	private static Context mContext;
-
-	private static String mTag  = "MyPreferencesManager";
+	private Context mContext;
 
     @Inject
-    public MyPreferencesManager(Context context) {
+    public MyPreferencesManager(@ApplicationContext Context context) {
         mContext = context;
     }
 
@@ -72,18 +66,15 @@ public class MyPreferencesManager {
 	}
 
     public Authenticator getProxyCredentials() {
-        return new Authenticator() {
-            @Override
-            public Request authenticate(Route route, Response response) throws IOException {
-                SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mContext);
-                final String username = sharedPref.getString(
-                        mContext.getString(R.string.pref_key_proxy_username), "");
-                final String password = sharedPref.getString(
-                        mContext.getString(R.string.pref_key_proxy_password), "");
-                return response.request().newBuilder()
-                        .header("Proxy-Authorization", Credentials.basic(username,password))
-                        .build();
-            }
+        return (route, response) -> {
+            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mContext);
+            final String username = sharedPref.getString(
+                    mContext.getString(R.string.pref_key_proxy_username), "");
+            final String password = sharedPref.getString(
+                    mContext.getString(R.string.pref_key_proxy_password), "");
+            return response.request().newBuilder()
+                    .header("Proxy-Authorization", Credentials.basic(username,password))
+                    .build();
         };
     }
 

@@ -38,11 +38,11 @@ import android.support.v7.preference.PreferenceManager;
 import com.bugsnag.android.Bugsnag;
 import com.shalzz.attendance.DatabaseHandler;
 import com.shalzz.attendance.R;
-import com.shalzz.attendance.activity.MainActivity;
 import com.shalzz.attendance.model.remote.Period;
 import com.shalzz.attendance.model.remote.Subject;
 import com.shalzz.attendance.network.DataAPI;
 import com.shalzz.attendance.network.RetrofitException;
+import com.shalzz.attendance.ui.main.MainActivity;
 import com.shalzz.attendance.wrapper.MyPreferencesManager;
 
 import java.util.Date;
@@ -161,8 +161,8 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                                 mContext.getResources(),
                                 R.mipmap.ic_launcher))
                         .setAutoCancel(true)
-                        .setPriority(Notification.PRIORITY_LOW)
-                        .setCategory(Notification.CATEGORY_RECOMMENDATION)
+                        .setPriority(NotificationCompat.PRIORITY_LOW)
+                        .setCategory(NotificationCompat.CATEGORY_RECOMMENDATION)
                         .setContentTitle(mContext.getString(
                                 R.string.notify_timetable_changed_title))
                         .setContentText(mContext.getString(

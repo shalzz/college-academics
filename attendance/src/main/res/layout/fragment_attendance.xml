@@ -24,7 +24,7 @@
     android:id="@+id/swipe_refresh_atten"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragment.AttendanceListFragment">
+    tools:context=".ui.attendance.AttendanceListFragment">
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -39,7 +39,7 @@
             android:drawSelectorOnTop="true"
             tools:listitem="@layout/list_attend_card"/>
 
-        <com.shalzz.attendance.CircularIndeterminate
+        <com.shalzz.attendance.utils.CircularIndeterminate
             android:id="@+id/circular_indet_atten"
             android:visibility="gone"
             android:layout_width="@dimen/material_progress_indeterminate"
