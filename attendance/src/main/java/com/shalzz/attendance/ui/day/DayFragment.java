@@ -97,12 +97,10 @@ public class DayFragment extends Fragment {
                 new DividerItemDecoration(mContext, DividerItemDecoration.VERTICAL_LIST);
         mRecyclerView.addItemDecoration(itemDecoration);
 
-        return mView;
-    }
-
-    public void onViewCreated(View view, Bundle savedInstanceState) {
         mController = new DayController(mContext, this);
         getLoaderManager().initLoader(0, getArguments(), mController);
+
+        return mView;
     }
 
     public Date getDate() {

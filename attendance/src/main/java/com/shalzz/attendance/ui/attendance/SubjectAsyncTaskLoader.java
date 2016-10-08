@@ -17,52 +17,52 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.shalzz.attendance.loader;
+package com.shalzz.attendance.ui.attendance;
 
 import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
 
 import com.shalzz.attendance.DatabaseHandler;
-import com.shalzz.attendance.model.local.Day;
+import com.shalzz.attendance.model.remote.Subject;
 
-import java.util.Date;
+import java.util.List;
 
-public class DayAsyncTaskLoader extends AsyncTaskLoader<Day> {
+public class SubjectAsyncTaskLoader extends AsyncTaskLoader<List<Subject>> {
 
     private DatabaseHandler mDb;
-    private Date mDate;
-    private Day mDay;
+    private List<Subject> mSubjects;
 
-    public DayAsyncTaskLoader(Context context, Date date) {
+    // If non-null, this is the current filter the user has provided.
+    public String mCurFilter;
+
+    public SubjectAsyncTaskLoader(Context context, String filter) {
         super(context);
-        mDate = date;
+        mCurFilter = filter;
     }
 
     @Override
     protected void onStartLoading() {
-        if (mDay != null) {
+        if (mSubjects != null) {
             // Use cached data
-            deliverResult(mDay);
+            deliverResult(mSubjects);
         }
-        if (takeContentChanged() || mDay == null) {
+        if (takeContentChanged() || mSubjects == null) {
             // Something has changed or we have no data,
             // so kick off loading it
             forceLoad();
         }
     }
 
-    @Override
-    public Day loadInBackground() {
+    public List<Subject> loadInBackground() {
         if(mDb == null)
             mDb = new DatabaseHandler(getContext());
-        return Day.create(mDb.getAbsentSubjects(mDate), mDb.getAllPeriods(mDate,
-                this));
+        return mDb.getAllSubjects(this, mCurFilter);
     }
 
     @Override
-    public void deliverResult(Day data) {
+    public void deliverResult(List<Subject> data) {
         // We’ll save the data for later retrieval
-        mDay = data;
+        mSubjects = data;
         // We can do any pre-processing we want here
         // Just remember this is on the UI thread so nothing lengthy!
         super.deliverResult(data);
@@ -75,13 +75,13 @@ public class DayAsyncTaskLoader extends AsyncTaskLoader<Day> {
     protected void onStopLoading() {
         // Attempt to cancel the current load task if possible.
         cancelLoad();
-        if (mDb != null) {
+        if(mDb != null) {
             mDb.close();
         }
     }
 
     @Override
-    public void onCanceled(Day data) {
+    public void onCanceled(List<Subject> data) {
         super.onCanceled(data);
         if(mDb != null) {
             mDb.close();
