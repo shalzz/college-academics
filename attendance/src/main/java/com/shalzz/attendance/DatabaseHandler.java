@@ -293,17 +293,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 SQLiteDatabase.CONFLICT_REPLACE);
     }
 
-    public ArrayList<Period> getAllPeriods(Date date, AsyncTaskLoader callback) {
+    public ArrayList<Period> getAllPeriods(Date date) {
         String dayName = DateHelper.getShortWeekday(date);
         ArrayList<Period> periods = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
         try(Cursor cursor = db.rawQuery(Period.SELECT_BY_WEEK_DAY, new String[] {dayName})) {
 
             while (cursor.moveToNext()) {
-                // Check isLoadInBackgroundCanceled() to cancel out early
-                if (callback != null && callback.isLoadInBackgroundCanceled()) {
-                    break;
-                }
                 periods.add(Period.MAPPER.map(cursor));
             }
         }

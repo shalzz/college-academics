@@ -22,6 +22,7 @@ package com.shalzz.attendance.ui.day;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -30,15 +31,32 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.shalzz.attendance.R;
+import com.shalzz.attendance.injection.ActivityContext;
+import com.shalzz.attendance.model.local.Day;
+import com.shalzz.attendance.ui.main.MainActivity;
 import com.shalzz.attendance.utils.DividerItemDecoration;
 
 import java.util.Date;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
-public class DayFragment extends Fragment {
+public class DayFragment extends Fragment implements DayMvpView {
+
+    public static final String ARG_DATE = "date";
+
+    @Inject
+    DayPresenter mDayPresenter;
+
+    @Inject
+    DayListAdapter mAdapter;
+
+    @Inject
+    @ActivityContext
+    Context mContext;
 
     @BindView(R.id.time_table_recycler_view)
     public RecyclerView mRecyclerView;
@@ -46,11 +64,6 @@ public class DayFragment extends Fragment {
     @BindView(R.id.empty_view)
     public View mEmptyView;
 
-    public static final String ARG_DATE = "date";
-
-    private Context mContext;
-    private Date mDate;
-    private DayController mController;
     private Unbinder unbinder;
 
     /**
@@ -68,20 +81,20 @@ public class DayFragment extends Fragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mContext = getActivity();
-        mDate = getArguments() != null ? (Date) getArguments()
-                .getSerializable(ARG_DATE) : new Date();
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View mView = inflater.inflate(R.layout.fragment_day, container, false);
+        unbinder = ButterKnife.bind(this,mView);
+
+        ((MainActivity) getActivity()).activityComponent().inject(this);
+        mDayPresenter.attachView(this);
+
+        return mView;
     }
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        if(container==null)
-            return null;
-        View mView = inflater.inflate(R.layout.fragment_day, container, false);
-        unbinder = ButterKnife.bind(this,mView);
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
@@ -97,14 +110,11 @@ public class DayFragment extends Fragment {
                 new DividerItemDecoration(mContext, DividerItemDecoration.VERTICAL_LIST);
         mRecyclerView.addItemDecoration(itemDecoration);
 
-        mController = new DayController(mContext, this);
-        getLoaderManager().initLoader(0, getArguments(), mController);
+        mRecyclerView.setAdapter(mAdapter);
 
-        return mView;
-    }
-
-    public Date getDate() {
-        return mDate;
+        Date date = getArguments() != null ? (Date) getArguments()
+                .getSerializable(ARG_DATE) : new Date();
+        mDayPresenter.loadDay(date);
     }
 
     @Override
@@ -112,5 +122,18 @@ public class DayFragment extends Fragment {
         super.onDestroyView();
         if(unbinder!=null)
             unbinder.unbind();
+        mDayPresenter.detachView();
+    }
+
+    /***** MVP View methods implementation *****/
+
+    public void clearDay() {
+        mEmptyView.setVisibility(View.VISIBLE);
+        mAdapter.clear();
+    }
+
+    public void setDay(Day day) {
+        mEmptyView.setVisibility(View.GONE);
+        mAdapter.update(day);
     }
 }

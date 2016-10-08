@@ -3,6 +3,7 @@ package com.shalzz.attendance.injection.component;
 import com.shalzz.attendance.injection.PerActivity;
 import com.shalzz.attendance.injection.module.ActivityModule;
 import com.shalzz.attendance.ui.attendance.AttendanceListFragment;
+import com.shalzz.attendance.ui.day.DayFragment;
 import com.shalzz.attendance.ui.login.LoginActivity;
 import com.shalzz.attendance.ui.main.MainActivity;
 import com.shalzz.attendance.ui.settings.AboutSettingsFragment;
@@ -35,4 +36,6 @@ public interface ActivityComponent {
     void inject(ProxySettingsFragment proxySettingsFragment);
 
     void inject(SettingsFragment settingsFragment);
+
+    void inject(DayFragment dayFragment);
 }

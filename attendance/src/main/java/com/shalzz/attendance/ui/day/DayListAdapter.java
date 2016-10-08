@@ -33,6 +33,8 @@ import com.shalzz.attendance.model.remote.Period;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -58,7 +60,8 @@ public class DayListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
     }
 
-    public DayListAdapter(){
+    @Inject
+    DayListAdapter() {
         callback = new SortedListAdapterCallback<Period>(this) {
             @Override
             public int compare(Period o1, Period o2) {
@@ -123,7 +126,7 @@ public class DayListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         mPeriods.endBatchedUpdates();
     }
 
-    public void clear() {
+    void clear() {
         mPeriods.clear();
     }
 
