@@ -35,5 +35,4 @@ after_deploy: "./gradlew publishRelease --no-daemon --stacktrace"
 env:
   secure: 07OFO7sZRirr9ZxcxXN6Q3RgXCla0zeSGSFGP0BKx0ssgw1RGOBNnB1wiN0Jh3iO05RIMrT3MxKtk7/b1K/r0HB0oqBKchbAnF6mufmvOerY8NxADXBL1t5zrn6NfkfafPeHsM6dFl1vLDzZWtFxtphE1KfsuhUMWzW1nDg8inCvdUp9BXp+Rpf99TE0gVBzi6VSzGtYeB6CQuWOZAHCj/SPXNHH7azolnIuhEtp1luws/tfvigFatvuTY4aPYcGY1tzH1Qby3rN1oOvSQKDULLUWsGQTb+wWT/SIxlHCwxJrLZ8HGw5VMqlSN9Q/K1rweg3wUHkTLdf9eMp3wb7K+x1TY4WpF1FYGfi/m4lIiOojDjssuo0l0qOxQ/Ko1EpornyX4C0JnnnSKf+3QI/HKBKJfulvUQLsAnWb50ZSZQvcrbhrYY3p4VTZ9MFUaDBBo8QEY/ld1Pnq42gOJGdWgFJMQPACKO3p+bhQNgiG20l7rIdQRIvboKYpC4Q2JlzeWxkA3/ZUQks+akuEgGgb8wr8F0qLO7GxeQEHK1rs1ryhyDHjA9M7BCfArlTR3pD44BosCwAJrgqnqVTZUaCa8g71QvDk7z+iJ+57IK5TyS43W3uyC5x0N8g1prtc3mBJ3sA6ibIlWxdULAsWcIpy0WL0yzQpXw4t3mdZeQB3b8=
 before_install:
-- 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then openssl aes-256-cbc -K $encrypted_ef2e0b3750f6_key -iv $encrypted_ef2e0b3750f6_iv -in 
-play-service-account-key.json.enc -out play-service-account-key.json -d; fi'
+- 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then openssl aes-256-cbc -K $encrypted_ef2e0b3750f6_key -iv $encrypted_ef2e0b3750f6_iv -in play-service-account-key.json.enc -out play-service-account-key.json -d; fi'
