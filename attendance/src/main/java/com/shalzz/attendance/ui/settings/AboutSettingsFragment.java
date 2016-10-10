@@ -62,12 +62,9 @@ public class AboutSettingsFragment extends PreferenceFragmentCompat {
 
         PreferenceScreen prefScreen =  getPreferenceScreen();
         Preference auth = prefScreen.getPreference(0);
-        char x[] = {83,104,97,103,117,110,32, 83,104,97,114,109,97};
-        int trans[] =   {0,0,0,5,-16,-9,78, -51,-30,0,-9,1,-65};
-        for (int i = 0; i < x.length; ++i) {
-            x[i] = (char) (x[i] + trans[i]);
-        }
-        auth.setSummary(getString(R.string.copyright_year)+ " " +String.valueOf(x));
+
+        auth.setSummary(getString(R.string.copyright_year)+ " "
+                + getString(R.string.app_copyright));
 
         Preference pref = prefScreen.getPreference(1);
         pref.setOnPreferenceClickListener(preference -> {
