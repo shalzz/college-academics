@@ -108,11 +108,17 @@ public class LoginActivity extends BaseActivity {
             Miscellaneous.showKeyboard(this, etSapid);
             return false;
         }
-        else if (password.length()==0) {
+        else {
+            textInputSapid.setError(null);
+        }
+        if (password.length()==0) {
             textInputPass.requestFocus();
             textInputPass.setError(getString(R.string.form_password_error));
             Miscellaneous.showKeyboard(this,etPass);
             return false;
+        }
+        else {
+            textInputPass.setError(null);
         }
         return true;
     }
