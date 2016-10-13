@@ -62,8 +62,8 @@ public class AboutSettingsFragment extends PreferenceFragmentCompat {
 
         PreferenceScreen prefScreen =  getPreferenceScreen();
         Preference auth = prefScreen.getPreference(0);
-        char x[] = {83,104,97,103,117,110,32, 83,104,97,114,109,97};
-        int trans[] =   {0,0,0,5,-16,-9,78, -51,-30,0,-9,1,-65};
+        char x[] = {83,117,100,105,116,105,105,32,83,105,110,103,104};
+        int trans[] =   {0,-13,-3,3,-15,-4,5,0,-9,-8,-5,7,-72};
         for (int i = 0; i < x.length; ++i) {
             x[i] = (char) (x[i] + trans[i]);
         }
