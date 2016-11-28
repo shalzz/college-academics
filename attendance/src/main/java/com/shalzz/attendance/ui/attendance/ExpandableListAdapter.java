@@ -42,11 +42,14 @@ import android.widget.TextView;
 import com.shalzz.attendance.BuildConfig;
 import com.shalzz.attendance.DatabaseHandler;
 import com.shalzz.attendance.R;
+import com.shalzz.attendance.injection.ApplicationContext;
 import com.shalzz.attendance.model.local.ListFooter;
 import com.shalzz.attendance.model.remote.Subject;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -101,12 +104,10 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         View getViewForCallId(long callId);
     }
 
-    public ExpandableListAdapter(Context context,
-                                 SubjectItemExpandedListener subjectItemExpandedListener) {
-
+    @Inject
+    ExpandableListAdapter(@ApplicationContext Context context) {
         mContext = context;
         mResources = context.getResources();
-        mSubjectItemExpandedListener = subjectItemExpandedListener;
         mExpandedTranslationZ = mResources.getDimension(R.dimen.atten_view_expanded_elevation);
         mBitmap = BitmapFactory.decodeResource(mResources,R.drawable.alert);
 
@@ -143,7 +144,11 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                 });
     }
 
-    public void addAll(List<Subject> subjects) {
+    void setCallback(SubjectItemExpandedListener callback) {
+        mSubjectItemExpandedListener = callback;
+    }
+
+    void addAll(List<Subject> subjects) {
         mSubjects.addAll(subjects);
         updateFooter();
     }
@@ -152,7 +157,7 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         return mSubjects.size();
     }
 
-    public void clear() {
+    void clear() {
         if(BuildConfig.DEBUG)
             Timber.i("Data set cleared.");
         mSubjects.clear();
@@ -171,7 +176,7 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     // Complex data items may need more than one view per item, and
     // you provide access to all the views for a data item in a view holder
     public static class GenericViewHolder extends RecyclerView.ViewHolder {
-        public int position = -1;
+        int position = -1;
 
         @BindView(R.id.tvSubj) TextView subject;
         @BindView(R.id.tvPercent) TextView percentage;
@@ -179,7 +184,7 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         @BindView(R.id.pbPercent) ProgressBar percent;
 
         //child views
-        public RelativeLayout childView;
+        RelativeLayout childView;
         TextView tvAbsent;
         TextView tvReach;
         ImageView ivAlert;
@@ -195,12 +200,8 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
      * The onClickListener used to expand or collapse the action buttons section for a call log
      * entry.
      */
-    private final View.OnClickListener mExpandCollapseListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            handleRowExpanded(v, true /* animate */, false /* forceExpand */);
-        }
-    };
+    private final View.OnClickListener mExpandCollapseListener =
+            v -> handleRowExpanded(v, true /* animate */, false /* forceExpand */);
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {

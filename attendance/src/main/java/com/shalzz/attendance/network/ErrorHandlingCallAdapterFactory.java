@@ -148,7 +148,7 @@ public class ErrorHandlingCallAdapterFactory extends CallAdapter.Factory {
             if (throwable instanceof IOException) {
                 exception = RetrofitException.networkError((IOException) throwable, context);
             } else {
-                exception = RetrofitException.unexpectedError(throwable);
+                exception = RetrofitException.unexpectedError(throwable, context);
             }
 
             callbackExecutor.execute(() -> delegate.onFailure(call, exception));

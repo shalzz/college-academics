@@ -23,12 +23,16 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -49,14 +53,19 @@ import android.widget.TextView;
 import com.bugsnag.android.Bugsnag;
 import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.ViewTarget;
+import com.malinskiy.materialicons.IconDrawable;
+import com.malinskiy.materialicons.Iconify;
 import com.shalzz.attendance.R;
-import com.shalzz.attendance.network.DataAPI;
+import com.shalzz.attendance.model.remote.Subject;
+import com.shalzz.attendance.network.RetrofitException;
 import com.shalzz.attendance.ui.login.UserAccount;
 import com.shalzz.attendance.ui.main.MainActivity;
 import com.shalzz.attendance.utils.CircularIndeterminate;
 import com.shalzz.attendance.utils.DividerItemDecoration;
 import com.shalzz.attendance.utils.Miscellaneous;
 import com.shalzz.attendance.wrapper.MultiSwipeRefreshLayout;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -68,7 +77,37 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
 public class AttendanceListFragment extends Fragment implements
+        AttendanceMvpView,
         ExpandableListAdapter.SubjectItemExpandedListener {
+
+    private final int GRID_LAYOUT_SPAN_COUNT = 2;
+    private final int mFadeInDuration = 150;
+    private final int mFadeInStartDelay = 150;
+    private final int mFadeOutDuration = 20;
+    private final int mExpandCollapseDuration = 200;
+
+    @Inject
+    UserAccount mUserAccount;
+
+    @Inject
+    AttendancePresenter mPresenter;
+
+    @Inject
+    ExpandableListAdapter mAdapter;
+
+    public static class EmptyView {
+        @BindView(R.id.emptyStateImageView)
+        public ImageView ImageView;
+
+        @BindView(R.id.emptyStateTitleTextView)
+        public TextView TitleTextView;
+
+        @BindView(R.id.emptyStateContentTextView)
+        public TextView ContentTextView;
+
+        @BindView(R.id.emptyStateButton)
+        public Button Button;
+    }
 
     /**
      * The {@link android.support.v4.widget.SwipeRefreshLayout} that detects swipe gestures and
@@ -86,20 +125,6 @@ public class AttendanceListFragment extends Fragment implements
     @BindView(R.id.empty_view)
     public View emptyView;
 
-    public static class EmptyView {
-        @BindView(R.id.emptyStateImageView)
-        public ImageView ImageView;
-
-        @BindView(R.id.emptyStateTitleTextView)
-        public TextView TitleTextView;
-
-        @BindView(R.id.emptyStateContentTextView)
-        public TextView ContentTextView;
-
-        @BindView(R.id.emptyStateButton)
-        public Button Button;
-    }
-
     @BindBool(R.bool.use_grid_layout)
     boolean useGridLayout;
 
@@ -109,43 +134,27 @@ public class AttendanceListFragment extends Fragment implements
     @BindString(R.string.hint_search)
     String hint_search_view;
 
-    @Inject
-    DataAPI api;
-
-    @Inject
-    UserAccount mUserAccount;
-
-    @Nullable
-    private LinearLayoutManager mLinearLayoutManager;
-
-    @Nullable
-    private StaggeredGridLayoutManager mGridLayoutManager;
-
+    @Nullable private LinearLayoutManager mLinearLayoutManager;
+    @Nullable private StaggeredGridLayoutManager mGridLayoutManager;
     private Context mContext;
-    private AttendanceController controller;
-
-    private final int GRID_LAYOUT_SPAN_COUNT = 2;
-    private final int mFadeInDuration = 150;
-    private final int mFadeInStartDelay = 150;
-    private final int mFadeOutDuration = 20;
-    private final int mExpandCollapseDuration = 200;
     private Unbinder unbinder;
     public EmptyView mEmptyView = new EmptyView();
 
     @Override
     public View onCreateView( @NonNull LayoutInflater inflater, ViewGroup container,
                               Bundle savedInstanceState) {
-        if(container==null)
-            return null;
-	    Bugsnag.setContext("AttendanceList");
-        ((MainActivity) getActivity()).activityComponent().inject(this);
-
-        mContext = getActivity();
-        setHasOptionsMenu(true);
         View mView = inflater.inflate(R.layout.fragment_attendance, container, false);
         unbinder = ButterKnife.bind(this, mView);
         ButterKnife.bind(mEmptyView, emptyView);
 
+        ((MainActivity) getActivity()).activityComponent().inject(this);
+        Bugsnag.setContext("AttendanceList");
+        mPresenter.attachView(this);
+
+        mContext = getActivity();
+        setHasOptionsMenu(true);
+
+        mSwipeRefreshLayout.setOnRefreshListener(() -> mPresenter.updateSubjects());
         mSwipeRefreshLayout.setSwipeableChildren(R.id.atten_recycler_view);
 
         // Set the color scheme of the SwipeRefreshLayout by providing 4 color resource ids
@@ -171,38 +180,27 @@ public class AttendanceListFragment extends Fragment implements
                 new DividerItemDecoration(mContext, DividerItemDecoration.VERTICAL_LIST);
         mRecyclerView.addItemDecoration(itemDecoration);
 
-        return mView;
-    }
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mContext);
+        int expandLimit = Integer.parseInt(sharedPref.getString(
+                mContext.getString(R.string.pref_key_sub_limit), "3"));
 
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+        mAdapter.setLimit(expandLimit);
+        View mFooter = inflater.inflate(R.layout.list_footer, mRecyclerView, false);
+        mFooter.setVisibility(View.INVISIBLE);
+        mAdapter.addFooter(mFooter);
+        mAdapter.setCallback(this);
 
-        controller = new AttendanceController(mContext, this, api);
+        mRecyclerView.setAdapter(mAdapter);
+
         mProgress.setVisibility(View.VISIBLE);
 
-        mSwipeRefreshLayout.setOnRefreshListener(() -> controller.updateSubjects());
-
+        return mView;
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        getLoaderManager().initLoader(0, null, controller);
-    }
-
-    public void showcaseView() {
-        if(mRecyclerView != null && mRecyclerView.getChildAt(2) != null) {
-            ViewTarget target = new ViewTarget(mRecyclerView.getChildAt(2));
-
-            new ShowcaseView.Builder(getActivity())
-                    .setStyle(R.style.ShowcaseTheme)
-                    .setTarget(target)
-                    .singleShot(2222)
-                    .setContentTitle(getString(R.string.sv_attendance_title))
-                    .setContentText(getString(R.string.sv_attendance_content))
-                    .build();
-        }
+        getLoaderManager().initLoader(0, null, mPresenter);
     }
 
     @Override
@@ -225,10 +223,10 @@ public class AttendanceListFragment extends Fragment implements
             public boolean onQueryTextChange(String arg0) {
                 String filter = !TextUtils.isEmpty(arg0) ? arg0 : null;
                 Bundle bundle = new Bundle();
-                bundle.putString(AttendanceController.SUBJECT_FILTER,filter);
+                bundle.putString(AttendancePresenter.SUBJECT_FILTER,filter);
                 // destroy the loader first to clear the adapter
                 getLoaderManager().destroyLoader(0);
-                getLoaderManager().restartLoader(0, bundle, controller);
+                getLoaderManager().restartLoader(0, bundle, mPresenter);
                 return false;
             }
         });
@@ -244,7 +242,7 @@ public class AttendanceListFragment extends Fragment implements
             // We make sure that the SwipeRefreshLayout is displaying it's refreshing indicator
             if (!mSwipeRefreshLayout.isRefreshing()) {
                 mSwipeRefreshLayout.setRefreshing(true);
-                controller.updateSubjects();
+                mPresenter.updateSubjects();
             }
             return true;
         }
@@ -389,5 +387,91 @@ public class AttendanceListFragment extends Fragment implements
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
+    }
+
+    /***** MVP View methods implementation *****/
+
+    @Override
+    public void clearSubjects() {
+        mAdapter.clear();
+    }
+
+    @Override
+    public void addSubjects(List<Subject> subjects) {
+        stopRefreshing();
+        showEmptyView(false);
+        mAdapter.addAll(subjects);
+    }
+
+    @Override
+    public void showcaseView() {
+        if(mRecyclerView != null && mRecyclerView.getChildAt(2) != null) {
+            ViewTarget target = new ViewTarget(mRecyclerView.getChildAt(2));
+
+            new ShowcaseView.Builder(getActivity())
+                    .setStyle(R.style.ShowcaseTheme)
+                    .setTarget(target)
+                    .singleShot(2222)
+                    .setContentTitle(getString(R.string.sv_attendance_title))
+                    .setContentText(getString(R.string.sv_attendance_content))
+                    .build();
+        }
+    }
+
+    public void updateLastSync() {
+        ((MainActivity) getActivity()).updateLastSync();
+    }
+
+    public void stopRefreshing() {
+        mProgress.setVisibility(View.GONE);
+        mSwipeRefreshLayout.setRefreshing(false);
+    }
+
+    public void showError(String message) {
+        stopRefreshing();
+        Miscellaneous.showSnackBar(mRecyclerView, message);
+    }
+
+    public void showRetryError(String message) {
+        stopRefreshing();
+        Snackbar.make(mRecyclerView, message, Snackbar.LENGTH_LONG)
+                .setAction("Retry", v -> mPresenter.updateSubjects())
+                .show();
+    }
+
+    public void showEmptyView(boolean show) {
+        stopRefreshing();
+        if(show) {
+            emptyView.setVisibility(View.VISIBLE);
+            mRecyclerView.setVisibility(View.GONE);
+        } else {
+            emptyView.setVisibility(View.GONE);
+            mRecyclerView.setVisibility(View.VISIBLE);
+        }
+    }
+
+    public void showErrorView(RetrofitException error) {
+        showEmptyView(true);
+        if (error.getKind() == RetrofitException.Kind.NETWORK) {
+            Drawable emptyDrawable = new IconDrawable(mContext,
+                    Iconify.IconValue.zmdi_wifi_off)
+                    .colorRes(android.R.color.darker_gray);
+            mEmptyView.ImageView.setImageDrawable(emptyDrawable);
+            mEmptyView.TitleTextView.setText(R.string.no_connection_title);
+            mEmptyView.ContentTextView.setText(R.string.no_connection_content);
+            mEmptyView.Button.setOnClickListener( v -> mPresenter.updateSubjects());
+            mEmptyView.Button.setVisibility(View.VISIBLE);
+        }
+        else if (error.getKind() == RetrofitException.Kind.EMPTY_RESPONSE) {
+            Drawable emptyDrawable = new IconDrawable(mContext,
+                    Iconify.IconValue.zmdi_cloud_off)
+                    .colorRes(android.R.color.darker_gray);
+            mEmptyView.ImageView.setImageDrawable(emptyDrawable);
+            mEmptyView.TitleTextView.setText(R.string.no_data_title);
+            mEmptyView.ContentTextView.setText(R.string.no_data_content);
+            mEmptyView.Button.setVisibility(View.GONE);
+
+            updateLastSync();
+        }
     }
 }

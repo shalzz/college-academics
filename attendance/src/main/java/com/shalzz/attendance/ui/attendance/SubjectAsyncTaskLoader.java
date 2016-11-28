@@ -23,9 +23,12 @@ import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
 
 import com.shalzz.attendance.DatabaseHandler;
+import com.shalzz.attendance.injection.ApplicationContext;
 import com.shalzz.attendance.model.remote.Subject;
 
 import java.util.List;
+
+import javax.inject.Inject;
 
 public class SubjectAsyncTaskLoader extends AsyncTaskLoader<List<Subject>> {
 
@@ -33,10 +36,15 @@ public class SubjectAsyncTaskLoader extends AsyncTaskLoader<List<Subject>> {
     private List<Subject> mSubjects;
 
     // If non-null, this is the current filter the user has provided.
-    public String mCurFilter;
+    String mCurFilter;
 
-    public SubjectAsyncTaskLoader(Context context, String filter) {
+    @Inject
+    SubjectAsyncTaskLoader(@ApplicationContext Context context, DatabaseHandler db) {
         super(context);
+        mDb = db;
+    }
+
+    void setCursorFilter(String filter) {
         mCurFilter = filter;
     }
 
@@ -54,8 +62,6 @@ public class SubjectAsyncTaskLoader extends AsyncTaskLoader<List<Subject>> {
     }
 
     public List<Subject> loadInBackground() {
-        if(mDb == null)
-            mDb = new DatabaseHandler(getContext());
         return mDb.getAllSubjects(this, mCurFilter);
     }
 
@@ -66,38 +72,5 @@ public class SubjectAsyncTaskLoader extends AsyncTaskLoader<List<Subject>> {
         // We can do any pre-processing we want here
         // Just remember this is on the UI thread so nothing lengthy!
         super.deliverResult(data);
-    }
-
-    /**
-     * Must be called from the UI thread
-     */
-    @Override
-    protected void onStopLoading() {
-        // Attempt to cancel the current load task if possible.
-        cancelLoad();
-        if(mDb != null) {
-            mDb.close();
-        }
-    }
-
-    @Override
-    public void onCanceled(List<Subject> data) {
-        super.onCanceled(data);
-        if(mDb != null) {
-            mDb.close();
-        }
-    }
-
-    @Override
-    protected void onReset() {
-        super.onReset();
-
-        // Ensure the loader is stopped
-        onStopLoading();
-
-        if (mDb != null) {
-            mDb.close();
-        }
-        mDb = null;
     }
 }

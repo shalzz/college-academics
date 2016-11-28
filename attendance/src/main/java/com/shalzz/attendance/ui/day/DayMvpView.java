@@ -7,9 +7,9 @@ import com.shalzz.attendance.ui.base.MvpView;
  * @author shalzz
  */
 
-public interface DayMvpView extends MvpView {
+interface DayMvpView extends MvpView {
 
-    public void clearDay();
+    void clearDay();
 
-    public void setDay(Day day);
+    void setDay(Day day);
 }

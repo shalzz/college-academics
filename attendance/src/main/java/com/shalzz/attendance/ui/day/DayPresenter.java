@@ -34,7 +34,7 @@ class DayPresenter extends BasePresenter<DayMvpView> {
     private DatabaseHandler mDb;
 
     @Inject
-    DayPresenter(DatabaseHandler db)  {
+    DayPresenter(DatabaseHandler db) {
         mDb = db;
     }
 

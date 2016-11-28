@@ -44,8 +44,9 @@ public class RetrofitException extends RuntimeException {
         return new RetrofitException(message, null, null, Kind.NETWORK, exception, null);
     }
 
-    static RetrofitException unexpectedError(Throwable exception) {
-        return new RetrofitException(exception.getMessage(), null, null, Kind.UNEXPECTED, exception, null);
+    static RetrofitException unexpectedError(Throwable exception, Context context) {
+        String message = context.getString(R.string.unexpected_error);
+        return new RetrofitException(message, null, null, Kind.UNEXPECTED, exception, null);
     }
 
     /** Identifies the event kind which triggered a {@link RetrofitException}. */
