@@ -22,9 +22,7 @@
 <!-- Version Code: MAJOR * 1,000,000 + MINOR * 1000 + PATCH -->
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.shalzz.attendance"
-          android:versionCode="2007011"
-          android:versionName="2.7.11">
+	package="com.shalzz.attendance">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
