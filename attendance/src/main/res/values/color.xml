@@ -47,6 +47,8 @@
 
     <color name="grey">#e0e0e0</color>
 
+    <color name="attendance_bg">@android:color/white</color>
+
     <!-- Main theme colors -->
     <color name="primary_dark">#00796B</color>
     <color name="primary">#009688</color>

@@ -268,11 +268,11 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     }
 
     /**
-     * Toggles the expansion state tracked for the call log row identified by rowId and returns
-     * the new expansion state.  Assumes that only a single call log row will be expanded at any
+     * Toggles the expansion state tracked for the row identified by rowId and returns
+     * the new expansion state.  Assumes that only a single row will be expanded at any
      * one point and tracks the current and previous expanded item.
      *
-     * @param rowId The row Id associated with the call log row to expand/collapse.
+     * @param rowId The row Id associated with the row to expand/collapse.
      * @return True where the row is now expanded, false otherwise.
      */
     private boolean toggleExpansion(long rowId) {
@@ -298,8 +298,8 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     }
 
     /**
-     * Determines if a call log row with the given Id is expanded.
-     * @param rowId The row Id of the call.
+     * Determines if a row with the given Id is expanded.
+     * @param rowId The row Id.
      * @return True if the row is expanded.
      */
     private boolean isExpanded(long rowId) {
@@ -307,7 +307,7 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     }
 
     /**
-     * Expands or collapses the view containing the CALLBACK, VOICEMAIL and DETAILS action buttons.
+     * Expands or collapses the view.
      *
      * @param view The call log entry parent view.
      * @param isExpanded The new expansion state of the view.
@@ -331,7 +331,6 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
             if (views.childView != null) {
                 views.childView.setVisibility(View.GONE);
             }
-            // TODO: fix elevation
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 view.setTranslationZ(0);
             }
@@ -339,11 +338,11 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     }
 
     /**
-     * Manages the state changes for the UI interaction where a call log row is expanded.
+     * Manages the state changes for the UI interaction where a row is expanded.
      *
      * @param view The view that was tapped
      * @param animate Whether or not to animate the expansion/collapse
-     * @param forceExpand Whether or not to force the call log row into an expanded state regardless
+     * @param forceExpand Whether or not to force the row into an expanded state regardless
      *        of its previous state
      */
     private void handleRowExpanded(View view, boolean animate, boolean forceExpand) {

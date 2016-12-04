@@ -36,7 +36,6 @@
             android:layout_height="match_parent"
             android:dividerHeight="1dp"
             android:clipToPadding="false"
-            android:drawSelectorOnTop="true"
             tools:listitem="@layout/list_attend_card"/>
 
         <com.shalzz.attendance.utils.CircularIndeterminate

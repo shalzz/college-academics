@@ -25,7 +25,6 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -70,7 +69,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import butterknife.BindBool;
-import butterknife.BindDimen;
+import butterknife.BindInt;
 import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -81,10 +80,6 @@ public class AttendanceListFragment extends Fragment implements
         ExpandableListAdapter.SubjectItemExpandedListener {
 
     private final int GRID_LAYOUT_SPAN_COUNT = 2;
-    private final int mFadeInDuration = 150;
-    private final int mFadeInStartDelay = 150;
-    private final int mFadeOutDuration = 20;
-    private final int mExpandCollapseDuration = 200;
 
     @Inject
     UserAccount mUserAccount;
@@ -128,8 +123,8 @@ public class AttendanceListFragment extends Fragment implements
     @BindBool(R.bool.use_grid_layout)
     boolean useGridLayout;
 
-    @BindDimen(R.dimen.atten_view_expanded_elevation)
-    float mExpandedItemTranslationZ;
+    @BindInt(R.integer.expand_collapse_duration)
+    int mExpandCollapseDuration;
 
     @BindString(R.string.hint_search)
     String hint_search_view;
@@ -276,25 +271,6 @@ public class AttendanceListFragment extends Fragment implements
                     viewHolder.childView.setVisibility(View.VISIBLE);
                 }
 
-                // Set up the fade effect for the action buttons.
-                if (isExpanded) {
-                    // Start the fade in after the expansion has partly completed, otherwise it
-                    // will be mostly over before the expansion completes.
-                    viewHolder.childView.setAlpha(0f);
-                    viewHolder.childView.animate()
-                            .alpha(1f)
-                            .setStartDelay(mFadeInStartDelay)
-                            .setDuration(mFadeInDuration)
-                            .start();
-                } else {
-                    viewHolder.childView.setAlpha(1f);
-                    viewHolder.childView.animate()
-                            .alpha(0f)
-                            .setDuration(mFadeOutDuration)
-                            .start();
-                }
-                view.requestLayout();
-
                 // Set up the animator to animate the expansion and shadow depth.
                 ValueAnimator animator = isExpanded ? ValueAnimator.ofFloat(0f, 1f)
                         : ValueAnimator.ofFloat(1f, 0f);
@@ -307,10 +283,6 @@ public class AttendanceListFragment extends Fragment implements
 
                     // For each value from 0 to 1, animate the various parts of the layout.
                     view.getLayoutParams().height = (int) (value * distance + baseHeight);
-                    float z = mExpandedItemTranslationZ * value;
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        view.setTranslationZ(z);
-                    }
                     view.requestLayout();
                 });
 
@@ -322,11 +294,6 @@ public class AttendanceListFragment extends Fragment implements
 
                         if (!isExpanded) {
                             viewHolder.childView.setVisibility(View.GONE);
-                        } else {
-                            // This seems like it should be unnecessary, but without this, after
-                            // navigating out of the activity and then back, the action view alpha
-                            // is defaulting to the value (0) at the start of the expand animation.
-                            viewHolder.childView.setAlpha(1);
                         }
                     }
                 });
