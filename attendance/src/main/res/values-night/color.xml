@@ -23,5 +23,5 @@
     <color name="attend">@color/holo_orange_light</color>
     <color name="skip">@color/holo_green_light</color>
     <color name="tint">@color/secondary_text_default_material_dark</color>
-    <color name="attendance_bg">#212121</color>
+    <color name="attendance_background">#212121</color>
 </resources>

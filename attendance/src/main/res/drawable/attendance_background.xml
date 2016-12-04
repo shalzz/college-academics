@@ -17,23 +17,14 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
-<LinearLayout
+
+<selector
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:minHeight="?android:listPreferredItemHeight"
-    android:foreground="?android:attr/selectableItemBackground"
-    android:background="@drawable/attendance_background"
-    android:clipToPadding="false"
-    android:orientation="vertical" >
+    android:constantSize="true"
+    android:enterFadeDuration="@integer/expand_collapse_duration"
+    android:exitFadeDuration="@integer/expand_collapse_duration">
 
-    <include layout="@layout/list_group_item"/>
-    <ViewStub android:id="@+id/subject_details_stub"
-        android:inflatedId="@+id/subTree"
-        android:layout="@layout/list_child_item"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/activity_vertical_margin"
-        android:layout_marginStart="@dimen/activity_vertical_margin" />
+    <item android:state_activated="true" android:drawable="@color/attendance_background" />
+    <item android:drawable="@android:color/transparent" />
 
-</LinearLayout>
+</selector>

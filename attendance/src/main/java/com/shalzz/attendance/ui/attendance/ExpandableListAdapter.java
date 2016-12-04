@@ -315,6 +315,7 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
             views.childView.setAlpha(1.0f);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 view.setTranslationZ(mExpandedTranslationZ);
+                view.setActivated(true);
             }
         } else {
 
@@ -325,6 +326,7 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
             }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 view.setTranslationZ(0);
+                view.setActivated(false);
             }
         }
     }
