@@ -175,11 +175,6 @@ public class AttendanceListFragment extends Fragment implements
                 new DividerItemDecoration(mContext, DividerItemDecoration.VERTICAL_LIST);
         mRecyclerView.addItemDecoration(itemDecoration);
 
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mContext);
-        int expandLimit = Integer.parseInt(sharedPref.getString(
-                mContext.getString(R.string.pref_key_sub_limit), "3"));
-
-        mAdapter.setLimit(expandLimit);
         View mFooter = inflater.inflate(R.layout.list_footer, mRecyclerView, false);
         mFooter.setVisibility(View.INVISIBLE);
         mAdapter.addFooter(mFooter);

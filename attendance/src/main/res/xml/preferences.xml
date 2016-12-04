@@ -30,16 +30,6 @@
             android:entryValues="@array/pref_day_night_values"/>
     </android.support.v7.preference.PreferenceCategory>
 
-    <android.support.v7.preference.PreferenceCategory android:title="Attendance" >
-        <android.support.v7.preference.ListPreference
-            android:key="@string/pref_key_sub_limit"
-            android:defaultValue="0"
-            android:title="@string/pref_subject_limit"
-            android:dialogTitle="@string/pref_subject_limit_dialog"
-            android:entries="@array/pref_subject_limit_entries"
-            android:entryValues="@array/pref_subject_limit_values"/>
-    </android.support.v7.preference.PreferenceCategory>
-
     <android.support.v7.preference.PreferenceCategory android:title="Timetable" >
         <android.support.v14.preference.SwitchPreference
             android:key="@string/pref_key_show_weekends"

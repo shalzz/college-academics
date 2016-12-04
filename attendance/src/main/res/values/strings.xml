@@ -31,7 +31,6 @@
     <string name="upesnet_ssid" translatable="false">UPESNET</string>
 
     <!--Preference Keys-->
-    <string name="pref_key_sub_limit">subjects_expanded_limit</string>
     <string name="pref_key_sync">data_sync</string>
     <string name="pref_key_sync_interval">data_sync_interval</string>
     <string name="pref_key_info_about">pref_info_about</string>
@@ -95,8 +94,6 @@
     </plurals>
 
     <!--Preferences-->
-    <string name="pref_subject_limit">Limit Expanded Subjects</string>
-    <string name="pref_subject_limit_dialog">Limit expanded subjects to</string>
     <string name="pref_sync">Auto Refresh</string>
     <string name="pref_sync_summary">Periodically sync your attendance and timetable</string>
     <string name="pref_refresh">Refresh Interval</string>

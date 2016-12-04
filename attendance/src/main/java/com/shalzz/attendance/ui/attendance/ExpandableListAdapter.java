@@ -60,9 +60,7 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     private Context mContext;
     private Resources mResources;
     private Bitmap mBitmap;
-    private final List<Long> mExpandedIds = new ArrayList<>();
     private float mExpandedTranslationZ;
-    private int mLimit = -1;
 
     //our items
     private final SortedList<Subject> mSubjects;
@@ -78,11 +76,12 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     private static final long NONE_EXPANDED = -1;
 
     /**
-     * Tracks the call log row which was previously expanded.  Used so that the closure of a
+     * Tracks the row which was previously expanded.  Used so that the closure of a
      * previously expanded call log entry can be animated on rebind.
      */
     private long mPreviouslyExpanded = NONE_EXPANDED;
 
+    private long mExpandedId = NONE_EXPANDED;
 
     private SubjectItemExpandedListener mSubjectItemExpandedListener;
 
@@ -277,22 +276,15 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
      */
     private boolean toggleExpansion(long rowId) {
         if (isExpanded(rowId)) {
-            // Collapsing currently expanded row.
-            mExpandedIds.remove(rowId);
-
+            mPreviouslyExpanded = NONE_EXPANDED;
+            mExpandedId = NONE_EXPANDED;
             return false;
         } else {
-            // Expanding a row.
-            mExpandedIds.add(rowId);
+            // Collapse the previous row
+            mPreviouslyExpanded = mExpandedId;
 
-            // Collapse a view if limit reached
-            boolean shouldCollapseOther =  mLimit > 0 && mExpandedIds.size() > mLimit;
-            if(shouldCollapseOther) {
-                mPreviouslyExpanded = mExpandedIds.get(0);
-                mExpandedIds.remove(mPreviouslyExpanded);
-            }
-            else
-                mPreviouslyExpanded = NONE_EXPANDED;
+            // Expanding a row.
+            mExpandedId = rowId;
             return true;
         }
     }
@@ -303,7 +295,7 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
      * @return True if the row is expanded.
      */
     private boolean isExpanded(long rowId) {
-        return mExpandedIds.contains(rowId);
+        return mExpandedId == rowId;
     }
 
     /**
@@ -571,17 +563,5 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
             super(itemView);
             this.base = (FrameLayout) itemView;
         }
-    }
-
-    /**
-     * Set the maximum number of items allowed to be expanded. When the
-     * (limit+1)th item is expanded, the first expanded item will collapse.
-     *
-     * @param limit the maximum number of items allowed to be expanded. Use <= 0
-     * for no limit.
-     */
-    public void setLimit(final int limit) {
-        mLimit = limit;
-        mExpandedIds.clear();
     }
 }

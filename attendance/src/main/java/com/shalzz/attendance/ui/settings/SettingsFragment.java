@@ -51,7 +51,6 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
     private final int MY_PERMISSIONS_REQUEST_GET_CONTACTS = 1;
 
     private Context mContext;
-    private String key_sub_limit;
     private String key_sync_interval;
     private String key_sync_day_night;
     private SwitchPreference syncPref;
@@ -67,10 +66,6 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
         key_sync_day_night = getString(R.string.pref_key_day_night);
         ListPreference dayNightListPref = (ListPreference) findPreference(key_sync_day_night);
         dayNightListPref.setSummary(dayNightListPref.getEntry());
-
-        key_sub_limit = getString(R.string.pref_key_sub_limit);
-        ListPreference listPref = (ListPreference) findPreference(key_sub_limit);
-        listPref.setSummary(listPref.getEntry());
 
         key_sync_interval = getString(R.string.pref_key_sync_interval);
         ListPreference synclistPref = (ListPreference) findPreference(key_sync_interval);
@@ -93,10 +88,6 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
             //noinspection WrongConstant
             AppCompatDelegate.setDefaultNightMode(Integer.parseInt(sharedPreferences.
                     getString(key,"-1")));
-        }
-        else if(key.equals(key_sub_limit)) {
-            ListPreference connectionPref = (ListPreference) findPreference(key);
-            connectionPref.setSummary(connectionPref.getEntry());
         }
         else if (key.equals(getString(R.string.pref_key_sync))) {
             if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.GET_ACCOUNTS) !=
@@ -182,7 +173,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
                 .registerOnSharedPreferenceChangeListener(this);
 
         PreferenceCategory prefCategory = (PreferenceCategory) getPreferenceScreen()
-                .getPreference(5);
+                .getPreference(4);
         PreferenceScreen prefScreen =  (PreferenceScreen) prefCategory.getPreference(0);
         prefScreen.setOnPreferenceClickListener(preference -> {
             Fragment mFragment = new AboutSettingsFragment();
@@ -198,7 +189,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
         });
 
         PreferenceCategory proxyPrefCategory = (PreferenceCategory) getPreferenceScreen()
-                .getPreference(3);
+                .getPreference(2);
         PreferenceScreen proxyPrefScreen =  (PreferenceScreen) proxyPrefCategory.getPreference(2);
         proxyPrefScreen.setOnPreferenceClickListener(preference -> {
             Fragment mFragment = new ProxySettingsFragment();

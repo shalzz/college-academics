@@ -27,20 +27,6 @@
         <!--<item >Help</item>-->
     </string-array>
     
-    <string-array name="pref_subject_limit_entries">
-        <item>No limit</item>
-        <item>One</item>
-        <item>Two</item>
-        <item>Three</item>
-    </string-array>
-        
-    <string-array name="pref_subject_limit_values">
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-    </string-array>
-    
     <string-array name="pref_data_sync_interval_entries">
         <item>3 Hours</item>
         <item>6 Hours</item>
