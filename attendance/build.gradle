@@ -43,8 +43,8 @@ android {
         applicationId 'com.shalzz.attendance'
         minSdkVersion 14
         targetSdkVersion 23
-	versionCode gitCommitCount
-	versionName gitTag
+	    versionCode gitCommitCount
+	    versionName gitTag
 
         resConfigs "en"
     }

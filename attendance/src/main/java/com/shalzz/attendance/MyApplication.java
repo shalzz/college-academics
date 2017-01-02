@@ -56,9 +56,9 @@ public class MyApplication extends Application {
 
         if (BuildConfig.DEBUG) {
             Timber.plant(new Timber.DebugTree());
-        } else {
-            Timber.plant(new BugsnagTree());
         }
+
+        Timber.plant(new BugsnagTree());
 
         int nightMode = Integer.parseInt(sharedPref.getString(
                 getString(R.string.pref_key_day_night), "-1"));
