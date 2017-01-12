@@ -81,7 +81,7 @@ class AttendancePresenter extends BasePresenter<AttendanceMvpView>
                     mDb.addSubject(subject, now);
                 }
 
-                if (mDb.purgeOldSubjects() == 1) {
+                if (mDb.purgeOldSubjects() == 1 && isViewAttached()) {
                     Timber.i("Purging Subjects...");
                     getMvpView().clearSubjects();
                 }
@@ -120,16 +120,17 @@ class AttendancePresenter extends BasePresenter<AttendanceMvpView>
         if(args != null)
             filter = args.getString(SUBJECT_FILTER);
         mSubjectAsyncTaskLoader.setCursorFilter(filter);
+        Timber.d("Filter: %s", filter);
         return mSubjectAsyncTaskLoader;
     }
 
     @Override
     public void onLoadFinished(Loader<List<Subject>> loader, List<Subject> data) {
+        checkViewAttached();
         String filter = ((SubjectAsyncTaskLoader) loader).mCurFilter;
         if(data.size() == 0 && filter == null) {
             updateSubjects();
         } else {
-            checkViewAttached();
             getMvpView().addSubjects(data);
         }
     }
@@ -138,7 +139,9 @@ class AttendancePresenter extends BasePresenter<AttendanceMvpView>
     public void onLoaderReset(Loader<List<Subject>> loader) {
         // Loader reset, throw away our data,
         // unregister any listeners, etc.
-        getMvpView().clearSubjects();
+        if(isViewAttached())
+            getMvpView().clearSubjects();
+
         // Of course, unless you use destroyLoader(),
         // this is called when everything is already dying
         // so a completely empty onLoaderReset() is
