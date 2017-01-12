@@ -30,6 +30,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import timber.log.Timber;
+
 public class SubjectAsyncTaskLoader extends AsyncTaskLoader<List<Subject>> {
 
     private DatabaseHandler mDb;
@@ -72,5 +74,12 @@ public class SubjectAsyncTaskLoader extends AsyncTaskLoader<List<Subject>> {
         // We can do any pre-processing we want here
         // Just remember this is on the UI thread so nothing lengthy!
         super.deliverResult(data);
+    }
+
+    @Override
+    protected void onReset() {
+        super.onReset();
+        Timber.i("Loader reset");
+        mSubjects = null;
     }
 }
