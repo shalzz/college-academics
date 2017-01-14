@@ -48,8 +48,6 @@ public interface ApplicationComponent {
     Context context();
     Application application();
     DataAPI dataApi();
-    Gson gson();
-    OkHttpClient okHttpclient();
     MyPreferencesManager preferenceManager();
     DatabaseHandler databaseHandler();
 

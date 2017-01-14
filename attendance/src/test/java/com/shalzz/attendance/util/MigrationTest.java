@@ -1,7 +1,10 @@
-package com.shalzz.attendance;
+package com.shalzz.attendance.util;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+
+import com.shalzz.attendance.BuildConfig;
+import com.shalzz.attendance.DatabaseHandler;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
@@ -19,10 +22,10 @@ import java.sql.ResultSet;
 import java.util.Set;
 import java.util.TreeSet;
 
-import static com.google.common.truth.Truth.assertThat;
+import static junit.framework.Assert.assertEquals;
 
 @RunWith(RobolectricGradleTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = 21, packageName = "com.shalzz.attendance")
+@Config(constants = BuildConfig.class, sdk = DefaultConfig.EMULATE_SDK)
 public final class MigrationTest {
 
     private File newFile;
@@ -58,7 +61,7 @@ public final class MigrationTest {
         Set<String> newSchema = extractSchema(newFile.getAbsolutePath());
         Set<String> upgradedSchema = extractSchema(upgradedFile.getAbsolutePath());
 
-        assertThat(upgradedSchema).isEqualTo(newSchema);
+        assertEquals(upgradedSchema, newSchema);
     }
 
     private Set<String> extractSchema(String url) throws Exception {

@@ -1,4 +1,6 @@
-package com.shalzz.attendance;
+package com.shalzz.attendance.util;
+
+import com.shalzz.attendance.BuildConfig;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -7,12 +9,10 @@ import org.robolectric.annotation.Config;
 import org.robolectric.manifest.AndroidManifest;
 import org.robolectric.res.Fs;
 
-import java.util.HashSet;
-
-import static com.google.common.truth.Truth.assertThat;
+import static junit.framework.Assert.assertEquals;
 
 @RunWith(RobolectricGradleTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = 21, packageName = "com.shalzz.attendance")
+@Config(constants = BuildConfig.class, sdk = DefaultConfig.EMULATE_SDK)
 public final class PermissionsTest {
 
     private static final String[] EXPECTED_PERMISSIONS = {
@@ -38,7 +38,6 @@ public final class PermissionsTest {
                 null
         );
 
-        assertThat(new HashSet<>(manifest.getUsedPermissions())).
-                containsExactly((Object[]) EXPECTED_PERMISSIONS);
+        assertEquals(manifest.getUsedPermissions().toArray(), EXPECTED_PERMISSIONS);
     }
 }

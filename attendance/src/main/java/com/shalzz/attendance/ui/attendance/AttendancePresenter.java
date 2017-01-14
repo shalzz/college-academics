@@ -41,7 +41,7 @@ import retrofit2.Response;
 import timber.log.Timber;
 
 @ConfigPersistent
-class AttendancePresenter extends BasePresenter<AttendanceMvpView>
+public class AttendancePresenter extends BasePresenter<AttendanceMvpView>
         implements LoaderManager.LoaderCallbacks<List<Subject>> {
 
     static final String SUBJECT_FILTER = "subject_filter_text";
@@ -69,7 +69,7 @@ class AttendancePresenter extends BasePresenter<AttendanceMvpView>
         super.detachView();
     }
 
-    void updateSubjects() {
+    public void updateSubjects() {
         Call<List<Subject>> call = mDataAPI.getAttendance();
         call.enqueue(new Callback<List<Subject>>() {
             @Override

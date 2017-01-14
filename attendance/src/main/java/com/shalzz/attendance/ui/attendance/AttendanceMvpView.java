@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * @author shalzz
  */
-interface AttendanceMvpView extends MvpView {
+public interface AttendanceMvpView extends MvpView {
     void clearSubjects();
 
     void addSubjects(List<Subject> subjects);
