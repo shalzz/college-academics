@@ -18,8 +18,8 @@ cache:
   - "$HOME/.gradle/caches/"
   - "$HOME/.gradle/wrapper/"
 script:
-- 'if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then ./gradlew assembleDebug connectedCheck --no-daemon --stacktrace; fi'
-- 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then ./gradlew build connectedCheck --no-daemon --stacktrace; fi'
+- 'if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then ./gradlew assembleDebug check --no-daemon --stacktrace; fi'
+- 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then ./gradlew build check --no-daemon --stacktrace; fi'
 sudo: false
 deploy:
   provider: releases
