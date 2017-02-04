@@ -9,7 +9,9 @@ import org.robolectric.annotation.Config;
 import org.robolectric.manifest.AndroidManifest;
 import org.robolectric.res.Fs;
 
-import static junit.framework.Assert.assertEquals;
+import java.util.HashSet;
+
+import static com.google.common.truth.Truth.assertThat;
 
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = DefaultConfig.EMULATE_SDK)
@@ -28,7 +30,7 @@ public final class PermissionsTest {
 
     private static final String MERGED_MANIFEST =
         "build/intermediates/manifests/full/" + BuildConfig.FLAVOR +
-                "/" + BuildConfig.BUILD_TYPE + "/AndroidManifest.xml";
+                "/release/AndroidManifest.xml";
 
     @Test
     public void shouldMatchPermissions() {
@@ -38,6 +40,7 @@ public final class PermissionsTest {
                 null
         );
 
-        assertEquals(manifest.getUsedPermissions().toArray(), EXPECTED_PERMISSIONS);
+        assertThat(new HashSet<>(manifest.getUsedPermissions()))
+                .containsExactly((Object[]) EXPECTED_PERMISSIONS);
     }
 }

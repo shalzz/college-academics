@@ -182,6 +182,7 @@ android {
         testCompile "org.robolectric:robolectric:3.1"
         testCompile 'commons-io:commons-io:1.3.2'
         testCompile 'org.xerial:sqlite-jdbc:3.8.10.1'
+        testCompile "com.google.truth:truth:0.27"
     }
 }
 
