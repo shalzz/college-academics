@@ -37,7 +37,7 @@ def gitCommitCount = 2007000 +
 
 android {
     compileSdkVersion 23
-    buildToolsVersion '24.0.1'
+    buildToolsVersion '25.0.2'
 
     defaultConfig {
         applicationId 'com.shalzz.attendance'
