@@ -23,7 +23,7 @@ Use [GitHub issues][2] and [Pull Requests][3].
 
 Donate to keep the development going
 
-Bitcoin  - `1G6KuJST6whifh1CjksKF84Sbwj34RbcgR`
+Bitcoin  - `3Qnud38dX8KHoJ8h4za5xfZzP8Vu4FbpFu`
 
 [1]: https://github.com/Shalzz/college-academics/releases
 [2]: https://github.com/Shalzz/college-academics/issues
