@@ -21,7 +21,6 @@ package com.shalzz.attendance.sync;
 
 import android.accounts.Account;
 import android.annotation.SuppressLint;
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.AbstractThreadedSyncAdapter;
@@ -36,14 +35,14 @@ import android.support.v7.app.NotificationCompat;
 import android.support.v7.preference.PreferenceManager;
 
 import com.bugsnag.android.Bugsnag;
-import com.shalzz.attendance.DatabaseHandler;
+import com.shalzz.attendance.data.local.DbOpenHelper;
 import com.shalzz.attendance.R;
-import com.shalzz.attendance.model.remote.Period;
-import com.shalzz.attendance.model.remote.Subject;
-import com.shalzz.attendance.network.DataAPI;
-import com.shalzz.attendance.network.RetrofitException;
+import com.shalzz.attendance.data.local.PreferencesHelper;
+import com.shalzz.attendance.data.model.Period;
+import com.shalzz.attendance.data.model.Subject;
+import com.shalzz.attendance.data.remote.DataAPI;
+import com.shalzz.attendance.data.remote.RetrofitException;
 import com.shalzz.attendance.ui.main.MainActivity;
-import com.shalzz.attendance.wrapper.MyPreferencesManager;
 
 import java.util.Date;
 import java.util.List;
@@ -58,7 +57,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     // Global variables
     private Context mContext;
 
-    private final MyPreferencesManager preferencesManager;
+    private final PreferencesHelper preferencesManager;
     private final DataAPI api;
 
     /**
@@ -69,7 +68,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     public SyncAdapter(
             Context context,
             boolean autoInitialize,
-            boolean allowParallelSyncs, MyPreferencesManager preferencesManager, DataAPI api) {
+            boolean allowParallelSyncs, PreferencesHelper preferencesManager, DataAPI api) {
         super(context, autoInitialize, allowParallelSyncs);
 		/*
 		 * If your app uses a content resolver, get an instance of it
@@ -91,7 +90,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
             @Override
             public void onResponse(Call<List<Subject>> call, Response<List<Subject>> response) {
                 try {
-                    DatabaseHandler db = new DatabaseHandler(mContext);
+                    DbOpenHelper db = new DbOpenHelper(mContext);
                     long now = new Date().getTime();
                     for (Subject subject : response.body()) {
                         db.addSubject(subject, now);
@@ -119,7 +118,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
             @SuppressLint("InlinedApi")
             public void onResponse(Call<List<Period>> call, Response<List<Period>> response) {
                 try {
-                    DatabaseHandler db = new DatabaseHandler(mContext);
+                    DbOpenHelper db = new DbOpenHelper(mContext);
                     long now = new Date().getTime();
                     for(Period period : response.body()) {
                         db.addPeriod(period, now);

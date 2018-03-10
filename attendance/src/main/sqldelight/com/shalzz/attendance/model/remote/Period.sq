@@ -1,0 +1,21 @@
+CREATE TABLE period (
+    id INTEGER AS Integer NOT NULL,
+    week_day TEXT NOT NULL,
+    name TEXT NOT NULL,
+    teacher TEXT NOT NULL,
+    room TEXT NOT NULL,
+    batch TEXT,
+    start TEXT NOT NULL,
+    'end' TEXT NOT NULL,
+    PRIMARY KEY(id, week_day)
+);
+
+select_by_week_day:
+SELECT *
+FROM period
+WHERE week_day = ?
+ORDER by start;
+
+select_count:
+SELECT count(*)
+FROM period;

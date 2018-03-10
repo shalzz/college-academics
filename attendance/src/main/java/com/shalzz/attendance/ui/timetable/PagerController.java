@@ -28,11 +28,11 @@ import android.view.View;
 
 import com.malinskiy.materialicons.IconDrawable;
 import com.malinskiy.materialicons.Iconify;
-import com.shalzz.attendance.DatabaseHandler;
+import com.shalzz.attendance.data.local.DbOpenHelper;
 import com.shalzz.attendance.R;
-import com.shalzz.attendance.model.remote.Period;
-import com.shalzz.attendance.network.DataAPI;
-import com.shalzz.attendance.network.RetrofitException;
+import com.shalzz.attendance.data.model.Period;
+import com.shalzz.attendance.data.remote.DataAPI;
+import com.shalzz.attendance.data.remote.RetrofitException;
 import com.shalzz.attendance.ui.main.MainActivity;
 import com.shalzz.attendance.utils.Miscellaneous;
 
@@ -50,7 +50,7 @@ public class PagerController {
 
     private TimeTablePagerFragment mView;
     public TimeTablePagerAdapter mAdapter;
-    private DatabaseHandler db;
+    private DbOpenHelper db;
     private Resources mResources;
     private Date mToday = new Date();
     private final DataAPI api;
@@ -62,7 +62,7 @@ public class PagerController {
                            DataAPI api) {
         mResources = context.getResources();
         mView = view;
-        db = new DatabaseHandler(context);
+        db = new DbOpenHelper(context);
         mAdapter = new TimeTablePagerAdapter(fm, context);
         mView.mViewPager.setAdapter(mAdapter);
         this.api = api;

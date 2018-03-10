@@ -39,7 +39,7 @@ import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.PreferenceScreen;
 
 import com.bugsnag.android.Bugsnag;
-import com.shalzz.attendance.DatabaseHandler;
+import com.shalzz.attendance.data.local.DbOpenHelper;
 import com.shalzz.attendance.MyApplication;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.ui.main.MainActivity;
@@ -99,7 +99,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
             }
         }
         else if(key.equals(key_sync_interval)) {
-            DatabaseHandler db = new DatabaseHandler(mContext);
+            DbOpenHelper db = new DbOpenHelper(mContext);
             ListPreference connectionPref = (ListPreference) findPreference(key);
             connectionPref.setSummary(connectionPref.getEntry());
             MySyncManager.addPeriodicSync(mContext, "" + db.getUser().sap_id());
@@ -127,7 +127,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
     }
 
     private void toggleSync(boolean sync) {
-        DatabaseHandler db = new DatabaseHandler(mContext);
+        DbOpenHelper db = new DbOpenHelper(mContext);
         String account_name =  "" + db.getUser().sap_id();
         db.close();
         if (sync)

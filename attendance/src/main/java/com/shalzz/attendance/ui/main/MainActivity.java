@@ -47,13 +47,16 @@ import com.bugsnag.android.Bugsnag;
 import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.Target;
 import com.shalzz.attendance.BuildConfig;
-import com.shalzz.attendance.DatabaseHandler;
+import com.shalzz.attendance.data.DataManager;
+import com.shalzz.attendance.data.local.DbOpenHelper;
 import com.shalzz.attendance.R;
-import com.shalzz.attendance.model.remote.User;
+import com.shalzz.attendance.data.model.User;
 import com.shalzz.attendance.ui.attendance.AttendanceListFragment;
 import com.shalzz.attendance.ui.base.BaseActivity;
 import com.shalzz.attendance.ui.settings.SettingsFragment;
 import com.shalzz.attendance.ui.timetable.TimeTablePagerFragment;
+
+import javax.inject.Inject;
 
 import butterknife.BindArray;
 import butterknife.BindBool;
@@ -62,6 +65,23 @@ import butterknife.ButterKnife;
 import timber.log.Timber;
 
 public class MainActivity extends BaseActivity {
+
+    /**
+     * To prevent saving the drawer position when logging out.
+     */
+    public static boolean LOGGED_OUT = false;
+
+    /**
+     * Remember the position of the selected item.
+     */
+    public static final String PREFERENCE_ACTIVATED_FRAGMENT = "ACTIVATED_FRAGMENT2.2";
+
+    public static final String FRAGMENT_TAG = "MainActivity.FRAGMENT";
+
+    public static final String LAUNCH_FRAGMENT_EXTRA = BuildConfig.APPLICATION_ID +
+            ".MainActivity.LAUNCH_FRAGMENT";
+
+    private static final String PREVIOUS_FRAGMENT_TAG = "MainActivity.PREVIOUS_FRAGMENT";
 
     /**
      * Null on tablets
@@ -84,22 +104,8 @@ public class MainActivity extends BaseActivity {
     @BindArray(R.array.drawer_array)
     String[] mNavTitles;
 
-    /**
-     * To prevent saving the drawer position when logging out.
-     */
-    public static boolean LOGGED_OUT = false;
-
-    /**
-     * Remember the position of the selected item.
-     */
-    public static final String PREFERENCE_ACTIVATED_FRAGMENT = "ACTIVATED_FRAGMENT2.2";
-
-    public static final String FRAGMENT_TAG = "MainActivity.FRAGMENT";
-
-    public static final String LAUNCH_FRAGMENT_EXTRA = BuildConfig.APPLICATION_ID +
-            ".MainActivity.LAUNCH_FRAGMENT";
-
-    private static final String PREVIOUS_FRAGMENT_TAG = "MainActivity.PREVIOUS_FRAGMENT";
+    @Inject
+    DataManager mDataManager;
 
     public boolean mPopSettingsBackStack =  false;
 
@@ -108,7 +114,7 @@ public class MainActivity extends BaseActivity {
     private DrawerHeaderViewHolder DrawerheaderVH;
     private FragmentManager mFragmentManager;
     private Fragment fragment = null;
-    private DatabaseHandler mDb;
+    private DbOpenHelper mDb;
     // Our custom poor-man's back stack which has only one entry at maximum.
     private Fragment mPreviousFragment;
 
@@ -132,7 +138,7 @@ public class MainActivity extends BaseActivity {
 	    Bugsnag.setContext("MainActivity");
 
         mFragmentManager = getSupportFragmentManager();
-        mDb = new DatabaseHandler(this);
+        mDb = new DbOpenHelper(this);
         DrawerheaderVH = new DrawerHeaderViewHolder(mNavigationView.getHeaderView(0));
 
         setSupportActionBar(mToolbar);
@@ -278,7 +284,7 @@ public class MainActivity extends BaseActivity {
 
             DrawerheaderVH.tv_name.setText(user.name());
             DrawerheaderVH.tv_course.setText(user.course());
-	        Bugsnag.setUserId(user.sap_id());
+	        Bugsnag.setUserId(user.sapid());
             Bugsnag.setUserName(user.name());
         }
     }

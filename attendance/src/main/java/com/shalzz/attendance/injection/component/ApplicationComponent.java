@@ -22,23 +22,20 @@ package com.shalzz.attendance.injection.component;
 import android.app.Application;
 import android.content.Context;
 
-import com.google.gson.Gson;
-import com.shalzz.attendance.DatabaseHandler;
+import com.shalzz.attendance.data.local.DbOpenHelper;
 import com.shalzz.attendance.injection.ApplicationContext;
 import com.shalzz.attendance.injection.module.ApplicationModule;
 import com.shalzz.attendance.injection.module.NetworkModule;
-import com.shalzz.attendance.network.DataAPI;
+import com.shalzz.attendance.data.remote.DataAPI;
 import com.shalzz.attendance.sync.SyncService;
 import com.shalzz.attendance.ui.settings.AboutSettingsFragment;
 import com.shalzz.attendance.ui.settings.ProxySettingsFragment;
 import com.shalzz.attendance.ui.settings.SettingsFragment;
-import com.shalzz.attendance.wrapper.MyPreferencesManager;
+import com.shalzz.attendance.data.local.PreferencesHelper;
 
-import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Component;
-import okhttp3.OkHttpClient;
 
 @Singleton
 @Component(modules = {ApplicationModule.class, NetworkModule.class})
@@ -48,8 +45,8 @@ public interface ApplicationComponent {
     Context context();
     Application application();
     DataAPI dataApi();
-    MyPreferencesManager preferenceManager();
-    DatabaseHandler databaseHandler();
+    PreferencesHelper preferenceManager();
+    DbOpenHelper databaseHandler();
 
     void inject(SyncService syncService);
 

@@ -19,7 +19,7 @@
 
 package com.shalzz.attendance.wrapper;
 
-import com.shalzz.attendance.model.local.Week;
+import com.shalzz.attendance.data.local.Week;
 
 import java.text.DateFormat;
 import java.text.ParseException;

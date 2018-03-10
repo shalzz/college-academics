@@ -6,10 +6,6 @@
 -keep class android.support.v4.** { *; }
 -keep interface android.support.v4.** { *;}
 
-# Apache HTTP
--dontnote org.apache.http.**
--dontnote android.net.**
-
 -keepattributes InnerClasses
 
 # Application classes that will be serialized/deserialized over Gson

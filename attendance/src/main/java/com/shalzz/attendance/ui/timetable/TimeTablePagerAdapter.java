@@ -26,7 +26,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v7.preference.PreferenceManager;
 
-import com.shalzz.attendance.DatabaseHandler;
+import com.shalzz.attendance.data.local.DbOpenHelper;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.ui.day.DayFragment;
 
@@ -46,7 +46,7 @@ public class TimeTablePagerAdapter extends FragmentStatePagerAdapter {
 	public TimeTablePagerAdapter(FragmentManager fm, Context context) {
 		super(fm);
         mContext = context;
-        DatabaseHandler db = new DatabaseHandler(mContext);
+        DbOpenHelper db = new DbOpenHelper(mContext);
         if(db.getPeriodCount()<=0) {
             mCount = 0;
         } else {

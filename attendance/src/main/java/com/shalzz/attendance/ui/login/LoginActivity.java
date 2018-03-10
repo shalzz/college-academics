@@ -37,7 +37,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class LoginActivity extends BaseActivity {
+public class LoginActivity extends BaseActivity implements LoginMvpView {
 
     @BindView(R.id.etSapid)
     TextInputLayout textInputSapid;
@@ -50,6 +50,9 @@ public class LoginActivity extends BaseActivity {
 
     @Inject
     UserAccount mUserAccount;
+
+    @Inject
+    LoginPresenter mPresenter;
 
     private EditText etSapid;
     private EditText etPass;
@@ -64,6 +67,7 @@ public class LoginActivity extends BaseActivity {
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
 	    Bugsnag.setContext("LoginActivity");
+        mPresenter.attachView(this);
 
         // set toolbar as actionbar
         setSupportActionBar(mToolbar);
@@ -127,5 +131,6 @@ public class LoginActivity extends BaseActivity {
     protected void onDestroy() {
         super.onDestroy();
         mUserAccount = null;
+        mPresenter.detachView();
     }
 }

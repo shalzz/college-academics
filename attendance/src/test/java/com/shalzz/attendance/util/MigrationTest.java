@@ -4,7 +4,7 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.shalzz.attendance.BuildConfig;
-import com.shalzz.attendance.DatabaseHandler;
+import com.shalzz.attendance.data.local.DbOpenHelper;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
@@ -45,7 +45,7 @@ public final class MigrationTest {
     @Test
     public void upgrade_should_be_the_same_as_create() throws Exception {
         Context context = RuntimeEnvironment.application;
-        DatabaseHandler helper = new DatabaseHandler(context);
+        DbOpenHelper helper = new DbOpenHelper(context);
 
         SQLiteDatabase newDb = SQLiteDatabase.openOrCreateDatabase(newFile, null);
         SQLiteDatabase upgradedDb = SQLiteDatabase.openDatabase(
@@ -55,7 +55,7 @@ public final class MigrationTest {
         );
 
         helper.onCreate(newDb);
-        helper.onUpgrade(upgradedDb, 9, DatabaseHandler.DATABASE_VERSION); // we are starting
+        helper.onUpgrade(upgradedDb, 9, DbOpenHelper.DATABASE_VERSION); // we are starting
         // migration testing from version 9
 
         Set<String> newSchema = extractSchema(newFile.getAbsolutePath());

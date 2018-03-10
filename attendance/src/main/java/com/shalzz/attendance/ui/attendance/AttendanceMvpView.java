@@ -1,7 +1,7 @@
 package com.shalzz.attendance.ui.attendance;
 
-import com.shalzz.attendance.model.remote.Subject;
-import com.shalzz.attendance.network.RetrofitException;
+import com.shalzz.attendance.data.model.Subject;
+import com.shalzz.attendance.data.remote.RetrofitException;
 import com.shalzz.attendance.ui.base.MvpView;
 
 import java.util.List;
@@ -10,6 +10,7 @@ import java.util.List;
  * @author shalzz
  */
 public interface AttendanceMvpView extends MvpView {
+
     void clearSubjects();
 
     void addSubjects(List<Subject> subjects);
@@ -26,5 +27,7 @@ public interface AttendanceMvpView extends MvpView {
 
     void showEmptyView(boolean show);
 
-    void showErrorView(RetrofitException error);
+    void showNetworkErrorView();
+
+    void showEmptyErrorView();
 }

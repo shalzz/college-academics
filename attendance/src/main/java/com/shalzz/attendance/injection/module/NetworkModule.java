@@ -24,16 +24,17 @@ import android.support.annotation.NonNull;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.ryanharter.auto.value.gson.AutoValueGsonTypeAdapterFactory;
+import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import com.shalzz.attendance.BuildConfig;
+import com.shalzz.attendance.data.MyGsonTypeAdapterFactory;
+import com.shalzz.attendance.data.local.PreferencesHelper;
+import com.shalzz.attendance.data.remote.DataAPI;
+import com.shalzz.attendance.data.remote.RxJava2ErrorCallAdapterFactory;
+import com.shalzz.attendance.data.remote.interceptor.AuthInterceptor;
+import com.shalzz.attendance.data.remote.interceptor.HeaderInterceptor;
+import com.shalzz.attendance.data.remote.interceptor.LoggingInterceptor;
 import com.shalzz.attendance.injection.ApplicationContext;
-import com.shalzz.attendance.network.DataAPI;
-import com.shalzz.attendance.network.ErrorHandlingCallAdapterFactory;
-import com.shalzz.attendance.network.interceptor.AuthInterceptor;
-import com.shalzz.attendance.network.interceptor.HeaderInterceptor;
-import com.shalzz.attendance.network.interceptor.LoggingInterceptor;
 import com.shalzz.attendance.utils.Miscellaneous;
-import com.shalzz.attendance.wrapper.MyPreferencesManager;
 
 import javax.inject.Singleton;
 
@@ -49,13 +50,13 @@ public class NetworkModule {
     @Provides @Singleton
     static Gson provideGson() {
         return new GsonBuilder()
-                .registerTypeAdapterFactory(new AutoValueGsonTypeAdapterFactory())
+                .registerTypeAdapterFactory(MyGsonTypeAdapterFactory.create())
                 .setDateFormat("yyyy-MM-dd")
                 .create();
     }
 
     @Provides @Singleton @NonNull
-    static OkHttpClient provideClient(MyPreferencesManager preferences,
+    static OkHttpClient provideClient(PreferencesHelper preferences,
                                       @ApplicationContext Context context) {
         final OkHttpClient.Builder okHttpBuilder = new OkHttpClient.Builder()
                 .addInterceptor(new HeaderInterceptor())
@@ -78,7 +79,8 @@ public class NetworkModule {
                 .baseUrl(DataAPI.ENDPOINT)
                 .client(okHttpClient)
                 .addConverterFactory(GsonConverterFactory.create(gson))
-                .addCallAdapterFactory(ErrorHandlingCallAdapterFactory.create(context))
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .addCallAdapterFactory(RxJava2ErrorCallAdapterFactory.create(context))
                 .validateEagerly(BuildConfig.DEBUG) // Fail early: check Retrofit configuration at creation time in Debug build.
                 .build()
                 .create(DataAPI.class);

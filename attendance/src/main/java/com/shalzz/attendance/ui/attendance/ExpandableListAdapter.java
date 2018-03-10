@@ -40,11 +40,11 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.shalzz.attendance.BuildConfig;
-import com.shalzz.attendance.DatabaseHandler;
+import com.shalzz.attendance.data.local.DbOpenHelper;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.injection.ApplicationContext;
-import com.shalzz.attendance.model.local.ListFooter;
-import com.shalzz.attendance.model.remote.Subject;
+import com.shalzz.attendance.data.local.ListFooter;
+import com.shalzz.attendance.data.model.Subject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -163,7 +163,7 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     }
 
     private void updateFooter() {
-        DatabaseHandler db = new DatabaseHandler(mContext);
+        DbOpenHelper db = new DbOpenHelper(mContext);
         ListFooter footer = db.getListFooter();
         if(!footer.equals(mFooter)) {
             mFooter = footer;

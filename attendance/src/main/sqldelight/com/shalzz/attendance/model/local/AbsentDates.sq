@@ -1,0 +1,16 @@
+CREATE TABLE absent (
+    subject_id INTEGER AS Integer NOT NULL,
+    absent_date TEXT AS java.util.Date NOT NULL,
+    UNIQUE(subject_id, absent_date),
+    FOREIGN KEY (subject_id) REFERENCES subject(id) ON DELETE CASCADE
+);
+
+select_by_id:
+SELECT *
+FROM absent
+WHERE subject_id = ? ;
+
+select_absent_subjects:
+SELECT *
+FROM absent
+WHERE absent_date = ?;

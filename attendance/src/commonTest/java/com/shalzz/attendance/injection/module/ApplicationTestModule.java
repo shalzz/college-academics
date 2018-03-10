@@ -23,7 +23,7 @@ import android.app.Application;
 import android.content.Context;
 
 import com.shalzz.attendance.injection.ApplicationContext;
-import com.shalzz.attendance.network.DataAPI;
+import com.shalzz.attendance.data.remote.DataAPI;
 
 import javax.inject.Singleton;
 

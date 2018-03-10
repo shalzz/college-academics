@@ -19,44 +19,33 @@
 
 package com.shalzz.attendance.ui.attendance;
 
-import android.os.Bundle;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
-
-import com.shalzz.attendance.DatabaseHandler;
+import com.shalzz.attendance.data.DataManager;
+import com.shalzz.attendance.data.model.Subject;
+import com.shalzz.attendance.data.remote.RetrofitException;
 import com.shalzz.attendance.injection.ConfigPersistent;
-import com.shalzz.attendance.model.remote.Subject;
-import com.shalzz.attendance.network.DataAPI;
-import com.shalzz.attendance.network.RetrofitException;
 import com.shalzz.attendance.ui.base.BasePresenter;
 
-import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.observers.DisposableObserver;
+import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 @ConfigPersistent
-public class AttendancePresenter extends BasePresenter<AttendanceMvpView>
-        implements LoaderManager.LoaderCallbacks<List<Subject>> {
+public class AttendancePresenter extends BasePresenter<AttendanceMvpView> {
 
-    static final String SUBJECT_FILTER = "subject_filter_text";
+    private DataManager mDataManager;
 
-    private DatabaseHandler mDb;
-    private DataAPI mDataAPI;
-    private SubjectAsyncTaskLoader mSubjectAsyncTaskLoader;
+    private Disposable mSyncDisposable;
+    private Disposable mDisposable;
 
     @Inject
-    AttendancePresenter(DatabaseHandler db,
-                        DataAPI api,
-                        SubjectAsyncTaskLoader subjectAsyncTaskLoader) {
-        mDb = db;
-        mDataAPI = api;
-        mSubjectAsyncTaskLoader = subjectAsyncTaskLoader;
+    AttendancePresenter(DataManager dataManager) {
+        mDataManager = dataManager;
     }
 
     @Override
@@ -67,84 +56,64 @@ public class AttendancePresenter extends BasePresenter<AttendanceMvpView>
     @Override
     public void detachView() {
         super.detachView();
+        mSyncDisposable.dispose();
+        mDisposable.dispose();
     }
 
-    public void updateSubjects() {
-        Call<List<Subject>> call = mDataAPI.getAttendance();
-        call.enqueue(new Callback<List<Subject>>() {
-            @Override
-            public void onResponse(Call<List<Subject>> call,
-                                   Response<List<Subject>> response) {
-                List<Subject> subjects = response.body();
-                long now = new Date().getTime();
-                for (Subject subject : subjects) {
-                    mDb.addSubject(subject, now);
-                }
-
-                if (mDb.purgeOldSubjects() == 1 && isViewAttached()) {
-                    Timber.i("Purging Subjects...");
-                    getMvpView().clearSubjects();
-                }
-
-                if(!isViewAttached())
-                    return;
-                getMvpView().addSubjects(subjects);
-                getMvpView().showcaseView();
-                getMvpView().updateLastSync();
-            }
-
-            @Override
-            public void onFailure(Call<List<Subject>> call, Throwable t) {
-                if(!isViewAttached())
-                    return;
-                RetrofitException error = (RetrofitException) t;
-                if (error.getKind() == RetrofitException.Kind.UNEXPECTED) {
-                    Timber.e(t, error.getMessage());
-                    getMvpView().showError(error.getMessage());
-                }
-                else if(mDb.getSubjectCount() > 0 &&
-                         (error.getKind() == RetrofitException.Kind.NETWORK ||
-                                error.getKind() == RetrofitException.Kind.EMPTY_RESPONSE)) {
-                    getMvpView().showRetryError(error.getMessage());
-                }
-                else {
-                    getMvpView().showErrorView(error);
-                }
-            }
-        });
+    public void syncSubjects() {
+        mSyncDisposable.dispose();
+        mSyncDisposable = mDataManager.syncSubjects()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnComplete(() -> {
+                    if(isViewAttached()) {
+                        getMvpView().updateLastSync();
+                    }
+                })
+                .doOnError(throwable -> {
+                    if(!isViewAttached())
+                        return;
+                    RetrofitException error = (RetrofitException) throwable;
+                    if (error.getKind() == RetrofitException.Kind.UNEXPECTED) {
+                        Timber.e(throwable, error.getMessage());
+                        getMvpView().showError(error.getMessage());
+                    }
+                    else if( /* mDb.getSubjectCount() > 0 && */ false) {
+                        getMvpView().showRetryError(error.getMessage());
+                    }
+                    else if (error.getKind() == RetrofitException.Kind.NETWORK){
+                        getMvpView().showNetworkErrorView();
+                    }
+                    else if (error.getKind() == RetrofitException.Kind.EMPTY_RESPONSE){
+                        getMvpView().showEmptyErrorView();
+                    }
+                })
+                .subscribe();
     }
 
-    @Override
-    public Loader<List<Subject>> onCreateLoader(int id, Bundle args) {
-        String filter = null;
-        if(args != null)
-            filter = args.getString(SUBJECT_FILTER);
-        mSubjectAsyncTaskLoader.setCursorFilter(filter);
-        Timber.d("Filter: %s", filter);
-        return mSubjectAsyncTaskLoader;
-    }
-
-    @Override
-    public void onLoadFinished(Loader<List<Subject>> loader, List<Subject> data) {
+    public void loadSubjects(String filter) {
         checkViewAttached();
-        String filter = ((SubjectAsyncTaskLoader) loader).mCurFilter;
-        if(data.size() == 0 && filter == null) {
-            updateSubjects();
-        } else {
-            getMvpView().addSubjects(data);
-        }
-    }
+        mDisposable.dispose();
+        mDisposable = mDataManager.getSubjects(filter)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableObserver<List<Subject>> () {
+                    @Override
+                    public void onNext(List<Subject> subjects) {
+                        getMvpView().addSubjects(subjects);
+                    }
 
-    @Override
-    public void onLoaderReset(Loader<List<Subject>> loader) {
-        // Loader reset, throw away our data,
-        // unregister any listeners, etc.
-        if(isViewAttached())
-            getMvpView().clearSubjects();
+                    @Override
+                    public void onError(Throwable e) {
+                        RetrofitException error = (RetrofitException) e;
+                        Timber.e(e, error.getMessage());
+                        getMvpView().showError(error.getMessage());
+                    }
 
-        // Of course, unless you use destroyLoader(),
-        // this is called when everything is already dying
-        // so a completely empty onLoaderReset() is
-        // totally acceptable
+                    @Override
+                    public void onComplete() {
+                        getMvpView().showcaseView();
+                    }
+                });
     }
 }

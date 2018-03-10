@@ -40,9 +40,9 @@ import android.widget.TextView;
 import com.bugsnag.android.Bugsnag;
 import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.Target;
-import com.shalzz.attendance.DatabaseHandler;
+import com.shalzz.attendance.data.local.DbOpenHelper;
 import com.shalzz.attendance.R;
-import com.shalzz.attendance.network.DataAPI;
+import com.shalzz.attendance.data.remote.DataAPI;
 import com.shalzz.attendance.ui.login.UserAccount;
 import com.shalzz.attendance.ui.main.MainActivity;
 import com.shalzz.attendance.utils.CircularIndeterminate;
@@ -152,7 +152,7 @@ public class TimeTablePagerFragment extends Fragment {
             return false;
         });
 
-        DatabaseHandler db = new DatabaseHandler(mContext);
+        DbOpenHelper db = new DbOpenHelper(mContext);
         if (db.getPeriodCount() == 0) {
             mController.updatePeriods();
             mProgress.setVisibility(View.VISIBLE);

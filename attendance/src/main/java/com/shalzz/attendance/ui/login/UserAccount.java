@@ -29,15 +29,15 @@ import android.preference.PreferenceManager;
 import android.view.View;
 
 import com.bugsnag.android.Bugsnag;
-import com.shalzz.attendance.DatabaseHandler;
+import com.shalzz.attendance.data.local.DbOpenHelper;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.injection.ActivityContext;
-import com.shalzz.attendance.model.remote.User;
-import com.shalzz.attendance.network.DataAPI;
-import com.shalzz.attendance.network.RetrofitException;
+import com.shalzz.attendance.data.model.User;
+import com.shalzz.attendance.data.remote.DataAPI;
+import com.shalzz.attendance.data.remote.RetrofitException;
 import com.shalzz.attendance.ui.main.MainActivity;
 import com.shalzz.attendance.utils.Miscellaneous;
-import com.shalzz.attendance.wrapper.MyPreferencesManager;
+import com.shalzz.attendance.data.local.PreferencesHelper;
 import com.shalzz.attendance.wrapper.MySyncManager;
 
 import javax.inject.Inject;
@@ -50,7 +50,7 @@ import timber.log.Timber;
 
 public class UserAccount {
 
-    private final MyPreferencesManager preferencesManager;
+    private final PreferencesHelper preferencesManager;
     private final Miscellaneous misc;
     private final DataAPI mAPI;
 
@@ -69,7 +69,7 @@ public class UserAccount {
                        DataAPI api) {
         mContext = context;
         mAPI = api;
-        preferencesManager = new MyPreferencesManager(mContext);
+        preferencesManager = new PreferencesHelper(mContext);
         misc = new Miscellaneous(context);
     }
 
@@ -88,11 +88,7 @@ public class UserAccount {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
                 User user = response.body();
-                preferencesManager.saveUser(user.sap_id(), user.password());
                 MySyncManager.addPeriodicSync(mContext, user.sap_id());
-                DatabaseHandler db = new DatabaseHandler(mContext);
-                db.addUser(user);
-                db.close();
 
                 configureBugsnag(password);
 
@@ -161,7 +157,7 @@ public class UserAccount {
         preferencesManager.removeUser();
 
         // Remove user Attendance data from database.
-        DatabaseHandler db = new DatabaseHandler(mContext);
+        DbOpenHelper db = new DbOpenHelper(mContext);
         db.resetTables();
 
         // Remove Sync Account
@@ -171,7 +167,7 @@ public class UserAccount {
         NotificationManager mNotificationManager =
                 (NotificationManager) mContext.getSystemService(
                         Context.NOTIFICATION_SERVICE);
-        mNotificationManager.cancel(0 /** timetable changed notification id */);
+        mNotificationManager.cancel(0 /* timetable changed notification id */);
 
         // Destroy current activity and start Login Activity
         Intent ourIntent = new Intent(mContext, LoginActivity.class);

@@ -24,8 +24,8 @@ import android.content.Intent;
 import android.os.IBinder;
 
 import com.shalzz.attendance.MyApplication;
-import com.shalzz.attendance.network.DataAPI;
-import com.shalzz.attendance.wrapper.MyPreferencesManager;
+import com.shalzz.attendance.data.local.PreferencesHelper;
+import com.shalzz.attendance.data.remote.DataAPI;
 
 import javax.inject.Inject;
 
@@ -37,7 +37,7 @@ import javax.inject.Inject;
 public class SyncService extends Service {
 
     @Inject
-    MyPreferencesManager preferencesManager;
+    PreferencesHelper preferencesManager;
 
     @Inject
     DataAPI api;

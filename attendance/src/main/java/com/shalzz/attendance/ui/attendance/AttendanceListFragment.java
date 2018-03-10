@@ -53,8 +53,7 @@ import com.github.amlcurran.showcaseview.targets.ViewTarget;
 import com.malinskiy.materialicons.IconDrawable;
 import com.malinskiy.materialicons.Iconify;
 import com.shalzz.attendance.R;
-import com.shalzz.attendance.model.remote.Subject;
-import com.shalzz.attendance.network.RetrofitException;
+import com.shalzz.attendance.data.model.Subject;
 import com.shalzz.attendance.ui.login.UserAccount;
 import com.shalzz.attendance.ui.main.MainActivity;
 import com.shalzz.attendance.utils.CircularIndeterminate;
@@ -88,18 +87,18 @@ public class AttendanceListFragment extends Fragment implements
     @Inject
     ExpandableListAdapter mAdapter;
 
-    public static class EmptyView {
+    static class EmptyView {
         @BindView(R.id.emptyStateImageView)
-        public ImageView ImageView;
+        ImageView ImageView;
 
         @BindView(R.id.emptyStateTitleTextView)
-        public TextView TitleTextView;
+        TextView TitleTextView;
 
         @BindView(R.id.emptyStateContentTextView)
-        public TextView ContentTextView;
+        TextView ContentTextView;
 
         @BindView(R.id.emptyStateButton)
-        public Button Button;
+        Button Button;
     }
 
     /**
@@ -147,7 +146,7 @@ public class AttendanceListFragment extends Fragment implements
         mContext = getActivity();
         setHasOptionsMenu(true);
 
-        mSwipeRefreshLayout.setOnRefreshListener(() -> mPresenter.updateSubjects());
+        mSwipeRefreshLayout.setOnRefreshListener(() -> mPresenter.syncSubjects());
         mSwipeRefreshLayout.setSwipeableChildren(R.id.atten_recycler_view);
 
         // Set the color scheme of the SwipeRefreshLayout by providing 4 color resource ids
@@ -186,9 +185,9 @@ public class AttendanceListFragment extends Fragment implements
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        getLoaderManager().initLoader(0, null, mPresenter);
+    public void onResume() {
+        super.onResume();
+        mPresenter.loadSubjects(null);
     }
 
     @Override
@@ -210,11 +209,8 @@ public class AttendanceListFragment extends Fragment implements
             @Override
             public boolean onQueryTextChange(String arg0) {
                 String filter = !TextUtils.isEmpty(arg0) ? arg0 : null;
-                Bundle bundle = new Bundle();
-                bundle.putString(AttendancePresenter.SUBJECT_FILTER,filter);
-                // destroy the loader first to clear the adapter
-                getLoaderManager().destroyLoader(0);
-                getLoaderManager().restartLoader(0, bundle, mPresenter);
+                clearSubjects();
+                mPresenter.loadSubjects(filter);
                 return false;
             }
         });
@@ -230,7 +226,7 @@ public class AttendanceListFragment extends Fragment implements
             // We make sure that the SwipeRefreshLayout is displaying it's refreshing indicator
             if (!mSwipeRefreshLayout.isRefreshing()) {
                 mSwipeRefreshLayout.setRefreshing(true);
-                mPresenter.updateSubjects();
+                mPresenter.syncSubjects();
             }
             return true;
         }
@@ -379,27 +375,32 @@ public class AttendanceListFragment extends Fragment implements
         }
     }
 
+    @Override
     public void updateLastSync() {
         ((MainActivity) getActivity()).updateLastSync();
     }
 
+    @Override
     public void stopRefreshing() {
         mProgress.setVisibility(View.GONE);
         mSwipeRefreshLayout.setRefreshing(false);
     }
 
+    @Override
     public void showError(String message) {
         stopRefreshing();
         Miscellaneous.showSnackBar(mRecyclerView, message);
     }
 
+    @Override
     public void showRetryError(String message) {
         stopRefreshing();
         Snackbar.make(mRecyclerView, message, Snackbar.LENGTH_LONG)
-                .setAction("Retry", v -> mPresenter.updateSubjects())
+                .setAction("Retry", v -> mPresenter.syncSubjects())
                 .show();
     }
 
+    @Override
     public void showEmptyView(boolean show) {
         stopRefreshing();
         if(show) {
@@ -411,28 +412,31 @@ public class AttendanceListFragment extends Fragment implements
         }
     }
 
-    public void showErrorView(RetrofitException error) {
-        showEmptyView(true);
-        if (error.getKind() == RetrofitException.Kind.NETWORK) {
-            Drawable emptyDrawable = new IconDrawable(mContext,
-                    Iconify.IconValue.zmdi_wifi_off)
-                    .colorRes(android.R.color.darker_gray);
-            mEmptyView.ImageView.setImageDrawable(emptyDrawable);
-            mEmptyView.TitleTextView.setText(R.string.no_connection_title);
-            mEmptyView.ContentTextView.setText(R.string.no_connection_content);
-            mEmptyView.Button.setOnClickListener( v -> mPresenter.updateSubjects());
-            mEmptyView.Button.setVisibility(View.VISIBLE);
-        }
-        else if (error.getKind() == RetrofitException.Kind.EMPTY_RESPONSE) {
-            Drawable emptyDrawable = new IconDrawable(mContext,
-                    Iconify.IconValue.zmdi_cloud_off)
-                    .colorRes(android.R.color.darker_gray);
-            mEmptyView.ImageView.setImageDrawable(emptyDrawable);
-            mEmptyView.TitleTextView.setText(R.string.no_data_title);
-            mEmptyView.ContentTextView.setText(R.string.no_data_content);
-            mEmptyView.Button.setVisibility(View.GONE);
+    @Override
+    public void showNetworkErrorView() {
+        Drawable emptyDrawable = new IconDrawable(mContext,
+                Iconify.IconValue.zmdi_wifi_off)
+                .colorRes(android.R.color.darker_gray);
+        mEmptyView.ImageView.setImageDrawable(emptyDrawable);
+        mEmptyView.TitleTextView.setText(R.string.no_connection_title);
+        mEmptyView.ContentTextView.setText(R.string.no_connection_content);
+        mEmptyView.Button.setOnClickListener( v -> mPresenter.syncSubjects());
+        mEmptyView.Button.setVisibility(View.VISIBLE);
 
-            updateLastSync();
-        }
+        showEmptyView(true);
+    }
+
+    @Override
+    public void showEmptyErrorView() {
+        Drawable emptyDrawable = new IconDrawable(mContext,
+                Iconify.IconValue.zmdi_cloud_off)
+                .colorRes(android.R.color.darker_gray);
+        mEmptyView.ImageView.setImageDrawable(emptyDrawable);
+        mEmptyView.TitleTextView.setText(R.string.no_data_title);
+        mEmptyView.ContentTextView.setText(R.string.no_data_content);
+        mEmptyView.Button.setVisibility(View.GONE);
+
+        updateLastSync();
+        showEmptyView(true);
     }
 }

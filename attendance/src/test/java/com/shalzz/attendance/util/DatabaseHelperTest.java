@@ -1,7 +1,7 @@
 package com.shalzz.attendance.util;
 
 import com.shalzz.attendance.BuildConfig;
-import com.shalzz.attendance.DatabaseHandler;
+import com.shalzz.attendance.data.local.DbOpenHelper;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,8 +18,8 @@ import static junit.framework.Assert.assertEquals;
 @Config(constants = BuildConfig.class, sdk = DefaultConfig.EMULATE_SDK)
 public class DatabaseHelperTest {
 
-    private final DatabaseHandler mDatabaseHelper =
-            new DatabaseHandler(RuntimeEnvironment.application);
+    private final DbOpenHelper mDatabaseHelper =
+            new DbOpenHelper(RuntimeEnvironment.application);
 
     @Test
     public void gets_correct_row_count() throws Exception {

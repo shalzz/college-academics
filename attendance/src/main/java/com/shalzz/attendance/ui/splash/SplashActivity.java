@@ -29,14 +29,14 @@ import com.shalzz.attendance.R;
 import com.shalzz.attendance.ui.base.BaseActivity;
 import com.shalzz.attendance.ui.login.LoginActivity;
 import com.shalzz.attendance.ui.main.MainActivity;
-import com.shalzz.attendance.wrapper.MyPreferencesManager;
+import com.shalzz.attendance.data.local.PreferencesHelper;
 
 import javax.inject.Inject;
 
 public class SplashActivity extends BaseActivity {
 
     @Inject
-    MyPreferencesManager preferencesManager;
+    PreferencesHelper mPreferencesHelper;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -50,12 +50,12 @@ public class SplashActivity extends BaseActivity {
             PreferenceManager.setDefaultValues(this, R.xml.pref_proxy, false);
         } catch (ClassCastException e) {
 	        Bugsnag.notify(e, Severity.INFO);
-            preferencesManager.removeDefaultSharedPreferences();
+            PreferenceManager.getDefaultSharedPreferences(this).edit().clear().apply();
             PreferenceManager.setDefaultValues(this, R.xml.preferences, true);
             PreferenceManager.setDefaultValues(this, R.xml.pref_proxy, true);
         }
 
-		boolean loggedin = preferencesManager.getLoginStatus();
+		boolean loggedin = mPreferencesHelper.getLoginStatus();
 
         Intent intent;
 		if(!loggedin)

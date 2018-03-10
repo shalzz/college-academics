@@ -32,7 +32,7 @@ import android.view.ViewGroup;
 
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.injection.ActivityContext;
-import com.shalzz.attendance.model.local.Day;
+import com.shalzz.attendance.data.local.Day;
 import com.shalzz.attendance.ui.main.MainActivity;
 import com.shalzz.attendance.utils.DividerItemDecoration;
 

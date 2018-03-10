@@ -19,23 +19,27 @@
 
 package com.shalzz.attendance.ui.day;
 
-import com.shalzz.attendance.DatabaseHandler;
+import com.shalzz.attendance.data.DataManager;
+import com.shalzz.attendance.data.local.DbOpenHelper;
 import com.shalzz.attendance.injection.ConfigPersistent;
-import com.shalzz.attendance.model.local.Day;
+import com.shalzz.attendance.data.local.Day;
 import com.shalzz.attendance.ui.base.BasePresenter;
 
 import java.util.Date;
 
 import javax.inject.Inject;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
+
 @ConfigPersistent
 class DayPresenter extends BasePresenter<DayMvpView> {
 
-    private DatabaseHandler mDb;
+    private DataManager mDataManager;
 
     @Inject
-    DayPresenter(DatabaseHandler db) {
-        mDb = db;
+    DayPresenter(DataManager dataManager) {
+        mDataManager = dataManager;
     }
 
     @Override
@@ -50,11 +54,13 @@ class DayPresenter extends BasePresenter<DayMvpView> {
 
     void loadDay(Date date) {
         checkViewAttached();
-        Day day = Day.create(mDb.getAbsentSubjects(date), mDb.getAllPeriods(date));
-        if (day.getPeriods().size() == 0) {
-            getMvpView().clearDay();
-        } else {
-            getMvpView().setDay(day);
-        }
+        mDataManager.getDay(date)
+                .doOnNext(day -> {
+                    if (day.getPeriods().size() == 0) {
+                        getMvpView().clearDay();
+                    } else {
+                        getMvpView().setDay(day);
+                    }
+                });
     }
 }
