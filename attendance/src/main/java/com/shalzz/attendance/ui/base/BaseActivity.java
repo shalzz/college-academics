@@ -4,11 +4,11 @@ import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
-import com.shalzz.attendance.MyApplication;
 import com.shalzz.attendance.injection.component.ActivityComponent;
 import com.shalzz.attendance.injection.component.ConfigPersistentComponent;
 import com.shalzz.attendance.injection.component.DaggerConfigPersistentComponent;
 import com.shalzz.attendance.injection.module.ActivityModule;
+import com.shalzz.attendance.MyApplication;
 
 import java.util.HashMap;
 import java.util.Map;

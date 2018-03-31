@@ -57,6 +57,7 @@ import com.shalzz.attendance.ui.settings.SettingsFragment;
 import com.shalzz.attendance.ui.timetable.TimeTablePagerFragment;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import butterknife.BindArray;
 import butterknife.BindBool;
@@ -103,6 +104,10 @@ public class MainActivity extends BaseActivity {
 
     @BindArray(R.array.drawer_array)
     String[] mNavTitles;
+
+    @Inject
+    @Named("app")
+    Tracker mTracker;
 
     @Inject
     DataManager mDataManager;
@@ -286,6 +291,11 @@ public class MainActivity extends BaseActivity {
             DrawerheaderVH.tv_course.setText(user.course());
 	        Bugsnag.setUserId(user.sapid());
             Bugsnag.setUserName(user.name());
+            mTracker.set("&uid", user.sap_id());
+            mTracker.send(new HitBuilders.ScreenViewBuilder()
+                    .setCustomDimension(Miscellaneous.CUSTOM_DIMENSION_USER_ID, user.sapid())
+                    .build());
+
         }
     }
 

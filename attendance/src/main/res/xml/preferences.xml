@@ -62,6 +62,11 @@
     </android.support.v7.preference.PreferenceCategory>
 
     <android.support.v7.preference.PreferenceCategory android:title="Privacy" >
+        <android.support.v14.preference.SwitchPreference
+            android:key="@string/pref_key_ga_opt_in"
+            android:defaultValue="true"
+            android:title="@string/pref_ga_opt_in"
+            android:summary="@string/pref_ga_opt_in_summary" />
 	<android.support.v14.preference.SwitchPreference
             android:key="@string/pref_key_bugsnag_opt_in"
             android:defaultValue="true"

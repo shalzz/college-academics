@@ -22,6 +22,7 @@ package com.shalzz.attendance.injection.component;
 import android.app.Application;
 import android.content.Context;
 
+import com.google.android.gms.analytics.Tracker;
 import com.shalzz.attendance.data.local.DbOpenHelper;
 import com.shalzz.attendance.injection.ApplicationContext;
 import com.shalzz.attendance.injection.module.ApplicationModule;
@@ -43,6 +44,8 @@ public interface ApplicationComponent {
     @ApplicationContext
     Context context();
     Application application();
+    @Named("app")
+    Tracker tracker();
     DataAPI dataApi();
     PreferencesHelper preferenceManager();
     DbOpenHelper databaseHandler();

@@ -26,10 +26,10 @@ import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.preference.PreferenceManager;
 
 import com.bugsnag.android.Bugsnag;
+import com.shalzz.attendance.utils.BugsnagTree;
 import com.shalzz.attendance.injection.component.ApplicationComponent;
 import com.shalzz.attendance.injection.component.DaggerApplicationComponent;
 import com.shalzz.attendance.injection.module.ApplicationModule;
-import com.shalzz.attendance.utils.BugsnagTree;
 
 import timber.log.Timber;
 

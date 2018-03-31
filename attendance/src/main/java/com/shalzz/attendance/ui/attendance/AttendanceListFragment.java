@@ -64,6 +64,7 @@ import com.shalzz.attendance.wrapper.MultiSwipeRefreshLayout;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import butterknife.BindBool;
 import butterknife.BindInt;
@@ -86,6 +87,9 @@ public class AttendanceListFragment extends Fragment implements
 
     @Inject
     ExpandableListAdapter mAdapter;
+
+    @Inject @Named("app")
+    Tracker mTracker;
 
     static class EmptyView {
         @BindView(R.id.emptyStateImageView)
@@ -131,6 +135,14 @@ public class AttendanceListFragment extends Fragment implements
     private Context mContext;
     private Unbinder unbinder;
     public EmptyView mEmptyView = new EmptyView();
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        mTracker.setScreenName(getClass().getSimpleName());
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+    }
 
     @Override
     public View onCreateView( @NonNull LayoutInflater inflater, ViewGroup container,
@@ -229,6 +241,12 @@ public class AttendanceListFragment extends Fragment implements
                 mPresenter.syncSubjects();
             }
             return true;
+        }
+        else if(item.getItemId() == R.id.menu_search) {
+            mTracker.send(new HitBuilders.EventBuilder()
+                    .setCategory("Action")
+                    .setAction("Search")
+                    .build());
         }
         return super.onOptionsItemSelected(item);
     }

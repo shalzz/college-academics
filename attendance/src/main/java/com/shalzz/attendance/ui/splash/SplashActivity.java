@@ -20,11 +20,15 @@
 package com.shalzz.attendance.ui.splash;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.preference.PreferenceManager;
 
 import com.bugsnag.android.Bugsnag;
 import com.bugsnag.android.Severity;
+import com.google.android.gms.analytics.GoogleAnalytics;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.ui.base.BaseActivity;
 import com.shalzz.attendance.ui.login.LoginActivity;
@@ -32,17 +36,36 @@ import com.shalzz.attendance.ui.main.MainActivity;
 import com.shalzz.attendance.data.local.PreferencesHelper;
 
 import javax.inject.Inject;
+import javax.inject.Named;
+
+import timber.log.Timber;
 
 public class SplashActivity extends BaseActivity {
 
     @Inject
     PreferencesHelper mPreferencesHelper;
 
+    @Inject
+    @Named("app")
+    Tracker mTracker;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         activityComponent().inject(this);
 		Bugsnag.setContext("SplashActivity");
+
+		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+		boolean optIn = sharedPref.getBoolean(getString(R.string.pref_key_ga_opt_in), true);
+		GoogleAnalytics.getInstance(this).setAppOptOut(!optIn);
+        Timber.i("Opted out of Google Analytics: %s", !optIn);
+
+        mTracker.send(new HitBuilders.ScreenViewBuilder()
+                        .setCustomDimension(Miscellaneous.CUSTOM_DIMENSION_THEME,
+                                sharedPref.getString(getString(R.string.pref_key_day_night), "-1"))
+                        .setCustomDimension(Miscellaneous.CUSTOM_DIMENSION_PROXY,""+
+                                sharedPref.getBoolean(getString(R.string.pref_key_use_proxy),false))
+                        .build());
 
                 // Set all default values once for this application
         try {

@@ -27,11 +27,14 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 
 import com.bugsnag.android.Bugsnag;
-import com.shalzz.attendance.R;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.shalzz.attendance.ui.base.BaseActivity;
 import com.shalzz.attendance.utils.Miscellaneous;
+import com.shalzz.attendance.R;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -47,6 +50,10 @@ public class LoginActivity extends BaseActivity implements LoginMvpView {
 
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
+
+    @Inject
+    @Named("app")
+    Tracker t;
 
     @Inject
     UserAccount mUserAccount;
@@ -87,6 +94,14 @@ public class LoginActivity extends BaseActivity implements LoginMvpView {
                 return false;
             });
         }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        t.setScreenName(getClass().getSimpleName());
+        t.send(new HitBuilders.ScreenViewBuilder().build());
     }
 
     @OnClick(R.id.bLogin)
