@@ -7,7 +7,6 @@ import com.shalzz.attendance.ui.day.DayFragment;
 import com.shalzz.attendance.ui.login.LoginActivity;
 import com.shalzz.attendance.ui.main.MainActivity;
 import com.shalzz.attendance.ui.settings.AboutSettingsFragment;
-import com.shalzz.attendance.ui.settings.ProxySettingsFragment;
 import com.shalzz.attendance.ui.settings.SettingsFragment;
 import com.shalzz.attendance.ui.splash.SplashActivity;
 import com.shalzz.attendance.ui.timetable.TimeTablePagerFragment;
@@ -32,8 +31,6 @@ public interface ActivityComponent {
     void inject(AttendanceListFragment attendanceListFragment);
 
     void inject(AboutSettingsFragment aboutSettingsFragment);
-
-    void inject(ProxySettingsFragment proxySettingsFragment);
 
     void inject(SettingsFragment settingsFragment);
 

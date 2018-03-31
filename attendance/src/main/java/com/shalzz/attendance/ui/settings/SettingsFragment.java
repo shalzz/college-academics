@@ -187,22 +187,6 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
             transaction.commit();
             return true;
         });
-
-        PreferenceCategory proxyPrefCategory = (PreferenceCategory) getPreferenceScreen()
-                .getPreference(2);
-        PreferenceScreen proxyPrefScreen =  (PreferenceScreen) proxyPrefCategory.getPreference(2);
-        proxyPrefScreen.setOnPreferenceClickListener(preference -> {
-            Fragment mFragment = new ProxySettingsFragment();
-            FragmentTransaction transaction = getFragmentManager().beginTransaction();
-
-            transaction.replace(R.id.frame_container, mFragment, MainActivity.FRAGMENT_TAG);
-            transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-            transaction.addToBackStack(null);
-            ((MainActivity)getActivity()).mPopSettingsBackStack = true;
-
-            transaction.commit();
-            return true;
-        });
     }
 
     public void requestBackup() {

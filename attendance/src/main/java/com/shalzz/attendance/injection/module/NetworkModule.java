@@ -34,7 +34,6 @@ import com.shalzz.attendance.data.remote.interceptor.AuthInterceptor;
 import com.shalzz.attendance.data.remote.interceptor.HeaderInterceptor;
 import com.shalzz.attendance.data.remote.interceptor.LoggingInterceptor;
 import com.shalzz.attendance.injection.ApplicationContext;
-import com.shalzz.attendance.utils.Miscellaneous;
 
 import javax.inject.Singleton;
 
@@ -62,11 +61,6 @@ public class NetworkModule {
                 .addInterceptor(new HeaderInterceptor())
                 .addInterceptor(new AuthInterceptor(preferences))
                 .addNetworkInterceptor(new LoggingInterceptor());
-
-        if(Miscellaneous.useProxy(context)) {
-            okHttpBuilder.proxyAuthenticator(preferences.getProxyCredentials());
-            okHttpBuilder.proxySelector(Miscellaneous.getProxySelector());
-        }
 
         return okHttpBuilder.build();
     }

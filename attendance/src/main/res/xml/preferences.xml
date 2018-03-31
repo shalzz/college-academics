@@ -59,13 +59,6 @@
             android:dependency="@string/pref_key_sync"
             android:entries="@array/pref_data_sync_interval_entries"
             android:entryValues="@array/pref_data_sync_interval_values"/>
-
-        <!-- opens another nested subscreen -->
-        <android.support.v7.preference.PreferenceScreen
-            android:persistent="false"
-            android:title="@string/pref_proxy"
-            android:summary="@string/pref_proxy_summary" >
-        </android.support.v7.preference.PreferenceScreen>
     </android.support.v7.preference.PreferenceCategory>
 
     <android.support.v7.preference.PreferenceCategory android:title="Privacy" >

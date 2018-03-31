@@ -21,38 +21,21 @@ package com.shalzz.attendance.utils;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.net.wifi.WifiInfo;
-import android.net.wifi.WifiManager;
 import android.support.design.widget.Snackbar;
-import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.SearchView;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.shalzz.attendance.R;
 import com.shalzz.attendance.injection.ActivityContext;
 
-import java.io.IOException;
 import java.math.BigInteger;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
-import java.net.ProxySelector;
-import java.net.SocketAddress;
-import java.net.URI;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 
 import javax.inject.Inject;
-
-import timber.log.Timber;
 
 public class Miscellaneous {
 
@@ -199,46 +182,5 @@ public class Miscellaneous {
             }
         }
         return String.valueOf(chars);
-    }
-
-    /**
-     * Determines whether to use proxy host or not.
-     * @return true or false.
-     */
-    public static boolean useProxy(Context context) {
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
-        boolean useProxy = sharedPref.getBoolean(context.getString(R.string.pref_key_use_proxy), false);
-        if(useProxy) {
-            ConnectivityManager connManager = (ConnectivityManager) context
-                    .getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-            if (mWifi.isConnectedOrConnecting()) {
-                WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
-                WifiInfo wifiInfo = wifiManager.getConnectionInfo();
-                Timber.d("Wifi changed to %s", wifiInfo.getSSID());
-                return wifiInfo.getSSID().equals(context.getString(R.string.upesnet_ssid));
-            }
-        }
-        return false;
-    }
-
-    public static ProxySelector getProxySelector() {
-        return new ProxySelector() {
-            @Override
-            public List<Proxy> select(URI uri) {
-                List<Proxy> list = new ArrayList<>();
-                list.add(Proxy.NO_PROXY);
-                list.add(new Proxy(Proxy.Type.HTTP, new InetSocketAddress(
-                        "proxy.ddn.upes.ac.in",8080)));
-                list.add(new Proxy(Proxy.Type.HTTP, new InetSocketAddress(
-                        "proxy1.ddn.upes.ac.in",8080)));
-                return list;
-            }
-
-            @Override
-            public void connectFailed(URI uri, SocketAddress address, IOException failure) {
-
-            }
-        };
     }
 }

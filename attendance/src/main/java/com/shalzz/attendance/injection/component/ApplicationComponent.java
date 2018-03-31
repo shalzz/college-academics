@@ -29,7 +29,6 @@ import com.shalzz.attendance.injection.module.NetworkModule;
 import com.shalzz.attendance.data.remote.DataAPI;
 import com.shalzz.attendance.sync.SyncService;
 import com.shalzz.attendance.ui.settings.AboutSettingsFragment;
-import com.shalzz.attendance.ui.settings.ProxySettingsFragment;
 import com.shalzz.attendance.ui.settings.SettingsFragment;
 import com.shalzz.attendance.data.local.PreferencesHelper;
 
@@ -51,8 +50,6 @@ public interface ApplicationComponent {
     void inject(SyncService syncService);
 
     void inject(SettingsFragment settingsFragment);
-
-    void inject(ProxySettingsFragment proxySettingsFragment);
 
     void inject(AboutSettingsFragment aboutSettingsFragment);
 }

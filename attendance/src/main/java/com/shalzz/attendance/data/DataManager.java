@@ -6,19 +6,15 @@ import com.shalzz.attendance.data.local.PreferencesHelper;
 import com.shalzz.attendance.data.model.Subject;
 import com.shalzz.attendance.data.model.User;
 import com.shalzz.attendance.data.remote.DataAPI;
-import com.shalzz.attendance.utils.Miscellaneous;
 
 import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 import hu.akarnokd.rxjava.interop.RxJavaInterop;
 import io.reactivex.Observable;
-import okhttp3.Credentials;
 
-@Singleton
 public class DataManager {
 
     private final DataAPI mDataAPI;

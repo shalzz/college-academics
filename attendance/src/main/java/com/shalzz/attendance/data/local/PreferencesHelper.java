@@ -22,16 +22,13 @@ package com.shalzz.attendance.data.local;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.support.v7.preference.PreferenceManager;
 
-import com.shalzz.attendance.R;
 import com.shalzz.attendance.injection.ApplicationContext;
 import com.shalzz.attendance.ui.main.MainActivity;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import okhttp3.Authenticator;
 import okhttp3.Credentials;
 import timber.log.Timber;
 
@@ -68,19 +65,6 @@ public class PreferencesHelper {
         return Credentials.basic(mPref.getString("USERNAME", null),
                 mPref.getString("PASSWORD", null));
 	}
-
-    public Authenticator getProxyCredentials() {
-        return (route, response) -> {
-            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mContext);
-            final String username = sharedPref.getString(
-                    mContext.getString(R.string.pref_key_proxy_username), "");
-            final String password = sharedPref.getString(
-                    mContext.getString(R.string.pref_key_proxy_password), "");
-            return response.request().newBuilder()
-                    .header("Proxy-Authorization", Credentials.basic(username,password))
-                    .build();
-        };
-    }
 
 	/**
 	 * Saves the user details in shared preferences and sets login status to true.
