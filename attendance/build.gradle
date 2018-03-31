@@ -19,7 +19,6 @@
 
 apply plugin: 'com.android.application'
 apply plugin: 'com.squareup.sqldelight'
-apply plugin: 'me.tatarka.retrolambda'
 apply plugin: 'com.github.triplet.play'
 apply plugin: 'com.bugsnag.android.gradle'
 
@@ -36,7 +35,7 @@ def gitCommitCount = 2007000 +
 
 android {
     compileSdkVersion 23
-    buildToolsVersion '25.0.2'
+    buildToolsVersion '27.0.3'
 
     defaultConfig {
         applicationId 'com.shalzz.attendance'
