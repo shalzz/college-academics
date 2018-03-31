@@ -24,7 +24,7 @@
               android:layout_height="match_parent"
               android:weightSum="1"
               android:orientation="vertical"
-              android:background="@drawable/login_bg"
+              android:background="@drawable/background"
               tools:ignore="RtlHardcoded,UnknownIdInLayout"
               tools:context=".ui.login.LoginActivity">
 
