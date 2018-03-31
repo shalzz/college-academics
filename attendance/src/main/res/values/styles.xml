@@ -64,12 +64,6 @@
 
     </style>
 
-    <style name="HintTextAppearance">
-        <item name="colorControlNormal">@android:color/white</item>
-        <item name="colorControlActivated">@android:color/white</item>
-        <item name="colorControlHighlight">@android:color/white</item>
-    </style>
-
     <!-- Showcase View Styles -->
 
     <style name="ShowcaseTheme" parent="ShowcaseView">
