@@ -23,6 +23,7 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.shalzz.attendance.data.model.AbsentDate;
 import com.shalzz.attendance.data.model.Period;
 import com.shalzz.attendance.data.model.Subject;
 import com.shalzz.attendance.data.model.User;

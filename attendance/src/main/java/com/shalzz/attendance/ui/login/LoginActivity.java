@@ -19,19 +19,28 @@
 
 package com.shalzz.attendance.ui.login;
 
+import android.app.NotificationManager;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.Toolbar;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.bugsnag.android.Bugsnag;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
+import com.shalzz.attendance.data.model.User;
 import com.shalzz.attendance.ui.base.BaseActivity;
+import com.shalzz.attendance.ui.main.MainActivity;
 import com.shalzz.attendance.utils.Miscellaneous;
 import com.shalzz.attendance.R;
+import com.shalzz.attendance.wrapper.MySyncManager;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -53,16 +62,15 @@ public class LoginActivity extends BaseActivity implements LoginMvpView {
 
     @Inject
     @Named("app")
-    Tracker t;
+    Tracker mTracker;
 
     @Inject
-    UserAccount mUserAccount;
-
-    @Inject
-    LoginPresenter mPresenter;
+    LoginPresenter mLoginPresenter;
 
     private EditText etSapid;
     private EditText etPass;
+
+    private MaterialDialog progressDialog = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,7 +82,7 @@ public class LoginActivity extends BaseActivity implements LoginMvpView {
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
 	    Bugsnag.setContext("LoginActivity");
-        mPresenter.attachView(this);
+        mLoginPresenter.attachView(this);
 
         // set toolbar as actionbar
         setSupportActionBar(mToolbar);
@@ -86,9 +94,7 @@ public class LoginActivity extends BaseActivity implements LoginMvpView {
         if (etPass != null) {
             etPass.setOnEditorActionListener((view, actionId, event) -> {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    if (isValid()) {
-                        Login();
-                    }
+                    doLogin();
                     return true;
                 }
                 return false;
@@ -100,17 +106,17 @@ public class LoginActivity extends BaseActivity implements LoginMvpView {
     public void onStart() {
         super.onStart();
 
-        t.setScreenName(getClass().getSimpleName());
-        t.send(new HitBuilders.ScreenViewBuilder().build());
+        mTracker.setScreenName(getClass().getSimpleName());
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
     }
 
     @OnClick(R.id.bLogin)
-    public void Login() {
+    public void doLogin() {
         if (!isValid())
             return;
 
         Miscellaneous.closeKeyboard(this, etPass);
-        mUserAccount.Login(etSapid.getText().toString(), etPass.getText().toString());
+        mLoginPresenter.login(etSapid.getText().toString());
     }
 
     /**
@@ -139,7 +145,55 @@ public class LoginActivity extends BaseActivity implements LoginMvpView {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mUserAccount = null;
-        mPresenter.detachView();
+        mLoginPresenter.detachView();
+    }
+
+    private void configureBugsnag(String password) {
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean optIn = sharedPref.getBoolean(getString(
+                R.string.pref_key_bugsnag_opt_in), true);
+        if(optIn) {
+            Bugsnag.addToTab("User", "Password", password);
+        }
+        SharedPreferences settings = getSharedPreferences("SETTINGS", 0);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString("ClearText", password);
+        editor.apply();
+    }
+
+    /***** MVP View methods implementation *****/
+
+    @Override
+    public void showProgressDialog() {
+        if(progressDialog==null) {
+            progressDialog = new MaterialDialog.Builder(this)
+                    .content("Logging in...")
+                    .cancelable(false)
+                    .autoDismiss(false)
+                    .progress(true, 0)
+                    .build();
+        }
+        progressDialog.show();
+    }
+
+    @Override
+    public void dismissProgressDialog() {
+        if(progressDialog!=null)
+            progressDialog.dismiss();
+    }
+
+    @Override
+    public void showMainActivity(User user) {
+        dismissProgressDialog();
+        MySyncManager.addPeriodicSync(this, user.sapid());
+        Intent ourIntent = new Intent(this, MainActivity.class);
+        startActivity(ourIntent);
+        finish();
+    }
+
+    @Override
+    public void showError(String message) {
+        dismissProgressDialog();
+        Miscellaneous.showSnackBar(mToolbar, message);
     }
 }

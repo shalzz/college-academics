@@ -30,10 +30,11 @@ import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.shalzz.attendance.R;
+import com.shalzz.attendance.data.local.PreferencesHelper;
 import com.shalzz.attendance.ui.base.BaseActivity;
 import com.shalzz.attendance.ui.login.LoginActivity;
 import com.shalzz.attendance.ui.main.MainActivity;
-import com.shalzz.attendance.data.local.PreferencesHelper;
+import com.shalzz.attendance.utils.Miscellaneous;
 
 import javax.inject.Inject;
 import javax.inject.Named;

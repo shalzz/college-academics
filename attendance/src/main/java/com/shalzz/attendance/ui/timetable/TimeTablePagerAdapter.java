@@ -41,18 +41,11 @@ public class TimeTablePagerAdapter extends FragmentStatePagerAdapter {
 	private final HashMap<Date, Integer> positions = new HashMap<>();
     private Date mDate;
     private Context mContext;
-    private int mCount;
+    private final int COUNT = 31;
 
-	public TimeTablePagerAdapter(FragmentManager fm, Context context) {
+	TimeTablePagerAdapter(FragmentManager fm, Context context) {
 		super(fm);
         mContext = context;
-        DbOpenHelper db = new DbOpenHelper(mContext);
-        if(db.getPeriodCount()<=0) {
-            mCount = 0;
-        } else {
-            mCount = 31;
-        }
-        db.close();
 	}
 
 	@Override
@@ -76,7 +69,7 @@ public class TimeTablePagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public int getCount() {
-        return mCount;
+        return COUNT;
     }
 
     public Date getDate() {
@@ -106,7 +99,6 @@ public class TimeTablePagerAdapter extends FragmentStatePagerAdapter {
     }
 
     public void setDate(Date date) {
-        mCount = 31;
         if(mDate != date) {
             mDate = date;
             updateDates();
@@ -114,7 +106,7 @@ public class TimeTablePagerAdapter extends FragmentStatePagerAdapter {
         notifyDataSetChanged();
     }
 
-    public void updateDates() {
+    void updateDates() {
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mContext);
         boolean show = sharedPref.getBoolean(mContext.getString(R.string.pref_key_show_weekends), true);
         int day_offset = 0;

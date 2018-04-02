@@ -1,8 +1,11 @@
+import java.lang.Integer;
+import java.lang.Float;
+
 CREATE TABLE subject (
     id INTEGER AS Integer PRIMARY KEY NOT NULL,
     name TEXT NOT NULL,
-    attended REAL AS java.lang.Float NOT NULL,
-    held REAL AS java.lang.Float NOT NULL,
+    attended REAL AS Float NOT NULL,
+    held REAL AS Float NOT NULL,
     absent_dates TEXT AS java.util.List<java.util.Date>
 );
 

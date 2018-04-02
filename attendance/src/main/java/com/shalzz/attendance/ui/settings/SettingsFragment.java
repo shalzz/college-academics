@@ -45,6 +45,7 @@ import com.google.android.gms.analytics.Tracker;
 import com.shalzz.attendance.data.local.DbOpenHelper;
 import com.shalzz.attendance.MyApplication;
 import com.shalzz.attendance.R;
+import com.shalzz.attendance.data.local.PreferencesHelper;
 import com.shalzz.attendance.ui.main.MainActivity;
 import com.shalzz.attendance.wrapper.MySyncManager;
 
@@ -66,6 +67,9 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
     @Inject
     @Named("app")
     Tracker mTracker;
+
+    @Inject
+    PreferencesHelper mPreferences;
 
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
@@ -122,7 +126,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
             DbOpenHelper db = new DbOpenHelper(mContext);
             ListPreference connectionPref = (ListPreference) findPreference(key);
             connectionPref.setSummary(connectionPref.getEntry());
-            MySyncManager.addPeriodicSync(mContext, "" + db.getUser().sap_id());
+            MySyncManager.addPeriodicSync(mContext, mPreferences.getUserId());
         }
         else if(key.equals(getString(R.string.pref_key_ga_opt_in))) {
             boolean optIn = sharedPreferences.getBoolean(key, true);
@@ -154,7 +158,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
 
     private void toggleSync(boolean sync) {
         DbOpenHelper db = new DbOpenHelper(mContext);
-        String account_name =  "" + db.getUser().sap_id();
+        String account_name = mPreferences.getUserId();
         db.close();
         if (sync)
             MySyncManager.enableAutomaticSync(mContext, account_name);

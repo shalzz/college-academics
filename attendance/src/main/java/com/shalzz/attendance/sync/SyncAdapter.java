@@ -84,69 +84,6 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     public void onPerformSync(Account account, Bundle extras, String authority,
                               ContentProviderClient provider, SyncResult syncResult) {
         Timber.i("Running sync adapter");
-
-        Call<List<Subject>> call = api.getAttendance(preferencesManager.getBasicAuthCredentials());
-        call.enqueue(new Callback<List<Subject>>() {
-            @Override
-            public void onResponse(Call<List<Subject>> call, Response<List<Subject>> response) {
-                try {
-                    DbOpenHelper db = new DbOpenHelper(mContext);
-                    long now = new Date().getTime();
-                    for (Subject subject : response.body()) {
-                        db.addSubject(subject, now);
-                    }
-                    db.purgeOldSubjects();
-                    db.close();
-                }
-                catch(Exception e) {
-                    Timber.e(e, mContext.getString(R.string.unexpected_error));
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<Subject>> call, Throwable t) {
-                RetrofitException error = (RetrofitException) t;
-                if (error.getKind() == RetrofitException.Kind.UNEXPECTED) {
-                    Timber.e(t, error.getMessage());
-                }
-            }
-        });
-
-        Call<List<Period>> call2 = api.getTimetable(preferencesManager.getBasicAuthCredentials());
-        call2.enqueue(new Callback<List<Period>>() {
-            @Override
-            @SuppressLint("InlinedApi")
-            public void onResponse(Call<List<Period>> call, Response<List<Period>> response) {
-                try {
-                    DbOpenHelper db = new DbOpenHelper(mContext);
-                    long now = new Date().getTime();
-                    for(Period period : response.body()) {
-                        db.addPeriod(period, now);
-                    }
-                    SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences
-                            (mContext);
-                    boolean notify = sharedPref.getBoolean(mContext.getString(
-                            R.string.pref_key_notify_timetable_changed),
-                            true);
-
-                    notify = db.purgeOldPeriods() == 1 && notify;
-                    if(notify) showNotification();
-
-                    db.close();
-                }
-                catch(Exception e) {
-                    Timber.e(e, mContext.getString(R.string.unexpected_error));
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<Period>> call, Throwable t) {
-                RetrofitException error = (RetrofitException) t;
-                if (error.getKind() == RetrofitException.Kind.UNEXPECTED) {
-                    Timber.e(t, error.getMessage());
-                }
-            }
-        });
     }
 
     /**

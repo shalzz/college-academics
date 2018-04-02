@@ -93,50 +93,6 @@ public class Miscellaneous {
     }
 
     /**
-     * Displays the default Progress Dialog.
-     * @param mMessage The message to display
-     */
-    public void showProgressDialog(String mMessage , boolean cancelable, DialogInterface.OnCancelListener progressDialogCancelListener) {
-        // lazy initialise
-        if(pd==null)
-        {
-            // Setup the Progress Dialog
-            pd = new MaterialDialog.Builder(mContext)
-                    .content(mMessage)
-                    .cancelable(cancelable)
-                    .autoDismiss(false)
-                    .cancelListener(progressDialogCancelListener)
-                    .progress(true, 0)
-                    .build();
-        }
-        pd.show();
-    }
-
-    /**
-     * Dismisses the Progress Dialog.
-     */
-    public void dismissProgressDialog() {
-        if(pd!=null)
-            pd.dismiss();
-    }
-
-    /**
-     * Displays a basic Alert Dialog.
-     * @param mMessage the message to display
-     */
-    public void showAlertDialog(String mMessage) {
-        // lazy initialise
-        if(builder==null) {
-            builder = new MaterialDialog.Builder(mContext)
-                    .cancelable(true)
-                    .positiveText(android.R.string.ok);
-        }
-        dismissProgressDialog();
-        builder.content(mMessage)
-                .show();
-    }
-
-    /**
      * Material design snack bar
      * @param view the parent view
      * @param msg message to be displayed

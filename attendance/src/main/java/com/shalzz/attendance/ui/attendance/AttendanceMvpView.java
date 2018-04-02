@@ -1,5 +1,6 @@
 package com.shalzz.attendance.ui.attendance;
 
+import com.shalzz.attendance.data.model.ListFooter;
 import com.shalzz.attendance.data.model.Subject;
 import com.shalzz.attendance.data.remote.RetrofitException;
 import com.shalzz.attendance.ui.base.MvpView;
@@ -15,6 +16,8 @@ public interface AttendanceMvpView extends MvpView {
 
     void addSubjects(List<Subject> subjects);
 
+    void updateFooter(ListFooter footer);
+
     void showcaseView();
 
     void updateLastSync();
@@ -27,7 +30,9 @@ public interface AttendanceMvpView extends MvpView {
 
     void showEmptyView(boolean show);
 
-    void showNetworkErrorView();
+    void showNetworkErrorView(String error);
+
+    void showNoConnectionErrorView();
 
     void showEmptyErrorView();
 }

@@ -20,13 +20,11 @@
 package com.shalzz.attendance.data.model;
 
 import android.os.Parcelable;
-import android.support.annotation.NonNull;
 
 import com.google.auto.value.AutoValue;
 import com.google.gson.Gson;
 import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.shalzz.attendance.model.remote.UserModel;
+import com.shalzz.attendance.model.UserModel;
 import com.squareup.sqldelight.RowMapper;
 
 /** Field names need to be the same

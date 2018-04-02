@@ -17,13 +17,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.shalzz.attendance.data.local;
+package com.shalzz.attendance.data.model;
 
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
 import com.google.auto.value.AutoValue;
-import com.shalzz.attendance.model.local.AbsentDatesModel;
+import com.shalzz.attendance.model.AbsentDatesModel;
 import com.shalzz.attendance.wrapper.DateHelper;
 import com.squareup.sqldelight.ColumnAdapter;
 import com.squareup.sqldelight.RowMapper;

@@ -20,6 +20,8 @@
 package com.shalzz.attendance.ui.main;
 
 import android.animation.ValueAnimator;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -38,6 +40,8 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
@@ -47,17 +51,18 @@ import com.bugsnag.android.Bugsnag;
 import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.Target;
 import com.shalzz.attendance.BuildConfig;
+import com.shalzz.attendance.R;
 import com.shalzz.attendance.data.DataManager;
 import com.shalzz.attendance.data.local.DbOpenHelper;
-import com.shalzz.attendance.R;
 import com.shalzz.attendance.data.model.User;
 import com.shalzz.attendance.ui.attendance.AttendanceListFragment;
 import com.shalzz.attendance.ui.base.BaseActivity;
+import com.shalzz.attendance.ui.login.LoginActivity;
 import com.shalzz.attendance.ui.settings.SettingsFragment;
 import com.shalzz.attendance.ui.timetable.TimeTablePagerFragment;
+import com.shalzz.attendance.wrapper.MySyncManager;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 import butterknife.BindArray;
 import butterknife.BindBool;
@@ -65,7 +70,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import timber.log.Timber;
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity implements MainMvpView {
 
     /**
      * To prevent saving the drawer position when logging out.
@@ -83,6 +88,26 @@ public class MainActivity extends BaseActivity {
             ".MainActivity.LAUNCH_FRAGMENT";
 
     private static final String PREVIOUS_FRAGMENT_TAG = "MainActivity.PREVIOUS_FRAGMENT";
+
+    /**
+     * Reference to fragment positions
+     */
+    public enum Fragments {
+        ATTENDANCE(1),
+        TIMETABLE(2),
+        SETTINGS(3);
+
+        private final int value;
+
+        Fragments(int value) {
+            this.value = value;
+        }
+
+        public int getValue() {
+            return value;
+        }
+    }
+
 
     /**
      * Null on tablets
@@ -106,20 +131,19 @@ public class MainActivity extends BaseActivity {
     String[] mNavTitles;
 
     @Inject
-    @Named("app")
-    Tracker mTracker;
+    DataManager mDataManager;
 
     @Inject
-    DataManager mDataManager;
+    MainPresenter mMainPresenter;
 
     public boolean mPopSettingsBackStack =  false;
 
     private int mCurrentSelectedPosition = Fragments.ATTENDANCE.getValue();
     private ActionBarDrawerToggle mDrawerToggle;
     private DrawerHeaderViewHolder DrawerheaderVH;
+
     private FragmentManager mFragmentManager;
     private Fragment fragment = null;
-    private DbOpenHelper mDb;
     // Our custom poor-man's back stack which has only one entry at maximum.
     private Fragment mPreviousFragment;
 
@@ -137,13 +161,13 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        activityComponent().inject(this);
         setContentView(R.layout.drawer);
         ButterKnife.bind(this);
+        activityComponent().inject(this);
 	    Bugsnag.setContext("MainActivity");
+        mMainPresenter.attachView(this);
 
         mFragmentManager = getSupportFragmentManager();
-        mDb = new DbOpenHelper(this);
         DrawerheaderVH = new DrawerHeaderViewHolder(mNavigationView.getHeaderView(0));
 
         setSupportActionBar(mToolbar);
@@ -196,7 +220,7 @@ public class MainActivity extends BaseActivity {
             displayView(mCurrentSelectedPosition);
         }
 
-        updateDrawerHeader();
+        mMainPresenter.loadUser();
     }
 
     private void initDrawer() {
@@ -276,35 +300,6 @@ public class MainActivity extends BaseActivity {
                 ((AttendanceListFragment) fragment).showcaseView();
             }
         });
-    }
-
-    public void updateDrawerHeader() {
-        updateUserDetails();
-        updateLastSync();
-    }
-
-    public void updateUserDetails() {
-        if(mDb.getUserCount()>0) {
-            User user = mDb.getUser();
-
-            DrawerheaderVH.tv_name.setText(user.name());
-            DrawerheaderVH.tv_course.setText(user.course());
-	        Bugsnag.setUserId(user.sapid());
-            Bugsnag.setUserName(user.name());
-            mTracker.set("&uid", user.sap_id());
-            mTracker.send(new HitBuilders.ScreenViewBuilder()
-                    .setCustomDimension(Miscellaneous.CUSTOM_DIMENSION_USER_ID, user.sapid())
-                    .build());
-
-        }
-    }
-
-    public void updateLastSync() {
-        if(mDb.getSubjectCount()>0) {
-            int time = (int) mDb.getLastSync();
-            DrawerheaderVH.last_refresh.setText(
-                    getResources().getQuantityString(R.plurals.tv_last_refresh, time, time));
-        }
     }
 
     public void setDrawerAsUp(boolean enabled) {
@@ -423,13 +418,23 @@ public class MainActivity extends BaseActivity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = new MenuInflater(this);
+        menuInflater.inflate(R.menu.main, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // called by the activity on tablets,
         // as we do not set a onClick listener
         // on the toolbar navigation icon
         // while on a tablet
-        if(item.getItemId() == android.R.id.home) {
+        if (item.getItemId() == android.R.id.home) {
             onBackPressed();
+            return true;
+        } else if (item.getItemId() == R.id.menu_logout) {
+            mMainPresenter.logout();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -593,29 +598,34 @@ public class MainActivity extends BaseActivity {
 
     @Override
     public void onDestroy() {
+        super.onDestroy();
         if(mDrawerLayout != null)
             mDrawerLayout.removeDrawerListener(mDrawerToggle);
-        mDb.close();
-        super.onDestroy();
+        mMainPresenter.detachView();
     }
 
-    /**
-     * Reference to fragment positions
-     */
-    public enum Fragments {
-        ATTENDANCE(1),
-        TIMETABLE(2),
-        SETTINGS(3);
+    /******* MVP View methods implementation *****/
 
-        private final int value;
-
-        Fragments(int value) {
-            this.value = value;
-        }
-
-        public int getValue() {
-            return value;
-        }
+    @Override
+    public void updateUserDetails(User user) {
+        DrawerheaderVH.tv_name.setText(user.name());
+        DrawerheaderVH.tv_course.setText(user.course());
     }
 
+    @Override
+    public void logout() {
+        // Remove Sync Account
+        MySyncManager.removeSyncAccount(this);
+
+        // Cancel a notification if it is shown.
+        NotificationManager mNotificationManager =
+                (NotificationManager) getSystemService(
+                        Context.NOTIFICATION_SERVICE);
+        mNotificationManager.cancel(0 /* timetable changed notification id */);
+
+        // Destroy current activity and start doLogin Activity
+        Intent ourIntent = new Intent(this, LoginActivity.class);
+        startActivity(ourIntent);
+        finish();
+    }
 }

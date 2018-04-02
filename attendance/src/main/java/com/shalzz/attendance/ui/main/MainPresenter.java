@@ -17,13 +17,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.shalzz.attendance.ui.login;
+package com.shalzz.attendance.ui.main;
 
-import android.app.Activity;
-import android.app.NotificationManager;
-import android.content.Context;
-import android.content.Intent;
-
+import com.bugsnag.android.Bugsnag;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.shalzz.attendance.data.DataManager;
 import com.shalzz.attendance.data.local.DbOpenHelper;
 import com.shalzz.attendance.data.local.PreferencesHelper;
@@ -31,11 +29,11 @@ import com.shalzz.attendance.data.model.User;
 import com.shalzz.attendance.data.remote.RetrofitException;
 import com.shalzz.attendance.injection.ConfigPersistent;
 import com.shalzz.attendance.ui.base.BasePresenter;
-import com.shalzz.attendance.ui.main.MainActivity;
+import com.shalzz.attendance.utils.Miscellaneous;
 import com.shalzz.attendance.utils.RxUtil;
-import com.shalzz.attendance.wrapper.MySyncManager;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -44,19 +42,25 @@ import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 @ConfigPersistent
-public class LoginPresenter extends BasePresenter<LoginMvpView> {
+public class MainPresenter extends BasePresenter<MainMvpView> {
 
     private DataManager mDataManager;
+    private PreferencesHelper mPreferenceHelper;
 
     private Disposable mDisposable;
 
     @Inject
-    LoginPresenter(DataManager dataManager) {
+    @Named("app")
+    Tracker mTracker;
+
+    @Inject
+    MainPresenter(DataManager dataManager, PreferencesHelper preferencesHelper) {
         mDataManager = dataManager;
+        mPreferenceHelper = preferencesHelper;
     }
 
     @Override
-    public void attachView(LoginMvpView mvpView) {
+    public void attachView(MainMvpView mvpView) {
         super.attachView(mvpView);
     }
 
@@ -66,29 +70,29 @@ public class LoginPresenter extends BasePresenter<LoginMvpView> {
         RxUtil.dispose(mDisposable);
     }
 
-    public void login(final String username) {
-        checkViewAttached();
-        getMvpView().showProgressDialog();
+    public void loadUser() {
         RxUtil.dispose(mDisposable);
-        mDisposable = mDataManager.getUser(username)
+        mDisposable = mDataManager.loadUser()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new DisposableObserver<User>() {
                     @Override
                     public void onNext(User user) {
-                        getMvpView().showMainActivity(user);
+                        if (isViewAttached()) {
+                            getMvpView().updateUserDetails(user);
+                        }
+                        Bugsnag.setUserId(user.sapid());
+                        Bugsnag.setUserName(user.name());
+                        mTracker.set("&uid", user.sapid());
+                        mTracker.send(new HitBuilders.ScreenViewBuilder()
+                                .setCustomDimension(Miscellaneous.CUSTOM_DIMENSION_USER_ID, user.sapid())
+                                .build());
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         RetrofitException error = (RetrofitException) e;
-                        if (error.getKind() == RetrofitException.Kind.UNEXPECTED) {
-                            getMvpView().showError(error.getMessage());
-                            Timber.e(e);
-                        }
-                        else {
-                            getMvpView().showError(error.getMessage());
-                        }
+                        Timber.e(e, error.getMessage());
                     }
 
                     @Override
@@ -96,5 +100,19 @@ public class LoginPresenter extends BasePresenter<LoginMvpView> {
 
                     }
                 });
+    }
+
+    public void logout() {
+        checkViewAttached();
+        MainActivity.LOGGED_OUT = true;
+
+        // Remove User Details from Shared Preferences.
+        mPreferenceHelper.removeUser();
+
+        // Remove user Attendance data from database.
+//        DbOpenHelper db = new DbOpenHelper(mContext);
+//        db.resetTables();
+
+        getMvpView().logout();
     }
 }

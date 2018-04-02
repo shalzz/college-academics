@@ -28,7 +28,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.shalzz.attendance.R;
-import com.shalzz.attendance.data.local.Day;
+import com.shalzz.attendance.data.model.Day;
 import com.shalzz.attendance.data.model.Period;
 
 import java.util.List;
@@ -83,10 +83,10 @@ public class DayListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 if(!oldItem.teacher().equals(newItem.teacher())) {
                     return false;
                 }
-                if(!oldItem.start_time().equals(newItem.start_time())) {
+                if(!oldItem.start().equals(newItem.start())) {
                     return false;
                 }
-                if(!oldItem.end_time().equals(newItem.end_time())) {
+                if(!oldItem.end().equals(newItem.end())) {
                     return false;
                 }
                 if((oldItem.batch() != null && newItem.batch() != null)

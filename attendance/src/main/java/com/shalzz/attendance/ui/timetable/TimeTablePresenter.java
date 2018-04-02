@@ -17,62 +17,47 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.shalzz.attendance.ui.attendance;
+package com.shalzz.attendance.ui.timetable;
 
 import com.shalzz.attendance.data.DataManager;
-import com.shalzz.attendance.data.model.ListFooter;
-import com.shalzz.attendance.data.model.Subject;
 import com.shalzz.attendance.data.remote.RetrofitException;
-import com.shalzz.attendance.injection.ConfigPersistent;
 import com.shalzz.attendance.ui.base.BasePresenter;
 import com.shalzz.attendance.utils.RxUtil;
-
-import java.util.List;
 
 import javax.inject.Inject;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
-@ConfigPersistent
-public class AttendancePresenter extends BasePresenter<AttendanceMvpView> {
+public class TimeTablePresenter extends BasePresenter<TimeTableMvpView> {
 
     private DataManager mDataManager;
 
-    private Disposable mSyncDisposable;
     private Disposable mDisposable;
-    private Disposable mFooterDisposable;
 
     @Inject
-    AttendancePresenter(DataManager dataManager) {
+    TimeTablePresenter(DataManager dataManager) {
         mDataManager = dataManager;
     }
 
     @Override
-    public void attachView(AttendanceMvpView mvpView) {
+    public void attachView(TimeTableMvpView mvpView) {
         super.attachView(mvpView);
     }
 
     @Override
     public void detachView() {
         super.detachView();
-        RxUtil.dispose(mSyncDisposable);
         RxUtil.dispose(mDisposable);
     }
 
-    public void syncSubjects() {
-        RxUtil.dispose(mSyncDisposable);
-        mSyncDisposable = mDataManager.syncSubjects()
+    public void updatePeriods() {
+        RxUtil.dispose(mDisposable);
+        mDisposable = mDataManager.syncSubjects()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnComplete(() -> {
-                    if(isViewAttached()) {
-                        getMvpView().updateLastSync();
-                    }
-                })
                 .doOnError(throwable -> {
                     if(!isViewAttached())
                         return;
@@ -87,7 +72,7 @@ public class AttendancePresenter extends BasePresenter<AttendanceMvpView> {
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .doOnNext(count -> {
                                     if (count > 0) {
-                                        getMvpView().showRetryError(error.getMessage());
+                                        getMvpView().showError(error.getMessage());
                                     }
                                     else if (error.getKind() == RetrofitException.Kind.HTTP){
                                         getMvpView().showNetworkErrorView(error.getMessage());
@@ -102,57 +87,5 @@ public class AttendancePresenter extends BasePresenter<AttendanceMvpView> {
                     }
                 })
                 .subscribe();
-    }
-
-    public void loadSubjects(String filter) {
-        checkViewAttached();
-        RxUtil.dispose(mDisposable);
-        mDisposable = mDataManager.getSubjects(filter)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableObserver<List<Subject>> () {
-                    @Override
-                    public void onNext(List<Subject> subjects) {
-                        getMvpView().addSubjects(subjects);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        RetrofitException error = (RetrofitException) e;
-                        Timber.e(e, error.getMessage());
-                        getMvpView().showError(error.getMessage());
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        getMvpView().showcaseView();
-                    }
-                });
-    }
-
-    public void loadListFooter() {
-        checkViewAttached();
-        RxUtil.dispose(mFooterDisposable);
-        mFooterDisposable = mDataManager.getListFooter()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableObserver<ListFooter> () {
-                    @Override
-                    public void onNext(ListFooter footer) {
-                        getMvpView().updateFooter(footer);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        RetrofitException error = (RetrofitException) e;
-                        Timber.e(e, error.getMessage());
-                        getMvpView().showError(error.getMessage());
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        getMvpView().showcaseView();
-                    }
-                });
     }
 }

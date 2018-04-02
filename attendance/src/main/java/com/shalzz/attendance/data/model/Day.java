@@ -17,40 +17,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.shalzz.attendance.data.local;
+package com.shalzz.attendance.data.model;
 
 import android.os.Parcelable;
 
 import com.google.auto.value.AutoValue;
 
-/**
- * Model class for the ExpandableListView footer.
- * @author shalzz
- *
- */
+import java.util.List;
+
 @AutoValue
-public abstract class ListFooter implements Parcelable {
+public abstract class Day implements Parcelable {
 
-	public abstract Float getHeld();
-	public abstract Float getAttended();
+    public abstract List<Integer> getSubjectIDs();
+    public abstract List<Period> getPeriods();
 
-    private Float percentage;
-
-	public Float getPercentage() {
-        if(percentage == null) {
-            percentage = getHeld() > 0f ? getAttended() / getHeld() * 100 : 0.0f;
-        }
-        return percentage;
-	}
-
-    public static Builder builder() {
-        return new AutoValue_ListFooter.Builder();
-    }
-
-    @AutoValue.Builder
-    public abstract static class Builder {
-        public abstract Builder setHeld(Float value);
-        public abstract Builder setAttended(Float value);
-        public abstract ListFooter build();
+    public static Day create(List<Integer> subject_ids,List<Period> periods) {
+        return new AutoValue_Day(subject_ids, periods);
     }
 }

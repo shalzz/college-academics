@@ -1,5 +1,7 @@
 package com.shalzz.attendance.injection;
 
+import com.shalzz.attendance.injection.component.ConfigPersistentComponent;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 

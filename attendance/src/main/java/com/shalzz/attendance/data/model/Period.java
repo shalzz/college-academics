@@ -20,17 +20,12 @@
 package com.shalzz.attendance.data.model;
 
 import android.os.Parcelable;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import com.google.auto.value.AutoValue;
 import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.SerializedName;
-import com.shalzz.attendance.model.remote.PeriodModel;
+import com.shalzz.attendance.model.PeriodModel;
 import com.shalzz.attendance.wrapper.DateHelper;
 import com.squareup.sqldelight.RowMapper;
-
-import org.immutables.gson.Gson;
 
 import java.text.ParseException;
 import java.util.Date;

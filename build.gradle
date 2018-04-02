@@ -1,4 +1,4 @@
-    /*
+/*
  * Copyright (c) 2013-2016 Shaleen Jain <shaleen.jain95@gmail.com>
  *
  * This file is part of UPES Academics.
@@ -28,7 +28,7 @@ buildscript {
         classpath 'com.android.tools.build:gradle:3.1.0'
         classpath 'com.squareup.sqldelight:gradle-plugin:0.6.1'
         classpath 'com.github.triplet.gradle:play-publisher:1.2.0'
-	classpath 'com.google.gms:google-services:3.0.0'
+	    classpath 'com.google.gms:google-services:3.0.0'
 
 	    //noinspection GradleDynamicVersion
 	    classpath 'com.bugsnag:bugsnag-android-gradle-plugin:3.1.1'

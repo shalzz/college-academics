@@ -21,6 +21,7 @@ package com.shalzz.attendance.ui.timetable;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
@@ -42,12 +43,12 @@ import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.Target;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
-import com.shalzz.attendance.data.local.DbOpenHelper;
+import com.malinskiy.materialicons.IconDrawable;
+import com.malinskiy.materialicons.Iconify;
 import com.shalzz.attendance.R;
-import com.shalzz.attendance.data.remote.DataAPI;
-import com.shalzz.attendance.ui.login.UserAccount;
 import com.shalzz.attendance.ui.main.MainActivity;
 import com.shalzz.attendance.utils.CircularIndeterminate;
+import com.shalzz.attendance.utils.Miscellaneous;
 import com.shalzz.attendance.wrapper.DateHelper;
 import com.shalzz.attendance.wrapper.MultiSwipeRefreshLayout;
 
@@ -62,7 +63,7 @@ import butterknife.ButterKnife;
 import butterknife.OnPageChange;
 import butterknife.Unbinder;
 
-public class TimeTablePagerFragment extends Fragment {
+public class TimeTablePagerFragment extends Fragment implements TimeTableMvpView {
 
     /**
      * The {@link android.support.v4.widget.SwipeRefreshLayout} that detects swipe gestures and
@@ -98,23 +99,20 @@ public class TimeTablePagerFragment extends Fragment {
     Tracker mTracker;
 
     @Inject
-    DataAPI api;
-
-    @Inject
-    UserAccount mUserAccount;
+    TimeTablePresenter mTimeTablePresenter;
 
     private int mPreviousPosition = 15;
-    private PagerController mController;
+    private TimeTablePagerAdapter mAdapter;
     private Context mContext;
     private ActionBar actionbar;
     private Unbinder unbinder;
     public EmptyView mEmptyView = new EmptyView();
+    private Date mToday = new Date();
 
     @Override
     public void onStart() {
         super.onStart();
-
-	mTracker.setScreenName(getClass().getSimpleName());
+	    mTracker.setScreenName(getClass().getSimpleName());
         mTracker.send(new HitBuilders.ScreenViewBuilder().build());
     }
 
@@ -129,29 +127,18 @@ public class TimeTablePagerFragment extends Fragment {
 
         setHasOptionsMenu(true);
         setRetainInstance(false);
-        actionbar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         final View view = inflater.inflate(R.layout.fragment_viewpager, container, false);
         unbinder = ButterKnife.bind(this, view);
         ButterKnife.bind(mEmptyView, emptyView);
+        mTimeTablePresenter.attachView(this);
+
+        actionbar = ((AppCompatActivity) getActivity()).getSupportActionBar();
 
         mSwipeRefreshLayout.setSwipeableChildren(R.id.time_table_recycler_view);
-
-        // Set the color scheme of the SwipeRefreshLayout by providing 4 color resource ids
         mSwipeRefreshLayout.setColorSchemeResources(
                 R.color.swipe_color_1, R.color.swipe_color_2,
                 R.color.swipe_color_3, R.color.swipe_color_4);
-
-        mViewPager.setOffscreenPageLimit(3);
-
-        return view;
-    }
-
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        mController = new PagerController(mContext, this, getChildFragmentManager(), api);
-        mSwipeRefreshLayout.setOnRefreshListener(() -> mController.updatePeriods());
+        mSwipeRefreshLayout.setOnRefreshListener(() -> mTimeTablePresenter.updatePeriods());
 
         // fix for oversensitive horizontal scroll of swipe view
         mViewPager.setOnTouchListener((v, event) -> {
@@ -166,14 +153,13 @@ public class TimeTablePagerFragment extends Fragment {
             return false;
         });
 
-        DbOpenHelper db = new DbOpenHelper(mContext);
-        if (db.getPeriodCount() == 0) {
-            mController.updatePeriods();
-            mProgress.setVisibility(View.VISIBLE);
-            mViewPager.setVisibility(View.GONE);
-        } else
-            mController.setToday();
-        db.close();
+        mAdapter = new TimeTablePagerAdapter(getChildFragmentManager(), mContext);
+
+        mViewPager.setOffscreenPageLimit(3);
+        mViewPager.setAdapter(mAdapter);
+
+        mTimeTablePresenter.updatePeriods();
+        return view;
     }
 
     @Override
@@ -197,7 +183,6 @@ public class TimeTablePagerFragment extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.time_table, menu);
     }
 
@@ -209,14 +194,11 @@ public class TimeTablePagerFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.menu_logout) {
-            mUserAccount.Logout();
-            return true;
-        } else if (item.getItemId() == R.id.menu_refresh) {
+        if (item.getItemId() == R.id.menu_refresh) {
             // We make sure that the SwipeRefreshLayout is displaying it's refreshing indicator
             if (!mSwipeRefreshLayout.isRefreshing()) {
                 mSwipeRefreshLayout.setRefreshing(true);
-                mController.updatePeriods();
+                mTimeTablePresenter.updatePeriods();
                 return true;
             }
         } else if (item.getItemId() == R.id.menu_date) {
@@ -234,7 +216,7 @@ public class TimeTablePagerFragment extends Fragment {
                     .build());
             return true;
         } else if (item.getItemId() == R.id.menu_today) {
-            mController.setToday();
+            setDate(mToday);
 
             mTracker.send(new HitBuilders.EventBuilder()
                     .setCategory("Action")
@@ -254,7 +236,7 @@ public class TimeTablePagerFragment extends Fragment {
     public void updateTitle(int position) {
         if (position > 0)
             mPreviousPosition = position;
-        Date mDate = mController.getDateForPosition(mPreviousPosition);
+        Date mDate = mAdapter.getDateForPosition(mPreviousPosition);
         if (mDate != null) {
             actionbar.setTitle(DateHelper.getProperWeekday(mDate));
             actionbar.setSubtitle(DateHelper.formatToProperFormat(mDate));
@@ -265,7 +247,7 @@ public class TimeTablePagerFragment extends Fragment {
         return (view, year, monthOfYear, dayOfMonth) -> {
             Calendar date = Calendar.getInstance();
             date.set(year, monthOfYear, dayOfMonth);
-            mController.setDate(date.getTime());
+            setDate(date.getTime());
             mTracker.send(new HitBuilders.EventBuilder()
                     .setCategory("Scroll to Date")
                     .setAction("Button")
@@ -279,5 +261,87 @@ public class TimeTablePagerFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
+        mTimeTablePresenter.detachView();
+    }
+
+    /******* MVP View methods implementation *****/
+
+    @Override
+    public void setDate(Date date) {
+        mAdapter.setDate(date);
+        updateTitle(-1);
+        scrollToDate(date);
+    }
+
+    @Override
+    public void scrollToDate(Date date) {
+        int pos = mAdapter.getPositionForDate(date);
+        mViewPager.setCurrentItem(pos, true);
+    }
+
+    @Override
+    public void showEmptyView(boolean show) {
+        stopRefreshing();
+        if(show) {
+            emptyView.setVisibility(View.VISIBLE);
+            mViewPager.setVisibility(View.GONE);
+        } else {
+            emptyView.setVisibility(View.GONE);
+            mViewPager.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @Override
+    public void showNoConnectionErrorView() {
+        Drawable emptyDrawable = new IconDrawable(mContext,
+                Iconify.IconValue.zmdi_wifi_off)
+                .colorRes(android.R.color.darker_gray);
+        mEmptyView.ImageView.setImageDrawable(emptyDrawable);
+        mEmptyView.TitleTextView.setText(R.string.no_connection_title);
+        mEmptyView.ContentTextView.setText(R.string.no_connection_content);
+        mEmptyView.Button.setOnClickListener( v -> mTimeTablePresenter.updatePeriods());
+        mEmptyView.Button.setVisibility(View.VISIBLE);
+
+        showEmptyView(true);
+    }
+
+    @Override
+    public void showNetworkErrorView(String error) {
+        Drawable emptyDrawable = new IconDrawable(mContext,
+                Iconify.IconValue.zmdi_network_alert)
+                .colorRes(android.R.color.darker_gray);
+        mEmptyView.ImageView.setImageDrawable(emptyDrawable);
+        mEmptyView.TitleTextView.setText("Network Error");
+        mEmptyView.ContentTextView.setText(error);
+        mEmptyView.Button.setOnClickListener( v -> mTimeTablePresenter.updatePeriods());
+        mEmptyView.Button.setVisibility(View.VISIBLE);
+
+        showEmptyView(true);
+    }
+
+    @Override
+    public void showEmptyErrorView() {
+        Drawable emptyDrawable = new IconDrawable(mContext,
+                Iconify.IconValue.zmdi_cloud_off)
+                .colorRes(android.R.color.darker_gray);
+        mEmptyView.ImageView.setImageDrawable(emptyDrawable);
+        mEmptyView.TitleTextView.setText(R.string.no_data_title);
+        mEmptyView.ContentTextView.setText(R.string.no_data_content);
+        mEmptyView.Button.setVisibility(View.GONE);
+
+        showEmptyView(true);
+    }
+
+    @Override
+    public void showError(String message) {
+        stopRefreshing();
+        Miscellaneous.showSnackBar(mSwipeRefreshLayout, message);
+    }
+
+    @Override
+    public void stopRefreshing() {
+        mProgress.setVisibility(View.GONE);
+        mSwipeRefreshLayout.setRefreshing(false);
+        mViewPager.setVisibility(View.VISIBLE);
     }
 }

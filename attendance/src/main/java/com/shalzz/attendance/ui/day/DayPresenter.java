@@ -20,17 +20,12 @@
 package com.shalzz.attendance.ui.day;
 
 import com.shalzz.attendance.data.DataManager;
-import com.shalzz.attendance.data.local.DbOpenHelper;
 import com.shalzz.attendance.injection.ConfigPersistent;
-import com.shalzz.attendance.data.local.Day;
 import com.shalzz.attendance.ui.base.BasePresenter;
 
 import java.util.Date;
 
 import javax.inject.Inject;
-
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
 
 @ConfigPersistent
 class DayPresenter extends BasePresenter<DayMvpView> {

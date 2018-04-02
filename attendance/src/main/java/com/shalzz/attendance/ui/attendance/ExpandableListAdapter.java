@@ -40,11 +40,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.shalzz.attendance.BuildConfig;
-import com.shalzz.attendance.data.local.DbOpenHelper;
 import com.shalzz.attendance.R;
-import com.shalzz.attendance.injection.ApplicationContext;
-import com.shalzz.attendance.data.local.ListFooter;
+import com.shalzz.attendance.data.model.ListFooter;
 import com.shalzz.attendance.data.model.Subject;
+import com.shalzz.attendance.injection.ApplicationContext;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -126,11 +125,10 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                         if(!oldItem.name().equals(newItem.name())) {
                             return false;
                         }
-                        if(oldItem.attended().compareTo(newItem.attended())
-                                != 0) {
+                        if(Float.compare(oldItem.attended(), newItem.attended()) != 0) {
                             return false;
                         }
-                        if(oldItem.held().compareTo(newItem.held()) != 0) {
+                        if(Float.compare(oldItem.held(), newItem.held()) != 0 ) {
                             return false;
                         }
                         return oldItem.absent_dates().equals(newItem.absent_dates());
@@ -149,7 +147,6 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
 
     void addAll(List<Subject> subjects) {
         mSubjects.addAll(subjects);
-        updateFooter();
     }
 
     public int getSubjectCount() {
@@ -162,9 +159,7 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         mSubjects.clear();
     }
 
-    private void updateFooter() {
-        DbOpenHelper db = new DbOpenHelper(mContext);
-        ListFooter footer = db.getListFooter();
+    void updateFooter(ListFooter footer) {
         if(!footer.equals(mFooter)) {
             mFooter = footer;
             notifyItemChanged(getItemCount()-1);
@@ -381,8 +376,8 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         TextView tvReach = holder.tvReach;
         ImageView ivAlert = holder.ivAlert;
 
-        int held = mSubjects.get(position).held().intValue();
-        int attend = mSubjects.get(position).attended().intValue();
+        int held = Float.valueOf(mSubjects.get(position).held()).intValue();
+        int attend = Float.valueOf(mSubjects.get(position).attended()).intValue();
         int percent = Math.round(mSubjects.get(position).getPercentage());
 
         tvAbsent.setText(mResources.getString(R.string.atten_list_days_absent,
@@ -491,8 +486,8 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         holder.percentage.setText(mResources.getString(R.string.atten_list_percentage,
                 mSubjects.get(position).getPercentage()));
         holder.classes.setText(mResources.getString(R.string.atten_list_attended_upon_held,
-                mSubjects.get(position).attended().intValue(),
-                mSubjects.get(position).held().intValue()));
+                mSubjects.get(position).attended(),
+                mSubjects.get(position).held()));
         Drawable d = holder.percent.getProgressDrawable();
         if(percent > 0f)
             d.setLevel(percent.intValue()*100);

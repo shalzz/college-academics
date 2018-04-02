@@ -24,7 +24,7 @@ import android.support.annotation.NonNull;
 
 import com.google.auto.value.AutoValue;
 import com.google.gson.TypeAdapter;
-import com.shalzz.attendance.model.remote.SubjectModel;
+import com.shalzz.attendance.model.SubjectModel;
 import com.shalzz.attendance.wrapper.DateHelper;
 import com.squareup.sqldelight.ColumnAdapter;
 import com.squareup.sqldelight.RowMapper;
@@ -37,24 +37,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-/** Field names need to be the same
- *  as that of the fields in the
- *  JSON object sent by the REST API,
- *  for {@link com.google.gson.Gson} to be able to deserialize it
- *  properly and automatically.
- *
- *  Typical `attendance` JSON object will be of the format:
- *  {
- *      "absent_dates":["","",...],
- *      "id": ##,
- *      "name":"",
- *      "held": ##,
- *      "attended": ##}
- *  }
- *
- *  which is exposed by the api endpoint /api/v1/me/attendance
- *  by the express.js server (upes-api) as of this writing.
- */
 @AutoValue
 public abstract class Subject implements SubjectModel, Parcelable {
 

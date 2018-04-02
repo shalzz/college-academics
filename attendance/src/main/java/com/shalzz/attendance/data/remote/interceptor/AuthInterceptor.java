@@ -47,7 +47,7 @@ public class AuthInterceptor implements Interceptor{
         }
 
         Request newRequest = originalRequest.newBuilder()
-                .header("Authorization", preferencesManager.getBasicAuthCredentials())
+                .header("Authorization", "Bearer " + preferencesManager.getUserId())
                 .build();
         return chain.proceed(newRequest);
     }

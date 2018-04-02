@@ -61,6 +61,7 @@
         android:paddingTop="3dp"
         android:text="Last refreshed 0 minutes ago"
         android:textColor="@android:color/darker_gray"
+        android:visibility="gone"
         android:textSize="13sp"/>
 
 </RelativeLayout>

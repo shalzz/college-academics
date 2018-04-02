@@ -2,6 +2,8 @@ package com.shalzz.attendance.data.local;
 
 import android.database.sqlite.SQLiteDatabase;
 
+import com.shalzz.attendance.data.model.AbsentDate;
+import com.shalzz.attendance.data.model.ListFooter;
 import com.shalzz.attendance.data.model.Period;
 import com.shalzz.attendance.data.model.Subject;
 import com.shalzz.attendance.data.model.User;
@@ -15,6 +17,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import rx.Observable;
 import rx.schedulers.Schedulers;
@@ -24,6 +27,7 @@ import rx.schedulers.Schedulers;
  *
  * @author shalzz
  */
+@Singleton
 public class DatabaseHelper {
 
     private final BriteDatabase mDb;

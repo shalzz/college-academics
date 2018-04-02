@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.shalzz.attendance.data.local;
+package com.shalzz.attendance.data.model;
 
 public enum Week {
 

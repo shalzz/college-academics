@@ -50,11 +50,13 @@ import android.widget.TextView;
 import com.bugsnag.android.Bugsnag;
 import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.ViewTarget;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.malinskiy.materialicons.IconDrawable;
 import com.malinskiy.materialicons.Iconify;
 import com.shalzz.attendance.R;
+import com.shalzz.attendance.data.model.ListFooter;
 import com.shalzz.attendance.data.model.Subject;
-import com.shalzz.attendance.ui.login.UserAccount;
 import com.shalzz.attendance.ui.main.MainActivity;
 import com.shalzz.attendance.utils.CircularIndeterminate;
 import com.shalzz.attendance.utils.DividerItemDecoration;
@@ -78,9 +80,6 @@ public class AttendanceListFragment extends Fragment implements
         ExpandableListAdapter.SubjectItemExpandedListener {
 
     private final int GRID_LAYOUT_SPAN_COUNT = 2;
-
-    @Inject
-    UserAccount mUserAccount;
 
     @Inject
     AttendancePresenter mPresenter;
@@ -193,19 +192,17 @@ public class AttendanceListFragment extends Fragment implements
 
         mProgress.setVisibility(View.VISIBLE);
 
+        mPresenter.loadSubjects(null);
+        mPresenter.loadListFooter();
+
         return mView;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        mPresenter.loadSubjects(null);
-    }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        menuInflater.inflate(R.menu.main, menu);
+        menuInflater.inflate(R.menu.attendance, menu);
         MenuItem searchItem = menu.findItem(R.id.menu_search);
 
         final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
@@ -230,11 +227,7 @@ public class AttendanceListFragment extends Fragment implements
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId() == R.id.menu_logout) {
-            mUserAccount.Logout();
-            return true;
-        }
-        else if(item.getItemId() == R.id.menu_refresh) {
+        if(item.getItemId() == R.id.menu_refresh) {
             // We make sure that the SwipeRefreshLayout is displaying it's refreshing indicator
             if (!mSwipeRefreshLayout.isRefreshing()) {
                 mSwipeRefreshLayout.setRefreshing(true);
@@ -379,6 +372,11 @@ public class AttendanceListFragment extends Fragment implements
     }
 
     @Override
+    public void updateFooter(ListFooter footer) {
+        mAdapter.updateFooter(footer);
+    }
+
+    @Override
     public void showcaseView() {
         if(mRecyclerView != null && mRecyclerView.getChildAt(2) != null) {
             ViewTarget target = new ViewTarget(mRecyclerView.getChildAt(2));
@@ -395,7 +393,7 @@ public class AttendanceListFragment extends Fragment implements
 
     @Override
     public void updateLastSync() {
-        ((MainActivity) getActivity()).updateLastSync();
+//        ((MainActivity) getActivity()).updateLastSync();
     }
 
     @Override
@@ -431,7 +429,21 @@ public class AttendanceListFragment extends Fragment implements
     }
 
     @Override
-    public void showNetworkErrorView() {
+    public void showNetworkErrorView(String error) {
+        Drawable emptyDrawable = new IconDrawable(mContext,
+                Iconify.IconValue.zmdi_network_alert)
+                .colorRes(android.R.color.darker_gray);
+        mEmptyView.ImageView.setImageDrawable(emptyDrawable);
+        mEmptyView.TitleTextView.setText("Network Error");
+        mEmptyView.ContentTextView.setText(error);
+        mEmptyView.Button.setOnClickListener( v -> mPresenter.syncSubjects());
+        mEmptyView.Button.setVisibility(View.VISIBLE);
+
+        showEmptyView(true);
+    }
+
+    @Override
+    public void showNoConnectionErrorView() {
         Drawable emptyDrawable = new IconDrawable(mContext,
                 Iconify.IconValue.zmdi_wifi_off)
                 .colorRes(android.R.color.darker_gray);

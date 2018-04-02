@@ -66,6 +66,10 @@ public class PreferencesHelper {
                 mPref.getString("PASSWORD", null));
 	}
 
+	public String getUserId() {
+        return mPref.getString("USERNAME", null);
+    }
+
 	/**
 	 * Saves the user details in shared preferences and sets login status to true.
 	 * @param username Username
