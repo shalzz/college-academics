@@ -81,11 +81,12 @@ public class MainPresenter extends BasePresenter<MainMvpView> {
                         if (isViewAttached()) {
                             getMvpView().updateUserDetails(user);
                         }
-                        Bugsnag.setUserId(user.sapid());
+                        Bugsnag.setUserId(user.id());
                         Bugsnag.setUserName(user.name());
-                        mTracker.set("&uid", user.sapid());
+                        mTracker.set("&uid", user.id());
                         mTracker.send(new HitBuilders.ScreenViewBuilder()
-                                .setCustomDimension(Miscellaneous.CUSTOM_DIMENSION_USER_ID, user.sapid())
+                                .setCustomDimension(Miscellaneous.CUSTOM_DIMENSION_USER_ID,
+                                        user.id())
                                 .build());
                     }
 

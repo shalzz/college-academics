@@ -27,23 +27,6 @@ import com.google.gson.TypeAdapter;
 import com.shalzz.attendance.model.UserModel;
 import com.squareup.sqldelight.RowMapper;
 
-/** Field names need to be the same
- *  as that of the fields in the
- *  JSON object sent by the REST API,
- *  for {@link Gson} to be able to deserialize it
- *  properly and automatically.
- *
- *  Typical `user` JSON object will be of the format:
- *  {
- *      "sapid": "",
- *      "password": "",
- *      "name": "",
- *      "course": ""
- *  }
- *
- *  which is exposed by the api endpoint /api/v1/me
- *  by the express.js server (upes-api) as of this writing.
- */
 @AutoValue
 public abstract class User implements UserModel, Parcelable {
     public static final Factory<User> FACTORY = new Factory<>(AutoValue_User::new);

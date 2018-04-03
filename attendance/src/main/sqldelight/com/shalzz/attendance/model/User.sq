@@ -1,8 +1,10 @@
 CREATE TABLE user (
-    sapid TEXT PRIMARY KEY NOT NULL,
+    id TEXT PRIMARY KEY NOT NULL,
+    roll_number TEXT NOT NULL,
     name TEXT NOT NULL,
     course TEXT NOT NULL,
-    password TEXT NOT NULL
+    phone TEXT NOT NULL,
+    email TEXT
 );
 
 select_all:
@@ -12,7 +14,7 @@ FROM user;
 select_by_id:
 SELECT *
 FROM user
-WHERE sapid = ? ;
+WHERE id = ? ;
 
 select_count:
 SELECT count(*)

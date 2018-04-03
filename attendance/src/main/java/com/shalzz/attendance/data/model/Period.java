@@ -20,43 +20,40 @@
 package com.shalzz.attendance.data.model;
 
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 
 import com.google.auto.value.AutoValue;
 import com.google.gson.TypeAdapter;
 import com.shalzz.attendance.model.PeriodModel;
 import com.shalzz.attendance.wrapper.DateHelper;
+import com.squareup.sqldelight.ColumnAdapter;
 import com.squareup.sqldelight.RowMapper;
 
 import java.text.ParseException;
 import java.util.Date;
 
-/** Field names need to be the same
- *  as that of the fields in the
- *  JSON object sent by the REST API,
- *  for {@link com.google.gson.Gson} to be able to deserialize it
- *  properly and automatically.
- *
- *  Typical `period` JSON object will be of the format:
- *  {
- *      "id": ##,
- *      "day": "",
- *      "name": "",
- *      "start": "",
- *      "end": "",
- *      "teacher": "",
- *      "room": "",
- *      "batch": ""
- *  }
- *
- *  which is exposed by the api endpoint /api/v1/me/timetable
- *  by the express.js server (upes-api) as of this writing.
- */
 @AutoValue
 public abstract class Period implements PeriodModel, Parcelable {
-    public static final Factory<Period> FACTORY =
-            new Factory<>(AutoValue_Period::new);
+    private static final ColumnAdapter<Date, String> DATE_ADAPTER =
+            new ColumnAdapter<Date, String>() {
 
-    public static final RowMapper<Period> MAPPER = FACTORY.select_by_week_dayMapper();
+                @NonNull
+                @Override
+                public Date decode(String databaseValue) {
+                    return DateHelper.parseDate(databaseValue);
+                }
+
+                @Override
+                public String encode(@NonNull Date value) {
+                    return DateHelper.formatToTechnicalFormat(value);
+                }
+
+            };
+
+    public static final Factory<Period> FACTORY =
+            new Factory<>(AutoValue_Period::new, DATE_ADAPTER);
+
+    public static final RowMapper<Period> MAPPER = FACTORY.select_by_dateMapper();
 
     public static TypeAdapter<Period> typeAdapter(com.google.gson.Gson gson) {
         return new AutoValue_Period.GsonTypeAdapter(gson);

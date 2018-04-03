@@ -30,7 +30,7 @@ import java.util.Locale;
 
 public class DateHelper {
 
-    private static DateFormat technicalDateFormat = new SimpleDateFormat("yyyy-MM-dd",Locale.US);
+    private static DateFormat technicalDateFormat = new SimpleDateFormat("dd-MM-yyyy",Locale.US);
     private static DateFormat properDateFormat = new SimpleDateFormat("dd/MM/yyyy",Locale.US);
     public static DateFormat hr24Format = new SimpleDateFormat("HH:mm", Locale.US);
     public static DateFormat hr12Format = new SimpleDateFormat("hh:mm aa", Locale.US);

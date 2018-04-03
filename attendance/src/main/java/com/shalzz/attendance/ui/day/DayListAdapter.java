@@ -74,7 +74,7 @@ public class DayListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 if(oldItem.id() != newItem.id()) {
                     return false;
                 }
-                if(!oldItem.week_day().equals(newItem.week_day())) {
+                if(!oldItem.date().equals(newItem.date())) {
                     return false;
                 }
                 if(!oldItem.name().equals(newItem.name())) {

@@ -1,19 +1,21 @@
 CREATE TABLE period (
     id INTEGER AS Integer NOT NULL,
-    week_day TEXT NOT NULL,
     name TEXT NOT NULL,
     teacher TEXT NOT NULL,
     room TEXT NOT NULL,
+    batchid TEXT NOT NULL,
     batch TEXT,
     start TEXT NOT NULL,
     'end' TEXT NOT NULL,
-    PRIMARY KEY(id, week_day)
+    absent INTEGER AS java.lang.Boolean NOT NULL,
+    'date' TEXT AS java.util.Date NOT NUll,
+    PRIMARY KEY(id, 'date')
 );
 
-select_by_week_day:
+select_by_date:
 SELECT *
 FROM period
-WHERE week_day = ?
+WHERE 'date' = ?
 ORDER by start;
 
 select_count:

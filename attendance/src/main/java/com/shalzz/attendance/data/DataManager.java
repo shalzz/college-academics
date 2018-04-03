@@ -50,7 +50,6 @@ public class DataManager {
     public Observable<User> getUser(String auth) {
         return mDataAPI.getUser(auth)
                 .concatMap(user -> {
-                    mPreferencesHelper.saveUser(user.name(), user.password());
                     return RxJavaInterop.toV2Observable(mDatabaseHelper.addUser(user));
                 });
     }

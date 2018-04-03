@@ -35,6 +35,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.bugsnag.android.Bugsnag;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
+import com.shalzz.attendance.data.local.PreferencesHelper;
 import com.shalzz.attendance.data.model.User;
 import com.shalzz.attendance.ui.base.BaseActivity;
 import com.shalzz.attendance.ui.main.MainActivity;
@@ -66,6 +67,9 @@ public class LoginActivity extends BaseActivity implements LoginMvpView {
 
     @Inject
     LoginPresenter mLoginPresenter;
+
+    @Inject
+    PreferencesHelper mPreferencesHelper;
 
     private EditText etSapid;
     private EditText etPass;
@@ -185,7 +189,8 @@ public class LoginActivity extends BaseActivity implements LoginMvpView {
     @Override
     public void showMainActivity(User user) {
         dismissProgressDialog();
-        MySyncManager.addPeriodicSync(this, user.sapid());
+        mPreferencesHelper.saveUser(user.name());
+        MySyncManager.addPeriodicSync(this, user.id());
         Intent ourIntent = new Intent(this, MainActivity.class);
         startActivity(ourIntent);
         finish();

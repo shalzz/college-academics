@@ -107,7 +107,7 @@ public class DatabaseHelper {
     }
 
     public Observable<List<Period>> getPeriods(Date date) {
-        SqlDelightStatement query = Period.FACTORY.select_by_week_day(DateHelper.getShortWeekday(date));
+        SqlDelightStatement query = Period.FACTORY.select_by_date(DateHelper.formatToTechnicalFormat(date));
         return mDb.createQuery(query.tables, query.statement, query.args)
                 .mapToList(Period.MAPPER::map);
     }

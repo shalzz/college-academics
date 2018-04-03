@@ -36,7 +36,7 @@ import timber.log.Timber;
 @Singleton
 public class PreferencesHelper {
 
-    public static final String PREF_FILE_NAME = "attendance_pref_file";
+    private static final String PREF_FILE_NAME = "attendance_pref_file";
 
     private final SharedPreferences mPref;
 
@@ -49,21 +49,8 @@ public class PreferencesHelper {
         mPref.edit().clear().apply();
     }
 
-    public boolean shouldShowcase(int id) {
-        return !mPref.getBoolean(String.valueOf(id), false);
-    }
-
-    public void showcasedView(int id) {
-        mPref.edit().putBoolean(String.valueOf(id), true).apply();
-    }
-
 	public boolean getLoginStatus() {
 		return mPref.getBoolean("LOGGEDIN", false);
-	}
-
-	public String getBasicAuthCredentials() {
-        return Credentials.basic(mPref.getString("USERNAME", null),
-                mPref.getString("PASSWORD", null));
 	}
 
 	public String getUserId() {
@@ -73,14 +60,11 @@ public class PreferencesHelper {
 	/**
 	 * Saves the user details in shared preferences and sets login status to true.
 	 * @param username Username
-	 * @param password Password
 	 */
-	public void saveUser(String username, String password) {
-		Timber.i("Setting LOGGEDIN pref to true");
+	public void saveUser(String username) {
 		SharedPreferences.Editor editor = mPref.edit();
 		editor.putBoolean("LOGGEDIN", true);
 		editor.putString("USERNAME", username);
-		editor.putString("PASSWORD", password);
 		editor.commit();
 	}
 
@@ -88,12 +72,10 @@ public class PreferencesHelper {
 	 * Removes the user details from the shared preferences and sets login status to false.
 	 */
 	public void removeUser() {
-		Timber.i("Setting LOGGEDIN pref to false");
 		SharedPreferences.Editor editor = mPref.edit();
         editor.remove(MainActivity.PREFERENCE_ACTIVATED_FRAGMENT);
 		editor.putBoolean("LOGGEDIN", false);
 		editor.remove("USERNAME");
-		editor.remove("PASSWORD");
 		editor.commit();
 	}
 }
