@@ -118,7 +118,9 @@ public class AttendancePresenter extends BasePresenter<AttendanceMvpView> {
                 .subscribeWith(new DisposableObserver<List<Subject>> () {
                     @Override
                     public void onNext(List<Subject> subjects) {
-                        getMvpView().addSubjects(subjects);
+                        if (isViewAttached()) {
+                            getMvpView().addSubjects(subjects);
+                        }
                         if (subjects.size() <= 0)
                             syncSubjects();
                     }
@@ -130,7 +132,9 @@ public class AttendancePresenter extends BasePresenter<AttendanceMvpView> {
 
                     @Override
                     public void onComplete() {
-                        getMvpView().showcaseView();
+                        if (isViewAttached()) {
+                            getMvpView().showcaseView();
+                        }
                     }
                 });
     }
@@ -144,19 +148,25 @@ public class AttendancePresenter extends BasePresenter<AttendanceMvpView> {
                 .subscribeWith(new DisposableObserver<ListFooter> () {
                     @Override
                     public void onNext(ListFooter footer) {
-                        getMvpView().updateFooter(footer);
+                        if (isViewAttached()) {
+                            getMvpView().updateFooter(footer);
+                        }
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         RetrofitException error = (RetrofitException) e;
                         Timber.e(e, error.getMessage());
-                        getMvpView().showError(error.getMessage());
+                        if (isViewAttached()) {
+                            getMvpView().showError(error.getMessage());
+                        }
                     }
 
                     @Override
                     public void onComplete() {
-                        getMvpView().showcaseView();
+                        if (isViewAttached()) {
+                            getMvpView().showcaseView();
+                        }
                     }
                 });
     }
