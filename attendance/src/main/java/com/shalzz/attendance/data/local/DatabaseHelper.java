@@ -13,6 +13,7 @@ import com.squareup.sqlbrite.SqlBrite;
 import com.squareup.sqldelight.SqlDelightStatement;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -55,12 +56,14 @@ public class DatabaseHelper {
                             SQLiteDatabase.CONFLICT_REPLACE);
 
                     // Store the dates in another table corresponding to the same id
-                    for (Date date : subject.absent_dates()) {
-                        mDb.insert(AbsentDate.TABLE_NAME,
-                                AbsentDate.FACTORY.marshal()
-                                        .subject_id(subject.id())
-                                        .absent_date(date)
-                                        .asContentValues());
+                    if (subject.absent_dates() != null) {
+                        for (Date date : subject.absent_dates()) {
+                            mDb.insert(AbsentDate.TABLE_NAME,
+                                    AbsentDate.FACTORY.marshal()
+                                            .subject_id(subject.id())
+                                            .absent_date(date)
+                                            .asContentValues());
+                        }
                     }
                     if (result >= 0) subscriber.onNext(subject);
                 }
@@ -71,6 +74,8 @@ public class DatabaseHelper {
     }
 
     public Observable<List<Subject>> getSubjects(String filter) {
+        filter = filter == null ? "" : filter;
+        filter = '%' + filter + '%';
         SqlDelightStatement query = Subject.FACTORY.select_like_name(filter);
         return mDb.createQuery(query.tables, query.statement, query.args)
                 .mapToList(Subject.MAPPER::map);

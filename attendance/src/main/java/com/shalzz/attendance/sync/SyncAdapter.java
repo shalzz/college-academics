@@ -20,36 +20,23 @@
 package com.shalzz.attendance.sync;
 
 import android.accounts.Account;
-import android.annotation.SuppressLint;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.SyncResult;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v7.app.NotificationCompat;
-import android.support.v7.preference.PreferenceManager;
 
 import com.bugsnag.android.Bugsnag;
-import com.shalzz.attendance.data.local.DbOpenHelper;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.data.local.PreferencesHelper;
-import com.shalzz.attendance.data.model.Period;
-import com.shalzz.attendance.data.model.Subject;
 import com.shalzz.attendance.data.remote.DataAPI;
-import com.shalzz.attendance.data.remote.RetrofitException;
 import com.shalzz.attendance.ui.main.MainActivity;
 
-import java.util.Date;
-import java.util.List;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 import timber.log.Timber;
 
 public class SyncAdapter extends AbstractThreadedSyncAdapter {

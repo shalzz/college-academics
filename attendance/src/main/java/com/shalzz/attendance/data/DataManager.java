@@ -49,9 +49,7 @@ public class DataManager {
 
     public Observable<User> getUser(String auth) {
         return mDataAPI.getUser(auth)
-                .concatMap(user -> {
-                    return RxJavaInterop.toV2Observable(mDatabaseHelper.addUser(user));
-                });
+                .concatMap(user -> RxJavaInterop.toV2Observable(mDatabaseHelper.addUser(user)));
     }
 
     public Observable<User> loadUser() {

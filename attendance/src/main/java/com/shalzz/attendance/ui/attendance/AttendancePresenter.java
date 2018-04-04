@@ -25,6 +25,7 @@ import com.shalzz.attendance.data.model.Subject;
 import com.shalzz.attendance.data.remote.RetrofitException;
 import com.shalzz.attendance.injection.ConfigPersistent;
 import com.shalzz.attendance.ui.base.BasePresenter;
+import com.shalzz.attendance.ui.timetable.TimeTableMvpView;
 import com.shalzz.attendance.utils.RxUtil;
 
 import java.util.List;
@@ -76,6 +77,10 @@ public class AttendancePresenter extends BasePresenter<AttendanceMvpView> {
                 .doOnError(throwable -> {
                     if(!isViewAttached())
                         return;
+                    if (!(throwable instanceof RetrofitException)) {
+                        Timber.e(throwable);
+                        return;
+                    }
                     RetrofitException error = (RetrofitException) throwable;
                     if (error.getKind() == RetrofitException.Kind.UNEXPECTED) {
                         Timber.e(throwable, error.getMessage());
@@ -114,13 +119,13 @@ public class AttendancePresenter extends BasePresenter<AttendanceMvpView> {
                     @Override
                     public void onNext(List<Subject> subjects) {
                         getMvpView().addSubjects(subjects);
+                        if (subjects.size() <= 0)
+                            syncSubjects();
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        RetrofitException error = (RetrofitException) e;
-                        Timber.e(e, error.getMessage());
-                        getMvpView().showError(error.getMessage());
+                        Timber.e(e);
                     }
 
                     @Override

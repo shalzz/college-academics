@@ -55,8 +55,7 @@ public class NetworkModule {
     }
 
     @Provides @Singleton @NonNull
-    static OkHttpClient provideClient(PreferencesHelper preferences,
-                                      @ApplicationContext Context context) {
+    static OkHttpClient provideClient(PreferencesHelper preferences) {
         final OkHttpClient.Builder okHttpBuilder = new OkHttpClient.Builder()
                 .addInterceptor(new HeaderInterceptor())
                 .addInterceptor(new AuthInterceptor(preferences))
@@ -73,7 +72,6 @@ public class NetworkModule {
                 .baseUrl(DataAPI.ENDPOINT)
                 .client(okHttpClient)
                 .addConverterFactory(GsonConverterFactory.create(gson))
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .addCallAdapterFactory(RxJava2ErrorCallAdapterFactory.create(context))
                 .validateEagerly(BuildConfig.DEBUG) // Fail early: check Retrofit configuration at creation time in Debug build.
                 .build()

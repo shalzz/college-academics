@@ -19,21 +19,12 @@
 
 package com.shalzz.attendance.ui.login;
 
-import android.app.Activity;
-import android.app.NotificationManager;
-import android.content.Context;
-import android.content.Intent;
-
 import com.shalzz.attendance.data.DataManager;
-import com.shalzz.attendance.data.local.DbOpenHelper;
-import com.shalzz.attendance.data.local.PreferencesHelper;
 import com.shalzz.attendance.data.model.User;
 import com.shalzz.attendance.data.remote.RetrofitException;
 import com.shalzz.attendance.injection.ConfigPersistent;
 import com.shalzz.attendance.ui.base.BasePresenter;
-import com.shalzz.attendance.ui.main.MainActivity;
 import com.shalzz.attendance.utils.RxUtil;
-import com.shalzz.attendance.wrapper.MySyncManager;
 
 import javax.inject.Inject;
 
@@ -70,7 +61,7 @@ public class LoginPresenter extends BasePresenter<LoginMvpView> {
         checkViewAttached();
         getMvpView().showProgressDialog();
         RxUtil.dispose(mDisposable);
-        mDisposable = mDataManager.getUser(username)
+        mDisposable = mDataManager.getUser("Bearer " + username)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new DisposableObserver<User>() {

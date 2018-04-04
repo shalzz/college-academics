@@ -9,11 +9,13 @@ import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
+import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
+import io.reactivex.functions.Function;
 import retrofit2.Call;
 import retrofit2.CallAdapter;
 import retrofit2.Response;
 import retrofit2.Retrofit;
-import rx.Observable;
 import rx.functions.Func1;
 
 public class RxJava2ErrorCallAdapterFactory extends CallAdapter.Factory {
@@ -54,9 +56,9 @@ public class RxJava2ErrorCallAdapterFactory extends CallAdapter.Factory {
 
         @Override
         public Observable adapt(Call call) {
-            return ((Observable) wrapped.adapt(call)).onErrorResumeNext(new Func1<Throwable, Observable>() {
+            return ((Observable) wrapped.adapt(call)).onErrorResumeNext(new Function<Throwable, ObservableSource>() {
                 @Override
-                public Observable call(Throwable throwable) {
+                public ObservableSource apply(Throwable throwable) throws Exception {
                     return Observable.error(asRetrofitException(throwable));
                 }
             });

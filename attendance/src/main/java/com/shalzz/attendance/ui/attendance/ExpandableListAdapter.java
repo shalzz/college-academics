@@ -44,6 +44,7 @@ import com.shalzz.attendance.R;
 import com.shalzz.attendance.data.model.ListFooter;
 import com.shalzz.attendance.data.model.Subject;
 import com.shalzz.attendance.injection.ApplicationContext;
+import com.shalzz.attendance.utils.Miscellaneous;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -131,7 +132,17 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                         if(Float.compare(oldItem.held(), newItem.held()) != 0 ) {
                             return false;
                         }
-                        return oldItem.absent_dates().equals(newItem.absent_dates());
+                        if (oldItem.absent_dates() != null && newItem.absent_dates() == null) {
+                            return false;
+                        }
+                        if (oldItem.absent_dates() == null && newItem.absent_dates() != null) {
+                            return false;
+                        }
+                        if (oldItem.absent_dates() == null && newItem.absent_dates() == null) {
+                            return true;
+                        }
+                        else
+                            return oldItem.absent_dates().equals(newItem.absent_dates());
                     }
 
                     @Override
@@ -482,12 +493,12 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
         Float percent = mSubjects.get(position).getPercentage();
-        holder.subject.setText(mSubjects.get(position).name());
+        holder.subject.setText(Miscellaneous.capitalizeString(mSubjects.get(position).name()));
         holder.percentage.setText(mResources.getString(R.string.atten_list_percentage,
                 mSubjects.get(position).getPercentage()));
         holder.classes.setText(mResources.getString(R.string.atten_list_attended_upon_held,
-                mSubjects.get(position).attended(),
-                mSubjects.get(position).held()));
+                Float.valueOf(mSubjects.get(position).attended()).intValue(),
+                Float.valueOf(mSubjects.get(position).held()).intValue()));
         Drawable d = holder.percent.getProgressDrawable();
         if(percent > 0f)
             d.setLevel(percent.intValue()*100);

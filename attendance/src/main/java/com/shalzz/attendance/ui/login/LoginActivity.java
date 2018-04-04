@@ -19,8 +19,6 @@
 
 package com.shalzz.attendance.ui.login;
 
-import android.app.NotificationManager;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -35,12 +33,12 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.bugsnag.android.Bugsnag;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
+import com.shalzz.attendance.R;
 import com.shalzz.attendance.data.local.PreferencesHelper;
 import com.shalzz.attendance.data.model.User;
 import com.shalzz.attendance.ui.base.BaseActivity;
 import com.shalzz.attendance.ui.main.MainActivity;
 import com.shalzz.attendance.utils.Miscellaneous;
-import com.shalzz.attendance.R;
 import com.shalzz.attendance.wrapper.MySyncManager;
 
 import javax.inject.Inject;
@@ -52,11 +50,8 @@ import butterknife.OnClick;
 
 public class LoginActivity extends BaseActivity implements LoginMvpView {
 
-    @BindView(R.id.etSapid)
-    TextInputLayout textInputSapid;
-
-    @BindView(R.id.etPass)
-    TextInputLayout textInputPass;
+    @BindView(R.id.etUserId)
+    TextInputLayout textInputUserId;
 
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
@@ -71,8 +66,7 @@ public class LoginActivity extends BaseActivity implements LoginMvpView {
     @Inject
     PreferencesHelper mPreferencesHelper;
 
-    private EditText etSapid;
-    private EditText etPass;
+    private EditText etUserId;
 
     private MaterialDialog progressDialog = null;
 
@@ -91,12 +85,11 @@ public class LoginActivity extends BaseActivity implements LoginMvpView {
         // set toolbar as actionbar
         setSupportActionBar(mToolbar);
 
-        etSapid = textInputSapid.getEditText();
-        etPass = textInputPass.getEditText();
+        etUserId = textInputUserId.getEditText();
 
         // Shows the CaptchaDialog when user presses 'Done' on keyboard.
-        if (etPass != null) {
-            etPass.setOnEditorActionListener((view, actionId, event) -> {
+        if (etUserId != null) {
+            etUserId.setOnEditorActionListener((view, actionId, event) -> {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
                     doLogin();
                     return true;
@@ -119,8 +112,8 @@ public class LoginActivity extends BaseActivity implements LoginMvpView {
         if (!isValid())
             return;
 
-        Miscellaneous.closeKeyboard(this, etPass);
-        mLoginPresenter.login(etSapid.getText().toString());
+        Miscellaneous.closeKeyboard(this, etUserId);
+        mLoginPresenter.login(etUserId.getText().toString());
     }
 
     /**
@@ -128,19 +121,12 @@ public class LoginActivity extends BaseActivity implements LoginMvpView {
      * @return true or false
      */
     public boolean isValid() {
-        String sapid = etSapid.getText().toString();
-        String password = etPass.getText().toString();
+        String sapid = etUserId.getText().toString();
 
-        if(sapid.length()==0 || sapid.length()!=9) {
-            textInputSapid.requestFocus();
-            textInputSapid.setError(getString(R.string.form_sapid_error));
-            Miscellaneous.showKeyboard(this, etSapid);
-            return false;
-        }
-        else if (password.length()==0) {
-            textInputPass.requestFocus();
-            textInputPass.setError(getString(R.string.form_password_error));
-            Miscellaneous.showKeyboard(this,etPass);
+        if(sapid.length()==0 || sapid.length()!=10) {
+            textInputUserId.requestFocus();
+            textInputUserId.setError(getString(R.string.form_userid_error));
+            Miscellaneous.showKeyboard(this, etUserId);
             return false;
         }
         return true;
@@ -189,8 +175,8 @@ public class LoginActivity extends BaseActivity implements LoginMvpView {
     @Override
     public void showMainActivity(User user) {
         dismissProgressDialog();
-        mPreferencesHelper.saveUser(user.name());
-        MySyncManager.addPeriodicSync(this, user.id());
+        mPreferencesHelper.saveUser(user.phone());
+        MySyncManager.addPeriodicSync(this, user.phone());
         Intent ourIntent = new Intent(this, MainActivity.class);
         startActivity(ourIntent);
         finish();
