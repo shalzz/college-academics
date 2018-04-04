@@ -37,6 +37,7 @@ import android.support.v7.preference.ListPreference;
 import android.support.v7.preference.PreferenceCategory;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.PreferenceScreen;
+import android.widget.Toast;
 
 import com.bugsnag.android.Bugsnag;
 import com.google.android.gms.analytics.GoogleAnalytics;
@@ -123,7 +124,6 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
             }
         }
         else if(key.equals(key_sync_interval)) {
-            DbOpenHelper db = new DbOpenHelper(mContext);
             ListPreference connectionPref = (ListPreference) findPreference(key);
             connectionPref.setSummary(connectionPref.getEntry());
             MySyncManager.addPeriodicSync(mContext, mPreferences.getUserId());
@@ -157,9 +157,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
     }
 
     private void toggleSync(boolean sync) {
-        DbOpenHelper db = new DbOpenHelper(mContext);
         String account_name = mPreferences.getUserId();
-        db.close();
         if (sync)
             MySyncManager.enableAutomaticSync(mContext, account_name);
         else
@@ -179,6 +177,9 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
                 } else {
                     toggleSync(false);
                     syncPref.setChecked(false);
+                    // Show an explanation why we need this permission.
+                    Toast.makeText(mContext, getString(R.string.contacts_permission_discription),
+                            Toast.LENGTH_LONG).show();
                 }
                 break;
             }

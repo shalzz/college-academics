@@ -71,12 +71,10 @@ public class SplashActivity extends BaseActivity {
                 // Set all default values once for this application
         try {
             PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
-            PreferenceManager.setDefaultValues(this, R.xml.pref_proxy, false);
         } catch (ClassCastException e) {
 	        Bugsnag.notify(e, Severity.INFO);
             PreferenceManager.getDefaultSharedPreferences(this).edit().clear().apply();
             PreferenceManager.setDefaultValues(this, R.xml.preferences, true);
-            PreferenceManager.setDefaultValues(this, R.xml.pref_proxy, true);
         }
 
 		boolean loggedin = mPreferencesHelper.getLoginStatus();

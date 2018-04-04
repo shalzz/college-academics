@@ -80,8 +80,7 @@
         <android.support.v7.preference.PreferenceScreen
             android:key="@string/pref_key_info_about"
             android:persistent="false"
-            android:title="@string/pref_about"
-            android:summary="@string/pref_about_summary"/>
+            android:title="@string/pref_about" />
     </android.support.v7.preference.PreferenceCategory>
 
 </android.support.v7.preference.PreferenceScreen>

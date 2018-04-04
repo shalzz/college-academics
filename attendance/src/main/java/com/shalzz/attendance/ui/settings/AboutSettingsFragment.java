@@ -123,7 +123,7 @@ public class AboutSettingsFragment extends PreferenceFragmentCompat {
         });
 
         Preference versionPref = prefScreen.getPreference(3);
-        versionPref.setSummary("v"+BuildConfig.VERSION_NAME);
+        versionPref.setSummary(BuildConfig.VERSION_NAME);
         versionPref.setOnPreferenceClickListener(preference -> {
             mTracker.send(new HitBuilders.EventBuilder()
                     .setCategory("Click")
