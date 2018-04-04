@@ -391,8 +391,12 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         int attend = Float.valueOf(mSubjects.get(position).attended()).intValue();
         int percent = Math.round(mSubjects.get(position).getPercentage());
 
-        tvAbsent.setText(mResources.getString(R.string.atten_list_days_absent,
-                mSubjects.get(position).getAbsentDatesAsString()));
+        if (mSubjects.get(position).absent_dates() == null) {
+            tvAbsent.setText(mResources.getText(R.string.atten_list_days_absent_null));
+        } else {
+            tvAbsent.setText(mResources.getString(R.string.atten_list_days_absent,
+                    mSubjects.get(position).getAbsentDatesAsString()));
+        }
 
         if (percent<67 && held!=0) {
             int x = (2*held) - (3*attend);

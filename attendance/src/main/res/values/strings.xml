@@ -20,7 +20,8 @@
 
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
 
-    <string name="app_url" translatable="false">http://www.github.com/shalzz/upes-academics</string>
+    <string name="app_url" translatable="false">http://www.github
+        .com/shalzz/college-academics</string>
     <string name="copyright_year" translatable="false">Copyright © 2013&#8211;2018</string>
     <string name="app_copyright" translatable="false">Shaleen Jain &#60;shaleen.jain95@gmail.com&#62;</string>
     
@@ -69,6 +70,8 @@
         click the scroll to date in the top right corner.</string>
     <string name="day_list_marked_absent">Absent!</string>
     <string name="atten_list_footer_total">Total Attendance:</string>
+    <string name="atten_list_days_absent_null">Days Absent: please see the timetable for
+        dates</string>
     <string name="atten_list_days_absent">"Days Absent: <xliff:g id="absent_dates">%s</xliff:g>"
     </string>
     <string name="atten_list_percentage"><xliff:g id="percentage">%.2f</xliff:g>%%</string>

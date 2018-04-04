@@ -43,7 +43,6 @@ import com.bugsnag.android.Bugsnag;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
-import com.shalzz.attendance.data.local.DbOpenHelper;
 import com.shalzz.attendance.MyApplication;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.data.local.PreferencesHelper;
@@ -213,6 +212,8 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
             transaction.replace(R.id.frame_container, mFragment, MainActivity.FRAGMENT_TAG);
             transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
             transaction.addToBackStack(null);
+
+            // TODO: use an EventBus
             ((MainActivity)getActivity()).mPopSettingsBackStack = true;
 
             transaction.commit();

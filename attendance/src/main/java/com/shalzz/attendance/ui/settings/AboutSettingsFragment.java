@@ -78,7 +78,7 @@ public class AboutSettingsFragment extends PreferenceFragmentCompat {
 
         auth.setSummary(getString(R.string.copyright_year)+ " "
                 + getString(R.string.app_copyright));
-	auth.setOnPreferenceClickListener(preference -> {
+	    auth.setOnPreferenceClickListener(preference -> {
             mTracker.send(new HitBuilders.EventBuilder()
                     .setCategory("Click")
                     .setAction("Author")
