@@ -111,8 +111,7 @@ public class MainPresenter extends BasePresenter<MainMvpView> {
         mPreferenceHelper.removeUser();
 
         // Remove user Attendance data from database.
-//        DbOpenHelper db = new DbOpenHelper(mContext);
-//        db.resetTables();
+        mDataManager.resetTables();
 
         getMvpView().logout();
     }

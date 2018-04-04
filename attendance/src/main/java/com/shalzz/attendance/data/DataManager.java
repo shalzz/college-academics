@@ -71,4 +71,8 @@ public class DataManager {
     public Observable<Integer> getUserCount() {
         return RxJavaInterop.toV2Observable(mDatabaseHelper.getUserCount());
     }
+
+    public void resetTables() {
+        mDatabaseHelper.resetTables();
+    }
 }
