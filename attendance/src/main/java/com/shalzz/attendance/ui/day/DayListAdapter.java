@@ -41,7 +41,6 @@ import butterknife.ButterKnife;
 public class DayListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
 
     private SortedList<Period> mPeriods;
-    private List<Integer> subjectIDs;
     private SortedListAdapterCallback<Period> callback;
 
     // Provide a reference to the views for each data item
@@ -105,9 +104,7 @@ public class DayListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         mPeriods = new SortedList<>(Period.class, callback);
     }
 
-    public void update(Day day) {
-        List<Period> periods = day.getPeriods();
-        subjectIDs = day.getSubjectIDs();
+    public void update(List<Period> periods) {
         mPeriods.beginBatchedUpdates();
         for (int i = 0; i < mPeriods.size(); i++) {
             Period existingObject = mPeriods.get(i);
@@ -153,12 +150,7 @@ public class DayListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         holder.tvRoom.setText(period.room());
         holder.tvTeacher.setText(period.teacher());
         holder.tvTime.setText(period.getTimein12hr());
-
-        if(subjectIDs.contains(period.id()))
-            holder.tvMarkedAbsent.setVisibility(View.VISIBLE);
-        else {
-            holder.tvMarkedAbsent.setVisibility(View.GONE);
-        }
+        holder.tvMarkedAbsent.setVisibility(period.absent() ? View.VISIBLE : View.GONE);
 
     }
 

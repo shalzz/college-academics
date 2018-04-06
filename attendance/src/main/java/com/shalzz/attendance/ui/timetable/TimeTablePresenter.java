@@ -35,8 +35,6 @@ public class TimeTablePresenter extends BasePresenter<TimeTableMvpView> {
 
     private DataManager mDataManager;
 
-    private Disposable mDisposable;
-
     @Inject
     TimeTablePresenter(DataManager dataManager) {
         mDataManager = dataManager;
@@ -50,42 +48,5 @@ public class TimeTablePresenter extends BasePresenter<TimeTableMvpView> {
     @Override
     public void detachView() {
         super.detachView();
-        RxUtil.dispose(mDisposable);
-    }
-
-    public void updatePeriods() {
-        RxUtil.dispose(mDisposable);
-        mDisposable = mDataManager.syncSubjects()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnError(throwable -> {
-                    if(!isViewAttached())
-                        return;
-                    RetrofitException error = (RetrofitException) throwable;
-                    if (error.getKind() == RetrofitException.Kind.UNEXPECTED) {
-                        Timber.e(throwable, error.getMessage());
-                        getMvpView().showError(error.getMessage());
-                    }
-                    else {
-                        mDataManager.getSubjectCount()
-                                .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .doOnNext(count -> {
-                                    if (count > 0) {
-                                        getMvpView().showError(error.getMessage());
-                                    }
-                                    else if (error.getKind() == RetrofitException.Kind.HTTP){
-                                        getMvpView().showNetworkErrorView(error.getMessage());
-                                    }
-                                    else if (error.getKind() == RetrofitException.Kind.NETWORK){
-                                        getMvpView().showNoConnectionErrorView();
-                                    }
-                                    else if (error.getKind() == RetrofitException.Kind.EMPTY_RESPONSE){
-                                        getMvpView().showEmptyErrorView();
-                                    }
-                                });
-                    }
-                })
-                .subscribe();
     }
 }

@@ -166,5 +166,6 @@
     <!-- Permissions -->
     <string name="contacts_permission_discription">Contacts permission (GET_ACCOUNTS) is required to
         manage a sync account</string>
+    <string name="network_error_message">Network Error</string>
 
 </resources>

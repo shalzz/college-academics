@@ -32,26 +32,13 @@ import com.squareup.sqldelight.RowMapper;
 import java.text.ParseException;
 import java.util.Date;
 
+import timber.log.Timber;
+
 @AutoValue
 public abstract class Period implements PeriodModel, Parcelable {
-    private static final ColumnAdapter<Date, String> DATE_ADAPTER =
-            new ColumnAdapter<Date, String>() {
-
-                @NonNull
-                @Override
-                public Date decode(String databaseValue) {
-                    return DateHelper.parseDate(databaseValue);
-                }
-
-                @Override
-                public String encode(@NonNull Date value) {
-                    return DateHelper.formatToTechnicalFormat(value);
-                }
-
-            };
 
     public static final Factory<Period> FACTORY =
-            new Factory<>(AutoValue_Period::new, DATE_ADAPTER);
+            new Factory<>(AutoValue_Period::new);
 
     public static final RowMapper<Period> MAPPER = FACTORY.select_by_dateMapper();
 

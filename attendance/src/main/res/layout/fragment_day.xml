@@ -18,47 +18,28 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:tools="http://schemas.android.com/tools"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             tools:context=".ui.day.DayFragment">
+<com.shalzz.attendance.wrapper.MultiSwipeRefreshLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/swiperefresh"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.day.DayFragment">
 
-    <!-- A RecyclerView with some commonly used attributes -->
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/time_table_recycler_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:drawSelectorOnTop="true"
-        android:clipToPadding="false"
-        tools:context=".fragment.Dayfragment"
-        tools:listitem="@layout/list_day_item"/>
+    <FrameLayout android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-    <LinearLayout android:id="@+id/empty_view"
-                  android:layout_width="match_parent"
-                  android:layout_height="match_parent"
-                  android:orientation="vertical" >
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/time_table_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:drawSelectorOnTop="true"
+            android:clipToPadding="false"
+            tools:context=".fragment.Dayfragment"
+            tools:listitem="@layout/list_day_item"/>
 
-        <TextView android:id="@+id/no_class"
-                  android:layout_width="match_parent"
-                  android:layout_height="wrap_content"
-                  android:gravity="center"
-                  android:text="@string/no_classes"
-                  android:textSize="20sp"
-                  android:padding="3dp"
-                  android:layout_margin="10dp"
-                  android:textStyle="bold"/>
+        <include layout="@layout/empty_view"/>
 
-        <TextView android:id="@+id/swipe_info"
-                  android:layout_width="match_parent"
-                  android:layout_height="wrap_content"
-                  android:layout_marginLeft="15dp"
-                  android:layout_marginStart="15dp"
-                  android:layout_marginRight="15dp"
-                  android:layout_marginEnd="15dp"
-                  android:gravity="center"
-                  android:text="@string/swipe_info"/>
+    </FrameLayout>
 
-    </LinearLayout>
-
-</FrameLayout>
+</com.shalzz.attendance.wrapper.MultiSwipeRefreshLayout>

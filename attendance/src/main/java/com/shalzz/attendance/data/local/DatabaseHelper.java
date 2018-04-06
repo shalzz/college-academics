@@ -37,7 +37,7 @@ public class DatabaseHelper {
     public DatabaseHelper(DbOpenHelper dbOpenHelper) {
         SqlBrite sqlBrite = new SqlBrite.Builder().build();
         mDb = sqlBrite.wrapDatabaseHelper(dbOpenHelper, Schedulers.io());
-        mDb.setLoggingEnabled(true);
+//        mDb.setLoggingEnabled(true);
     }
 
     public BriteDatabase getBriteDb() {
@@ -93,12 +93,13 @@ public class DatabaseHelper {
                 .mapToList(cursor -> AbsentDate.MAPPER.map(cursor).subject_id());
     }
 
-    public Observable<Period> addPeriods(final Collection<Period> newPeriods) {
+    public Observable<Period> addPeriods(final List<Period> newPeriods) {
         return Observable.create(subscriber -> {
             if (subscriber.isUnsubscribed()) return;
+            if (newPeriods.isEmpty()) return;
 
             try (BriteDatabase.Transaction transaction = mDb.newTransaction()) {
-                mDb.delete(Period.TABLE_NAME, null);
+                mDb.delete(Period.TABLE_NAME, "date = ?", newPeriods.get(0).date());
                 for (Period period : newPeriods) {
                     long result = mDb.insert(Period.TABLE_NAME,
                             Period.FACTORY.marshal(period).asContentValues(),
@@ -148,8 +149,9 @@ public class DatabaseHelper {
                 .mapToOne(cursor -> cursor.getInt(0));
     }
 
-    public Observable<Integer> getPeriodCount() {
-        SqlDelightStatement query = Period.FACTORY.select_count();
+    public Observable<Integer> getPeriodCount(Date day) {
+        SqlDelightStatement query =
+                Period.FACTORY.select_count_by_date(DateHelper.formatToTechnicalFormat(day));
         return mDb.createQuery(query.tables, query.statement, query.args)
                 .mapToOne(cursor -> cursor.getInt(0));
     }

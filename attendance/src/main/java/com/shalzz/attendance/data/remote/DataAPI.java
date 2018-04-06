@@ -43,6 +43,6 @@ public interface DataAPI {
     Observable<List<Subject>> getAttendance();
 
     @GET("me/timetable/{date}")
-    Observable<List<Period>> getTimetable(@Path("date") Date date);
+    Observable<List<Period>> getTimetable(@Path("date") String date);
 
 }

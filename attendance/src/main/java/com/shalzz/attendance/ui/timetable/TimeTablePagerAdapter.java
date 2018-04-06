@@ -46,6 +46,7 @@ public class TimeTablePagerAdapter extends FragmentStatePagerAdapter {
 	TimeTablePagerAdapter(FragmentManager fm, Context context) {
 		super(fm);
         mContext = context;
+        setDate(new Date()); // Today;
 	}
 
 	@Override

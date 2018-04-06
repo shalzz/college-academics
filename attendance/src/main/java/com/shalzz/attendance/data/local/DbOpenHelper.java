@@ -35,9 +35,9 @@ import javax.inject.Singleton;
 @Singleton
 public class DbOpenHelper extends SQLiteOpenHelper {
 
-    private static final String DATABASE_NAME = "attendanceManager";
+    private static final String DATABASE_NAME = "academics.db";
 
-    public static final int DATABASE_VERSION = 9;
+    public static final int DATABASE_VERSION = 10;
 
     @Inject
     public DbOpenHelper(@ApplicationContext Context context) {

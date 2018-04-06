@@ -21,7 +21,6 @@ package com.shalzz.attendance.ui.timetable;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
@@ -31,26 +30,17 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.bugsnag.android.Bugsnag;
 import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.Target;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
-import com.malinskiy.materialicons.IconDrawable;
-import com.malinskiy.materialicons.Iconify;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.ui.main.MainActivity;
-import com.shalzz.attendance.utils.CircularIndeterminate;
-import com.shalzz.attendance.utils.Miscellaneous;
 import com.shalzz.attendance.wrapper.DateHelper;
-import com.shalzz.attendance.wrapper.MultiSwipeRefreshLayout;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -65,35 +55,8 @@ import butterknife.Unbinder;
 
 public class TimeTablePagerFragment extends Fragment implements TimeTableMvpView {
 
-    /**
-     * The {@link android.support.v4.widget.SwipeRefreshLayout} that detects swipe gestures and
-     * triggers callbacks in the app.
-     */
-    @BindView(R.id.swiperefresh)
-    public MultiSwipeRefreshLayout mSwipeRefreshLayout;
-
-    @BindView(R.id.circular_indet)
-    public CircularIndeterminate mProgress;
-
     @BindView(R.id.pager)
     public ViewPager mViewPager;
-
-    @BindView(R.id.empty_view)
-    public View emptyView;
-
-    public static class EmptyView {
-        @BindView(R.id.emptyStateImageView)
-        public ImageView ImageView;
-
-        @BindView(R.id.emptyStateTitleTextView)
-        public TextView TitleTextView;
-
-        @BindView(R.id.emptyStateContentTextView)
-        public TextView ContentTextView;
-
-        @BindView(R.id.emptyStateButton)
-        public Button Button;
-    }
 
     @Inject @Named("app")
     Tracker mTracker;
@@ -106,8 +69,6 @@ public class TimeTablePagerFragment extends Fragment implements TimeTableMvpView
     private Context mContext;
     private ActionBar actionbar;
     private Unbinder unbinder;
-    public EmptyView mEmptyView = new EmptyView();
-    private Date mToday = new Date();
 
     @Override
     public void onStart() {
@@ -129,36 +90,15 @@ public class TimeTablePagerFragment extends Fragment implements TimeTableMvpView
         setRetainInstance(false);
         final View view = inflater.inflate(R.layout.fragment_viewpager, container, false);
         unbinder = ButterKnife.bind(this, view);
-        ButterKnife.bind(mEmptyView, emptyView);
         mTimeTablePresenter.attachView(this);
 
         actionbar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-
-        mSwipeRefreshLayout.setSwipeableChildren(R.id.time_table_recycler_view);
-        mSwipeRefreshLayout.setColorSchemeResources(
-                R.color.swipe_color_1, R.color.swipe_color_2,
-                R.color.swipe_color_3, R.color.swipe_color_4);
-        mSwipeRefreshLayout.setOnRefreshListener(() -> mTimeTablePresenter.updatePeriods());
-
-        // fix for oversensitive horizontal scroll of swipe view
-        mViewPager.setOnTouchListener((v, event) -> {
-            if (mSwipeRefreshLayout != null) {
-                mSwipeRefreshLayout.setEnabled(false);
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_UP:
-                        mSwipeRefreshLayout.setEnabled(true);
-                        break;
-                }
-            }
-            return false;
-        });
 
         mAdapter = new TimeTablePagerAdapter(getChildFragmentManager(), mContext);
 
         mViewPager.setOffscreenPageLimit(3);
         mViewPager.setAdapter(mAdapter);
 
-        mTimeTablePresenter.updatePeriods();
         return view;
     }
 
@@ -194,14 +134,7 @@ public class TimeTablePagerFragment extends Fragment implements TimeTableMvpView
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.menu_refresh) {
-            // We make sure that the SwipeRefreshLayout is displaying it's refreshing indicator
-            if (!mSwipeRefreshLayout.isRefreshing()) {
-                mSwipeRefreshLayout.setRefreshing(true);
-                mTimeTablePresenter.updatePeriods();
-                return true;
-            }
-        } else if (item.getItemId() == R.id.menu_date) {
+         if (item.getItemId() == R.id.menu_date) {
             Calendar today = Calendar.getInstance();
             today.setTime(new Date());
             DatePickerDialog mDatePickerDialog = new DatePickerDialog(mContext, onDateSetListener()
@@ -216,7 +149,7 @@ public class TimeTablePagerFragment extends Fragment implements TimeTableMvpView
                     .build());
             return true;
         } else if (item.getItemId() == R.id.menu_today) {
-            setDate(mToday);
+            setDate(new Date());
 
             mTracker.send(new HitBuilders.EventBuilder()
                     .setCategory("Action")
@@ -277,71 +210,5 @@ public class TimeTablePagerFragment extends Fragment implements TimeTableMvpView
     public void scrollToDate(Date date) {
         int pos = mAdapter.getPositionForDate(date);
         mViewPager.setCurrentItem(pos, true);
-    }
-
-    @Override
-    public void showEmptyView(boolean show) {
-        stopRefreshing();
-        if(show) {
-            emptyView.setVisibility(View.VISIBLE);
-            mViewPager.setVisibility(View.GONE);
-        } else {
-            emptyView.setVisibility(View.GONE);
-            mViewPager.setVisibility(View.VISIBLE);
-        }
-    }
-
-    @Override
-    public void showNoConnectionErrorView() {
-        Drawable emptyDrawable = new IconDrawable(mContext,
-                Iconify.IconValue.zmdi_wifi_off)
-                .colorRes(android.R.color.darker_gray);
-        mEmptyView.ImageView.setImageDrawable(emptyDrawable);
-        mEmptyView.TitleTextView.setText(R.string.no_connection_title);
-        mEmptyView.ContentTextView.setText(R.string.no_connection_content);
-        mEmptyView.Button.setOnClickListener( v -> mTimeTablePresenter.updatePeriods());
-        mEmptyView.Button.setVisibility(View.VISIBLE);
-
-        showEmptyView(true);
-    }
-
-    @Override
-    public void showNetworkErrorView(String error) {
-        Drawable emptyDrawable = new IconDrawable(mContext,
-                Iconify.IconValue.zmdi_network_alert)
-                .colorRes(android.R.color.darker_gray);
-        mEmptyView.ImageView.setImageDrawable(emptyDrawable);
-        mEmptyView.TitleTextView.setText("Network Error");
-        mEmptyView.ContentTextView.setText(error);
-        mEmptyView.Button.setOnClickListener( v -> mTimeTablePresenter.updatePeriods());
-        mEmptyView.Button.setVisibility(View.VISIBLE);
-
-        showEmptyView(true);
-    }
-
-    @Override
-    public void showEmptyErrorView() {
-        Drawable emptyDrawable = new IconDrawable(mContext,
-                Iconify.IconValue.zmdi_cloud_off)
-                .colorRes(android.R.color.darker_gray);
-        mEmptyView.ImageView.setImageDrawable(emptyDrawable);
-        mEmptyView.TitleTextView.setText(R.string.no_data_title);
-        mEmptyView.ContentTextView.setText(R.string.no_data_content);
-        mEmptyView.Button.setVisibility(View.GONE);
-
-        showEmptyView(true);
-    }
-
-    @Override
-    public void showError(String message) {
-        stopRefreshing();
-        Miscellaneous.showSnackBar(mSwipeRefreshLayout, message);
-    }
-
-    @Override
-    public void stopRefreshing() {
-        mProgress.setVisibility(View.GONE);
-        mSwipeRefreshLayout.setRefreshing(false);
-        mViewPager.setVisibility(View.VISIBLE);
     }
 }

@@ -8,16 +8,17 @@ CREATE TABLE period (
     start TEXT NOT NULL,
     'end' TEXT NOT NULL,
     absent INTEGER AS java.lang.Boolean NOT NULL,
-    'date' TEXT AS java.util.Date NOT NUll,
-    PRIMARY KEY(id, 'date')
+    date TEXT NOT NUll,
+    PRIMARY KEY(id, date)
 );
 
 select_by_date:
 SELECT *
 FROM period
-WHERE 'date' = ?
+WHERE date = ?
 ORDER by start;
 
-select_count:
+select_count_by_date:
 SELECT count(*)
-FROM period;
+FROM period
+WHERE date = ?;

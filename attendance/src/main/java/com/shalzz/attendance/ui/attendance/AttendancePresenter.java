@@ -25,7 +25,6 @@ import com.shalzz.attendance.data.model.Subject;
 import com.shalzz.attendance.data.remote.RetrofitException;
 import com.shalzz.attendance.injection.ConfigPersistent;
 import com.shalzz.attendance.ui.base.BasePresenter;
-import com.shalzz.attendance.ui.timetable.TimeTableMvpView;
 import com.shalzz.attendance.utils.RxUtil;
 
 import java.util.List;
@@ -66,7 +65,7 @@ public class AttendancePresenter extends BasePresenter<AttendanceMvpView> {
 
     public void syncSubjects() {
         RxUtil.dispose(mSyncDisposable);
-        mSyncDisposable = mDataManager.syncSubjects()
+        mSyncDisposable = mDataManager.getAttendance()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnComplete(() -> {
@@ -100,9 +99,6 @@ public class AttendancePresenter extends BasePresenter<AttendanceMvpView> {
                                     else if (error.getKind() == RetrofitException.Kind.NETWORK){
                                         getMvpView().showNoConnectionErrorView();
                                     }
-                                    else if (error.getKind() == RetrofitException.Kind.EMPTY_RESPONSE){
-                                        getMvpView().showEmptyErrorView();
-                                    }
                                 });
                     }
                 })
@@ -112,7 +108,7 @@ public class AttendancePresenter extends BasePresenter<AttendanceMvpView> {
     public void loadSubjects(String filter) {
         checkViewAttached();
         RxUtil.dispose(mDisposable);
-        mDisposable = mDataManager.getSubjects(filter)
+        mDisposable = mDataManager.loadAttendance(filter)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new DisposableObserver<List<Subject>> () {
@@ -155,11 +151,7 @@ public class AttendancePresenter extends BasePresenter<AttendanceMvpView> {
 
                     @Override
                     public void onError(Throwable e) {
-                        RetrofitException error = (RetrofitException) e;
-                        Timber.e(e, error.getMessage());
-                        if (isViewAttached()) {
-                            getMvpView().showError(error.getMessage());
-                        }
+                        Timber.e(e);
                     }
 
                     @Override

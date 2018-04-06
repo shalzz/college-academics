@@ -20,17 +20,30 @@
 package com.shalzz.attendance.ui.day;
 
 import com.shalzz.attendance.data.DataManager;
+import com.shalzz.attendance.data.model.Period;
+import com.shalzz.attendance.data.remote.RetrofitException;
 import com.shalzz.attendance.injection.ConfigPersistent;
 import com.shalzz.attendance.ui.base.BasePresenter;
+import com.shalzz.attendance.utils.RxUtil;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.inject.Inject;
 
-@ConfigPersistent
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.observers.DisposableObserver;
+import io.reactivex.schedulers.Schedulers;
+import timber.log.Timber;
+
 class DayPresenter extends BasePresenter<DayMvpView> {
 
     private DataManager mDataManager;
+
+    private Disposable mDisposable;
+    private Disposable mNetworkDisposable;
+    private Disposable mDbDisposable;
 
     @Inject
     DayPresenter(DataManager dataManager) {
@@ -45,16 +58,104 @@ class DayPresenter extends BasePresenter<DayMvpView> {
     @Override
     public void detachView() {
         super.detachView();
+        RxUtil.dispose(mDisposable);
+        RxUtil.dispose(mNetworkDisposable);
+        RxUtil.dispose(mDbDisposable);
     }
 
-    void loadDay(Date date) {
+    public void getDay(Date day) {
         checkViewAttached();
-        mDataManager.getDay(date)
-                .doOnNext(day -> {
-                    if (day.getPeriods().size() == 0) {
-                        getMvpView().clearDay();
-                    } else {
-                        getMvpView().setDay(day);
+        RxUtil.dispose(mDisposable);
+        mDisposable = mDataManager.getPeriodCount(day)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(count -> {
+                    if(isViewAttached()) {
+                        if (count == 0) {
+                            getMvpView().setRefreshing();
+                            syncDay(day);
+                        }
+                        loadDay(day);
+                    }
+                })
+                .subscribe();
+    }
+
+    public void syncDay(Date day) {
+        checkViewAttached();
+        RxUtil.dispose(mNetworkDisposable);
+        mNetworkDisposable = mDataManager.getDay(day)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableObserver<Period>() {
+                    @Override
+                    public void onNext(Period period) {
+                    }
+
+                    @Override
+                    public void onError(Throwable throwable) {
+                        if(!isViewAttached())
+                            return;
+                        getMvpView().stopRefreshing();
+                        RetrofitException error = (RetrofitException) throwable;
+                        if (error.getKind() == RetrofitException.Kind.UNEXPECTED) {
+                            Timber.e(throwable, error.getMessage());
+                            getMvpView().showError(error.getMessage());
+                        }
+                        else {
+                            mDataManager.getPeriodCount(day)
+                                    .subscribeOn(Schedulers.io())
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .doOnNext(count -> {
+                                        if (count > 0) {
+                                            getMvpView().showError(error.getMessage());
+                                        }
+                                        else if (error.getKind() == RetrofitException.Kind.HTTP){
+                                            getMvpView().showNetworkErrorView(error.getMessage());
+                                        }
+                                        else if (error.getKind() == RetrofitException.Kind.NETWORK){
+                                            getMvpView().showNoConnectionErrorView();
+                                        }
+                                    })
+                                    .subscribe();
+                        }
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        if (isViewAttached()) {
+                            getMvpView().stopRefreshing();
+                        }
+                    }
+                });
+    }
+
+    void loadDay(Date day) {
+        checkViewAttached();
+        RxUtil.dispose(mDbDisposable);
+        mDbDisposable = mDataManager.loadDay(day)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableObserver<List<Period>>() {
+                    @Override
+                    public void onNext(List<Period> periods) {
+                        if(!isViewAttached())
+                            return;
+                        if (periods.size() == 0) {
+                            getMvpView().clearDay();
+                        } else {
+                            getMvpView().setDay(periods);
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Timber.e(e);
+                    }
+
+                    @Override
+                    public void onComplete() {
+
                     }
                 });
     }

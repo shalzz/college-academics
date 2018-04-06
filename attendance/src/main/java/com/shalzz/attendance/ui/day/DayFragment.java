@@ -20,29 +20,40 @@
 package com.shalzz.attendance.ui.day;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import com.malinskiy.materialicons.IconDrawable;
+import com.malinskiy.materialicons.Iconify;
 import com.shalzz.attendance.R;
+import com.shalzz.attendance.data.model.Period;
 import com.shalzz.attendance.injection.ActivityContext;
-import com.shalzz.attendance.data.model.Day;
 import com.shalzz.attendance.ui.main.MainActivity;
+import com.shalzz.attendance.utils.CircularIndeterminate;
 import com.shalzz.attendance.utils.DividerItemDecoration;
+import com.shalzz.attendance.utils.Miscellaneous;
+import com.shalzz.attendance.wrapper.MultiSwipeRefreshLayout;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import timber.log.Timber;
 
 public class DayFragment extends Fragment implements DayMvpView {
 
@@ -58,12 +69,35 @@ public class DayFragment extends Fragment implements DayMvpView {
     @ActivityContext
     Context mContext;
 
+    /**
+     * The {@link android.support.v4.widget.SwipeRefreshLayout} that detects swipe gestures and
+     * triggers callbacks in the app.
+     */
+    @BindView(R.id.swiperefresh)
+    public MultiSwipeRefreshLayout mSwipeRefreshLayout;
+
+    @BindView(R.id.empty_view)
+    public View emptyView;
+
+    public static class EmptyView {
+        @BindView(R.id.emptyStateImageView)
+        public ImageView ImageView;
+
+        @BindView(R.id.emptyStateTitleTextView)
+        public TextView TitleTextView;
+
+        @BindView(R.id.emptyStateContentTextView)
+        public TextView ContentTextView;
+
+        @BindView(R.id.emptyStateButton)
+        public Button Button;
+    }
+
     @BindView(R.id.time_table_recycler_view)
     public RecyclerView mRecyclerView;
 
-    @BindView(R.id.empty_view)
-    public View mEmptyView;
-
+    private Date mDate;
+    private EmptyView mEmptyView = new EmptyView();
     private Unbinder unbinder;
 
     /**
@@ -84,17 +118,20 @@ public class DayFragment extends Fragment implements DayMvpView {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View mView = inflater.inflate(R.layout.fragment_day, container, false);
-        unbinder = ButterKnife.bind(this,mView);
+        unbinder = ButterKnife.bind(this, mView);
+        ButterKnife.bind(mEmptyView, emptyView);
 
         ((MainActivity) getActivity()).activityComponent().inject(this);
         mDayPresenter.attachView(this);
 
-        return mView;
-    }
+        mDate = getArguments().getSerializable(ARG_DATE) != null ?
+                (Date) getArguments().getSerializable(ARG_DATE) : new Date();
 
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+        mSwipeRefreshLayout.setSwipeableChildren(R.id.time_table_recycler_view);
+        mSwipeRefreshLayout.setColorSchemeResources(
+                R.color.swipe_color_1, R.color.swipe_color_2,
+                R.color.swipe_color_3, R.color.swipe_color_4);
+        mSwipeRefreshLayout.setOnRefreshListener(() -> mDayPresenter.syncDay(mDate));
 
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
@@ -112,9 +149,22 @@ public class DayFragment extends Fragment implements DayMvpView {
 
         mRecyclerView.setAdapter(mAdapter);
 
-        Date date = getArguments() != null ? (Date) getArguments()
-                .getSerializable(ARG_DATE) : new Date();
-        mDayPresenter.loadDay(date);
+        mDayPresenter.getDay(mDate);
+
+        return mView;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.menu_refresh) {
+            // We make sure that the SwipeRefreshLayout is displaying it's refreshing indicator
+            if (!mSwipeRefreshLayout.isRefreshing()) {
+                mSwipeRefreshLayout.setRefreshing(true);
+                mDayPresenter.syncDay(mDate);
+                return true;
+            }
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -127,13 +177,96 @@ public class DayFragment extends Fragment implements DayMvpView {
 
     /***** MVP View methods implementation *****/
 
+    @Override
+    public void setRefreshing() {
+        if (!mSwipeRefreshLayout.isRefreshing()) {
+            mSwipeRefreshLayout.setRefreshing(true);
+        }
+    }
+
+    @Override
+    public void stopRefreshing() {
+        mSwipeRefreshLayout.setRefreshing(false);
+    }
+
+    @Override
     public void clearDay() {
-        mEmptyView.setVisibility(View.VISIBLE);
+        showNoTimetableEmptyView();
         mAdapter.clear();
     }
 
-    public void setDay(Day day) {
-        mEmptyView.setVisibility(View.GONE);
+    @Override
+    public void setDay(List<Period> day) {
+        showEmptyView(false);
         mAdapter.update(day);
+    }
+
+    @Override
+    public void showEmptyView(boolean show) {
+        stopRefreshing();
+        if(show) {
+            emptyView.setVisibility(View.VISIBLE);
+        } else {
+            emptyView.setVisibility(View.GONE);
+        }
+    }
+
+    @Override
+    public void showNoTimetableEmptyView() {
+        mEmptyView.ImageView.setVisibility(View.GONE);
+        mEmptyView.TitleTextView.setText(R.string.no_classes);
+        mEmptyView.ContentTextView.setText(R.string.swipe_info);
+        mEmptyView.Button.setVisibility(View.GONE);
+
+        showEmptyView(true);
+    }
+
+    @Override
+    public void showNoConnectionErrorView() {
+        mEmptyView.ImageView.setVisibility(View.VISIBLE);
+        Drawable emptyDrawable = new IconDrawable(mContext,
+                Iconify.IconValue.zmdi_wifi_off)
+                .colorRes(android.R.color.darker_gray);
+        mEmptyView.ImageView.setImageDrawable(emptyDrawable);
+        mEmptyView.TitleTextView.setText(R.string.no_connection_title);
+        mEmptyView.ContentTextView.setText(R.string.no_connection_content);
+        mEmptyView.Button.setOnClickListener( v -> mDayPresenter.syncDay(mDate));
+        mEmptyView.Button.setVisibility(View.VISIBLE);
+
+        showEmptyView(true);
+    }
+
+    @Override
+    public void showNetworkErrorView(String error) {
+        Drawable emptyDrawable = new IconDrawable(mContext,
+                Iconify.IconValue.zmdi_network_alert)
+                .colorRes(android.R.color.darker_gray);
+        mEmptyView.ImageView.setImageDrawable(emptyDrawable);
+        mEmptyView.TitleTextView.setText(R.string.network_error_message);
+        mEmptyView.ContentTextView.setText(error);
+        mEmptyView.Button.setOnClickListener( v -> mDayPresenter.syncDay(mDate));
+        mEmptyView.Button.setVisibility(View.VISIBLE);
+
+        showEmptyView(true);
+    }
+
+    @Override
+    public void showEmptyErrorView() {
+        Drawable emptyDrawable = new IconDrawable(mContext,
+                Iconify.IconValue.zmdi_cloud_off)
+                .colorRes(android.R.color.darker_gray);
+        mEmptyView.ImageView.setImageDrawable(emptyDrawable);
+        mEmptyView.TitleTextView.setText(R.string.no_data_title);
+        mEmptyView.ContentTextView.setText(R.string.no_data_content);
+        mEmptyView.Button.setVisibility(View.GONE);
+
+        showEmptyView(true);
+    }
+
+    @Override
+    public void showError(String message) {
+        Timber.d("Error: %s", message);
+        stopRefreshing();
+        Miscellaneous.showSnackBar(mSwipeRefreshLayout, message);
     }
 }

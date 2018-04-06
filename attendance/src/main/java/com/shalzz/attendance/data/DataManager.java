@@ -4,9 +4,11 @@ import com.shalzz.attendance.data.local.DatabaseHelper;
 import com.shalzz.attendance.data.model.Day;
 import com.shalzz.attendance.data.model.ListFooter;
 import com.shalzz.attendance.data.local.PreferencesHelper;
+import com.shalzz.attendance.data.model.Period;
 import com.shalzz.attendance.data.model.Subject;
 import com.shalzz.attendance.data.model.User;
 import com.shalzz.attendance.data.remote.DataAPI;
+import com.shalzz.attendance.wrapper.DateHelper;
 
 import java.util.Date;
 import java.util.List;
@@ -31,20 +33,24 @@ public class DataManager {
         mPreferencesHelper = prefs;
     }
 
-    public Observable<Subject> syncSubjects() {
+    public Observable<Subject> getAttendance() {
         return mDataAPI.getAttendance()
                 .concatMap(subjects ->
                         RxJavaInterop.toV2Observable(mDatabaseHelper.setSubjects(subjects)));
     }
 
-    public Observable<List<Subject>> getSubjects(String filter) {
+    public Observable<List<Subject>> loadAttendance(String filter) {
         return RxJavaInterop.toV2Observable(mDatabaseHelper.getSubjects(filter));
     }
 
-    public Observable<Day> getDay(Date date) {
-        return RxJavaInterop.toV2Observable(mDatabaseHelper.getAbsentSubjects(date)
-                .zipWith(mDatabaseHelper.getPeriods(date),
-                        Day::create));
+    public Observable<Period> getDay(Date date) {
+        return mDataAPI.getTimetable(DateHelper.formatToTechnicalFormat(date))
+                .concatMap(periods ->
+                        RxJavaInterop.toV2Observable(mDatabaseHelper.addPeriods(periods)));
+    }
+
+    public Observable<List<Period>> loadDay(Date date) {
+        return RxJavaInterop.toV2Observable(mDatabaseHelper.getPeriods(date));
     }
 
     public Observable<User> getUser(String auth) {
@@ -64,8 +70,8 @@ public class DataManager {
         return RxJavaInterop.toV2Observable(mDatabaseHelper.getSubjectCount());
     }
 
-    public Observable<Integer> getPeriodCount() {
-        return RxJavaInterop.toV2Observable(mDatabaseHelper.getPeriodCount());
+    public Observable<Integer> getPeriodCount(Date date) {
+        return RxJavaInterop.toV2Observable(mDatabaseHelper.getPeriodCount(date));
     }
 
     public Observable<Integer> getUserCount() {
