@@ -22,6 +22,8 @@ public interface AttendanceMvpView extends MvpView {
 
     void updateLastSync();
 
+    void setRefreshing();
+
     void stopRefreshing();
 
     void showError(String message);

@@ -33,7 +33,7 @@ public class DataManager {
         mPreferencesHelper = prefs;
     }
 
-    public Observable<Subject> getAttendance() {
+    public Observable<Subject> syncAttendance() {
         return mDataAPI.getAttendance()
                 .concatMap(subjects ->
                         RxJavaInterop.toV2Observable(mDatabaseHelper.setSubjects(subjects)));
@@ -43,7 +43,7 @@ public class DataManager {
         return RxJavaInterop.toV2Observable(mDatabaseHelper.getSubjects(filter));
     }
 
-    public Observable<Period> getDay(Date date) {
+    public Observable<Period> syncDay(Date date) {
         return mDataAPI.getTimetable(DateHelper.formatToTechnicalFormat(date))
                 .concatMap(periods ->
                         RxJavaInterop.toV2Observable(mDatabaseHelper.addPeriods(periods)));

@@ -42,8 +42,9 @@ public class AttendancePresenter extends BasePresenter<AttendanceMvpView> {
 
     private DataManager mDataManager;
 
-    private Disposable mSyncDisposable;
     private Disposable mDisposable;
+    private Disposable mSyncDisposable;
+    private Disposable mDbDisposable;
     private Disposable mFooterDisposable;
 
     @Inject
@@ -59,13 +60,35 @@ public class AttendancePresenter extends BasePresenter<AttendanceMvpView> {
     @Override
     public void detachView() {
         super.detachView();
-        RxUtil.dispose(mSyncDisposable);
         RxUtil.dispose(mDisposable);
+        RxUtil.dispose(mSyncDisposable);
+        RxUtil.dispose(mDbDisposable);
+        RxUtil.dispose(mFooterDisposable);
     }
 
-    public void syncSubjects() {
+    public void getAttendance(String filter) {
+        checkViewAttached();
+        RxUtil.dispose(mDisposable);
+        mDisposable = mDataManager.getSubjectCount()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(count -> {
+                    if(isViewAttached()) {
+                        if (count == 0) {
+                            getMvpView().setRefreshing();
+                            syncAttendance();
+                        }
+                        loadAttendance(filter);
+                        loadListFooter();
+                    }
+                })
+                .doOnComplete(() -> RxUtil.dispose(mDisposable))
+                .subscribe();
+    }
+
+    public void syncAttendance() {
         RxUtil.dispose(mSyncDisposable);
-        mSyncDisposable = mDataManager.getAttendance()
+        mSyncDisposable = mDataManager.syncAttendance()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnComplete(() -> {
@@ -105,20 +128,19 @@ public class AttendancePresenter extends BasePresenter<AttendanceMvpView> {
                 .subscribe();
     }
 
-    public void loadSubjects(String filter) {
+    public void loadAttendance(String filter) {
         checkViewAttached();
-        RxUtil.dispose(mDisposable);
-        mDisposable = mDataManager.loadAttendance(filter)
+        RxUtil.dispose(mDbDisposable);
+        mDbDisposable = mDataManager.loadAttendance(filter)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new DisposableObserver<List<Subject>> () {
                     @Override
                     public void onNext(List<Subject> subjects) {
                         if (isViewAttached()) {
-                            getMvpView().addSubjects(subjects);
+                            if (subjects.size() > 0)
+                                getMvpView().addSubjects(subjects);
                         }
-                        if (subjects.size() <= 0)
-                            syncSubjects();
                     }
 
                     @Override

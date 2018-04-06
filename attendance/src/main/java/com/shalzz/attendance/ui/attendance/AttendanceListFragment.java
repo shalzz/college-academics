@@ -157,7 +157,7 @@ public class AttendanceListFragment extends Fragment implements
         mContext = getActivity();
         setHasOptionsMenu(true);
 
-        mSwipeRefreshLayout.setOnRefreshListener(() -> mPresenter.syncSubjects());
+        mSwipeRefreshLayout.setOnRefreshListener(() -> mPresenter.syncAttendance());
         mSwipeRefreshLayout.setSwipeableChildren(R.id.atten_recycler_view);
 
         // Set the color scheme of the SwipeRefreshLayout by providing 4 color resource ids
@@ -190,10 +190,7 @@ public class AttendanceListFragment extends Fragment implements
 
         mRecyclerView.setAdapter(mAdapter);
 
-        mProgress.setVisibility(View.VISIBLE);
-
-        mPresenter.loadSubjects(null);
-        mPresenter.loadListFooter();
+        mPresenter.getAttendance(null);
 
         return mView;
     }
@@ -219,7 +216,7 @@ public class AttendanceListFragment extends Fragment implements
             public boolean onQueryTextChange(String arg0) {
                 String filter = !TextUtils.isEmpty(arg0) ? arg0 : null;
                 clearSubjects();
-                mPresenter.loadSubjects(filter);
+                mPresenter.loadAttendance(filter);
                 return false;
             }
         });
@@ -231,7 +228,7 @@ public class AttendanceListFragment extends Fragment implements
             // We make sure that the SwipeRefreshLayout is displaying it's refreshing indicator
             if (!mSwipeRefreshLayout.isRefreshing()) {
                 mSwipeRefreshLayout.setRefreshing(true);
-                mPresenter.syncSubjects();
+                mPresenter.syncAttendance();
             }
             return true;
         }
@@ -397,8 +394,15 @@ public class AttendanceListFragment extends Fragment implements
     }
 
     @Override
+    public void setRefreshing() {
+        mProgress.setVisibility(View.VISIBLE);
+        mRecyclerView.setVisibility(View.GONE);
+    }
+
+    @Override
     public void stopRefreshing() {
         mProgress.setVisibility(View.GONE);
+        mRecyclerView.setVisibility(View.VISIBLE);
         mSwipeRefreshLayout.setRefreshing(false);
     }
 
@@ -412,7 +416,7 @@ public class AttendanceListFragment extends Fragment implements
     public void showRetryError(String message) {
         stopRefreshing();
         Snackbar.make(mRecyclerView, message, Snackbar.LENGTH_LONG)
-                .setAction("Retry", v -> mPresenter.syncSubjects())
+                .setAction("Retry", v -> mPresenter.syncAttendance())
                 .show();
     }
 
@@ -436,7 +440,7 @@ public class AttendanceListFragment extends Fragment implements
         mEmptyView.ImageView.setImageDrawable(emptyDrawable);
         mEmptyView.TitleTextView.setText("Network Error");
         mEmptyView.ContentTextView.setText(error);
-        mEmptyView.Button.setOnClickListener( v -> mPresenter.syncSubjects());
+        mEmptyView.Button.setOnClickListener( v -> mPresenter.syncAttendance());
         mEmptyView.Button.setVisibility(View.VISIBLE);
 
         showEmptyView(true);
@@ -450,7 +454,7 @@ public class AttendanceListFragment extends Fragment implements
         mEmptyView.ImageView.setImageDrawable(emptyDrawable);
         mEmptyView.TitleTextView.setText(R.string.no_connection_title);
         mEmptyView.ContentTextView.setText(R.string.no_connection_content);
-        mEmptyView.Button.setOnClickListener( v -> mPresenter.syncSubjects());
+        mEmptyView.Button.setOnClickListener( v -> mPresenter.syncAttendance());
         mEmptyView.Button.setVisibility(View.VISIBLE);
 
         showEmptyView(true);

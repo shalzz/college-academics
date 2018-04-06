@@ -22,7 +22,6 @@ package com.shalzz.attendance.ui.day;
 import com.shalzz.attendance.data.DataManager;
 import com.shalzz.attendance.data.model.Period;
 import com.shalzz.attendance.data.remote.RetrofitException;
-import com.shalzz.attendance.injection.ConfigPersistent;
 import com.shalzz.attendance.ui.base.BasePresenter;
 import com.shalzz.attendance.utils.RxUtil;
 
@@ -78,13 +77,14 @@ class DayPresenter extends BasePresenter<DayMvpView> {
                         loadDay(day);
                     }
                 })
+                .doOnComplete(() -> RxUtil.dispose(mDisposable))
                 .subscribe();
     }
 
     public void syncDay(Date day) {
         checkViewAttached();
         RxUtil.dispose(mNetworkDisposable);
-        mNetworkDisposable = mDataManager.getDay(day)
+        mNetworkDisposable = mDataManager.syncDay(day)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new DisposableObserver<Period>() {
