@@ -91,41 +91,48 @@ public class AttendancePresenter extends BasePresenter<AttendanceMvpView> {
         mSyncDisposable = mDataManager.syncAttendance()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnComplete(() -> {
-                    if(isViewAttached()) {
-                        getMvpView().updateLastSync();
+                .subscribeWith(new DisposableObserver<Subject>() {
+                    @Override
+                    public void onNext(Subject subject) {
+
                     }
-                })
-                .doOnError(throwable -> {
-                    if(!isViewAttached())
-                        return;
-                    if (!(throwable instanceof RetrofitException)) {
-                        Timber.e(throwable);
-                        return;
+
+                    @Override
+                    public void onError(Throwable throwable) {
+                        if(!isViewAttached())
+                            return;
+                        if (!(throwable instanceof RetrofitException)) {
+                            Timber.e(throwable);
+                            return;
+                        }
+                        RetrofitException error = (RetrofitException) throwable;
+                        if (error.getKind() == RetrofitException.Kind.UNEXPECTED) {
+                            Timber.e(throwable, error.getMessage());
+                            getMvpView().showError(error.getMessage());
+                        }
+                        else {
+                            mDataManager.getSubjectCount()
+                                    .subscribeOn(Schedulers.io())
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .doOnNext(count -> {
+                                        if (count > 0) {
+                                            getMvpView().showRetryError(error.getMessage());
+                                        }
+                                        else if (error.getKind() == RetrofitException.Kind.HTTP){
+                                            getMvpView().showNetworkErrorView(error.getMessage());
+                                        }
+                                        else if (error.getKind() == RetrofitException.Kind.NETWORK){
+                                            getMvpView().showNoConnectionErrorView();
+                                        }
+                                    });
+                        }
                     }
-                    RetrofitException error = (RetrofitException) throwable;
-                    if (error.getKind() == RetrofitException.Kind.UNEXPECTED) {
-                        Timber.e(throwable, error.getMessage());
-                        getMvpView().showError(error.getMessage());
+
+                    @Override
+                    public void onComplete() {
+
                     }
-                    else {
-                        mDataManager.getSubjectCount()
-                                .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .doOnNext(count -> {
-                                    if (count > 0) {
-                                        getMvpView().showRetryError(error.getMessage());
-                                    }
-                                    else if (error.getKind() == RetrofitException.Kind.HTTP){
-                                        getMvpView().showNetworkErrorView(error.getMessage());
-                                    }
-                                    else if (error.getKind() == RetrofitException.Kind.NETWORK){
-                                        getMvpView().showNoConnectionErrorView();
-                                    }
-                                });
-                    }
-                })
-                .subscribe();
+                });
     }
 
     public void loadAttendance(String filter) {

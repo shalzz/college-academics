@@ -107,7 +107,11 @@ class DayPresenter extends BasePresenter<DayMvpView> {
                                     .subscribeOn(Schedulers.io())
                                     .observeOn(AndroidSchedulers.mainThread())
                                     .doOnNext(count -> {
-                                        if (count > 0) {
+                                        if( !isViewAttached() ) {
+                                            //noinspection UnnecessaryReturnStatement
+                                            return;
+                                        }
+                                        else if (count > 0) {
                                             getMvpView().showError(error.getMessage());
                                         }
                                         else if (error.getKind() == RetrofitException.Kind.HTTP){

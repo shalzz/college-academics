@@ -9,14 +9,15 @@ import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
+import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
+import io.reactivex.Single;
 import io.reactivex.functions.Function;
 import retrofit2.Call;
 import retrofit2.CallAdapter;
 import retrofit2.Response;
 import retrofit2.Retrofit;
-import rx.functions.Func1;
 
 public class RxJava2ErrorCallAdapterFactory extends CallAdapter.Factory {
     private final RxJava2CallAdapterFactory original;
@@ -32,18 +33,18 @@ public class RxJava2ErrorCallAdapterFactory extends CallAdapter.Factory {
     }
 
     @Override
-    public CallAdapter<?, ?> get(Type returnType, Annotation[] annotations, Retrofit retrofit) {
+    public CallAdapter get(final Type returnType, final Annotation[] annotations, final Retrofit retrofit) {
         return new RxCallAdapterWrapper(retrofit,
-                original.get(returnType, annotations, retrofit),
-                mContext);
+                original.get(returnType, annotations,
+                retrofit), mContext);
     }
 
-    private static class RxCallAdapterWrapper implements CallAdapter<Observable<?>,Observable<?>> {
+    private static class RxCallAdapterWrapper implements CallAdapter {
         private final Retrofit retrofit;
-        private final CallAdapter<?,?> wrapped;
+        private final CallAdapter wrapped;
         private final Context context;
 
-        RxCallAdapterWrapper(Retrofit retrofit, CallAdapter<?,?> wrapped, Context context) {
+        RxCallAdapterWrapper(Retrofit retrofit, final CallAdapter wrapped, Context context) {
             this.retrofit = retrofit;
             this.wrapped = wrapped;
             this.context = context;
@@ -54,15 +55,29 @@ public class RxJava2ErrorCallAdapterFactory extends CallAdapter.Factory {
             return wrapped.responseType();
         }
 
+        @SuppressWarnings({"unchecked", "NullableProblems"})
         @Override
-        public Observable adapt(Call call) {
-            return ((Observable) wrapped.adapt(call))
-                    .onErrorResumeNext(new Function<Throwable, ObservableSource>() {
-                        @Override
-                        public ObservableSource apply(Throwable throwable) throws Exception {
-                            return Observable.error(asRetrofitException(throwable));
-                        }
-                    });
+        public Object adapt(Call call)
+        {
+            Object adaptedCall = wrapped.adapt(call);
+
+            if (adaptedCall instanceof Completable) {
+                return ((Completable) adaptedCall).onErrorResumeNext(
+                        throwable -> Completable.error(asRetrofitException(throwable)));
+            }
+
+            if (adaptedCall instanceof Single) {
+                return ((Single) adaptedCall).onErrorResumeNext(
+                        throwable -> Single.error(asRetrofitException((Throwable) throwable)));
+            }
+
+            if (adaptedCall instanceof Observable) {
+                return ((Observable) adaptedCall).onErrorResumeNext(
+                        (Function<? super Throwable, ? extends ObservableSource>)
+                                throwable -> Observable.error(asRetrofitException(throwable)));
+            }
+
+            throw new RuntimeException("Observable Type not supported");
         }
 
         private RetrofitException asRetrofitException(Throwable throwable) {
