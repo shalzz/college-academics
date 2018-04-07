@@ -20,16 +20,12 @@
 
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
 
-    <string name="app_url" translatable="false">http://www.github
-        .com/shalzz/college-academics</string>
+    <string name="app_url" translatable="false">http://www.github.com/shalzz/college-academics</string>
     <string name="copyright_year" translatable="false">Copyright © 2013&#8211;2018</string>
     <string name="app_copyright" translatable="false">Shaleen Jain &#60;shaleen.jain95@gmail.com&#62;</string>
     
     <!--API keys-->
     <string name="bugsnag_api" translatable="false">600a00bfd5bd72e5df7f288f74df8f9b</string>
-
-    <!--Network related strings-->
-    <string name="upesnet_ssid" translatable="false">UPESNET</string>
 
     <!--Preference Keys-->
     <string name="pref_key_sync">data_sync</string>
@@ -101,12 +97,6 @@
     <string name="pref_sync">Auto Refresh</string>
     <string name="pref_sync_summary">Periodically sync your attendance and timetable</string>
     <string name="pref_refresh">Refresh Interval</string>
-    <string name="pref_proxy">Proxy Authentication</string>
-    <string name="pref_proxy_summary">Configure proxy server settings</string>
-    <string name="pref_proxy_enable">Enable Proxy</string>
-    <string name="pref_proxy_enable_summary">Automatically set proxy when connected to \'UPESNET\'</string>
-    <string name="pref_proxy_username">Username</string>
-    <string name="pref_proxy_password">Password</string>
     <string name="pref_about">About</string>
     <string name="pref_author">Author</string>
     <string name="pref_notice">Open Source License</string>
