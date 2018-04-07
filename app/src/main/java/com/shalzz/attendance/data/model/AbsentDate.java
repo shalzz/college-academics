@@ -51,7 +51,7 @@ public abstract class AbsentDate implements AbsentDatesModel, Parcelable {
     public static final Factory<AbsentDate> FACTORY = new Factory<>(
             AutoValue_AbsentDate::new, DATE_ADAPTER);
 
-    public static final RowMapper<AbsentDate> MAPPER = FACTORY.select_by_idMapper();
+    public static final RowMapper<AbsentDate> MAPPER = FACTORY.selectByIdMapper();
 
     public static AbsentDate create(Integer subject_id, Date absent_date) {
         return new AutoValue_AbsentDate(subject_id, absent_date);

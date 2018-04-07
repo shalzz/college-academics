@@ -40,7 +40,7 @@ public abstract class Period implements PeriodModel, Parcelable {
     public static final Factory<Period> FACTORY =
             new Factory<>(AutoValue_Period::new);
 
-    public static final RowMapper<Period> MAPPER = FACTORY.select_by_dateMapper();
+    public static final RowMapper<Period> MAPPER = FACTORY.selectByDateMapper();
 
     public static TypeAdapter<Period> typeAdapter(com.google.gson.Gson gson) {
         return new AutoValue_Period.GsonTypeAdapter(gson);

@@ -23,5 +23,9 @@ SELECT sum(attended), sum(held)
 FROM subject;
 
 insertSubject:
-INSERT INTO subject(id, name, attended, held)
+INSERT OR REPLACE
+INTO subject(id, name, attended, held)
 VALUES (?, ?, ?, ?);
+
+deleteAll:
+DELETE FROM subject;

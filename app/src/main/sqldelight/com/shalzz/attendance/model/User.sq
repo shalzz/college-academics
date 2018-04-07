@@ -7,15 +7,23 @@ CREATE TABLE user (
     email TEXT
 );
 
-select_all:
+selectAll:
 SELECT *
 FROM user;
 
-select_by_id:
+selectById:
 SELECT *
 FROM user
 WHERE id = ? ;
 
-select_count:
+selectCount:
 SELECT count(*)
 FROM user;
+
+insertUser:
+INSERT OR REPLACE
+INTO user(id, roll_number, name, course, phone, email)
+VALUES (?, ?, ?, ?, ?, ?);
+
+deleteAll:
+DELETE FROM user;

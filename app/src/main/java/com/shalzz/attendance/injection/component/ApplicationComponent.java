@@ -51,7 +51,6 @@ public interface ApplicationComponent {
     Tracker tracker();
     DataAPI dataApi();
     PreferencesHelper preferenceManager();
-    DbOpenHelper databaseHandler();
     DatabaseHelper databaseHelper();
     DataManager dataManager();
 

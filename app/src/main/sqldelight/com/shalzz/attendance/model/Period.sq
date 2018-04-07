@@ -12,13 +12,24 @@ CREATE TABLE period (
     PRIMARY KEY(id, date)
 );
 
-select_by_date:
+selectByDate:
 SELECT *
 FROM period
 WHERE date = ?
 ORDER by start;
 
-select_count_by_date:
+selectCountByDate:
 SELECT count(*)
 FROM period
 WHERE date = ?;
+
+insertPeriod:
+INSERT OR REPLACE
+INTO period(id, name, teacher, room, batchid, batch, start, 'end', absent, date)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+deleteByDate:
+DELETE FROM period WHERE date = ?;
+
+deleteAll:
+DELETE FROM period;

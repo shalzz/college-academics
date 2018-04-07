@@ -31,7 +31,7 @@ import com.squareup.sqldelight.RowMapper;
 public abstract class User implements UserModel, Parcelable {
     public static final Factory<User> FACTORY = new Factory<>(AutoValue_User::new);
 
-    public static final RowMapper<User> MAPPER = FACTORY.select_allMapper();
+    public static final RowMapper<User> MAPPER = FACTORY.selectAllMapper();
 
     public static TypeAdapter<User> typeAdapter(Gson gson) {
         return new AutoValue_User.GsonTypeAdapter(gson);

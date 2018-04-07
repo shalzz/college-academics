@@ -19,6 +19,8 @@
 
 package com.shalzz.attendance.data.local;
 
+import android.arch.persistence.db.SupportSQLiteDatabase;
+import android.arch.persistence.db.SupportSQLiteOpenHelper;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -32,49 +34,26 @@ import com.shalzz.attendance.injection.ApplicationContext;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-@Singleton
-public class DbOpenHelper extends SQLiteOpenHelper {
+public class DbOpenHelper extends SupportSQLiteOpenHelper.Callback {
 
-    private static final String DATABASE_NAME = "academics.db";
+    public static final String DATABASE_NAME = "academics.db";
 
     public static final int DATABASE_VERSION = 10;
 
-    @Inject
-    public DbOpenHelper(@ApplicationContext Context context) {
-        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+    public DbOpenHelper() {
+        super(DATABASE_VERSION);
     }
 
     @Override
-    public void onConfigure(SQLiteDatabase db) {
-        super.onConfigure(db);
-        db.execSQL("PRAGMA foreign_keys=ON;");
-        db.enableWriteAheadLogging();
+    public void onCreate(SupportSQLiteDatabase db) {
+        db.execSQL(Subject.CREATE_TABLE);
+        db.execSQL(Period.CREATE_TABLE);
+        db.execSQL(User.CREATE_TABLE);
+        db.execSQL(AbsentDate.CREATE_TABLE);
     }
 
-    /**
-     * Create Tables.
-     */
     @Override
-    public void onCreate(SQLiteDatabase db) {
-        db.beginTransaction();
-        try {
-            db.execSQL(Subject.CREATE_TABLE);
-            db.execSQL(Period.CREATE_TABLE);
-            db.execSQL(User.CREATE_TABLE);
-            db.execSQL(AbsentDate.CREATE_TABLE);
-
-            //Add other tables here
-            db.setTransactionSuccessful();
-        } finally {
-            db.endTransaction();
-        }
-    }
-
-    /**
-     * Drop the table if it exist and create a new table.
-     */
-    @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+    public void onUpgrade(SupportSQLiteDatabase db, int oldVersion, int newVersion) {
         switch (oldVersion) {
             case 1:
             case 2:

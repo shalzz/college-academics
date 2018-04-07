@@ -5,12 +5,17 @@ CREATE TABLE absent (
     FOREIGN KEY (subject_id) REFERENCES subject(id) ON DELETE CASCADE
 );
 
-select_by_id:
+selectById:
 SELECT *
 FROM absent
 WHERE subject_id = ? ;
 
-select_absent_subjects:
+selectAbsentSubjects:
 SELECT *
 FROM absent
 WHERE absent_date = ?;
+
+insertAbsentDate:
+INSERT OR REPLACE
+INTO absent(subject_id, absent_date)
+VALUES (?, ?);

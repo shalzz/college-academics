@@ -70,9 +70,9 @@ public class NetworkModule {
                               @ApplicationContext Context context) {
         return new Retrofit.Builder()
                 .baseUrl(DataAPI.ENDPOINT)
-                .client(okHttpClient)
-                .addConverterFactory(GsonConverterFactory.create(gson))
                 .addCallAdapterFactory(RxJava2ErrorCallAdapterFactory.create(context))
+                .addConverterFactory(GsonConverterFactory.create(gson))
+                .client(okHttpClient)
                 .validateEagerly(BuildConfig.DEBUG) // Fail early: check Retrofit configuration at creation time in Debug build.
                 .build()
                 .create(DataAPI.class);

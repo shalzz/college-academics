@@ -73,7 +73,7 @@ public abstract class Subject implements SubjectModel, Parcelable {
 
     public static final Factory<Subject> FACTORY = new Factory<>(AutoValue_Subject::new, DATE_ADAPTER);
 
-    public static final RowMapper<Subject> MAPPER = FACTORY.select_like_nameMapper();
+    public static final RowMapper<Subject> MAPPER = FACTORY.selectLikeNameMapper();
 
     public static TypeAdapter<Subject> typeAdapter(com.google.gson.Gson gson) {
         return new AutoValue_Subject.GsonTypeAdapter(gson);

@@ -1,9 +1,8 @@
 package com.shalzz.attendance.data;
 
 import com.shalzz.attendance.data.local.DatabaseHelper;
-import com.shalzz.attendance.data.model.Day;
-import com.shalzz.attendance.data.model.ListFooter;
 import com.shalzz.attendance.data.local.PreferencesHelper;
+import com.shalzz.attendance.data.model.ListFooter;
 import com.shalzz.attendance.data.model.Period;
 import com.shalzz.attendance.data.model.Subject;
 import com.shalzz.attendance.data.model.User;
@@ -16,8 +15,8 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import hu.akarnokd.rxjava.interop.RxJavaInterop;
 import io.reactivex.Observable;
+
 
 @Singleton
 public class DataManager {
@@ -35,47 +34,45 @@ public class DataManager {
 
     public Observable<Subject> syncAttendance() {
         return mDataAPI.getAttendance()
-                .concatMap(subjects ->
-                        RxJavaInterop.toV2Observable(mDatabaseHelper.setSubjects(subjects)));
+                .concatMap(mDatabaseHelper::setSubjects);
     }
 
     public Observable<List<Subject>> loadAttendance(String filter) {
-        return RxJavaInterop.toV2Observable(mDatabaseHelper.getSubjects(filter));
+        return mDatabaseHelper.getSubjects(filter);
     }
 
     public Observable<Period> syncDay(Date date) {
         return mDataAPI.getTimetable(DateHelper.formatToTechnicalFormat(date))
-                .concatMap(periods ->
-                        RxJavaInterop.toV2Observable(mDatabaseHelper.addPeriods(periods)));
+                .concatMap(mDatabaseHelper::addPeriods);
     }
 
     public Observable<List<Period>> loadDay(Date date) {
-        return RxJavaInterop.toV2Observable(mDatabaseHelper.getPeriods(date));
+        return mDatabaseHelper.getPeriods(date);
     }
 
     public Observable<User> getUser(String auth) {
         return mDataAPI.getUser(auth)
-                .concatMap(user -> RxJavaInterop.toV2Observable(mDatabaseHelper.addUser(user)));
+                .concatMap(mDatabaseHelper::addUser);
     }
 
     public Observable<User> loadUser() {
-        return RxJavaInterop.toV2Observable(mDatabaseHelper.getUser());
+        return mDatabaseHelper.getUser();
     }
 
     public Observable<ListFooter> getListFooter() {
-        return RxJavaInterop.toV2Observable(mDatabaseHelper.getListFooter());
+        return mDatabaseHelper.getListFooter();
     }
 
     public Observable<Integer> getSubjectCount() {
-        return RxJavaInterop.toV2Observable(mDatabaseHelper.getSubjectCount());
+        return mDatabaseHelper.getSubjectCount();
     }
 
     public Observable<Integer> getPeriodCount(Date date) {
-        return RxJavaInterop.toV2Observable(mDatabaseHelper.getPeriodCount(date));
+        return mDatabaseHelper.getPeriodCount(date);
     }
 
     public Observable<Integer> getUserCount() {
-        return RxJavaInterop.toV2Observable(mDatabaseHelper.getUserCount());
+        return mDatabaseHelper.getUserCount();
     }
 
     public void resetTables() {
