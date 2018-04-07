@@ -27,6 +27,8 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -120,8 +122,9 @@ public class DayFragment extends Fragment implements DayMvpView {
         View mView = inflater.inflate(R.layout.fragment_day, container, false);
         unbinder = ButterKnife.bind(this, mView);
         ButterKnife.bind(mEmptyView, emptyView);
-
         ((MainActivity) getActivity()).activityComponent().inject(this);
+
+        setHasOptionsMenu(true);
         mDayPresenter.attachView(this);
 
         mDate = getArguments().getSerializable(ARG_DATE) != null ?
@@ -152,6 +155,11 @@ public class DayFragment extends Fragment implements DayMvpView {
         mDayPresenter.getDay(mDate);
 
         return mView;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.day, menu);
     }
 
     @Override

@@ -21,14 +21,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/menu_refresh"
-        android:orderInCategory="70"
-        android:icon="@drawable/refresh"
-        android:title="@string/menu_refresh"
-        app:showAsAction="ifRoom">
-    </item>
-
-    <item
         android:id="@+id/menu_today"
         android:orderInCategory="80"
         android:title="@string/menu_today"
@@ -39,13 +31,6 @@
         android:id="@+id/menu_date"
         android:orderInCategory="90"
         android:title="@string/menu_date"
-        app:showAsAction="never">
-    </item>
-
-    <item
-        android:id="@+id/menu_logout"
-        android:orderInCategory="100"
-        android:title="@string/menu_logout"
         app:showAsAction="never">
     </item>
 
