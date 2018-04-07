@@ -9,15 +9,19 @@ CREATE TABLE subject (
     absent_dates TEXT AS java.util.List<java.util.Date>
 );
 
-select_like_name:
+selectLikeName:
 SELECT *
 FROM subject
 WHERE name LIKE ? ;
 
-select_count:
+selectCount:
 SELECT count(*)
 FROM subject;
 
-select_total:
+selectTotal:
 SELECT sum(attended), sum(held)
 FROM subject;
+
+insertSubject:
+INSERT INTO subject(id, name, attended, held)
+VALUES (?, ?, ?, ?);

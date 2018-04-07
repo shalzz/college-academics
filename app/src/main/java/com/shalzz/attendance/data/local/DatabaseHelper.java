@@ -7,6 +7,7 @@ import com.shalzz.attendance.data.model.ListFooter;
 import com.shalzz.attendance.data.model.Period;
 import com.shalzz.attendance.data.model.Subject;
 import com.shalzz.attendance.data.model.User;
+import com.shalzz.attendance.model.SubjectModel;
 import com.shalzz.attendance.wrapper.DateHelper;
 import com.squareup.sqlbrite.BriteDatabase;
 import com.squareup.sqlbrite.SqlBrite;
@@ -32,12 +33,16 @@ import rx.schedulers.Schedulers;
 public class DatabaseHelper {
 
     private final BriteDatabase mDb;
+    private final Subject.InsertSubject insertSubject;
 
     @Inject
     public DatabaseHelper(DbOpenHelper dbOpenHelper) {
         SqlBrite sqlBrite = new SqlBrite.Builder().build();
         mDb = sqlBrite.wrapDatabaseHelper(dbOpenHelper, Schedulers.io());
 //        mDb.setLoggingEnabled(true);
+
+        SQLiteDatabase db = dbOpenHelper.getWritableDatabase();
+        insertSubject = new SubjectModel.InsertSubject(db);
     }
 
     public BriteDatabase getBriteDb() {
@@ -51,9 +56,11 @@ public class DatabaseHelper {
             try (BriteDatabase.Transaction transaction = mDb.newTransaction()) {
                 mDb.delete(Subject.TABLE_NAME, null);
                 for (Subject subject : newSubjects) {
-                    long result = mDb.insert(Subject.TABLE_NAME,
-                            Subject.FACTORY.marshal(subject).asContentValues(),
-                            SQLiteDatabase.CONFLICT_REPLACE);
+                    insertSubject.bind(subject.id(),
+                            subject.name(),
+                            subject.attended(),
+                            subject.held());
+                    long result = mDb.executeInsert(Subject.TABLE_NAME, insertSubject.program);
 
                     // Store the dates in another table corresponding to the same id
                     if (subject.absent_dates() != null) {
@@ -76,7 +83,7 @@ public class DatabaseHelper {
     public Observable<List<Subject>> getSubjects(String filter) {
         filter = filter == null ? "" : filter;
         filter = '%' + filter + '%';
-        SqlDelightStatement query = Subject.FACTORY.select_like_name(filter);
+        SqlDelightStatement query = Subject.FACTORY.selectLikeName(filter);
         return mDb.createQuery(query.tables, query.statement, query.args)
                 .mapToList(Subject.MAPPER::map);
     }
@@ -135,7 +142,7 @@ public class DatabaseHelper {
     }
 
     public Observable<ListFooter> getListFooter() {
-        SqlDelightStatement query = Subject.FACTORY.select_total();
+        SqlDelightStatement query = Subject.FACTORY.selectTotal();
         return mDb.createQuery(query.tables, query.statement, query.args)
                 .mapToOne(cursor -> ListFooter.builder()
                         .setAttended(cursor.getFloat(0))
@@ -144,7 +151,7 @@ public class DatabaseHelper {
     }
 
     public Observable<Integer> getSubjectCount() {
-        SqlDelightStatement query = Subject.FACTORY.select_count();
+        SqlDelightStatement query = Subject.FACTORY.selectCount();
         return mDb.createQuery(query.tables, query.statement, query.args)
                 .mapToOne(cursor -> cursor.getInt(0));
     }
