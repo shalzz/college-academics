@@ -72,9 +72,10 @@ public class AboutSettingsFragment extends PreferenceFragmentCompat {
     public void onResume() {
         super.onResume();
         mainActivity.setTitle(getString(R.string.about_settings_title));
+        int index = 0;
 
         PreferenceScreen prefScreen =  getPreferenceScreen();
-        Preference auth = prefScreen.getPreference(0);
+        Preference auth = prefScreen.getPreference(index++);
 
         auth.setSummary(getString(R.string.copyright_year)+ " "
                 + getString(R.string.app_copyright));
@@ -86,28 +87,28 @@ public class AboutSettingsFragment extends PreferenceFragmentCompat {
             return true;
         });
 
-        Preference pref = prefScreen.getPreference(1);
-        pref.setOnPreferenceClickListener(preference -> {
-            final String name = getString(R.string.app_name);
-            final String url = getString(R.string.app_url);
-            final String copyright = getString(R.string.copyright_year) + " "
-                                        + getString(R.string.app_copyright);
-            final License license = new GnuGeneralPublicLicense20();
-            final Notice notice = new Notice(name, url, copyright, license);
-            new LicensesDialog.Builder(mContext)
-                    .setNotices(notice)
-                    .setShowFullLicenseText(true)
-                    .build()
-                    .show();
+//        Preference pref = prefScreen.getPreference(index++);
+//        pref.setOnPreferenceClickListener(preference -> {
+//            final String name = getString(R.string.app_name);
+//            final String url = getString(R.string.app_url);
+//            final String copyright = getString(R.string.copyright_year) + " "
+//                                        + getString(R.string.app_copyright);
+//            final License license = new GnuGeneralPublicLicense20();
+//            final Notice notice = new Notice(name, url, copyright, license);
+//            new LicensesDialog.Builder(mContext)
+//                    .setNotices(notice)
+//                    .setShowFullLicenseText(true)
+//                    .build()
+//                    .show();
+//
+//            mTracker.send(new HitBuilders.EventBuilder()
+//                    .setCategory("Click")
+//                    .setAction("License")
+//                    .build());
+//            return true;
+//        });
 
-            mTracker.send(new HitBuilders.EventBuilder()
-                    .setCategory("Click")
-                    .setAction("License")
-                    .build());
-            return true;
-        });
-
-        Preference noticePref = prefScreen.getPreference(2);
+        Preference noticePref = prefScreen.getPreference(index++);
         noticePref.setOnPreferenceClickListener(preference -> {
             new LicensesDialog.Builder(mContext)
                     .setNotices(R.raw.notices)
@@ -122,7 +123,7 @@ public class AboutSettingsFragment extends PreferenceFragmentCompat {
             return true;
         });
 
-        Preference versionPref = prefScreen.getPreference(3);
+        Preference versionPref = prefScreen.getPreference(index++);
         versionPref.setSummary(BuildConfig.VERSION_NAME);
         versionPref.setOnPreferenceClickListener(preference -> {
             mTracker.send(new HitBuilders.EventBuilder()
