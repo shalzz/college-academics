@@ -32,12 +32,11 @@ public class RetrofitException extends RuntimeException {
         return new RetrofitException(message, url, response, Kind.HTTP, null, retrofit);
     }
 
-//    static RetrofitException emptyResponseError(String url, Response response,
-//                                                       Retrofit retrofit, Context context) {
-//        String message = context.getString(R.string.no_data_content);
-//        return new RetrofitException(message, url, response, Kind.EMPTY_RESPONSE,
-//                null, retrofit);
-//    }
+    static RetrofitException emptyResponseError(Retrofit retrofit, Context context) {
+        String message = context.getString(R.string.no_data_content);
+        return new RetrofitException(message, null, null, Kind.EMPTY_RESPONSE,
+                null, retrofit);
+    }
 
     static RetrofitException networkError(IOException exception, Context context) {
         String message = context.getString(R.string.no_internet);
@@ -56,7 +55,7 @@ public class RetrofitException extends RuntimeException {
         /** A non-200 HTTP status code was received from the server. */
         HTTP,
         /** An empty response body was received from the server. */
-//        EMPTY_RESPONSE,
+        EMPTY_RESPONSE,
         /**
          * An internal error occurred while attempting to execute a request. It is best practice to
          * re-throw this exception so your application crashes.
