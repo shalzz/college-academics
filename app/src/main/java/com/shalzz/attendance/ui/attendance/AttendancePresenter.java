@@ -42,7 +42,6 @@ public class AttendancePresenter extends BasePresenter<AttendanceMvpView> {
 
     private DataManager mDataManager;
 
-    private Disposable mDisposable;
     private Disposable mSyncDisposable;
     private Disposable mDbDisposable;
     private Disposable mFooterDisposable;
@@ -60,51 +59,25 @@ public class AttendancePresenter extends BasePresenter<AttendanceMvpView> {
     @Override
     public void detachView() {
         super.detachView();
-        RxUtil.dispose(mDisposable);
         RxUtil.dispose(mSyncDisposable);
         RxUtil.dispose(mDbDisposable);
         RxUtil.dispose(mFooterDisposable);
     }
 
-    public void getAttendance(String filter) {
-        checkViewAttached();
-        RxUtil.dispose(mDisposable);
-        mDisposable = mDataManager.getSubjectCount()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(count -> {
-                    if(isViewAttached()) {
-                        if (count == 0) {
-                            getMvpView().setRefreshing();
-                            syncAttendance();
-                        }
-                        loadAttendance(filter);
-                        loadListFooter();
-                    }
-                })
-                .doOnComplete(() -> RxUtil.dispose(mDisposable))
-                .subscribe();
-    }
-
     public void syncAttendance() {
+        checkViewAttached();
         RxUtil.dispose(mSyncDisposable);
         mSyncDisposable = mDataManager.syncAttendance()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new DisposableObserver<Subject>() {
                     @Override
-                    public void onNext(Subject subject) {
-
-                    }
+                    public void onNext(Subject subject) { }
 
                     @Override
                     public void onError(Throwable throwable) {
                         if(!isViewAttached())
                             return;
-                        if (!(throwable instanceof RetrofitException)) {
-                            Timber.e(throwable);
-                            return;
-                        }
                         RetrofitException error = (RetrofitException) throwable;
                         if (error.getKind() == RetrofitException.Kind.UNEXPECTED) {
                             Timber.e(throwable, error.getMessage());
@@ -115,7 +88,11 @@ public class AttendancePresenter extends BasePresenter<AttendanceMvpView> {
                                     .subscribeOn(Schedulers.io())
                                     .observeOn(AndroidSchedulers.mainThread())
                                     .doOnNext(count -> {
-                                        if (count > 0) {
+                                        if( !isViewAttached() ) {
+                                            //noinspection UnnecessaryReturnStatement
+                                            return;
+                                        }
+                                        else if (count > 0) {
                                             getMvpView().showRetryError(error.getMessage());
                                         }
                                         else if (error.getKind() == RetrofitException.Kind.HTTP){
@@ -123,14 +100,19 @@ public class AttendancePresenter extends BasePresenter<AttendanceMvpView> {
                                         }
                                         else if (error.getKind() == RetrofitException.Kind.NETWORK){
                                             getMvpView().showNoConnectionErrorView();
+                                        } else if (error.getKind() == RetrofitException.Kind.EMPTY_RESPONSE) {
+                                            getMvpView().showEmptyErrorView();
+                                            // Prevent recursive calls
+                                            mDbDisposable.dispose();
                                         }
-                                    });
+                                    })
+                                    .subscribe();
                         }
                     }
 
                     @Override
                     public void onComplete() {
-
+                        mSyncDisposable.dispose();
                     }
                 });
     }
@@ -145,8 +127,18 @@ public class AttendancePresenter extends BasePresenter<AttendanceMvpView> {
                     @Override
                     public void onNext(List<Subject> subjects) {
                         if (isViewAttached()) {
-                            if (subjects.size() > 0)
+                            // if data is null
+                            // sync with network
+                            // while showing the loading screen
+                            // otherwise load the attendance
+                            // as well as the listfooter
+                            if (subjects.size() == 0) {
+                                getMvpView().setRefreshing();
+                                syncAttendance();
+                            } else {
                                 getMvpView().addSubjects(subjects);
+                                loadListFooter();
+                            }
                         }
                     }
 

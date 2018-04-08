@@ -190,7 +190,7 @@ public class AttendanceListFragment extends Fragment implements
 
         mRecyclerView.setAdapter(mAdapter);
 
-        mPresenter.getAttendance(null);
+        mPresenter.loadAttendance(null);
 
         return mView;
     }
@@ -389,11 +389,6 @@ public class AttendanceListFragment extends Fragment implements
     }
 
     @Override
-    public void updateLastSync() {
-//        ((MainActivity) getActivity()).updateLastSync();
-    }
-
-    @Override
     public void setRefreshing() {
         mProgress.setVisibility(View.VISIBLE);
         mRecyclerView.setVisibility(View.GONE);
@@ -470,7 +465,6 @@ public class AttendanceListFragment extends Fragment implements
         mEmptyView.ContentTextView.setText(R.string.no_data_content);
         mEmptyView.Button.setVisibility(View.GONE);
 
-        updateLastSync();
         showEmptyView(true);
     }
 }

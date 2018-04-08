@@ -20,8 +20,6 @@ public interface AttendanceMvpView extends MvpView {
 
     void showcaseView();
 
-    void updateLastSync();
-
     void setRefreshing();
 
     void stopRefreshing();

@@ -94,6 +94,7 @@ class DayPresenter extends BasePresenter<DayMvpView> {
 
                     @Override
                     public void onError(Throwable throwable) {
+                        Timber.e(throwable);
                         if(!isViewAttached())
                             return;
                         getMvpView().stopRefreshing();

@@ -8,16 +8,21 @@ import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import io.reactivex.Completable;
 import io.reactivex.Observable;
-import io.reactivex.ObservableSource;
 import io.reactivex.Single;
-import io.reactivex.functions.Function;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.observers.DisposableObserver;
+import io.reactivex.schedulers.Schedulers;
 import retrofit2.Call;
 import retrofit2.CallAdapter;
 import retrofit2.Response;
 import retrofit2.Retrofit;
+import timber.log.Timber;
 
 public class RxJava2ErrorCallAdapterFactory extends CallAdapter.Factory {
     private final RxJava2CallAdapterFactory original;
@@ -72,9 +77,36 @@ public class RxJava2ErrorCallAdapterFactory extends CallAdapter.Factory {
             }
 
             if (adaptedCall instanceof Observable) {
-                return ((Observable) adaptedCall).onErrorResumeNext(
-                        (Function<? super Throwable, ? extends ObservableSource>)
-                                throwable -> Observable.error(asRetrofitException(throwable)));
+                return Observable.create(source -> {
+                    if (source.isDisposed()) return;
+
+                    ((Observable) adaptedCall)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribeWith(new DisposableObserver() {
+                                @Override
+                                public void onNext(Object object) {
+                                    Timber.d("next: %s",object);
+                                    if (object instanceof List && ((List)object).isEmpty() ) {
+                                        source.tryOnError(RetrofitException.
+                                                        emptyResponseError(retrofit, context));
+                                    } else {
+                                        source.onNext(object);
+                                    }
+                                }
+
+                                @Override
+                                public void onError(Throwable e) {
+                                    source.onError(asRetrofitException(e));
+                                }
+
+                                @Override
+                                public void onComplete() {
+                                    source.onComplete();
+                                }
+                            });
+
+                });
             }
 
             throw new RuntimeException("Observable Type not supported");
