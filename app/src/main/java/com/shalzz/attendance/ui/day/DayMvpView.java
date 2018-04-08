@@ -1,6 +1,5 @@
 package com.shalzz.attendance.ui.day;
 
-import com.shalzz.attendance.data.model.Day;
 import com.shalzz.attendance.data.model.Period;
 import com.shalzz.attendance.ui.base.MvpView;
 

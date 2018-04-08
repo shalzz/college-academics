@@ -28,7 +28,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.shalzz.attendance.R;
-import com.shalzz.attendance.data.model.Day;
 import com.shalzz.attendance.data.model.Period;
 
 import java.util.List;
