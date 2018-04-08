@@ -68,12 +68,12 @@ public class DataManager {
         return mDatabaseHelper.getSubjectCount().first(0);
     }
 
-    public Observable<Integer> getPeriodCount(Date date) {
-        return mDatabaseHelper.getPeriodCount(date);
+    public Single<Integer> getPeriodCount(Date date) {
+        return mDatabaseHelper.getPeriodCount(date).first(0);
     }
 
-    public Observable<Integer> getUserCount() {
-        return mDatabaseHelper.getUserCount();
+    public Single<Integer> getUserCount() {
+        return mDatabaseHelper.getUserCount().first(0);
     }
 
     public void resetTables() {
