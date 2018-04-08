@@ -152,7 +152,7 @@ public class DayFragment extends Fragment implements DayMvpView {
 
         mRecyclerView.setAdapter(mAdapter);
 
-        mDayPresenter.getDay(mDate);
+        mDayPresenter.loadDay(mDate);
 
         return mView;
     }
@@ -254,19 +254,6 @@ public class DayFragment extends Fragment implements DayMvpView {
         mEmptyView.ContentTextView.setText(error);
         mEmptyView.Button.setOnClickListener( v -> mDayPresenter.syncDay(mDate));
         mEmptyView.Button.setVisibility(View.VISIBLE);
-
-        showEmptyView(true);
-    }
-
-    @Override
-    public void showEmptyErrorView() {
-        Drawable emptyDrawable = new IconDrawable(mContext,
-                Iconify.IconValue.zmdi_cloud_off)
-                .colorRes(android.R.color.darker_gray);
-        mEmptyView.ImageView.setImageDrawable(emptyDrawable);
-        mEmptyView.TitleTextView.setText(R.string.no_data_title);
-        mEmptyView.ContentTextView.setText(R.string.no_data_content);
-        mEmptyView.Button.setVisibility(View.GONE);
 
         showEmptyView(true);
     }

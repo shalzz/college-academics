@@ -40,7 +40,6 @@ class DayPresenter extends BasePresenter<DayMvpView> {
 
     private DataManager mDataManager;
 
-    private Disposable mDisposable;
     private Disposable mNetworkDisposable;
     private Disposable mDbDisposable;
 
@@ -57,28 +56,8 @@ class DayPresenter extends BasePresenter<DayMvpView> {
     @Override
     public void detachView() {
         super.detachView();
-        RxUtil.dispose(mDisposable);
         RxUtil.dispose(mNetworkDisposable);
         RxUtil.dispose(mDbDisposable);
-    }
-
-    public void getDay(Date day) {
-        checkViewAttached();
-        RxUtil.dispose(mDisposable);
-        mDisposable = mDataManager.getPeriodCount(day)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(count -> {
-                    if(isViewAttached()) {
-                        if (count == 0) {
-                            getMvpView().setRefreshing();
-                            syncDay(day);
-                        }
-                        loadDay(day);
-                    }
-                })
-                .doOnComplete(() -> RxUtil.dispose(mDisposable))
-                .subscribe();
     }
 
     public void syncDay(Date day) {
@@ -120,6 +99,10 @@ class DayPresenter extends BasePresenter<DayMvpView> {
                                         }
                                         else if (error.getKind() == RetrofitException.Kind.NETWORK){
                                             getMvpView().showNoConnectionErrorView();
+                                        } else if (error.getKind() == RetrofitException.Kind.EMPTY_RESPONSE) {
+                                            getMvpView().clearDay();
+                                            // Prevent recursive calls
+                                            mDbDisposable.dispose();
                                         }
                                     })
                                     .subscribe();
@@ -128,9 +111,8 @@ class DayPresenter extends BasePresenter<DayMvpView> {
 
                     @Override
                     public void onComplete() {
-                        if (isViewAttached()) {
-                            getMvpView().stopRefreshing();
-                        }
+                        // close any db observables
+                        mNetworkDisposable.dispose();
                     }
                 });
     }
@@ -147,7 +129,8 @@ class DayPresenter extends BasePresenter<DayMvpView> {
                         if(!isViewAttached())
                             return;
                         if (periods.size() == 0) {
-                            getMvpView().clearDay();
+                            getMvpView().setRefreshing();
+                            syncDay(day);
                         } else {
                             getMvpView().setDay(periods);
                         }

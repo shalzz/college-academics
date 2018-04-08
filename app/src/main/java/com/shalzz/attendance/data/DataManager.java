@@ -16,6 +16,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import io.reactivex.Observable;
+import io.reactivex.Single;
 
 
 @Singleton
@@ -63,8 +64,8 @@ public class DataManager {
         return mDatabaseHelper.getListFooter();
     }
 
-    public Observable<Integer> getSubjectCount() {
-        return mDatabaseHelper.getSubjectCount();
+    public Single<Integer> getSubjectCount() {
+        return mDatabaseHelper.getSubjectCount().first(0);
     }
 
     public Observable<Integer> getPeriodCount(Date date) {

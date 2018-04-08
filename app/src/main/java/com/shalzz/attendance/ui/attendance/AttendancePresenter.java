@@ -34,6 +34,7 @@ import javax.inject.Inject;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.observers.DisposableObserver;
+import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
@@ -87,26 +88,33 @@ public class AttendancePresenter extends BasePresenter<AttendanceMvpView> {
                             mDataManager.getSubjectCount()
                                     .subscribeOn(Schedulers.io())
                                     .observeOn(AndroidSchedulers.mainThread())
-                                    .doOnNext(count -> {
-                                        if( !isViewAttached() ) {
-                                            //noinspection UnnecessaryReturnStatement
-                                            return;
+                                    .subscribeWith(new DisposableSingleObserver<Integer>() {
+                                        @Override
+                                        public void onSuccess(Integer count) {
+                                            if( !isViewAttached() ) {
+                                                //noinspection UnnecessaryReturnStatement
+                                                return;
+                                            }
+                                            else if (count > 0) {
+                                                getMvpView().showRetryError(error.getMessage());
+                                            }
+                                            else if (error.getKind() == RetrofitException.Kind.HTTP){
+                                                getMvpView().showNetworkErrorView(error.getMessage());
+                                            }
+                                            else if (error.getKind() == RetrofitException.Kind.NETWORK){
+                                                getMvpView().showNoConnectionErrorView();
+                                            } else if (error.getKind() == RetrofitException.Kind.EMPTY_RESPONSE) {
+                                                getMvpView().showEmptyErrorView();
+                                                // Prevent recursive calls
+                                                mDbDisposable.dispose();
+                                            }
                                         }
-                                        else if (count > 0) {
-                                            getMvpView().showRetryError(error.getMessage());
+
+                                        @Override
+                                        public void onError(Throwable e) {
+                                            Timber.e(e);
                                         }
-                                        else if (error.getKind() == RetrofitException.Kind.HTTP){
-                                            getMvpView().showNetworkErrorView(error.getMessage());
-                                        }
-                                        else if (error.getKind() == RetrofitException.Kind.NETWORK){
-                                            getMvpView().showNoConnectionErrorView();
-                                        } else if (error.getKind() == RetrofitException.Kind.EMPTY_RESPONSE) {
-                                            getMvpView().showEmptyErrorView();
-                                            // Prevent recursive calls
-                                            mDbDisposable.dispose();
-                                        }
-                                    })
-                                    .subscribe();
+                                    });
                         }
                     }
 
