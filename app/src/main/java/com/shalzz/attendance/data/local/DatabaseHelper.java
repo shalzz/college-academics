@@ -5,6 +5,7 @@ import android.arch.persistence.db.SupportSQLiteOpenHelper;
 import android.arch.persistence.db.SupportSQLiteOpenHelper.Configuration;
 import android.arch.persistence.db.framework.FrameworkSQLiteOpenHelperFactory;
 import android.content.Context;
+import android.os.Build;
 
 import com.shalzz.attendance.data.model.AbsentDate;
 import com.shalzz.attendance.data.model.ListFooter;
@@ -60,7 +61,10 @@ public class DatabaseHelper {
                 .build();
         Factory factory = new FrameworkSQLiteOpenHelperFactory();
         SupportSQLiteOpenHelper helper = factory.create(configuration);
-//        helper.setWriteAheadLoggingEnabled(true);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            helper.setWriteAheadLoggingEnabled(true);
+        }
         mDb = sqlBrite.wrapDatabaseHelper(helper, Schedulers.io());
         mDb.setLoggingEnabled(true);
 
@@ -75,8 +79,8 @@ public class DatabaseHelper {
     }
 
     public Observable<Subject> setSubjects(final Collection<Subject> newSubjects) {
-        return Observable.create(subscriber -> {
-            if (subscriber.isDisposed()) return;
+        return Observable.create(source -> {
+            if (source.isDisposed()) return;
 
             try (BriteDatabase.Transaction transaction = mDb.newTransaction()) {
                 mDb.executeUpdateDelete(deleteAllSubjects.getTable(), deleteAllSubjects);
@@ -94,10 +98,10 @@ public class DatabaseHelper {
                             mDb.executeInsert(insertAbsentDate.getTable(), insertAbsentDate);
                         }
                     }
-                    if (result >= 0) subscriber.onNext(subject);
+                    if (result >= 0) source.onNext(subject);
                 }
                 transaction.markSuccessful();
-                subscriber.onComplete();
+                source.onComplete();
             }
         });
     }
