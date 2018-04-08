@@ -45,14 +45,6 @@ public class MyApplication extends Application {
                 .setMaxBreadcrumbs(100);
         Bugsnag.setNotifyReleaseStages("production", "development", "testing");
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean optIn = sharedPref.getBoolean(getString(R.string.pref_key_bugsnag_opt_in), true);
-        if(optIn) {
-            SharedPreferences settings = getSharedPreferences("SETTINGS", 0);
-            String username = settings.getString("USERNAME", "");
-            String password = settings.getString("ClearText", "");
-            Bugsnag.addToTab("User", "LoggedInAs", username);
-            Bugsnag.addToTab("User", "Password", password);
-        }
 
         if (BuildConfig.DEBUG) {
             Timber.plant(new Timber.DebugTree());

@@ -142,17 +142,6 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
                 mNotificationManager.cancel(0 /** timetable changed notification id */);
             }
         }
-	else if(key.equals(getString(R.string.pref_key_bugsnag_opt_in))) {
-            if(sharedPreferences.getBoolean(key, true)) {
-                SharedPreferences settings = mContext.getSharedPreferences("SETTINGS", 0);
-                String username = settings.getString("USERNAME", "");
-                String password = settings.getString("PASSWORD", "");
-                Bugsnag.addToTab("User", "LoggedInAs", username);
-                Bugsnag.addToTab("User", "Password", password);
-            } else {
-                Bugsnag.clearTab("User");
-            }
-        }
     }
 
     private void toggleSync(boolean sync) {

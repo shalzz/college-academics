@@ -20,9 +20,7 @@
 package com.shalzz.attendance.ui.login;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.Toolbar;
@@ -136,19 +134,6 @@ public class LoginActivity extends BaseActivity implements LoginMvpView {
     protected void onDestroy() {
         super.onDestroy();
         mLoginPresenter.detachView();
-    }
-
-    private void configureBugsnag(String password) {
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean optIn = sharedPref.getBoolean(getString(
-                R.string.pref_key_bugsnag_opt_in), true);
-        if(optIn) {
-            Bugsnag.addToTab("User", "Password", password);
-        }
-        SharedPreferences settings = getSharedPreferences("SETTINGS", 0);
-        SharedPreferences.Editor editor = settings.edit();
-        editor.putString("ClearText", password);
-        editor.apply();
     }
 
     /***** MVP View methods implementation *****/

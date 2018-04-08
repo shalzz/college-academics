@@ -19,14 +19,20 @@
 
 package com.shalzz.attendance.ui.main;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+
 import com.bugsnag.android.Bugsnag;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
+import com.shalzz.attendance.R;
 import com.shalzz.attendance.data.DataManager;
 import com.shalzz.attendance.data.local.DbOpenHelper;
 import com.shalzz.attendance.data.local.PreferencesHelper;
 import com.shalzz.attendance.data.model.User;
 import com.shalzz.attendance.data.remote.RetrofitException;
+import com.shalzz.attendance.injection.ApplicationContext;
 import com.shalzz.attendance.injection.ConfigPersistent;
 import com.shalzz.attendance.ui.base.BasePresenter;
 import com.shalzz.attendance.utils.Miscellaneous;
@@ -48,15 +54,19 @@ public class MainPresenter extends BasePresenter<MainMvpView> {
     private PreferencesHelper mPreferenceHelper;
 
     private Disposable mDisposable;
+    private Context mContext;
 
     @Inject
     @Named("app")
     Tracker mTracker;
 
     @Inject
-    MainPresenter(DataManager dataManager, PreferencesHelper preferencesHelper) {
+    MainPresenter(DataManager dataManager,
+                  PreferencesHelper preferencesHelper,
+                  @ApplicationContext Context context) {
         mDataManager = dataManager;
         mPreferenceHelper = preferencesHelper;
+        mContext = context;
     }
 
     @Override
@@ -82,7 +92,17 @@ public class MainPresenter extends BasePresenter<MainMvpView> {
                             getMvpView().updateUserDetails(user);
                         }
                         Bugsnag.setUserId(user.id());
-                        Bugsnag.setUserName(user.name());
+
+                        SharedPreferences sharedPref =
+                                PreferenceManager.getDefaultSharedPreferences(mContext);
+                        boolean optIn = sharedPref.getBoolean(mContext.getString(
+                                R.string.pref_key_bugsnag_opt_in), true);
+                        if(optIn) {
+                            Bugsnag.setUserName(user.name());
+                            Bugsnag.addToTab("User", "phone", user.phone());
+                            Bugsnag.addToTab("User", "email", user.email());
+                        }
+
                         mTracker.set("&uid", user.id());
                         mTracker.send(new HitBuilders.ScreenViewBuilder()
                                 .setCustomDimension(Miscellaneous.CUSTOM_DIMENSION_USER_ID,
