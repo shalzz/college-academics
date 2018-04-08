@@ -7,6 +7,7 @@ import android.arch.persistence.db.framework.FrameworkSQLiteOpenHelperFactory;
 import android.content.Context;
 import android.os.Build;
 
+import com.shalzz.attendance.BuildConfig;
 import com.shalzz.attendance.data.model.AbsentDate;
 import com.shalzz.attendance.data.model.ListFooter;
 import com.shalzz.attendance.data.model.Period;
@@ -66,7 +67,9 @@ public class DatabaseHelper {
             helper.setWriteAheadLoggingEnabled(true);
         }
         mDb = sqlBrite.wrapDatabaseHelper(helper, Schedulers.io());
-        mDb.setLoggingEnabled(true);
+        if (BuildConfig.DEBUG) {
+            mDb.setLoggingEnabled(true);
+        }
 
         SupportSQLiteDatabase db = mDb.getWritableDatabase();
         insertSubject = new SubjectModel.InsertSubject(db);
