@@ -3,7 +3,7 @@ deploy: check-env
 	git push
 	git checkout master
 	git merge dev --no-edit
-	git tag -as $(TAG)
+	git tag -a $(TAG)
 	git push && git push --tags
 	git checkout dev
 
