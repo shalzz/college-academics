@@ -22,9 +22,11 @@ package com.shalzz.attendance.injection.module;
 import android.app.Application;
 import android.content.Context;
 
+import com.google.android.gms.analytics.Tracker;
 import com.shalzz.attendance.injection.ApplicationContext;
 import com.shalzz.attendance.data.remote.DataAPI;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -62,6 +64,13 @@ public class ApplicationTestModule {
     @Singleton
     DataAPI provideDataAPIService() {
         return mock(DataAPI.class);
+    }
+
+    @Provides
+    @Named("app")
+    @Singleton
+    synchronized Tracker provideTracker(@ApplicationContext Context context) {
+        return mock(Tracker.class);
     }
 
 }

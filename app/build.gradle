@@ -152,9 +152,14 @@ android {
 
         compileOnly "com.jakewharton.auto.value:auto-value-annotations:$AUTO_VALUE_VERSION"
         implementation "com.google.auto.value:auto-value:$AUTO_VALUE_VERSION"
-        annotationProcessor     "com.google.auto.value:auto-value:$AUTO_VALUE_VERSION"
+        def autoValueCompiler = "com.google.auto.value:auto-value:$AUTO_VALUE_VERSION"
+        annotationProcessor     autoValueCompiler
+        testAnnotationProcessor autoValueCompiler
+        androidTestAnnotationProcessor autoValueCompiler
+
         compileOnly "com.ryanharter.auto.value:auto-value-gson:$AUTO_VALUE_GSON_VERSION"
         annotationProcessor     "com.ryanharter.auto.value:auto-value-gson:$AUTO_VALUE_GSON_VERSION"
+
         annotationProcessor     "com.ryanharter.auto.value:auto-value-parcel:$AUTO_VALUE_PARCEL_VERSION"
         implementation "com.ryanharter.auto.value:auto-value-parcel-adapter:$AUTO_VALUE_PARCEL_VERSION"
 
