@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2013-2016 Shaleen Jain <shaleen.jain95@gmail.com>
+  ~
+  ~ This file is part of UPES Academics.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="96dp"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_marginLeft="@dimen/activity_vertical_margin"
+                android:layout_marginStart="@dimen/activity_vertical_margin"
+                android:layout_marginRight="@dimen/activity_vertical_margin"
+                android:layout_marginEnd="@dimen/activity_vertical_margin"
+                android:paddingBottom="5dp"
+                android:theme="@style/ThemeOverlay.AppCompat.Dark"
+                tools:background="#ff303030"
+                android:gravity="bottom">
+
+    <TextView
+        android:id="@+id/drawer_header_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="28dp"
+        android:paddingTop="5dp"
+        android:text="Name"
+        android:textColor="@color/list_item_title"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/drawer_header_course"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/drawer_header_name"
+        android:text="Course"
+        android:textColor="@android:color/darker_gray"
+        android:textSize="13sp" />
+
+    <TextView
+        android:id="@+id/last_refreshed"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/drawer_header_course"
+        android:gravity="end"
+        android:paddingTop="3dp"
+        android:text="Last refreshed 0 minutes ago"
+        android:textColor="@android:color/darker_gray"
+        android:visibility="gone"
+        android:textSize="13sp"/>
+
+</RelativeLayout>

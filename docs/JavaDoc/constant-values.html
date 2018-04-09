@@ -116,77 +116,77 @@
 </tr>
 <tbody>
 <tr class="altColor">
-<td class="colFirst"><a name="com.shalzz.attendance.DatabaseHandler.CREATE_ATTENDANCE_TABLE">
+<td class="colFirst"><a name="com.shalzz.attendance.data.local.DatabaseHandler.CREATE_ATTENDANCE_TABLE">
 <!--   -->
 </a><code>private&nbsp;static&nbsp;final&nbsp;java.lang.String</code></td>
 <td><code><a href="com/shalzz/attendance/DatabaseHandler.html#CREATE_ATTENDANCE_TABLE">CREATE_ATTENDANCE_TABLE</a></code></td>
 <td class="colLast"><code>"CREATE TABLE Attendance ( id INTEGER PRIMARY KEY, Subject_Name TEXT, No_Classes_Held REAL, No_Classes_Attended REAL, lastUpdated INTEGER, Days_Absent TEXT );"</code></td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><a name="com.shalzz.attendance.DatabaseHandler.CREATE_DAYS_ABSENT_TABLE">
+<td class="colFirst"><a name="com.shalzz.attendance.data.local.DatabaseHandler.CREATE_DAYS_ABSENT_TABLE">
 <!--   -->
 </a><code>private&nbsp;static&nbsp;final&nbsp;java.lang.String</code></td>
 <td><code><a href="com/shalzz/attendance/DatabaseHandler.html#CREATE_DAYS_ABSENT_TABLE">CREATE_DAYS_ABSENT_TABLE</a></code></td>
 <td class="colLast"><code>"CREATE TABLE days_absent ( id INTEGER, Days_Absent TEXT,  UNIQUE ( id,Days_Absent ), FOREIGN KEY(id ) REFERENCES Attendance ( id ) ON DELETE CASCADE ); "</code></td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><a name="com.shalzz.attendance.DatabaseHandler.CREATE_TIME_TABLE">
+<td class="colFirst"><a name="com.shalzz.attendance.data.local.DatabaseHandler.CREATE_TIME_TABLE">
 <!--   -->
 </a><code>private&nbsp;static&nbsp;final&nbsp;java.lang.String</code></td>
 <td><code><a href="com/shalzz/attendance/DatabaseHandler.html#CREATE_TIME_TABLE">CREATE_TIME_TABLE</a></code></td>
 <td class="colLast"><code>"CREATE TABLE TimeTable ( id INTEGER, Day TEXT, Subject_Name TEXT , Teacher TEXT , Room TEXT, batch TEXT, lastUpdated INTEGER, Start TEXT, End TEXT, PRIMARY KEY(id,Day) );"</code></td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><a name="com.shalzz.attendance.DatabaseHandler.CREATE_USER_TABLE">
+<td class="colFirst"><a name="com.shalzz.attendance.data.local.DatabaseHandler.CREATE_USER_TABLE">
 <!--   -->
 </a><code>private&nbsp;static&nbsp;final&nbsp;java.lang.String</code></td>
 <td><code><a href="com/shalzz/attendance/DatabaseHandler.html#CREATE_USER_TABLE">CREATE_USER_TABLE</a></code></td>
 <td class="colLast"><code>"CREATE TABLE User ( student_name TEXT, course_name TEXT, password TEXT, sapid  INTEGER PRIMARY KEY );"</code></td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><a name="com.shalzz.attendance.DatabaseHandler.DATABASE_NAME">
+<td class="colFirst"><a name="com.shalzz.attendance.data.local.DatabaseHandler.DATABASE_NAME">
 <!--   -->
 </a><code>private&nbsp;static&nbsp;final&nbsp;java.lang.String</code></td>
 <td><code><a href="com/shalzz/attendance/DatabaseHandler.html#DATABASE_NAME">DATABASE_NAME</a></code></td>
 <td class="colLast"><code>"attendanceManager"</code></td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><a name="com.shalzz.attendance.DatabaseHandler.DATABASE_VERSION">
+<td class="colFirst"><a name="com.shalzz.attendance.data.local.DatabaseHandler.DATABASE_VERSION">
 <!--   -->
 </a><code>private&nbsp;static&nbsp;final&nbsp;int</code></td>
 <td><code><a href="com/shalzz/attendance/DatabaseHandler.html#DATABASE_VERSION">DATABASE_VERSION</a></code></td>
 <td class="colLast"><code>8</code></td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><a name="com.shalzz.attendance.DatabaseHandler.KEY_BATCH">
+<td class="colFirst"><a name="com.shalzz.attendance.data.local.DatabaseHandler.KEY_BATCH">
 <!--   -->
 </a><code>private&nbsp;static&nbsp;final&nbsp;java.lang.String</code></td>
 <td><code><a href="com/shalzz/attendance/DatabaseHandler.html#KEY_BATCH">KEY_BATCH</a></code></td>
 <td class="colLast"><code>"batch"</code></td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><a name="com.shalzz.attendance.DatabaseHandler.KEY_CLASSES_ATTENDED">
+<td class="colFirst"><a name="com.shalzz.attendance.data.local.DatabaseHandler.KEY_CLASSES_ATTENDED">
 <!--   -->
 </a><code>private&nbsp;static&nbsp;final&nbsp;java.lang.String</code></td>
 <td><code><a href="com/shalzz/attendance/DatabaseHandler.html#KEY_CLASSES_ATTENDED">KEY_CLASSES_ATTENDED</a></code></td>
 <td class="colLast"><code>"No_Classes_Attended"</code></td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><a name="com.shalzz.attendance.DatabaseHandler.KEY_CLASSES_HELD">
+<td class="colFirst"><a name="com.shalzz.attendance.data.local.DatabaseHandler.KEY_CLASSES_HELD">
 <!--   -->
 </a><code>private&nbsp;static&nbsp;final&nbsp;java.lang.String</code></td>
 <td><code><a href="com/shalzz/attendance/DatabaseHandler.html#KEY_CLASSES_HELD">KEY_CLASSES_HELD</a></code></td>
 <td class="colLast"><code>"No_Classes_Held"</code></td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><a name="com.shalzz.attendance.DatabaseHandler.KEY_COURSE">
+<td class="colFirst"><a name="com.shalzz.attendance.data.local.DatabaseHandler.KEY_COURSE">
 <!--   -->
 </a><code>private&nbsp;static&nbsp;final&nbsp;java.lang.String</code></td>
 <td><code><a href="com/shalzz/attendance/DatabaseHandler.html#KEY_COURSE">KEY_COURSE</a></code></td>
 <td class="colLast"><code>"course_name"</code></td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><a name="com.shalzz.attendance.DatabaseHandler.KEY_DAY">
+<td class="colFirst"><a name="com.shalzz.attendance.data.local.DatabaseHandler.KEY_DAY">
 <!--   -->
 </a><code>private&nbsp;static&nbsp;final&nbsp;java.lang.String</code></td>
 <td><code><a href="com/shalzz/attendance/DatabaseHandler.html#KEY_DAY">KEY_DAY</a></code></td>
@@ -200,119 +200,119 @@
 <td class="colLast"><code>"Days_Absent"</code></td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><a name="com.shalzz.attendance.DatabaseHandler.KEY_END">
+<td class="colFirst"><a name="com.shalzz.attendance.data.local.DatabaseHandler.KEY_END">
 <!--   -->
 </a><code>private&nbsp;static&nbsp;final&nbsp;java.lang.String</code></td>
 <td><code><a href="com/shalzz/attendance/DatabaseHandler.html#KEY_END">KEY_END</a></code></td>
 <td class="colLast"><code>"End"</code></td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><a name="com.shalzz.attendance.DatabaseHandler.KEY_ID">
+<td class="colFirst"><a name="com.shalzz.attendance.data.local.DatabaseHandler.KEY_ID">
 <!--   -->
 </a><code>private&nbsp;static&nbsp;final&nbsp;java.lang.String</code></td>
 <td><code><a href="com/shalzz/attendance/DatabaseHandler.html#KEY_ID">KEY_ID</a></code></td>
 <td class="colLast"><code>"id"</code></td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><a name="com.shalzz.attendance.DatabaseHandler.KEY_LAST_UPDATED">
+<td class="colFirst"><a name="com.shalzz.attendance.data.local.DatabaseHandler.KEY_LAST_UPDATED">
 <!--   -->
 </a><code>private&nbsp;static&nbsp;final&nbsp;java.lang.String</code></td>
 <td><code><a href="com/shalzz/attendance/DatabaseHandler.html#KEY_LAST_UPDATED">KEY_LAST_UPDATED</a></code></td>
 <td class="colLast"><code>"lastUpdated"</code></td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><a name="com.shalzz.attendance.DatabaseHandler.KEY_NAME">
+<td class="colFirst"><a name="com.shalzz.attendance.data.local.DatabaseHandler.KEY_NAME">
 <!--   -->
 </a><code>private&nbsp;static&nbsp;final&nbsp;java.lang.String</code></td>
 <td><code><a href="com/shalzz/attendance/DatabaseHandler.html#KEY_NAME">KEY_NAME</a></code></td>
 <td class="colLast"><code>"Subject_Name"</code></td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><a name="com.shalzz.attendance.DatabaseHandler.KEY_PASSWORD">
+<td class="colFirst"><a name="com.shalzz.attendance.data.local.DatabaseHandler.KEY_PASSWORD">
 <!--   -->
 </a><code>private&nbsp;static&nbsp;final&nbsp;java.lang.String</code></td>
 <td><code><a href="com/shalzz/attendance/DatabaseHandler.html#KEY_PASSWORD">KEY_PASSWORD</a></code></td>
 <td class="colLast"><code>"password"</code></td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><a name="com.shalzz.attendance.DatabaseHandler.KEY_ROOM">
+<td class="colFirst"><a name="com.shalzz.attendance.data.local.DatabaseHandler.KEY_ROOM">
 <!--   -->
 </a><code>private&nbsp;static&nbsp;final&nbsp;java.lang.String</code></td>
 <td><code><a href="com/shalzz/attendance/DatabaseHandler.html#KEY_ROOM">KEY_ROOM</a></code></td>
 <td class="colLast"><code>"Room"</code></td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><a name="com.shalzz.attendance.DatabaseHandler.KEY_SAPID">
+<td class="colFirst"><a name="com.shalzz.attendance.data.local.DatabaseHandler.KEY_SAPID">
 <!--   -->
 </a><code>private&nbsp;static&nbsp;final&nbsp;java.lang.String</code></td>
 <td><code><a href="com/shalzz/attendance/DatabaseHandler.html#KEY_SAPID">KEY_SAPID</a></code></td>
 <td class="colLast"><code>"sapid"</code></td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><a name="com.shalzz.attendance.DatabaseHandler.KEY_START">
+<td class="colFirst"><a name="com.shalzz.attendance.data.local.DatabaseHandler.KEY_START">
 <!--   -->
 </a><code>private&nbsp;static&nbsp;final&nbsp;java.lang.String</code></td>
 <td><code><a href="com/shalzz/attendance/DatabaseHandler.html#KEY_START">KEY_START</a></code></td>
 <td class="colLast"><code>"Start"</code></td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><a name="com.shalzz.attendance.DatabaseHandler.KEY_STU_NAME">
+<td class="colFirst"><a name="com.shalzz.attendance.data.local.DatabaseHandler.KEY_STU_NAME">
 <!--   -->
 </a><code>private&nbsp;static&nbsp;final&nbsp;java.lang.String</code></td>
 <td><code><a href="com/shalzz/attendance/DatabaseHandler.html#KEY_STU_NAME">KEY_STU_NAME</a></code></td>
 <td class="colLast"><code>"student_name"</code></td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><a name="com.shalzz.attendance.DatabaseHandler.KEY_SUBJECT_NAME">
+<td class="colFirst"><a name="com.shalzz.attendance.data.local.DatabaseHandler.KEY_SUBJECT_NAME">
 <!--   -->
 </a><code>private&nbsp;static&nbsp;final&nbsp;java.lang.String</code></td>
 <td><code><a href="com/shalzz/attendance/DatabaseHandler.html#KEY_SUBJECT_NAME">KEY_SUBJECT_NAME</a></code></td>
 <td class="colLast"><code>"Subject_Name"</code></td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><a name="com.shalzz.attendance.DatabaseHandler.KEY_TEACHER">
+<td class="colFirst"><a name="com.shalzz.attendance.data.local.DatabaseHandler.KEY_TEACHER">
 <!--   -->
 </a><code>private&nbsp;static&nbsp;final&nbsp;java.lang.String</code></td>
 <td><code><a href="com/shalzz/attendance/DatabaseHandler.html#KEY_TEACHER">KEY_TEACHER</a></code></td>
 <td class="colLast"><code>"Teacher"</code></td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><a name="com.shalzz.attendance.DatabaseHandler.KEY_TOTAL_ATTEND">
+<td class="colFirst"><a name="com.shalzz.attendance.data.local.DatabaseHandler.KEY_TOTAL_ATTEND">
 <!--   -->
 </a><code>private&nbsp;static&nbsp;final&nbsp;java.lang.String</code></td>
 <td><code><a href="com/shalzz/attendance/DatabaseHandler.html#KEY_TOTAL_ATTEND">KEY_TOTAL_ATTEND</a></code></td>
 <td class="colLast"><code>"Classes_attend"</code></td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><a name="com.shalzz.attendance.DatabaseHandler.KEY_TOTAL_HELD">
+<td class="colFirst"><a name="com.shalzz.attendance.data.local.DatabaseHandler.KEY_TOTAL_HELD">
 <!--   -->
 </a><code>private&nbsp;static&nbsp;final&nbsp;java.lang.String</code></td>
 <td><code><a href="com/shalzz/attendance/DatabaseHandler.html#KEY_TOTAL_HELD">KEY_TOTAL_HELD</a></code></td>
 <td class="colLast"><code>"Classes_held"</code></td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><a name="com.shalzz.attendance.DatabaseHandler.TABLE_ATTENDANCE">
+<td class="colFirst"><a name="com.shalzz.attendance.data.local.DatabaseHandler.TABLE_ATTENDANCE">
 <!--   -->
 </a><code>private&nbsp;static&nbsp;final&nbsp;java.lang.String</code></td>
 <td><code><a href="com/shalzz/attendance/DatabaseHandler.html#TABLE_ATTENDANCE">TABLE_ATTENDANCE</a></code></td>
 <td class="colLast"><code>"Attendance"</code></td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><a name="com.shalzz.attendance.DatabaseHandler.TABLE_DAYS_ABSENT">
+<td class="colFirst"><a name="com.shalzz.attendance.data.local.DatabaseHandler.TABLE_DAYS_ABSENT">
 <!--   -->
 </a><code>private&nbsp;static&nbsp;final&nbsp;java.lang.String</code></td>
 <td><code><a href="com/shalzz/attendance/DatabaseHandler.html#TABLE_DAYS_ABSENT">TABLE_DAYS_ABSENT</a></code></td>
 <td class="colLast"><code>"days_absent"</code></td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><a name="com.shalzz.attendance.DatabaseHandler.TABLE_TIMETABLE">
+<td class="colFirst"><a name="com.shalzz.attendance.data.local.DatabaseHandler.TABLE_TIMETABLE">
 <!--   -->
 </a><code>private&nbsp;static&nbsp;final&nbsp;java.lang.String</code></td>
 <td><code><a href="com/shalzz/attendance/DatabaseHandler.html#TABLE_TIMETABLE">TABLE_TIMETABLE</a></code></td>
 <td class="colLast"><code>"TimeTable"</code></td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><a name="com.shalzz.attendance.DatabaseHandler.TABLE_USER">
+<td class="colFirst"><a name="com.shalzz.attendance.data.local.DatabaseHandler.TABLE_USER">
 <!--   -->
 </a><code>private&nbsp;static&nbsp;final&nbsp;java.lang.String</code></td>
 <td><code><a href="com/shalzz/attendance/DatabaseHandler.html#TABLE_USER">TABLE_USER</a></code></td>

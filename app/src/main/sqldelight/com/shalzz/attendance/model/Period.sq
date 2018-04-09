@@ -1,0 +1,35 @@
+CREATE TABLE period (
+    id INTEGER AS Integer NOT NULL,
+    name TEXT NOT NULL,
+    teacher TEXT NOT NULL,
+    room TEXT NOT NULL,
+    batchid TEXT NOT NULL,
+    batch TEXT,
+    start TEXT NOT NULL,
+    'end' TEXT NOT NULL,
+    absent INTEGER AS java.lang.Boolean NOT NULL,
+    date TEXT NOT NUll,
+    PRIMARY KEY(id, date)
+);
+
+selectByDate:
+SELECT *
+FROM period
+WHERE date = ?
+ORDER by start;
+
+selectCountByDate:
+SELECT count(*)
+FROM period
+WHERE date = ?;
+
+insertPeriod:
+INSERT OR REPLACE
+INTO period(id, name, teacher, room, batchid, batch, start, 'end', absent, date)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+deleteByDate:
+DELETE FROM period WHERE date = ?;
+
+deleteAll:
+DELETE FROM period;

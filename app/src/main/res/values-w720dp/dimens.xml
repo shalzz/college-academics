@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2013-2016 Shaleen Jain <shaleen.jain95@gmail.com>
+  ~
+  ~ This file is part of UPES Academics.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<resources>
+    <!--
+             Customize dimensions originally defined in res/values/dimens.xml (such as
+             screen margins) for sw720dp devices (e.g. 10" tablets) in landscape here.
+        -->
+
+    <!-- Text size for action bar titles -->
+    <!-- Text size for action bar subtitles -->
+    <dimen name="action_bar_subtitle_text_size">10dp</dimen>
+    <!-- Top margin for action bar subtitles -->
+    <!-- Bottom margin for action bar subtitles -->
+</resources>

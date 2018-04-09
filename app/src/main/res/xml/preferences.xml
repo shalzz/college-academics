@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2013-2016 Shaleen Jain <shaleen.jain95@gmail.com>
+  ~
+  ~ This file is part of UPES Academics.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<android.support.v7.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <android.support.v7.preference.PreferenceCategory android:title="General" >
+        <android.support.v7.preference.ListPreference
+            android:key="@string/pref_key_day_night"
+            android:defaultValue="-1"
+            android:title="@string/pref_day_night"
+            android:dialogTitle="@string/pref_day_night_dialog"
+            android:entries="@array/pref_day_night_entries"
+            android:entryValues="@array/pref_day_night_values"/>
+    </android.support.v7.preference.PreferenceCategory>
+
+    <android.support.v7.preference.PreferenceCategory android:title="Timetable" >
+        <android.support.v14.preference.SwitchPreference
+            android:key="@string/pref_key_show_weekends"
+            android:defaultValue="true"
+            android:title="@string/pref_show_weekends"
+            android:summaryOn="@string/pref_show_weekends_summary_on"
+            android:summaryOff="@string/pref_show_weekends_summary_off"/>
+        <android.support.v14.preference.SwitchPreference
+            android:key="@string/pref_key_notify_timetable_changed"
+            android:defaultValue="true"
+            android:title="@string/pref_notify_timetable_changed"
+            android:summary="@string/pref_notify_timetable_changed_summary"/>
+    </android.support.v7.preference.PreferenceCategory>
+
+    <android.support.v7.preference.PreferenceCategory android:title="Network" >
+        <android.support.v14.preference.SwitchPreference
+            android:key="@string/pref_key_sync"
+            android:defaultValue="true"
+            android:title="@string/pref_sync"
+            android:summary="@string/pref_sync_summary" />
+
+        <android.support.v7.preference.ListPreference
+            android:key="@string/pref_key_sync_interval"
+            android:defaultValue="480"
+            android:title="@string/pref_refresh"
+            android:dialogTitle="@string/pref_refresh"
+            android:dependency="@string/pref_key_sync"
+            android:entries="@array/pref_data_sync_interval_entries"
+            android:entryValues="@array/pref_data_sync_interval_values"/>
+    </android.support.v7.preference.PreferenceCategory>
+
+    <android.support.v7.preference.PreferenceCategory android:title="Privacy" >
+        <android.support.v14.preference.SwitchPreference
+            android:key="@string/pref_key_ga_opt_in"
+            android:defaultValue="true"
+            android:title="@string/pref_ga_opt_in"
+            android:summary="@string/pref_ga_opt_in_summary" />
+	<android.support.v14.preference.SwitchPreference
+            android:key="@string/pref_key_bugsnag_opt_in"
+            android:defaultValue="true"
+            android:title="@string/pref_bugsnag_opt_in"
+            android:summary="@string/pref_bugsnag_opt_in_summary" />
+    </android.support.v7.preference.PreferenceCategory>
+
+    <android.support.v7.preference.PreferenceCategory
+        android:title="Info" >
+
+        <android.support.v7.preference.PreferenceScreen
+            android:key="@string/pref_key_info_about"
+            android:persistent="false"
+            android:title="@string/pref_about" />
+    </android.support.v7.preference.PreferenceCategory>
+
+</android.support.v7.preference.PreferenceScreen>

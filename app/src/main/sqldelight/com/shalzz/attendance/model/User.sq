@@ -1,0 +1,29 @@
+CREATE TABLE user (
+    id TEXT PRIMARY KEY NOT NULL,
+    roll_number TEXT NOT NULL,
+    name TEXT NOT NULL,
+    course TEXT NOT NULL,
+    phone TEXT NOT NULL,
+    email TEXT
+);
+
+selectAll:
+SELECT *
+FROM user;
+
+selectById:
+SELECT *
+FROM user
+WHERE id = ? ;
+
+selectCount:
+SELECT count(*)
+FROM user;
+
+insertUser:
+INSERT OR REPLACE
+INTO user(id, roll_number, name, course, phone, email)
+VALUES (?, ?, ?, ?, ?, ?);
+
+deleteAll:
+DELETE FROM user;

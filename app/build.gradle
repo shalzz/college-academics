@@ -1,0 +1,217 @@
+/*
+ * Copyright (c) 2013-2016 Shaleen Jain <shaleen.jain95@gmail.com>
+ *
+ * This file is part of UPES Academics.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+apply plugin: 'com.android.application'
+apply plugin: 'com.squareup.sqldelight'
+apply plugin: 'com.github.triplet.play'
+apply plugin: 'com.bugsnag.android.gradle'
+
+bugsnag {
+    apiKey '600a00bfd5bd72e5df7f288f74df8f9b'
+}
+
+// query git for the SHA, Tag and commit count. Use these to automate versioning.
+def gitSha = 'git rev-parse --short HEAD'.execute([], project.rootDir).text.trim()
+def gitTag = 'git describe --tags'.execute([], project.rootDir).text.trim()
+def gitCommitCount = 2007000 +
+        Integer.parseInt('git rev-list --count HEAD'.execute([], project.rootDir).text.trim())
+
+android {
+    compileSdkVersion 23
+    buildToolsVersion '27.0.3'
+
+    defaultConfig {
+        applicationId 'com.shalzz.attendance'
+        minSdkVersion 14
+        targetSdkVersion 23
+	    versionCode gitCommitCount
+	    versionName gitTag
+
+        resConfigs "en"
+    }
+
+    compileOptions {
+        incremental true
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    play {
+        jsonFile = file('../play-service-account-key.json')
+        uploadImages = true
+        track = 'beta'
+    }
+
+    signingConfigs {
+        // You must set up an environment var before release signing
+        // Run: export APP_KEY={password}
+        release {
+            storeFile file("keystore/release.keystore")
+            keyAlias "attendance keystore"
+            storePassword "$System.env.APP_KEY"
+            keyPassword "$System.env.APP_KEY"
+        }
+
+        debug {
+            storeFile file('keystore/debug.keystore')
+            keyAlias 'androiddebugkey'
+            storePassword 'android'
+            keyPassword 'android'
+        }
+    }
+
+    buildTypes {
+        debug {
+            applicationIdSuffix '.debug'
+            versionNameSuffix "-debug"
+            ext.enableBugsnag = false
+            resValue "string", "app_name", "College Academics (debug)"
+            resValue "string", "contentAuthority", defaultConfig.applicationId + '.debug.provider'
+            resValue "string", "account_type", "com.shalzz.debug"
+            buildConfigField "String", "ACCOUNT_TYPE", '"com.shalzz.debug"'
+        }
+        release {
+            minifyEnabled true
+            useProguard true
+            resValue "string", "app_name", "College Academics"
+            resValue "string", "contentAuthority", defaultConfig.applicationId + '.provider'
+            resValue "string", "account_type", "com.shalzz"
+            buildConfigField "String", "ACCOUNT_TYPE", '"com.shalzz"'
+//            FileCollection proGuardFileCollection = files { file('./proguard').listFiles() }
+            proguardFiles(file('./proguard').listFiles())
+            proguardFile getDefaultProguardFile('proguard-android-optimize.txt')
+            signingConfig signingConfigs.release
+        }
+    }
+
+    sourceSets {
+        def commonTestDir = 'src/commonTest/java'
+        test {
+            java.srcDir commonTestDir
+        }
+        androidTest {
+            java.srcDir commonTestDir
+        }
+    }
+
+    //Needed because of this https://github.com/square/okio/issues/58
+    lintOptions {
+        disable 'InvalidPackage'
+    }
+
+    //Needed because of this https://github.com/ReactiveX/RxJava/issues/4445
+    packagingOptions {
+        exclude 'META-INF/rxjava.properties'
+    }
+
+    dependencies {
+        final SUPPORT_LIBRARY_VERSION = '23.4.0'
+        final DAGGER_VERSION = '2.5'
+        final ESPRESSO_VERSION = '2.2.1'
+        final RUNNER_VERSION = '0.4'
+        final RETROFIT_VERSION = '2.2.0'
+        final BUTTERKNIFE_VERSION = '8.4.0'
+        final AUTO_VALUE_VERSION = '1.5'
+        final AUTO_VALUE_GSON_VERSION = '0.7.0'
+        final AUTO_VALUE_PARCEL_VERSION = '0.2.5'
+
+        implementation 'com.google.android.gms:play-services-analytics:9.4.0'
+        implementation "com.android.support:recyclerview-v7:$SUPPORT_LIBRARY_VERSION"
+        implementation "com.android.support:design:$SUPPORT_LIBRARY_VERSION"
+        implementation "com.android.support:support-v4:$SUPPORT_LIBRARY_VERSION"
+        implementation "com.android.support:appcompat-v7:$SUPPORT_LIBRARY_VERSION"
+        implementation "com.android.support:preference-v14:$SUPPORT_LIBRARY_VERSION"
+        implementation "com.android.support:support-annotations:25.3.1"
+        implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+
+        implementation "android.arch.persistence:db:1.0.0"
+        implementation "android.arch.persistence:db-framework:1.0.0"
+
+        def daggerCompiler = "com.google.dagger:dagger-compiler:$DAGGER_VERSION"
+        implementation  "com.google.dagger:dagger:$DAGGER_VERSION"
+        compileOnly 'javax.annotation:jsr250-api:1.0'
+        annotationProcessor daggerCompiler
+        testAnnotationProcessor daggerCompiler
+        androidTestAnnotationProcessor daggerCompiler
+
+        compileOnly "com.jakewharton.auto.value:auto-value-annotations:$AUTO_VALUE_VERSION"
+        implementation "com.google.auto.value:auto-value:$AUTO_VALUE_VERSION"
+        def autoValueCompiler = "com.google.auto.value:auto-value:$AUTO_VALUE_VERSION"
+        annotationProcessor     autoValueCompiler
+        testAnnotationProcessor autoValueCompiler
+        androidTestAnnotationProcessor autoValueCompiler
+
+        compileOnly "com.ryanharter.auto.value:auto-value-gson:$AUTO_VALUE_GSON_VERSION"
+        annotationProcessor     "com.ryanharter.auto.value:auto-value-gson:$AUTO_VALUE_GSON_VERSION"
+
+        annotationProcessor     "com.ryanharter.auto.value:auto-value-parcel:$AUTO_VALUE_PARCEL_VERSION"
+        implementation "com.ryanharter.auto.value:auto-value-parcel-adapter:$AUTO_VALUE_PARCEL_VERSION"
+
+        implementation 'com.google.code.gson:gson:2.8.2'
+
+        implementation 'com.jakewharton.timber:timber:4.7.0'
+        implementation "com.jakewharton:butterknife:$BUTTERKNIFE_VERSION"
+        annotationProcessor "com.jakewharton:butterknife-compiler:$BUTTERKNIFE_VERSION"
+
+        implementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
+        implementation 'io.reactivex.rxjava2:rxjava:2.1.3'
+        implementation 'com.squareup.sqlbrite3:sqlbrite:3.2.0'
+
+        implementation "com.squareup.retrofit2:retrofit:$RETROFIT_VERSION"
+        implementation "com.squareup.retrofit2:converter-gson:$RETROFIT_VERSION"
+        implementation 'com.jakewharton.retrofit:retrofit2-rxjava2-adapter:1.0.0'
+
+        implementation 'com.malinskiy:materialicons:1.0.2'
+        implementation 'com.github.amlcurran.showcaseview:library:5.4.0'
+        implementation 'com.github.afollestad.material-dialogs:core:0.8.5.5'
+        implementation 'de.psdev.licensesdialog:licensesdialog:1.8.0'
+
+	    //noinspection GradleDynamicVersion
+        implementation 'com.bugsnag:bugsnag-android:3.+'
+
+        def jUnit = "junit:junit:4.12"
+        def mockito = "org.mockito:mockito-core:1.10.19"
+
+        // Instrumentation test dependencies
+        androidTestImplementation jUnit
+        androidTestImplementation mockito
+        androidTestImplementation "com.android.support:support-annotations:25.3.1"
+        androidTestImplementation("com.android.support.test.espresso:espresso-contrib:$ESPRESSO_VERSION")
+        androidTestImplementation "com.android.support.test.espresso:espresso-core:$ESPRESSO_VERSION"
+        androidTestImplementation "com.android.support.test:runner:$RUNNER_VERSION"
+        androidTestImplementation "com.android.support.test:rules:$RUNNER_VERSION"
+        androidTestImplementation "com.google.code.findbugs:jsr305:3.0.0"
+
+        // Unit tests dependencies
+        testImplementation jUnit
+        testImplementation mockito
+        testImplementation "org.robolectric:robolectric:3.1"
+        testImplementation 'commons-io:commons-io:1.3.2'
+        testImplementation 'org.xerial:sqlite-jdbc:3.8.10.1'
+        testImplementation "com.google.truth:truth:0.27"
+    }
+}
+
+// ADD THIS AT THE BOTTOM
+apply plugin: 'com.google.gms.google-services'
+
+// Log out test results to console
+tasks.matching {it instanceof Test}.all {
+    testLogging.events = ["failed", "passed", "skipped"]
+}
