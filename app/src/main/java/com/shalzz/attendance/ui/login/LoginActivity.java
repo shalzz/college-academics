@@ -83,6 +83,9 @@ public class LoginActivity extends BaseActivity implements LoginMvpView {
         // set toolbar as actionbar
         setSupportActionBar(mToolbar);
 
+        // Static background with ScrollView
+        getWindow().setBackgroundDrawableResource(R.drawable.background);
+
         etUserId = textInputUserId.getEditText();
 
         // Shows the CaptchaDialog when user presses 'Done' on keyboard.

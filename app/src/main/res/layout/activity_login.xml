@@ -17,71 +17,75 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/linearLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/background"
     tools:context=".ui.login.LoginActivity">
 
-    <include
-        android:id="@+id/toolbar"
-        layout="@layout/include_toolbar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-    <ImageView
-        android:id="@+id/ivAppName"
-        android:layout_width="133dp"
-        android:layout_height="116dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginTop="56dp"
-        android:contentDescription="@string/app_name"
-        android:src="@drawable/background_text"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
+        <include
+            android:id="@+id/toolbar"
+            layout="@layout/include_toolbar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
 
-    <android.support.design.widget.TextInputLayout
-        android:id="@+id/etUserId"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:theme="@style/HintTextAppearance"
-        app:errorEnabled="true"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ivAppName" >
+        <ImageView
+            android:id="@+id/ivAppName"
+            android:layout_width="133dp"
+            android:layout_height="116dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="56dp"
+            android:contentDescription="@string/app_name"
+            android:src="@drawable/background_text"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 
-        <android.support.design.widget.TextInputEditText
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/etUserId"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:ems="10"
-            android:gravity="center"
-            android:hint="@string/hint_userid"
-            android:imeOptions="flagNoExtractUi"
-            android:inputType="number|textNoSuggestions"
-            android:maxLength="10"
-            android:maxLines="1">
+            android:theme="@style/HintTextAppearance"
+            app:errorEnabled="true"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ivAppName" >
 
-            <requestFocus
+            <android.support.design.widget.TextInputEditText
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-        </android.support.design.widget.TextInputEditText>
-    </android.support.design.widget.TextInputLayout>
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:ems="10"
+                android:gravity="center"
+                android:hint="@string/hint_userid"
+                android:imeOptions="flagNoExtractUi"
+                android:inputType="number|textNoSuggestions"
+                android:maxLength="10"
+                android:maxLines="1">
 
-    <Button
-        android:id="@+id/bLogin"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:padding="5dp"
-        android:text="@string/log_in"
-        app:layout_constraintEnd_toEndOf="@+id/etUserId"
-        app:layout_constraintStart_toStartOf="@+id/etUserId"
-        app:layout_constraintTop_toBottomOf="@+id/etUserId" />
+                <requestFocus
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </android.support.design.widget.TextInputEditText>
+        </android.support.design.widget.TextInputLayout>
 
-</android.support.constraint.ConstraintLayout>
+        <Button
+            android:id="@+id/bLogin"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="5dp"
+            android:text="@string/log_in"
+            app:layout_constraintEnd_toEndOf="@+id/etUserId"
+            app:layout_constraintStart_toStartOf="@+id/etUserId"
+            app:layout_constraintTop_toBottomOf="@+id/etUserId" />
+
+    </android.support.constraint.ConstraintLayout>
+</ScrollView>
