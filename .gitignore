@@ -12,3 +12,5 @@ attendance/*.txt
 local.properties
 
 captures/
+
+play-service-account-key.json
