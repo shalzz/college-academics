@@ -56,15 +56,24 @@ android {
     play {
         jsonFile = file('../play-service-account-key.json')
         uploadImages = true
-	    track = 'beta'
+        track = 'beta'
     }
 
     signingConfigs {
+        // You must set up an environment var before release signing
+        // Run: export APP_KEY={password}
         release {
-            storeFile file("./android.keystore")
+            storeFile file("keystore/release.keystore")
             keyAlias "attendance keystore"
             storePassword "$System.env.APP_KEY"
             keyPassword "$System.env.APP_KEY"
+        }
+
+        debug {
+            storeFile file('keystore/debug.keystore')
+            keyAlias 'androiddebugkey'
+            storePassword 'android'
+            keyPassword 'android'
         }
     }
 
