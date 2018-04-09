@@ -25,7 +25,6 @@ import android.content.Context;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
 import com.shalzz.attendance.R;
-import com.shalzz.attendance.injection.ActivityContext;
 import com.shalzz.attendance.injection.ApplicationContext;
 
 import java.util.HashMap;
@@ -35,8 +34,6 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-
-import static com.google.android.gms.analytics.internal.zzy.s;
 
 @Module
 public class ApplicationModule {

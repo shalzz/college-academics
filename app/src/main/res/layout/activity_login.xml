@@ -80,8 +80,8 @@
         android:gravity="center"
         android:padding="5dp"
         android:text="@string/log_in"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/etUserId"
+        app:layout_constraintStart_toStartOf="@+id/etUserId"
         app:layout_constraintTop_toBottomOf="@+id/etUserId" />
 
 </android.support.constraint.ConstraintLayout>
