@@ -81,11 +81,11 @@ public class AttendancePresenter extends BasePresenter<AttendanceMvpView> {
                             return;
                         RetrofitException error = (RetrofitException) throwable;
                         if (error.getKind() == RetrofitException.Kind.UNEXPECTED) {
-                            Timber.e(throwable, error.getMessage());
+                            Timber.e(throwable);
                             getMvpView().showError(error.getMessage());
                         }
                         else {
-                            mDataManager.getSubjectCount()
+                            Disposable disposable = mDataManager.getSubjectCount()
                                     .subscribeOn(Schedulers.io())
                                     .observeOn(AndroidSchedulers.mainThread())
                                     .subscribeWith(new DisposableSingleObserver<Integer>() {
