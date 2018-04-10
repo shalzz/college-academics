@@ -26,7 +26,8 @@ public final class PermissionsTest {
             "android.permission.AUTHENTICATE_ACCOUNTS",
             "android.permission.GET_ACCOUNTS",
             "android.permission.MANAGE_ACCOUNTS",
-            "com.android.vending.BILLING"
+            "com.android.vending.BILLING",
+            "android.permission.WAKE_LOCK"
     };
 
     private static final String MERGED_MANIFEST =
