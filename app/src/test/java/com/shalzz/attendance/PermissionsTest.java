@@ -1,6 +1,6 @@
-package com.shalzz.attendance.util;
+package com.shalzz.attendance;
 
-import com.shalzz.attendance.BuildConfig;
+import com.shalzz.attendance.util.DefaultConfig;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
