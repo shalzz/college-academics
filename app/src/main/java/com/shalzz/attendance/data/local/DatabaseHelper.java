@@ -6,6 +6,7 @@ import android.arch.persistence.db.SupportSQLiteOpenHelper.Configuration;
 import android.arch.persistence.db.framework.FrameworkSQLiteOpenHelperFactory;
 import android.content.Context;
 import android.os.Build;
+import android.support.annotation.VisibleForTesting;
 
 import com.shalzz.attendance.BuildConfig;
 import com.shalzz.attendance.data.model.AbsentDate;
@@ -28,6 +29,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import io.reactivex.Observable;
+import io.reactivex.Scheduler;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
@@ -52,6 +54,11 @@ public class DatabaseHelper {
 
     @Inject
     public DatabaseHelper(@ApplicationContext Context context) {
+        this(context, Schedulers.io());
+    }
+
+    @VisibleForTesting
+    public DatabaseHelper(Context context, Scheduler scheduler) {
         SqlBrite sqlBrite = new SqlBrite.Builder()
                 .logger(message -> Timber.tag("Database").v(message))
                 .build();
@@ -66,7 +73,7 @@ public class DatabaseHelper {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             helper.setWriteAheadLoggingEnabled(true);
         }
-        mDb = sqlBrite.wrapDatabaseHelper(helper, Schedulers.io());
+        mDb = sqlBrite.wrapDatabaseHelper(helper, scheduler);
         if (BuildConfig.DEBUG) {
             mDb.setLoggingEnabled(true);
         }
@@ -79,6 +86,10 @@ public class DatabaseHelper {
         deleteByDate = new Period.DeleteByDate(db);
         insertUser = new User.InsertUser(db);
         deleteAllUsers = new User.DeleteAll(db);
+    }
+
+    public BriteDatabase getBriteDb() {
+        return mDb;
     }
 
     public Observable<Subject> setSubjects(final Collection<Subject> newSubjects) {
