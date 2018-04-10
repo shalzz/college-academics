@@ -36,4 +36,19 @@ public abstract class User implements UserModel, Parcelable {
     public static TypeAdapter<User> typeAdapter(Gson gson) {
         return new AutoValue_User.GsonTypeAdapter(gson);
     }
+
+    public static Builder builder() {
+        return new AutoValue_User.Builder();
+    }
+
+    @AutoValue.Builder
+    public abstract static class Builder {
+        public abstract Builder setId(String id);
+        public abstract Builder setRoll_number(String roll_number);
+        public abstract Builder setName(String name);
+        public abstract Builder setCourse(String course);
+        public abstract Builder setPhone(String phone);
+        public abstract Builder setEmail(String email);
+        public abstract User build();
+    }
 }

@@ -1,5 +1,7 @@
 package com.shalzz.attendance.util;
 
+import com.shalzz.attendance.utils.RxEventBus;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
