@@ -24,12 +24,13 @@ sudo: false
 deploy:
   provider: releases
   api_key:
-    secure: zmOEqC6xjAeq1s00Vfvuva1vPw3PGZrrNTz/yJwP5Cs2wOgLvSRbe1hJHqYvjyKdoqm2yhNdTTm+xQCv9tFa8+dW+5h2xwhERYywt4UdMa4bMMcGX18jqCTWjz4x73pEfv+xl1y+7nyW7chqL0HE73CJczlnkuq2KEiiIIHAmS+PMdJ+0jm7Bg901KMCjKixccNmUtD5E7S2ZJqgJg99VwrWeYG3xitcvn0x+Y2C3MuHgKIoPYp4DAQC7Y7sIYukj1jN+rIhorY4MIAf4rnZruli+AXs9pAhPzyqtMnrNArM5IXp9q29CR32uIjNNYAGIQWLOfMyjnel0VqlesXRGzaC/+UeWJwN92rGgaS+GbkNzFpRC5bdYAjnEO2Lo/DVZoNCSgOjXHgbZegTp0ZF76XJv1ZBol1PFbKl9/Sf1XORfTkYuP6e86pEvNvMcgS11xVrhZNAk8aNLQ3ZKxzkBksINuBr03v9zXwwtFzBlklNw0YD75QzFhMyBCZgfKRmVfWjsqFyCkjdo7BWAKEm+8dn6Xtu2L9N0KXf8X9YL43UihYZ8SRiLT8sn9gxLsDiMCvM5jwnrlWUT8yXP0qw9yRssep6phP0iq2WmMHh+ZBVrxPGPu+bfdMccAGoEMFsfH8wLFrpl5vTLy0C7F4Q7RsXOWrVGTpAckPdDG9GhmY=
-  file: "./app/build/outputs/apk/app-release.apk"
+    secure: WK/kKL09FEBTCpQg5CDqfZorSybOL+TYMzylqKSgLUilAxByDK6tD0ZHSnNnoZjyX7wC8xhtA9jU/dChUHT4SGPoqDabn1EvfMlGuGym1iIzi76S9yo41llx5Ddjc1uTBsE8PhVWoqC889EeMoVkykOCoYytqJThw61Z9AEq1AWNX2ue/28YLfr0trZWDTZJHOFv61lW6zB0cSOtTCIa7I+//1OLL/pdwvFObj01p879ehctsvdBqPg00iFP6voJBCyu8v8rKEEJWRNT1qU39lb5xC/AR3CWNPXSfiIi7Er7bLJ1OhNXwDSugivaA/iIsBwooRt28reUbrdTkqk15HyU5xB7XsQHEAF6CjscS9wl0urtvNfWbLWV9R9oRAdC+q4OKcGbJ/TUrY5yRmm4V1WmC2V9utCM4iPjG7bSImdq7M7M7/d9YNAOFlLrKjC84PrPFR8bsZM8bO8BWxClyG6w8qpgstG/OcalNuAXsCeYZPSxr9iKlC9aIShH6VNgBQjgrpJ7aRqGD4cNekqfUQJ/7sHuZQJ7pw6rjdAsvkof87BGAjypdhGs5nZ7EysCCD3X7nWVP3TdcE2OfU1MCVSm+nugc40Yccreof2JuR0jgZWVN5evI+rn4wZvgUCVQYs5DJ+VI4qjiXA/tCmT3bKB2LhvfjwpgldxVyv0glc=
   skip_cleanup: true
+  file: "./app/build/outputs/apk/app-release.apk"
   on:
-    tags: true
     branch: master
+    tags: true
+    repo: shalzz/college-academics
 after_deploy: "./gradlew publishRelease --no-daemon --stacktrace"
 before_install:
 - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then openssl aes-256-cbc -K $encrypted_3476a8f5fa31_key
