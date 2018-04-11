@@ -40,13 +40,9 @@
     <screenName name="com.shalzz.attendance.ui.settings.AboutSettingsFragment">
         AboutScreen
     </screenName>
-    <screenName name="com.shalzz.attendance.ui.settings.ProxySettingsFragment">
-        ProxyScreen
-    </screenName>
     <screenName name="com.shalzz.attendance.ui.login.LoginActivity">
         LoginScreen
     </screenName>
 
-    <string name="ga_trackingId">UA-48815638-1</string>
-    <string name="ga_appName">UPES Academics</string>
+    <string name="ga_trackingId" translatable="false">UA-48815638-1</string>
 </resources>

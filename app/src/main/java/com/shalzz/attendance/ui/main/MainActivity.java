@@ -53,7 +53,6 @@ import com.github.amlcurran.showcaseview.targets.Target;
 import com.shalzz.attendance.BuildConfig;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.data.DataManager;
-import com.shalzz.attendance.data.local.DbOpenHelper;
 import com.shalzz.attendance.data.model.User;
 import com.shalzz.attendance.ui.attendance.AttendanceListFragment;
 import com.shalzz.attendance.ui.base.BaseActivity;

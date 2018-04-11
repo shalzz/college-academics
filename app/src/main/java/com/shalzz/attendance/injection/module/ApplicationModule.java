@@ -72,7 +72,6 @@ public class ApplicationModule {
 
     @Provides
     @Named("app")
-    @Singleton
     synchronized Tracker provideTracker(@ApplicationContext Context context) {
         TrackerName trackerId = TrackerName.APP_TRACKER;
         if (!mTrackers.containsKey(trackerId)) {

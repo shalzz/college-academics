@@ -69,11 +69,11 @@ public class DateHelper {
         return date;
     }
 
-    public static String formatToTechnicalFormat(Date date) {
+    public static String toTechnicalFormat(Date date) {
         return technicalDateFormat.format(date);
     }
 
-    public static String formatToProperFormat(Date date) {
+    public static String toProperFormat(Date date) {
         return properDateFormat.format(date);
     }
 

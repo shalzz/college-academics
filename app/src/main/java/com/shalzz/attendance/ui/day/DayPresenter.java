@@ -74,17 +74,16 @@ class DayPresenter extends BasePresenter<DayMvpView> {
 
                     @Override
                     public void onError(Throwable throwable) {
-                        Timber.e(throwable);
                         if(!isViewAttached())
                             return;
                         getMvpView().stopRefreshing();
                         RetrofitException error = (RetrofitException) throwable;
                         if (error.getKind() == RetrofitException.Kind.UNEXPECTED) {
-                            Timber.e(throwable, error.getMessage());
+                            Timber.e(throwable);
                             getMvpView().showError(error.getMessage());
                         }
                         else {
-                            mDataManager.getPeriodCount(day)
+                            Disposable disposable = mDataManager.getPeriodCount(day)
                                     .subscribeOn(Schedulers.io())
                                     .observeOn(AndroidSchedulers.mainThread())
                                     .subscribeWith(new DisposableSingleObserver<Integer>() {

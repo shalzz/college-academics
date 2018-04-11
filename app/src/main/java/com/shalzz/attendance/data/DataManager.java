@@ -27,7 +27,7 @@ public class DataManager {
     private final PreferencesHelper mPreferencesHelper;
 
     @Inject
-    DataManager(DataAPI dataAPI, DatabaseHelper db, PreferencesHelper prefs) {
+    public DataManager(DataAPI dataAPI, DatabaseHelper db, PreferencesHelper prefs) {
         mDataAPI = dataAPI;
         mDatabaseHelper = db;
         mPreferencesHelper = prefs;
@@ -43,17 +43,17 @@ public class DataManager {
     }
 
     public Observable<Period> syncDay(Date date) {
-        return mDataAPI.getTimetable(DateHelper.formatToTechnicalFormat(date))
-                .concatMap(mDatabaseHelper::addPeriods);
+        return mDataAPI.getTimetable(DateHelper.toTechnicalFormat(date))
+                .concatMap(mDatabaseHelper::setPeriods);
     }
 
     public Observable<List<Period>> loadDay(Date date) {
         return mDatabaseHelper.getPeriods(date);
     }
 
-    public Observable<User> getUser(String auth) {
+    public Observable<User> syncUser(String auth) {
         return mDataAPI.getUser(auth)
-                .concatMap(mDatabaseHelper::addUser);
+                .concatMap(mDatabaseHelper::setUser);
     }
 
     public Observable<User> loadUser() {

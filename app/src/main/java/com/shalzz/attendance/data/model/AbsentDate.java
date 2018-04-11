@@ -43,7 +43,7 @@ public abstract class AbsentDate implements AbsentDatesModel, Parcelable {
 
                 @Override
                 public String encode(@NonNull Date value) {
-                    return DateHelper.formatToTechnicalFormat(value);
+                    return DateHelper.toTechnicalFormat(value);
                 }
 
             };

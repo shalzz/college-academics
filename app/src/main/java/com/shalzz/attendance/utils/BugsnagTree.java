@@ -2,18 +2,9 @@ package com.shalzz.attendance.utils;
 
 import android.util.Log;
 
-import com.bugsnag.android.BreadcrumbType;
 import com.bugsnag.android.Bugsnag;
-import com.bugsnag.android.Error;
-import com.shalzz.attendance.wrapper.DateHelper;
-
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.Locale;
 
 import timber.log.Timber;
-
-import static com.google.android.gms.analytics.internal.zzy.s;
 
 public final class BugsnagTree extends Timber.Tree {
 

@@ -22,6 +22,7 @@ package com.shalzz.attendance.ui.timetable;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
@@ -94,12 +95,21 @@ public class TimeTablePagerFragment extends Fragment implements TimeTableMvpView
 
         actionbar = ((AppCompatActivity) getActivity()).getSupportActionBar();
 
-        mAdapter = new TimeTablePagerAdapter(getChildFragmentManager(), mContext);
+        mAdapter = new TimeTablePagerAdapter(getChildFragmentManager(),
+                mContext,
+                position -> mViewPager.setCurrentItem(position, true));
 
         mViewPager.setOffscreenPageLimit(3);
         mViewPager.setAdapter(mAdapter);
 
         return view;
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        mAdapter.scrollToToday();
     }
 
     @Override
@@ -167,12 +177,12 @@ public class TimeTablePagerFragment extends Fragment implements TimeTableMvpView
      */
     @OnPageChange(R.id.pager)
     public void updateTitle(int position) {
-        if (position > 0)
+        if (position != -1)
             mPreviousPosition = position;
         Date mDate = mAdapter.getDateForPosition(mPreviousPosition);
         if (mDate != null) {
             actionbar.setTitle(DateHelper.getProperWeekday(mDate));
-            actionbar.setSubtitle(DateHelper.formatToProperFormat(mDate));
+            actionbar.setSubtitle(DateHelper.toProperFormat(mDate));
         }
     }
 
@@ -202,13 +212,8 @@ public class TimeTablePagerFragment extends Fragment implements TimeTableMvpView
     @Override
     public void setDate(Date date) {
         mAdapter.setDate(date);
+        mAdapter.scrollToDate(date);
         updateTitle(-1);
-        scrollToDate(date);
     }
 
-    @Override
-    public void scrollToDate(Date date) {
-        int pos = mAdapter.getPositionForDate(date);
-        mViewPager.setCurrentItem(pos, true);
-    }
 }

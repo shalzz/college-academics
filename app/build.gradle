@@ -120,6 +120,14 @@ android {
         exclude 'META-INF/rxjava.properties'
     }
 
+    // Needed because of this https://github.com/robolectric/robolectric/issues/{1399, 3826}
+    testOptions {
+        unitTests {
+            returnDefaultValues = true
+            includeAndroidResources = true
+        }
+    }
+
     dependencies {
         final SUPPORT_LIBRARY_VERSION = '23.4.0'
         final DAGGER_VERSION = '2.5'
@@ -131,7 +139,7 @@ android {
         final AUTO_VALUE_GSON_VERSION = '0.7.0'
         final AUTO_VALUE_PARCEL_VERSION = '0.2.5'
 
-        implementation 'com.google.android.gms:play-services-analytics:9.4.0'
+        implementation "com.google.android.gms:play-services-analytics:9.4.0"
         implementation "com.android.support:recyclerview-v7:$SUPPORT_LIBRARY_VERSION"
         implementation "com.android.support:design:$SUPPORT_LIBRARY_VERSION"
         implementation "com.android.support:support-v4:$SUPPORT_LIBRARY_VERSION"
@@ -186,7 +194,7 @@ android {
         implementation 'com.bugsnag:bugsnag-android:3.+'
 
         def jUnit = "junit:junit:4.12"
-        def mockito = "org.mockito:mockito-core:1.10.19"
+        def mockito = "org.mockito:mockito-core:2.6.2"
 
         // Instrumentation test dependencies
         androidTestImplementation jUnit
@@ -201,9 +209,8 @@ android {
         // Unit tests dependencies
         testImplementation jUnit
         testImplementation mockito
-        testImplementation "org.robolectric:robolectric:3.1"
+        testImplementation "org.robolectric:robolectric:3.8"
         testImplementation 'commons-io:commons-io:1.3.2'
-        testImplementation 'org.xerial:sqlite-jdbc:3.8.10.1'
         testImplementation "com.google.truth:truth:0.27"
     }
 }

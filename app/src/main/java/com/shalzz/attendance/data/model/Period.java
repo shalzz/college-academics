@@ -46,6 +46,25 @@ public abstract class Period implements PeriodModel, Parcelable {
         return new AutoValue_Period.GsonTypeAdapter(gson);
     }
 
+    public static Builder builder() {
+        return new AutoValue_Period.Builder();
+    }
+
+    @AutoValue.Builder
+    public abstract static class Builder {
+        public abstract Builder setId(int id);
+        public abstract Builder setName(String name);
+        public abstract Builder setTeacher(String teacher);
+        public abstract Builder setRoom(String room);
+        public abstract Builder setBatchid(String batchid);
+        public abstract Builder setBatch(String string);
+        public abstract Builder setStart(String string);
+        public abstract Builder setEnd(String string);
+        public abstract Builder setDate(String string);
+        public abstract Builder setAbsent(boolean absent);
+        public abstract Period build();
+    }
+
     private Date start_date;
     private String timeRange;
 

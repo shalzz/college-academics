@@ -1,10 +1,10 @@
-package com.shalzz.attendance.util;
+package com.shalzz.attendance;
 
-import com.shalzz.attendance.BuildConfig;
+import com.shalzz.attendance.util.DefaultConfig;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 import org.robolectric.manifest.AndroidManifest;
 import org.robolectric.res.Fs;
@@ -13,7 +13,7 @@ import java.util.HashSet;
 
 import static com.google.common.truth.Truth.assertThat;
 
-@RunWith(RobolectricGradleTestRunner.class)
+@RunWith(RobolectricTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = DefaultConfig.EMULATE_SDK)
 public final class PermissionsTest {
 
@@ -26,7 +26,8 @@ public final class PermissionsTest {
             "android.permission.AUTHENTICATE_ACCOUNTS",
             "android.permission.GET_ACCOUNTS",
             "android.permission.MANAGE_ACCOUNTS",
-            "com.android.vending.BILLING"
+            "com.android.vending.BILLING",
+            "android.permission.WAKE_LOCK"
     };
 
     private static final String MERGED_MANIFEST =

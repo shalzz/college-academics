@@ -58,7 +58,7 @@ public abstract class Subject implements SubjectModel, Parcelable {
                     String SEPARATOR = ",";
                     StringBuilder csvBuilder = new StringBuilder();
                     for(Date date : value){
-                        csvBuilder.append(DateHelper.formatToTechnicalFormat(date));
+                        csvBuilder.append(DateHelper.toTechnicalFormat(date));
                         csvBuilder.append(SEPARATOR);
                     }
 
@@ -77,6 +77,20 @@ public abstract class Subject implements SubjectModel, Parcelable {
 
     public static TypeAdapter<Subject> typeAdapter(com.google.gson.Gson gson) {
         return new AutoValue_Subject.GsonTypeAdapter(gson);
+    }
+
+    public static Builder builder() {
+        return new AutoValue_Subject.Builder();
+    }
+
+    @AutoValue.Builder
+    public abstract static class Builder {
+        public abstract Builder setId(int id);
+        public abstract Builder setName(String name);
+        public abstract Builder setAttended(float attended);
+        public abstract Builder setHeld(float held);
+        public abstract Builder setAbsent_dates(List<Date> dateList);
+        public abstract Subject build();
     }
 
     private String absentDates;
