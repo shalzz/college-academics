@@ -11,6 +11,4 @@ public interface TimeTableMvpView extends MvpView {
 
     void setDate(Date date);
 
-    void scrollToDate(Date date);
-
 }

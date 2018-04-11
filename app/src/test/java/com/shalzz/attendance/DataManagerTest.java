@@ -121,7 +121,7 @@ public class DataManagerTest {
 
         mDataManager.syncDay(day).subscribe();
         // Verify right calls to helper methods
-        verify(mMockDataAPI).getTimetable(DateHelper.formatToTechnicalFormat(day));
+        verify(mMockDataAPI).getTimetable(DateHelper.toTechnicalFormat(day));
         verify(mMockDatabaseHelper).setPeriods(periods);
     }
 
@@ -151,12 +151,12 @@ public class DataManagerTest {
     @Test
     public void syncDayDoesNotCallDatabaseWhenApiFails() {
         Date day = new Date();
-        when(mMockDataAPI.getTimetable(DateHelper.formatToTechnicalFormat(day)))
+        when(mMockDataAPI.getTimetable(DateHelper.toTechnicalFormat(day)))
                 .thenReturn(Observable.error(new RuntimeException()));
 
         mDataManager.syncDay(day).subscribe(new TestObserver<>());
         // Verify right calls to helper methods
-        verify(mMockDataAPI).getTimetable(DateHelper.formatToTechnicalFormat(day));
+        verify(mMockDataAPI).getTimetable(DateHelper.toTechnicalFormat(day));
         verify(mMockDatabaseHelper, never()).setPeriods(ArgumentMatchers.anyList());
     }
 
@@ -178,7 +178,7 @@ public class DataManagerTest {
 
     private void stubSyncDayHelperCalls(Date date, List<Period> periods) {
         // Stub calls to the DataAPI service and database helper.
-        when(mMockDataAPI.getTimetable(DateHelper.formatToTechnicalFormat(date)))
+        when(mMockDataAPI.getTimetable(DateHelper.toTechnicalFormat(date)))
                 .thenReturn(Observable.just(periods));
         when(mMockDatabaseHelper.setPeriods(periods))
                 .thenReturn(Observable.fromIterable(periods));

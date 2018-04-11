@@ -43,7 +43,7 @@ public class DataManager {
     }
 
     public Observable<Period> syncDay(Date date) {
-        return mDataAPI.getTimetable(DateHelper.formatToTechnicalFormat(date))
+        return mDataAPI.getTimetable(DateHelper.toTechnicalFormat(date))
                 .concatMap(mDatabaseHelper::setPeriods);
     }
 

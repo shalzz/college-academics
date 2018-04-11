@@ -19,33 +19,43 @@
 
 package com.shalzz.attendance.ui.timetable;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v7.preference.PreferenceManager;
+import android.util.SparseArray;
 
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.ui.day.DayFragment;
+import com.shalzz.attendance.wrapper.DateHelper;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
+
+import io.reactivex.annotations.NonNull;
+import timber.log.Timber;
 
 public class TimeTablePagerAdapter extends FragmentStatePagerAdapter {
 
-	@SuppressLint("UseSparseArrays")
-	private final HashMap<Integer, Date> dates = new HashMap<>();
-	private final HashMap<Date, Integer> positions = new HashMap<>();
-    private Date mDate;
-    private Context mContext;
     private final int COUNT = 31;
 
-	TimeTablePagerAdapter(FragmentManager fm, Context context) {
+	private final SparseArray<Date> dates = new SparseArray<>();
+    private Date mToday;
+    private Date mDate;
+    private boolean mShowWeekends;
+    private Callback mCallback;
+
+	TimeTablePagerAdapter(FragmentManager fm, Context context, Callback callback) {
 		super(fm);
-        mContext = context;
-        setDate(new Date()); // Today;
+        mCallback = callback;
+
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
+        mShowWeekends = sharedPref.getBoolean(context.getString(R.string
+                .pref_key_show_weekends), true);
+
+        mToday = new Date();
+        setDate(mToday);
 	}
 
 	@Override
@@ -54,7 +64,13 @@ public class TimeTablePagerAdapter extends FragmentStatePagerAdapter {
 	}
 
     @Override
+    public int getCount() {
+        return COUNT;
+    }
+
+    @Override
     public int getItemPosition(Object item) {
+	    // TODO: fix performance of fragment and array creation and destruction
 //        DayFragment fragment = (DayFragment)item;
 //        Date date = fragment.getDate();
 //        int position = positions.get(date);
@@ -67,23 +83,17 @@ public class TimeTablePagerAdapter extends FragmentStatePagerAdapter {
         return POSITION_NONE;
     }
 
-    @Override
-    public int getCount() {
-        return COUNT;
-    }
-
-    public Date getDate() {
-        return mDate;
-    }
-
     public Date getDateForPosition(int position) {
         return dates.get(position);
     }
 
-    public int getPositionForDate(Date date) {
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mContext);
-        boolean show = sharedPref.getBoolean(mContext.getString(R.string.pref_key_show_weekends), true);
-        if(!show) {
+    public void scrollToDate(Date date) {
+        mCallback.scrollToPosition(indexOfValue(dates, date));
+    }
+
+    public void scrollToToday() {
+	    Date date = mToday;
+        if(!mShowWeekends) {
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(date);
             if(calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) {
@@ -95,26 +105,25 @@ public class TimeTablePagerAdapter extends FragmentStatePagerAdapter {
             date = calendar.getTime();
         }
 
-        return positions.get(date);
+        scrollToDate(date);
     }
 
-    public void setDate(Date date) {
-        if(mDate != date) {
+    public void setDate(@NonNull Date date) {
+        if(mDate == null || !DateHelper.toTechnicalFormat(mDate)
+                .equals(DateHelper.toTechnicalFormat(date))) {
             mDate = date;
             updateDates();
         }
-        notifyDataSetChanged();
     }
 
-    void updateDates() {
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mContext);
-        boolean show = sharedPref.getBoolean(mContext.getString(R.string.pref_key_show_weekends), true);
+    private void updateDates() {
+        Timber.d("Updating dates");
         int day_offset = 0;
         Calendar calendar = Calendar.getInstance();
         for(int i =0; i < getCount() ; i++) {
             calendar.setTime(mDate);
             calendar.add(Calendar.DATE, -15+i);
-            if(!show) {
+            if(!mShowWeekends) {
                 calendar.add(Calendar.DATE, day_offset);
                 if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) {
                     calendar.add(Calendar.DATE, 1);
@@ -127,7 +136,20 @@ public class TimeTablePagerAdapter extends FragmentStatePagerAdapter {
             }
             Date date = calendar.getTime();
             dates.put(i, date);
-            positions.put(date, i);
         }
+        notifyDataSetChanged();
+    }
+
+    private int indexOfValue(SparseArray<Date> array, Date value) {
+        for (int i = 0; i < array.size(); i++) {
+            if (DateHelper.toTechnicalFormat(array.valueAt(i))
+                    .equals(DateHelper.toTechnicalFormat(value)))
+                return i;
+        }
+        return -1;
+    }
+
+    interface Callback {
+	    void scrollToPosition(int position);
     }
 }

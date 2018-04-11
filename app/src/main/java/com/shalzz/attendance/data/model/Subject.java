@@ -58,7 +58,7 @@ public abstract class Subject implements SubjectModel, Parcelable {
                     String SEPARATOR = ",";
                     StringBuilder csvBuilder = new StringBuilder();
                     for(Date date : value){
-                        csvBuilder.append(DateHelper.formatToTechnicalFormat(date));
+                        csvBuilder.append(DateHelper.toTechnicalFormat(date));
                         csvBuilder.append(SEPARATOR);
                     }
 

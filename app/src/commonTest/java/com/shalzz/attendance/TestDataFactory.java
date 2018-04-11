@@ -5,7 +5,6 @@ import com.shalzz.attendance.data.model.Subject;
 import com.shalzz.attendance.data.model.User;
 import com.shalzz.attendance.wrapper.DateHelper;
 
-import java.util.Arrays;
 import java.util.Date;
 import java.util.UUID;
 
@@ -51,7 +50,7 @@ public class TestDataFactory {
         return Period.builder()
                 .setId(makeInt(uniqueSuffix))
                 .setName("Name-" + uniqueSuffix)
-                .setDate(DateHelper.formatToTechnicalFormat(date))
+                .setDate(DateHelper.toTechnicalFormat(date))
                 .setStart("Start-" + uniqueSuffix)
                 .setEnd("End-" + uniqueSuffix)
                 .setRoom("Room-" + uniqueSuffix)

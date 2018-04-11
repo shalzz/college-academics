@@ -169,7 +169,7 @@ public class DatabaseHelper {
     }
 
     public Observable<List<Period>> getPeriods(Date date) {
-        SqlDelightQuery query = Period.FACTORY.selectByDate(DateHelper.formatToTechnicalFormat(date));
+        SqlDelightQuery query = Period.FACTORY.selectByDate(DateHelper.toTechnicalFormat(date));
         return mDb.createQuery(query.getTables(), query)
                 .mapToList(Period.MAPPER::map);
     }
@@ -212,7 +212,7 @@ public class DatabaseHelper {
 
     public Observable<Integer> getPeriodCount(Date day) {
         SqlDelightQuery query =
-                Period.FACTORY.selectCountByDate(DateHelper.formatToTechnicalFormat(day));
+                Period.FACTORY.selectCountByDate(DateHelper.toTechnicalFormat(day));
         return mDb.createQuery(query.getTables(), query)
                 .mapToOne(cursor -> cursor.getInt(0));
     }
