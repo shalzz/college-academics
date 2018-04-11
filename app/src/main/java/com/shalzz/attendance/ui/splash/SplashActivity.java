@@ -64,8 +64,6 @@ public class SplashActivity extends BaseActivity {
         mTracker.send(new HitBuilders.ScreenViewBuilder()
                         .setCustomDimension(Miscellaneous.CUSTOM_DIMENSION_THEME,
                                 sharedPref.getString(getString(R.string.pref_key_day_night), "-1"))
-                        .setCustomDimension(Miscellaneous.CUSTOM_DIMENSION_PROXY,""+
-                                sharedPref.getBoolean(getString(R.string.pref_key_use_proxy),false))
                         .build());
 
                 // Set all default values once for this application

@@ -20,38 +20,19 @@
 package com.shalzz.attendance.utils;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.SearchView;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
-import com.afollestad.materialdialogs.MaterialDialog;
-import com.shalzz.attendance.injection.ActivityContext;
-
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Locale;
-
-import javax.inject.Inject;
 
 public class Miscellaneous {
 
     // Google Analytics Custom Dimensions
     public static final int CUSTOM_DIMENSION_THEME = 1;
-    public static final int CUSTOM_DIMENSION_PROXY = 2;
     public static final int CUSTOM_DIMENSION_USER_ID = 3;
-
-    private MaterialDialog.Builder builder = null;
-    private MaterialDialog pd = null;
-    private Context mContext;
-
-    @Inject
-    public Miscellaneous(@ActivityContext Context context) {
-        mContext = context;
-    }
 
     /**
      * Shows the default user soft keyboard.
@@ -100,30 +81,6 @@ public class Miscellaneous {
     public static void showSnackBar(View view, String msg) {
         Snackbar.make(view, msg, Snackbar.LENGTH_LONG)
                 .show();
-    }
-
-    /**
-     * Calculate md5 for any given string
-     * @param s the string
-     * @return the hash of the string s
-     */
-    public static String md5(String s) {
-        MessageDigest m;
-
-        try {
-            m = MessageDigest.getInstance("MD5");
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-            return "";
-        }
-
-        m.update(s.getBytes(),0,s.length());
-        String hashtext = new BigInteger(1,m.digest()).toString(16);
-        // Now we need to zero pad it if you actually want the full 32 chars.
-        while(hashtext.length() < 32 ){
-            hashtext = "0"+hashtext;
-        }
-        return hashtext;
     }
 
     public static String capitalizeString(String name) {
