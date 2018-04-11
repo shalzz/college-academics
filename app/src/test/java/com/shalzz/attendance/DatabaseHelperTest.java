@@ -3,6 +3,8 @@ package com.shalzz.attendance;
 import android.database.Cursor;
 
 import com.shalzz.attendance.data.local.DatabaseHelper;
+import com.shalzz.attendance.data.model.Period;
+import com.shalzz.attendance.data.model.Subject;
 import com.shalzz.attendance.data.model.User;
 import com.shalzz.attendance.util.DefaultConfig;
 import com.shalzz.attendance.util.RxSchedulersOverrideRule;
@@ -15,7 +17,9 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 import io.reactivex.observers.TestObserver;
 
@@ -67,6 +71,33 @@ public class DatabaseHelperTest {
         mDatabaseHelper.getUser().subscribe(result);
         result.assertNoErrors();
         result.assertValue(user);
+    }
+
+    @Test
+    public void getSubjects() {
+        List<Subject> subjects = Arrays.asList(TestDataFactory.makeSubject("s1"),
+                TestDataFactory.makeSubject("s2"));
+
+        mDatabaseHelper.setSubjects(subjects).subscribe();
+
+        TestObserver<List<Subject>> result = new TestObserver<>();
+        mDatabaseHelper.getSubjects(null).subscribe(result);
+        result.assertNoErrors();
+        result.assertValue(subjects);
+    }
+
+    @Test
+    public void getPeriods() {
+        Date day = new Date();
+        List<Period> periods = Arrays.asList(TestDataFactory.makePeriod("p1", day),
+                TestDataFactory.makePeriod("p2", day));
+
+        mDatabaseHelper.setPeriods(periods).subscribe();
+
+        TestObserver<List<Period>> result = new TestObserver<>();
+        mDatabaseHelper.getPeriods(day).subscribe(result);
+        result.assertNoErrors();
+        result.assertValue(periods);
     }
 
     @Test

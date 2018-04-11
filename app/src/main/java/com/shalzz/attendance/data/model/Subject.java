@@ -79,6 +79,20 @@ public abstract class Subject implements SubjectModel, Parcelable {
         return new AutoValue_Subject.GsonTypeAdapter(gson);
     }
 
+    public static Builder builder() {
+        return new AutoValue_Subject.Builder();
+    }
+
+    @AutoValue.Builder
+    public abstract static class Builder {
+        public abstract Builder setId(int id);
+        public abstract Builder setName(String name);
+        public abstract Builder setAttended(float attended);
+        public abstract Builder setHeld(float held);
+        public abstract Builder setAbsent_dates(List<Date> dateList);
+        public abstract Subject build();
+    }
+
     private String absentDates;
     private Float percentage;
 
