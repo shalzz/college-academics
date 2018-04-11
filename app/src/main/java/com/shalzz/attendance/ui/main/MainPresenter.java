@@ -103,10 +103,10 @@ public class MainPresenter extends BasePresenter<MainMvpView> {
                             Bugsnag.addToTab("User", "email", user.email());
                         }
 
-                        mTracker.set("&uid", user.id());
+                        mTracker.set("&uid", user.phone());
                         mTracker.send(new HitBuilders.ScreenViewBuilder()
                                 .setCustomDimension(Miscellaneous.CUSTOM_DIMENSION_USER_ID,
-                                        user.id())
+                                        user.phone())
                                 .build());
                     }
 
