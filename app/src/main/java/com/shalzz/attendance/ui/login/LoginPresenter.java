@@ -61,7 +61,7 @@ public class LoginPresenter extends BasePresenter<LoginMvpView> {
         checkViewAttached();
         getMvpView().showProgressDialog();
         RxUtil.dispose(mDisposable);
-        mDisposable = mDataManager.getUser("Bearer " + username)
+        mDisposable = mDataManager.syncUser("Bearer " + username)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new DisposableObserver<User>() {

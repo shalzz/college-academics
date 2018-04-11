@@ -140,7 +140,7 @@ public class DatabaseHelper {
                 .mapToList(cursor -> AbsentDate.MAPPER.map(cursor).subject_id());
     }
 
-    public Observable<Period> addPeriods(final List<Period> newPeriods) {
+    public Observable<Period> setPeriods(final List<Period> newPeriods) {
         return Observable.create(subscriber -> {
             if (subscriber.isDisposed()) return;
             if (newPeriods.isEmpty()) return;
@@ -174,7 +174,7 @@ public class DatabaseHelper {
                 .mapToList(Period.MAPPER::map);
     }
 
-    public Observable<User> addUser(User user) {
+    public Observable<User> setUser(User user) {
         return Observable.create(subscriber -> {
             if (subscriber.isDisposed()) return;
             insertUser.bind(user.id(),

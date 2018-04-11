@@ -45,7 +45,7 @@ public class DatabaseHelperTest {
         User user = TestDataFactory.makeUser("u1");
 
         TestObserver<User> result = new TestObserver<>();
-        mDatabaseHelper.addUser(user).subscribe(result);
+        mDatabaseHelper.setUser(user).subscribe(result);
         result.assertNoErrors();
         result.assertValue(user);
 
@@ -61,7 +61,7 @@ public class DatabaseHelperTest {
     public void getUser() {
         User user = TestDataFactory.makeUser("u1");
 
-        mDatabaseHelper.addUser(user).subscribe();
+        mDatabaseHelper.setUser(user).subscribe();
 
         TestObserver<User> result = new TestObserver<>();
         mDatabaseHelper.getUser().subscribe(result);
