@@ -97,7 +97,7 @@ public class RxJava2ErrorCallAdapterFactory extends CallAdapter.Factory {
 
                                 @Override
                                 public void onError(Throwable e) {
-                                    source.onError(asRetrofitException(e));
+                                    source.tryOnError(asRetrofitException(e));
                                 }
 
                                 @Override
