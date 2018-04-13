@@ -112,8 +112,7 @@ public class MainPresenter extends BasePresenter<MainMvpView> {
 
                     @Override
                     public void onError(Throwable e) {
-                        RetrofitException error = (RetrofitException) e;
-                        Timber.e(e, error.getMessage());
+                        Timber.e(e);
                     }
 
                     @Override
