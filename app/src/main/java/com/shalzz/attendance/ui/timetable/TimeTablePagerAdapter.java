@@ -88,24 +88,21 @@ public class TimeTablePagerAdapter extends FragmentStatePagerAdapter {
     }
 
     public void scrollToDate(Date date) {
-        mCallback.scrollToPosition(indexOfValue(dates, date));
-    }
-
-    public void scrollToToday() {
-	    Date date = mToday;
         if(!mShowWeekends) {
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(date);
-            if(calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) {
-                calendar.add(Calendar.DATE, 1);
-            }
-            if(calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {
+            while(calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY ||
+                    calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY ) {
                 calendar.add(Calendar.DATE, 1);
             }
             date = calendar.getTime();
         }
+        Timber.d("Date: %s", date);
+        mCallback.scrollToPosition(indexOfValue(dates, date));
+    }
 
-        scrollToDate(date);
+    public void scrollToToday() {
+        scrollToDate(mToday);
     }
 
     public void setDate(@NonNull Date date) {
@@ -125,11 +122,8 @@ public class TimeTablePagerAdapter extends FragmentStatePagerAdapter {
             calendar.add(Calendar.DATE, -15+i);
             if(!mShowWeekends) {
                 calendar.add(Calendar.DATE, day_offset);
-                if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) {
-                    calendar.add(Calendar.DATE, 1);
-                    ++day_offset;
-                }
-                if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {
+                while(calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY ||
+                        calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY ) {
                     calendar.add(Calendar.DATE, 1);
                     ++day_offset;
                 }
