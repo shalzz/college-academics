@@ -247,7 +247,7 @@ public class DayFragment extends Fragment implements DayMvpView {
     @Override
     public void showNetworkErrorView(String error) {
         Drawable emptyDrawable = new IconDrawable(mContext,
-                Iconify.IconValue.zmdi_network_alert)
+                Iconify.IconValue.zmdi_cloud_off)
                 .colorRes(android.R.color.darker_gray);
         mEmptyView.ImageView.setImageDrawable(emptyDrawable);
         mEmptyView.TitleTextView.setText(R.string.network_error_message);
