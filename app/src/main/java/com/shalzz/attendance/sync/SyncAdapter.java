@@ -20,24 +20,17 @@
 package com.shalzz.attendance.sync;
 
 import android.accounts.Account;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SyncResult;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.support.v7.app.NotificationCompat;
 
 import com.bugsnag.android.Bugsnag;
-import com.shalzz.attendance.R;
 import com.shalzz.attendance.data.DataManager;
 import com.shalzz.attendance.data.model.Period;
 import com.shalzz.attendance.data.model.Subject;
 import com.shalzz.attendance.data.remote.RetrofitException;
-import com.shalzz.attendance.ui.main.MainActivity;
 import com.shalzz.attendance.utils.RxUtil;
 
 import java.util.Calendar;
@@ -132,40 +125,5 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                         RxUtil.dispose(mTimetableDisposable);
                     }
                 });
-    }
-
-    /**
-     * Notifies the user that their timetable has changed.
-     */
-    private void showNotification() {
-        NotificationCompat.Builder mBuilder =
-                (NotificationCompat.Builder) new NotificationCompat.Builder(mContext)
-                        .setSmallIcon(R.drawable.ic_stat_human)
-                        .setLargeIcon(BitmapFactory.decodeResource(
-                                mContext.getResources(),
-                                R.mipmap.ic_launcher))
-                        .setAutoCancel(true)
-                        .setPriority(NotificationCompat.PRIORITY_LOW)
-                        .setCategory(NotificationCompat.CATEGORY_RECOMMENDATION)
-                        .setContentTitle(mContext.getString(
-                                R.string.notify_timetable_changed_title))
-                        .setContentText(mContext.getString(
-                                R.string.notify_timetable_changed_text));
-
-        Intent resultIntent = new Intent(mContext, MainActivity.class);
-        resultIntent.putExtra(MainActivity.LAUNCH_FRAGMENT_EXTRA, MainActivity
-                .Fragments.TIMETABLE.getValue());
-        resultIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP |
-                Intent.FLAG_ACTIVITY_SINGLE_TOP)
-                .setAction(Intent.ACTION_MAIN)
-                .addCategory(Intent.CATEGORY_LAUNCHER);
-
-        PendingIntent resultPendingIntent = PendingIntent.getActivity(mContext,
-                0, resultIntent,PendingIntent.FLAG_UPDATE_CURRENT);
-        mBuilder.setContentIntent(resultPendingIntent);
-        NotificationManager mNotificationManager =
-                (NotificationManager) mContext.getSystemService(
-                        Context.NOTIFICATION_SERVICE);
-        mNotificationManager.notify(0, mBuilder.build());
     }
 }
