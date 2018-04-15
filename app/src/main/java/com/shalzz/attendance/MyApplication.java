@@ -53,7 +53,7 @@ public class MyApplication extends Application {
         Timber.plant(new BugsnagTree());
 
         int nightMode = Integer.parseInt(sharedPref.getString(
-                getString(R.string.pref_key_day_night), "-1"));
+                getString(R.string.pref_key_day_night), "1"));
         //noinspection WrongConstant
         AppCompatDelegate.setDefaultNightMode(nightMode);
     }

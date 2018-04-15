@@ -20,7 +20,6 @@
 package com.shalzz.attendance.ui.settings;
 
 import android.Manifest;
-import android.app.NotificationManager;
 import android.app.backup.BackupManager;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -39,6 +38,7 @@ import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.PreferenceScreen;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.bugsnag.android.Bugsnag;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
@@ -107,11 +107,19 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
         requestBackup();
 
         if(key.equals(key_sync_day_night)) {
-            ListPreference connectionPref = (ListPreference) findPreference(key);
-            connectionPref.setSummary(connectionPref.getEntry());
+            ListPreference listPref = (ListPreference) findPreference(key);
+            listPref.setSummary(listPref.getEntry());
             //noinspection WrongConstant
             AppCompatDelegate.setDefaultNightMode(Integer.parseInt(sharedPreferences.
                     getString(key,"-1")));
+        }
+        else if(key.equals(getString(R.string.pref_key_hide_weekends))) {
+            // if not paid user
+            // show dialog for pro mode
+            // if dialog cancels
+            // set value back to default
+            SwitchPreference switchPref = (SwitchPreference) findPreference(key);
+            switchPref.setChecked(false);
         }
         else if (key.equals(getString(R.string.pref_key_sync))) {
             if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.GET_ACCOUNTS) !=
@@ -132,15 +140,6 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
             GoogleAnalytics.getInstance(mContext).setAppOptOut(
                     !optIn);
             Timber.i("Opted out of Google Analytics: %b", !optIn);
-        }
-        else if(key.equals(getString(R.string.pref_key_notify_timetable_changed))) {
-            if(!sharedPreferences.getBoolean(key, true)) {
-                // Cancel a notification if it is shown.
-                NotificationManager mNotificationManager =
-                        (NotificationManager) mContext.getSystemService(
-                                Context.NOTIFICATION_SERVICE);
-                mNotificationManager.cancel(0 /** timetable changed notification id */);
-            }
         }
     }
 
@@ -190,6 +189,24 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
         // Set up a listener whenever a key changes
         getPreferenceScreen().getSharedPreferences()
                 .registerOnSharedPreferenceChangeListener(this);
+
+        PreferenceCategory prefCatGeneral = (PreferenceCategory) getPreferenceScreen()
+                .getPreference(0);
+        SwitchPreference proModePref = (SwitchPreference) prefCatGeneral.getPreference(0);
+        proModePref.setOnPreferenceClickListener(preference -> {
+            proModePref.setChecked(false);
+            new MaterialDialog.Builder(mContext)
+                    .title(R.string.pref_dialog_title_donate)
+                    .items(R.array.pref_donate_entries)
+                    .itemsCallback((dialog, view, which, text) -> {
+                        String values[] = mContext.getResources()
+                                .getStringArray(R.array.pref_donate_values);
+                        Toast.makeText(mContext, values[which], Toast.LENGTH_LONG).show();
+                        dialog.dismiss();
+                    })
+                    .show();
+            return true;
+        });
 
         PreferenceCategory prefCategory = (PreferenceCategory) getPreferenceScreen()
                 .getPreference(4);

@@ -41,6 +41,7 @@
     <string name="pref_key_hide_weekends">hide_weekends</string>
     <string name="pref_key_day_night">day_night</string>
     <string name="pref_key_bugsnag_opt_in">bugsnag_opt_in</string>
+    <string name="pref_key_pro_mode">pro_mode</string>
 
     <!--////  Actual user visible text ////-->
 
@@ -103,14 +104,24 @@
     <string name="pref_version">Build Version</string>
     <string name="pref_ga_opt_in">Google Analytics</string>
     <string name="pref_ga_opt_in_summary">Collect and send anonymous data to help improve the app</string>
-    <string name="pref_hide_weekends">Hide Weekends</string>
+    <string name="pref_hide_weekends">Hide Weekends (Pro feature)</string>
     <string name="pref_hide_weekends_summary_off">Display weekends as well</string>
     <string name="pref_hide_weekends_summary_on">Display only weekdays</string>
-    <string name="pref_day_night">Day/Night Theme</string>
+    <string name="pref_day_night">Day/Night Theme (Pro feature)</string>
     <string name="pref_day_night_dialog">Select Night Mode</string>
     <string name="pref_bugsnag_opt_in">Crash Reports</string>
     <string name="pref_bugsnag_opt_in_summary">Send crash reports with diagnostic
         information to help debug and improve the app</string>
+
+    <string name="pref_dialog_title_donate">Donation Amount</string>
+    <string name="pref_pro_mode">Upgrade to Pro</string>
+    <string name="pref_show_pro_mode_off">Thanks for using College Academics. Consider donating
+        to help support my work (I develop this is for
+        free). Donating any amount enables Pro mode as well as removes
+        the ads.</string>
+    <string name="pref_show_pro_mode_on">Thanks for Donating. Pro Mode with additional
+        features are now enabled.</string>
+
 
     <!--Showcase View-->
     <string name="sv_attendance_title">Expandable item</string>
