@@ -61,7 +61,6 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
 
     private Context mContext;
     private String key_sync_interval;
-    private String key_sync_day_night;
     private SwitchPreference syncPref;
 
     @Inject
@@ -78,10 +77,6 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
 	    Bugsnag.setContext("Settings");
 
         addPreferencesFromResource(R.xml.preferences);
-
-        key_sync_day_night = getString(R.string.pref_key_day_night);
-        ListPreference dayNightListPref = (ListPreference) findPreference(key_sync_day_night);
-        dayNightListPref.setSummary(dayNightListPref.getEntry());
 
         key_sync_interval = getString(R.string.pref_key_sync_interval);
         ListPreference synclistPref = (ListPreference) findPreference(key_sync_interval);
@@ -106,7 +101,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         requestBackup();
 
-        if(key.equals(key_sync_day_night)) {
+        if(key.equals(getString(R.string.pref_key_day_night))) {
             ListPreference listPref = (ListPreference) findPreference(key);
             listPref.setSummary(listPref.getEntry());
             //noinspection WrongConstant

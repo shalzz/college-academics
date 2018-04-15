@@ -32,6 +32,7 @@
             android:defaultValue="1"
             android:title="@string/pref_day_night"
             android:dialogTitle="@string/pref_day_night_dialog"
+            android:summary="@string/pref_day_night_summary"
             android:entries="@array/pref_day_night_entries"
             android:entryValues="@array/pref_day_night_values"/>
     </android.support.v7.preference.PreferenceCategory>
@@ -41,8 +42,7 @@
             android:key="@string/pref_key_hide_weekends"
             android:defaultValue="false"
             android:title="@string/pref_hide_weekends"
-            android:summaryOn="@string/pref_hide_weekends_summary_on"
-            android:summaryOff="@string/pref_hide_weekends_summary_off"/>
+            android:summary="@string/pref_hide_weekends_summary"/>
     </android.support.v7.preference.PreferenceCategory>
 
     <android.support.v7.preference.PreferenceCategory android:title="Network" >

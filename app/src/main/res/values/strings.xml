@@ -105,15 +105,14 @@
     <string name="pref_ga_opt_in">Google Analytics</string>
     <string name="pref_ga_opt_in_summary">Collect and send anonymous data to help improve the app</string>
     <string name="pref_hide_weekends">Hide Weekends (Pro feature)</string>
-    <string name="pref_hide_weekends_summary_off">Display weekends as well</string>
+    <string name="pref_hide_weekends_summary">Show or Hide the weekends</string>
     <string name="pref_hide_weekends_summary_on">Display only weekdays</string>
     <string name="pref_day_night">Day/Night Theme (Pro feature)</string>
     <string name="pref_day_night_dialog">Select Night Mode</string>
+    <string name="pref_day_night_summary">Choose a Day or Night Theme</string>
     <string name="pref_bugsnag_opt_in">Crash Reports</string>
     <string name="pref_bugsnag_opt_in_summary">Send crash reports with diagnostic
         information to help debug and improve the app</string>
-
-    <string name="pref_dialog_title_donate">Donation Amount</string>
     <string name="pref_pro_mode">Upgrade to Pro</string>
     <string name="pref_show_pro_mode_off">Thanks for using College Academics. Consider donating
         to help support my work (I develop this is for
@@ -121,6 +120,7 @@
         the ads.</string>
     <string name="pref_show_pro_mode_on">Thanks for Donating. Pro Mode with additional
         features are now enabled.</string>
+    <string name="pref_dialog_title_donate">Donation Amount</string>
 
 
     <!--Showcase View-->
