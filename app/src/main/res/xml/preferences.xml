@@ -37,11 +37,6 @@
             android:title="@string/pref_hide_weekends"
             android:summaryOn="@string/pref_hide_weekends_summary_on"
             android:summaryOff="@string/pref_hide_weekends_summary_off"/>
-        <android.support.v14.preference.SwitchPreference
-            android:key="@string/pref_key_notify_timetable_changed"
-            android:defaultValue="true"
-            android:title="@string/pref_notify_timetable_changed"
-            android:summary="@string/pref_notify_timetable_changed_summary"/>
     </android.support.v7.preference.PreferenceCategory>
 
     <android.support.v7.preference.PreferenceCategory android:title="Network" >
