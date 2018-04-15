@@ -43,7 +43,7 @@ public class TimeTablePagerAdapter extends FragmentStatePagerAdapter {
 	private final SparseArray<Date> dates = new SparseArray<>();
     private Date mToday;
     private Date mDate;
-    private boolean mShowWeekends;
+    private boolean mHideWeekends;
     private Callback mCallback;
 
 	TimeTablePagerAdapter(FragmentManager fm, Context context, Callback callback) {
@@ -51,8 +51,8 @@ public class TimeTablePagerAdapter extends FragmentStatePagerAdapter {
         mCallback = callback;
 
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
-        mShowWeekends = sharedPref.getBoolean(context.getString(R.string
-                .pref_key_show_weekends), true);
+        mHideWeekends = sharedPref.getBoolean(context.getString(R.string.pref_key_hide_weekends),
+                false);
 
         mToday = new Date();
         setDate(mToday);
@@ -88,7 +88,7 @@ public class TimeTablePagerAdapter extends FragmentStatePagerAdapter {
     }
 
     public void scrollToDate(Date date) {
-        if(!mShowWeekends) {
+        if(mHideWeekends) {
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(date);
             while(calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY ||
@@ -120,7 +120,7 @@ public class TimeTablePagerAdapter extends FragmentStatePagerAdapter {
         for(int i =0; i < getCount() ; i++) {
             calendar.setTime(mDate);
             calendar.add(Calendar.DATE, -15+i);
-            if(!mShowWeekends) {
+            if(mHideWeekends) {
                 calendar.add(Calendar.DATE, day_offset);
                 while(calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY ||
                         calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY ) {

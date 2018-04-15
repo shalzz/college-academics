@@ -39,7 +39,7 @@
     <string name="pref_key_proxy_password">pref_key_proxy_password</string>
     <string name="pref_key_ga_opt_in">ga_opt_in</string>
     <string name="pref_key_notify_timetable_changed">notify_timetable_changed</string>
-    <string name="pref_key_show_weekends">show_weekends</string>
+    <string name="pref_key_hide_weekends">hide_weekends</string>
     <string name="pref_key_day_night">day_night</string>
     <string name="pref_key_bugsnag_opt_in">bugsnag_opt_in</string>
 
@@ -107,9 +107,9 @@
     <string name="pref_notify_timetable_changed">Notifications</string>
     <string name="pref_notify_timetable_changed_summary">Receive a notification when your
         timetable changes</string>
-    <string name="pref_show_weekends">Weekends</string>
-    <string name="pref_show_weekends_summary_on">Display weekends as well</string>
-    <string name="pref_show_weekends_summary_off">Display only weekdays</string>
+    <string name="pref_hide_weekends">Hide Weekends</string>
+    <string name="pref_hide_weekends_summary_off">Display weekends as well</string>
+    <string name="pref_hide_weekends_summary_on">Display only weekdays</string>
     <string name="pref_day_night">Day/Night Theme</string>
     <string name="pref_day_night_dialog">Select Night Mode</string>
     <string name="pref_bugsnag_opt_in">Crash Reports</string>
