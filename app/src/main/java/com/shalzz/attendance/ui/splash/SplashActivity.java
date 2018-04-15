@@ -29,6 +29,7 @@ import com.bugsnag.android.Severity;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
+import com.shalzz.attendance.BuildConfig;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.data.local.PreferencesHelper;
 import com.shalzz.attendance.ui.base.BaseActivity;
@@ -58,7 +59,7 @@ public class SplashActivity extends BaseActivity {
 
 		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
 		boolean optIn = sharedPref.getBoolean(getString(R.string.pref_key_ga_opt_in), true);
-		GoogleAnalytics.getInstance(this).setAppOptOut(!optIn);
+		GoogleAnalytics.getInstance(this).setAppOptOut(!optIn || BuildConfig.DEBUG);
         Timber.i("Opted out of Google Analytics: %s", !optIn);
 
         mTracker.send(new HitBuilders.ScreenViewBuilder()
