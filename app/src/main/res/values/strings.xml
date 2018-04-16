@@ -47,7 +47,7 @@
 
     <!--User friendly error messages-->
     <string name="generic_server_down">It seems the web server is down or not responding.</string>
-    <string name="no_internet">No Connection</string>
+    <string name="no_internet">No Connection. Please try again when you are connected to the internet</string>
     <string name="generic_error">Network error occurred.</string>
     <string name="proxy_error">Proxy Authentication failed. Please check your credentials.</string>
     <string name="unexpected_error">An unexpected error occurred</string>

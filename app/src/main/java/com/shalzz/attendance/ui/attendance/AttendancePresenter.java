@@ -19,12 +19,17 @@
 
 package com.shalzz.attendance.ui.attendance;
 
+import android.content.Context;
+
+import com.shalzz.attendance.R;
 import com.shalzz.attendance.data.DataManager;
 import com.shalzz.attendance.data.model.ListFooter;
 import com.shalzz.attendance.data.model.Subject;
 import com.shalzz.attendance.data.remote.RetrofitException;
+import com.shalzz.attendance.injection.ApplicationContext;
 import com.shalzz.attendance.injection.ConfigPersistent;
 import com.shalzz.attendance.ui.base.BasePresenter;
+import com.shalzz.attendance.utils.NetworkUtil;
 import com.shalzz.attendance.utils.RxUtil;
 
 import java.util.List;
@@ -42,14 +47,16 @@ import timber.log.Timber;
 public class AttendancePresenter extends BasePresenter<AttendanceMvpView> {
 
     private DataManager mDataManager;
+    private Context mContext;
 
     private Disposable mSyncDisposable;
     private Disposable mDbDisposable;
     private Disposable mFooterDisposable;
 
     @Inject
-    AttendancePresenter(DataManager dataManager) {
+    AttendancePresenter(DataManager dataManager, @ApplicationContext Context context) {
         mDataManager = dataManager;
+        mContext = context;
     }
 
     @Override
@@ -95,14 +102,21 @@ public class AttendancePresenter extends BasePresenter<AttendanceMvpView> {
                                                 //noinspection UnnecessaryReturnStatement
                                                 return;
                                             }
+                                            else if (!NetworkUtil.isNetworkConnected(mContext)) {
+                                                Timber.i("Sync canceled, connection not available");
+                                                if (count > 0) {
+                                                    getMvpView().showRetryError(
+                                                            mContext.getString(R.string.no_internet));
+                                                } else {
+                                                    getMvpView().showNoConnectionErrorView();
+                                                }
+                                            }
                                             else if (count > 0) {
                                                 getMvpView().showRetryError(error.getMessage());
                                             }
-                                            else if (error.getKind() == RetrofitException.Kind.HTTP){
+                                            else if (error.getKind() == RetrofitException.Kind.HTTP
+                                                    || error.getKind() == RetrofitException.Kind.NETWORK){
                                                 getMvpView().showNetworkErrorView(error.getMessage());
-                                            }
-                                            else if (error.getKind() == RetrofitException.Kind.NETWORK){
-                                                getMvpView().showNoConnectionErrorView();
                                             } else if (error.getKind() == RetrofitException.Kind.EMPTY_RESPONSE) {
                                                 getMvpView().showEmptyErrorView();
                                                 // Prevent recursive calls

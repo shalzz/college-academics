@@ -39,7 +39,7 @@ public class RetrofitException extends RuntimeException {
     }
 
     static RetrofitException networkError(IOException exception, Context context) {
-        String message = context.getString(R.string.no_internet);
+        String message = context.getString(R.string.generic_server_down);
         return new RetrofitException(message, null, null, Kind.NETWORK, exception, null);
     }
 

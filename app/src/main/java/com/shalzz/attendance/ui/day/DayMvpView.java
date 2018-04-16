@@ -21,6 +21,8 @@ interface DayMvpView extends MvpView {
 
     void showError(String message);
 
+    void showRetryError(String message);
+
     void showNoTimetableEmptyView();
 
     void showNoConnectionErrorView();

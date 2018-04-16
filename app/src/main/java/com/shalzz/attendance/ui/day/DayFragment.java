@@ -23,6 +23,7 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -263,5 +264,13 @@ public class DayFragment extends Fragment implements DayMvpView {
         Timber.d("Error: %s", message);
         stopRefreshing();
         Miscellaneous.showSnackBar(mSwipeRefreshLayout, message);
+    }
+
+    @Override
+    public void showRetryError(String message) {
+        stopRefreshing();
+        Snackbar.make(mRecyclerView, message, Snackbar.LENGTH_LONG)
+                .setAction("Retry", v -> mDayPresenter.syncDay(mDate))
+                .show();
     }
 }
