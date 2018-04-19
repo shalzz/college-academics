@@ -19,6 +19,7 @@
 
 package com.shalzz.attendance.ui.timetable;
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.os.Bundle;
@@ -65,6 +66,9 @@ public class TimeTablePagerFragment extends Fragment implements TimeTableMvpView
     @Inject
     TimeTablePresenter mTimeTablePresenter;
 
+    @Inject
+    Activity mActivity;
+
     private int mPreviousPosition = 15;
     private TimeTablePagerAdapter mAdapter;
     private Context mContext;
@@ -96,7 +100,7 @@ public class TimeTablePagerFragment extends Fragment implements TimeTableMvpView
         actionbar = ((AppCompatActivity) getActivity()).getSupportActionBar();
 
         mAdapter = new TimeTablePagerAdapter(getChildFragmentManager(),
-                mContext,
+                mActivity,
                 position -> mViewPager.setCurrentItem(position, true));
 
         mViewPager.setOffscreenPageLimit(3);

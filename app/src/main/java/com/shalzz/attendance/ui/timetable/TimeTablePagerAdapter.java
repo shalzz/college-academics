@@ -19,7 +19,7 @@
 
 package com.shalzz.attendance.ui.timetable;
 
-import android.content.Context;
+import android.app.Activity;
 import android.content.SharedPreferences;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -27,6 +27,7 @@ import android.support.v7.preference.PreferenceManager;
 import android.util.SparseArray;
 
 import com.shalzz.attendance.R;
+import com.shalzz.attendance.billing.BillingProvider;
 import com.shalzz.attendance.ui.day.DayFragment;
 import com.shalzz.attendance.wrapper.DateHelper;
 
@@ -46,13 +47,16 @@ public class TimeTablePagerAdapter extends FragmentStatePagerAdapter {
     private boolean mHideWeekends;
     private Callback mCallback;
 
-	TimeTablePagerAdapter(FragmentManager fm, Context context, Callback callback) {
+	TimeTablePagerAdapter(FragmentManager fm, Activity activity, Callback callback) {
 		super(fm);
         mCallback = callback;
 
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
-        mHideWeekends = sharedPref.getBoolean(context.getString(R.string.pref_key_hide_weekends),
-                false);
+        if (((BillingProvider)activity).isProKeyPurchased()) {
+            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(activity);
+            mHideWeekends = sharedPref.getBoolean(activity.getString(R.string.pref_key_hide_weekends), false);
+        } else {
+            mHideWeekends = false;
+        }
 
         mToday = new Date();
         setDate(mToday);

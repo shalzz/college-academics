@@ -59,6 +59,9 @@
     <string name="no_connection_title">No connection.</string>
     <string name="no_connection_content">Please try again when you are connected to the internet</string>
     <string name="empty_view_try_again">Try Again</string>
+    <string name="error_billing_unavailable">Billing unavailable. Make sure your Google Play app
+        is setup correctly</string>
+    <string name="error_billing_default">Billing unavailable. Please check your device.</string>
 
     <!--EditText's and TextView's-->
     <string name="no_classes">You don\'t have any classes on this day :)</string>

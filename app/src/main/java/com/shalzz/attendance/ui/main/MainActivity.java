@@ -47,11 +47,14 @@ import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.TextView;
 
+import com.android.billingclient.api.BillingClient.BillingResponse;
 import com.bugsnag.android.Bugsnag;
 import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.Target;
 import com.shalzz.attendance.BuildConfig;
 import com.shalzz.attendance.R;
+import com.shalzz.attendance.billing.BillingManager;
+import com.shalzz.attendance.billing.BillingProvider;
 import com.shalzz.attendance.data.DataManager;
 import com.shalzz.attendance.data.model.User;
 import com.shalzz.attendance.ui.attendance.AttendanceListFragment;
@@ -69,7 +72,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import timber.log.Timber;
 
-public class MainActivity extends BaseActivity implements MainMvpView {
+public class MainActivity extends BaseActivity implements MainMvpView, BillingProvider {
 
     /**
      * To prevent saving the drawer position when logging out.
@@ -145,6 +148,7 @@ public class MainActivity extends BaseActivity implements MainMvpView {
     private Fragment fragment = null;
     // Our custom poor-man's back stack which has only one entry at maximum.
     private Fragment mPreviousFragment;
+    private BillingManager mBillingManager;
 
     public static class DrawerHeaderViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.drawer_header_name) TextView tv_name;
@@ -168,7 +172,7 @@ public class MainActivity extends BaseActivity implements MainMvpView {
 
         mFragmentManager = getSupportFragmentManager();
         DrawerheaderVH = new DrawerHeaderViewHolder(mNavigationView.getHeaderView(0));
-
+        mBillingManager = new BillingManager(this, mMainPresenter.getUpdateListener());
         setSupportActionBar(mToolbar);
 
         // Set the list's click listener
@@ -181,6 +185,14 @@ public class MainActivity extends BaseActivity implements MainMvpView {
     protected void onResume() {
         super.onResume();
         showcaseView();
+        // Note: We query purchases in onResume() to handle purchases completed while the activity
+        // is inactive. For example, this can happen if the activity is destroyed during the
+        // purchase flow. This ensures that when the activity is resumed it reflects the user's
+        // current purchases.
+        if (mBillingManager != null
+                && mBillingManager.getBillingClientResponseCode() == BillingResponse.OK) {
+            mBillingManager.queryPurchases();
+        }
     }
 
     @Override
@@ -597,10 +609,25 @@ public class MainActivity extends BaseActivity implements MainMvpView {
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
         if(mDrawerLayout != null)
             mDrawerLayout.removeDrawerListener(mDrawerToggle);
+        if (mBillingManager != null) {
+            mBillingManager.destroy();
+        }
         mMainPresenter.detachView();
+        super.onDestroy();
+    }
+
+    /****** BillingProvider interface implementations*****/
+
+    @Override
+    public BillingManager getBillingManager() {
+        return mBillingManager;
+    }
+
+    @Override
+    public boolean isProKeyPurchased() {
+        return mMainPresenter.isProKeyPurchased();
     }
 
     /******* MVP View methods implementation *****/

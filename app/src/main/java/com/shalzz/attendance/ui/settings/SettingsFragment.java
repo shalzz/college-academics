@@ -20,6 +20,7 @@
 package com.shalzz.attendance.ui.settings;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.backup.BackupManager;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -38,30 +39,33 @@ import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.PreferenceScreen;
 import android.widget.Toast;
 
-import com.afollestad.materialdialogs.MaterialDialog;
+import com.android.billingclient.api.BillingClient;
 import com.bugsnag.android.Bugsnag;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
-import com.shalzz.attendance.MyApplication;
 import com.shalzz.attendance.R;
+import com.shalzz.attendance.billing.BillingConstants;
+import com.shalzz.attendance.billing.BillingProvider;
 import com.shalzz.attendance.data.local.PreferencesHelper;
+import com.shalzz.attendance.event.ProKeyPurchaseEvent;
+import com.shalzz.attendance.injection.ActivityContext;
 import com.shalzz.attendance.ui.main.MainActivity;
+import com.shalzz.attendance.utils.RxEventBus;
+import com.shalzz.attendance.utils.RxUtil;
 import com.shalzz.attendance.wrapper.MySyncManager;
+import com.shalzz.attendance.wrapper.ProModeListPreference;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import io.reactivex.disposables.Disposable;
 import timber.log.Timber;
 
 public class SettingsFragment extends PreferenceFragmentCompat implements
         OnSharedPreferenceChangeListener {
 
     private final int MY_PERMISSIONS_REQUEST_GET_CONTACTS = 1;
-
-    private Context mContext;
-    private String key_sync_interval;
-    private SwitchPreference syncPref;
 
     @Inject
     @Named("app")
@@ -70,13 +74,31 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
     @Inject
     PreferencesHelper mPreferences;
 
+    @Inject
+    Activity mActivity;
+
+    @ActivityContext
+    @Inject
+    Context mContext;
+
+    @Inject
+    RxEventBus mEventBus;
+
+    private BillingProvider mBillingProvider;
+    private String key_sync_interval;
+    private SwitchPreference syncPref;
+    private SwitchPreference proModePref;
+
+    private Disposable PurchaseEventDisposable;
+
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
-        mContext = getActivity();
-        MyApplication.get(mContext).getComponent().inject(this);
+        ((MainActivity) getActivity()).activityComponent().inject(this);
 	    Bugsnag.setContext("Settings");
 
         addPreferencesFromResource(R.xml.preferences);
+
+        mBillingProvider = (BillingProvider) mActivity;
 
         key_sync_interval = getString(R.string.pref_key_sync_interval);
         ListPreference synclistPref = (ListPreference) findPreference(key_sync_interval);
@@ -88,6 +110,10 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
             toggleSync(false);
             syncPref.setChecked(false);
         }
+
+        proModePref = (SwitchPreference) findPreference(getString(R.string.pref_key_pro_mode));
+        PurchaseEventDisposable = mEventBus.filteredObservable(ProKeyPurchaseEvent.class)
+                 .subscribe(proKeyPurchaseEvent -> proModePref.setChecked(true), Timber::e);
     }
 
     @Override
@@ -99,8 +125,6 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
     }
 
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        requestBackup();
-
         if(key.equals(getString(R.string.pref_key_day_night))) {
             ListPreference listPref = (ListPreference) findPreference(key);
             listPref.setSummary(listPref.getEntry());
@@ -109,12 +133,11 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
                     getString(key,"-1")));
         }
         else if(key.equals(getString(R.string.pref_key_hide_weekends))) {
-            // if not paid user
-            // show dialog for pro mode
-            // if dialog cancels
-            // set value back to default
-            SwitchPreference switchPref = (SwitchPreference) findPreference(key);
-            switchPref.setChecked(false);
+            if (!mBillingProvider.isProKeyPurchased()) {
+                SwitchPreference switchPref = (SwitchPreference) findPreference(key);
+                switchPref.setChecked(false);
+                Toast.makeText(mContext, "Pro key required!", Toast.LENGTH_SHORT).show();
+            }
         }
         else if (key.equals(getString(R.string.pref_key_sync))) {
             if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.GET_ACCOUNTS) !=
@@ -136,6 +159,8 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
                     !optIn);
             Timber.i("Opted out of Google Analytics: %b", !optIn);
         }
+
+        requestBackup();
     }
 
     private void toggleSync(boolean sync) {
@@ -177,6 +202,12 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+        RxUtil.dispose(PurchaseEventDisposable);
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         getActivity().setTitle(getString(R.string.navigation_item_3));
@@ -187,19 +218,25 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
 
         PreferenceCategory prefCatGeneral = (PreferenceCategory) getPreferenceScreen()
                 .getPreference(0);
-        SwitchPreference proModePref = (SwitchPreference) prefCatGeneral.getPreference(0);
-        proModePref.setOnPreferenceClickListener(preference -> {
-            proModePref.setChecked(false);
-            new MaterialDialog.Builder(mContext)
-                    .title(R.string.pref_dialog_title_donate)
-                    .items(R.array.pref_donate_entries)
-                    .itemsCallback((dialog, view, which, text) -> {
-                        String values[] = mContext.getResources()
-                                .getStringArray(R.array.pref_donate_values);
-                        Toast.makeText(mContext, values[which], Toast.LENGTH_LONG).show();
-                        dialog.dismiss();
-                    })
-                    .show();
+
+        if (mBillingProvider.isProKeyPurchased()) {
+            proModePref.setChecked(true);
+        } else {
+            proModePref.setOnPreferenceClickListener(preference -> {
+                proModePref.setChecked(false);
+                mBillingProvider.getBillingManager()
+                        .initiatePurchaseFlow(BillingConstants.SKU_PRO_KEY, BillingClient.SkuType.INAPP);
+                return true;
+            });
+        }
+
+        ProModeListPreference proThemePref = (ProModeListPreference) prefCatGeneral.getPreference(1);
+        proThemePref.setProModeListPreferenceClickListener(preference -> {
+            if (mBillingProvider.isProKeyPurchased()) {
+                proThemePref.showDialog();
+            } else {
+                Toast.makeText(mContext, "Pro key required!", Toast.LENGTH_SHORT).show();
+            }
             return true;
         });
 
@@ -215,7 +252,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
             transaction.addToBackStack(null);
 
             // TODO: use an EventBus
-            ((MainActivity)getActivity()).mPopSettingsBackStack = true;
+            ((MainActivity)mActivity).mPopSettingsBackStack = true;
 
             transaction.commit();
             mTracker.send(new HitBuilders.EventBuilder()
