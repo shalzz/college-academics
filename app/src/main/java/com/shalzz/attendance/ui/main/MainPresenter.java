@@ -24,7 +24,6 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.widget.Toast;
 
-import com.android.billingclient.api.BillingClient;
 import com.android.billingclient.api.BillingClient.BillingResponse;
 import com.android.billingclient.api.Purchase;
 import com.bugsnag.android.Bugsnag;
@@ -37,7 +36,6 @@ import com.shalzz.attendance.data.DataManager;
 import com.shalzz.attendance.data.local.PreferencesHelper;
 import com.shalzz.attendance.data.model.User;
 import com.shalzz.attendance.event.ProKeyPurchaseEvent;
-import com.shalzz.attendance.event.PurchaseEvent;
 import com.shalzz.attendance.injection.ApplicationContext;
 import com.shalzz.attendance.injection.ConfigPersistent;
 import com.shalzz.attendance.ui.base.BasePresenter;

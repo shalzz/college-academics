@@ -172,7 +172,8 @@ public class MainActivity extends BaseActivity implements MainMvpView, BillingPr
 
         mFragmentManager = getSupportFragmentManager();
         DrawerheaderVH = new DrawerHeaderViewHolder(mNavigationView.getHeaderView(0));
-        mBillingManager = new BillingManager(this, mMainPresenter.getUpdateListener());
+        mBillingManager = new BillingManager(this, mDataManager,
+                mMainPresenter.getUpdateListener());
         setSupportActionBar(mToolbar);
 
         // Set the list's click listener

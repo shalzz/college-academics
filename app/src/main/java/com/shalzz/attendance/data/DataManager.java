@@ -1,5 +1,8 @@
 package com.shalzz.attendance.data;
 
+import android.content.Context;
+
+import com.android.billingclient.api.Purchase;
 import com.shalzz.attendance.data.local.DatabaseHelper;
 import com.shalzz.attendance.data.local.PreferencesHelper;
 import com.shalzz.attendance.data.model.ListFooter;
@@ -7,6 +10,7 @@ import com.shalzz.attendance.data.model.Period;
 import com.shalzz.attendance.data.model.Subject;
 import com.shalzz.attendance.data.model.User;
 import com.shalzz.attendance.data.remote.DataAPI;
+import com.shalzz.attendance.utils.NetworkUtil;
 import com.shalzz.attendance.wrapper.DateHelper;
 
 import java.util.Date;
@@ -74,6 +78,11 @@ public class DataManager {
 
     public Single<Integer> getUserCount() {
         return mDatabaseHelper.getUserCount().first(0);
+    }
+
+    public Observable<Boolean> verifyValidSignature(Purchase purchase, Context context) {
+        return mDataAPI.verifyValidSignature(purchase.getOriginalJson(),
+                purchase.getSignature());
     }
 
     public void resetTables() {

@@ -220,8 +220,11 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
                 .getPreference(0);
 
         if (mBillingProvider.isProKeyPurchased()) {
+            proModePref.setOnPreferenceClickListener(null);
             proModePref.setChecked(true);
+            proModePref.setSelectable(false);
         } else {
+            proModePref.setChecked(false);
             proModePref.setOnPreferenceClickListener(preference -> {
                 proModePref.setChecked(false);
                 mBillingProvider.getBillingManager()

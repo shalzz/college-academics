@@ -5,6 +5,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
 import retrofit2.HttpException;
+import retrofit2.http.Headers;
 
 public class NetworkUtil {
 
@@ -22,6 +23,11 @@ public class NetworkUtil {
                 (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+    }
+
+    public static String getCacheControlHeaders(Context context) {
+        return isNetworkConnected(context) ?
+                "public, max-age=60" :  "public, only-if-cached, max-stale=604800";
     }
 
 }
