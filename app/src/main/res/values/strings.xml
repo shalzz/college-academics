@@ -117,12 +117,10 @@
     <string name="pref_bugsnag_opt_in_summary">Send crash reports with diagnostic
         information to help debug and improve the app</string>
     <string name="pref_pro_mode">Upgrade to Pro</string>
-    <string name="pref_show_pro_mode_off">Thanks for using College Academics. Consider donating
-        to help support my work (I develop this is for
-        free). Donating any amount enables Pro mode as well as removes
-        the ads.</string>
-    <string name="pref_show_pro_mode_on">Thanks for Donating. Pro Mode with additional
-        features are now enabled.</string>
+    <string name="pref_show_pro_mode_off">Thanks for using College Academics. Consider upgrading
+        to Pro Mode to unlock additional features and remove ads.</string>
+    <string name="pref_show_pro_mode_on">Pro Mode is now unlocked with additional
+        features available and ads removed.</string>
     <string name="pref_dialog_title_donate">Donation Amount</string>
 
 
