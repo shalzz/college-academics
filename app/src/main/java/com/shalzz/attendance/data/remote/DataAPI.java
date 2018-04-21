@@ -33,8 +33,8 @@ import retrofit2.http.Query;
 
 public interface DataAPI {
 
-//    String ENDPOINT = "https://academics.8bitlabs.in/api/v1/";
-    String ENDPOINT = "http://192.168.1.160:8080/api/v1/";
+    String ENDPOINT = "https://academics.8bitlabs.in/api/v1/";
+//    String ENDPOINT = "http://192.168.1.160:8080/api/v1/";
 
     @GET("me")
     Observable<User> getUser(@Header("Authorization") String authorization);
