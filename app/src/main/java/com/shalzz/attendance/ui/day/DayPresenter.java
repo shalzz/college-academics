@@ -101,7 +101,6 @@ class DayPresenter extends BasePresenter<DayMvpView> {
                                                 return;
                                             }
                                             else if (!NetworkUtil.isNetworkConnected(mContext)) {
-                                                Timber.i("Sync canceled, connection not available");
                                                 if (count > 0) {
                                                     getMvpView().showRetryError(
                                                             mContext.getString(R.string.no_internet));

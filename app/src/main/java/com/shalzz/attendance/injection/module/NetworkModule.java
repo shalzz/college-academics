@@ -31,15 +31,21 @@ import com.shalzz.attendance.data.local.PreferencesHelper;
 import com.shalzz.attendance.data.remote.DataAPI;
 import com.shalzz.attendance.data.remote.RxJava2ErrorCallAdapterFactory;
 import com.shalzz.attendance.data.remote.interceptor.AuthInterceptor;
+import com.shalzz.attendance.data.remote.interceptor.CacheControlInterceptor;
 import com.shalzz.attendance.data.remote.interceptor.HeaderInterceptor;
 import com.shalzz.attendance.data.remote.interceptor.LoggingInterceptor;
 import com.shalzz.attendance.injection.ApplicationContext;
+
+import java.io.File;
 
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import okhttp3.Cache;
+import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
+import okhttp3.internal.cache.CacheInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -55,10 +61,18 @@ public class NetworkModule {
     }
 
     @Provides @Singleton @NonNull
-    static OkHttpClient provideClient(PreferencesHelper preferences) {
+    static OkHttpClient provideClient(PreferencesHelper preferences,
+                                      @ApplicationContext Context context) {
+        //setup cache
+        File httpCacheDirectory = new File(context.getCacheDir(), "responses");
+        int cacheSize = 10 * 1024 * 1024; // 10 MiB
+        Cache cache = new Cache(httpCacheDirectory, cacheSize);
+
         final OkHttpClient.Builder okHttpBuilder = new OkHttpClient.Builder()
+                .cache(cache)
                 .addInterceptor(new HeaderInterceptor())
                 .addInterceptor(new AuthInterceptor(preferences))
+                .addInterceptor(new CacheControlInterceptor(context))
                 .addNetworkInterceptor(new LoggingInterceptor());
 
         return okHttpBuilder.build();

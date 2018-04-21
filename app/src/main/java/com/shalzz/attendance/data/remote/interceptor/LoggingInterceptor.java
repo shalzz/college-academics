@@ -37,9 +37,10 @@ public class LoggingInterceptor implements Interceptor {
         Response response = chain.proceed(request);
 
         long t2 = System.nanoTime();
-        Timber.i("Received response %s for %s in %.1fms%nstatus: %s %n%s",
+        Timber.i("Received response %s for %s in %.1fms%nstatus: %s %n%scached: %s",
                  response.message(), response.request().url(),
-                (t2 - t1) / 1e6d, response.code(), response.headers());
+                (t2 - t1) / 1e6d, response.code(), response.headers(),
+                response.cacheResponse() != null);
 
         return response;
     }
