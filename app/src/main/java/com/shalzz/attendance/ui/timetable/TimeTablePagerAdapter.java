@@ -65,6 +65,7 @@ public class TimeTablePagerAdapter extends FragmentStatePagerAdapter {
                 .subscribe(proKeyPurchaseEvent -> {
                     checkPreferences(activity);
                     updateDates();
+                    scrollToToday();
                 });
 
         mToday = new Date();

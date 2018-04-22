@@ -88,6 +88,8 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
     private String key_sync_interval;
     private SwitchPreference syncPref;
     private SwitchPreference proModePref;
+    private ProModeListPreference proThemePref;
+    private SwitchPreference weekendsPref;
 
     private Disposable PurchaseEventDisposable;
 
@@ -111,6 +113,9 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
             syncPref.setChecked(false);
         }
 
+        proThemePref = (ProModeListPreference) findPreference(getString(R.string.pref_key_day_night));
+        weekendsPref = (SwitchPreference) findPreference(getString(R.string.pref_key_hide_weekends));
+
         proModePref = (SwitchPreference) findPreference(getString(R.string.pref_key_pro_mode));
         PurchaseEventDisposable = mEventBus.filteredObservable(ProKeyPurchaseEvent.class)
                  .subscribe(proKeyPurchaseEvent -> proModePref.setChecked(true), Timber::e);
@@ -126,16 +131,14 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
 
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         if(key.equals(getString(R.string.pref_key_day_night))) {
-            ListPreference listPref = (ListPreference) findPreference(key);
-            listPref.setSummary(listPref.getEntry());
+            proThemePref.setSummary(proThemePref.getEntry());
             //noinspection WrongConstant
             AppCompatDelegate.setDefaultNightMode(Integer.parseInt(sharedPreferences.
                     getString(key,"-1")));
         }
         else if(key.equals(getString(R.string.pref_key_hide_weekends))) {
             if (!mBillingProvider.isProKeyPurchased()) {
-                SwitchPreference switchPref = (SwitchPreference) findPreference(key);
-                switchPref.setChecked(false);
+                weekendsPref.setChecked(false);
                 Toast.makeText(mContext, "Pro key required!", Toast.LENGTH_SHORT).show();
             }
         }
@@ -216,9 +219,6 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
         getPreferenceScreen().getSharedPreferences()
                 .registerOnSharedPreferenceChangeListener(this);
 
-        PreferenceCategory prefCatGeneral = (PreferenceCategory) getPreferenceScreen()
-                .getPreference(0);
-
         if (mBillingProvider.isProKeyPurchased()) {
             proModePref.setOnPreferenceClickListener(null);
             proModePref.setChecked(true);
@@ -233,7 +233,6 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
             });
         }
 
-        ProModeListPreference proThemePref = (ProModeListPreference) prefCatGeneral.getPreference(1);
         proThemePref.setProModeListPreferenceClickListener(preference -> {
             if (mBillingProvider.isProKeyPurchased()) {
                 proThemePref.showDialog();
