@@ -72,7 +72,7 @@ public class NetworkModule {
                 .cache(cache)
                 .addInterceptor(new HeaderInterceptor())
                 .addInterceptor(new AuthInterceptor(preferences))
-                .addInterceptor(new CacheControlInterceptor(context))
+                .addNetworkInterceptor(new CacheControlInterceptor(context))
                 .addNetworkInterceptor(new LoggingInterceptor());
 
         return okHttpBuilder.build();

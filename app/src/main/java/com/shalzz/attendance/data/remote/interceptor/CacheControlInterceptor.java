@@ -16,9 +16,6 @@ import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.Response;
 
-/**
- * @author shalzz
- */
 public class CacheControlInterceptor implements Interceptor {
     private Context mContext;
 
@@ -29,28 +26,27 @@ public class CacheControlInterceptor implements Interceptor {
 
     @Override
     public Response intercept(@NonNull Chain chain) throws IOException {
-        Request request = chain.request();
-
         if (NetworkUtil.isNetworkConnected(mContext)) {
-            CacheControl cacheControl = new CacheControl.Builder()
-                    .maxAge( 1, TimeUnit.MINUTES )
-                    .immutable()
+            Response originalResponse = chain.proceed(chain.request());
+            int maxAge = 60; // read from cache for 1 minute
+            return originalResponse.newBuilder()
+                    .header("Cache-Control", "public, max-age=" + maxAge)
                     .build();
 
-            request = request.newBuilder()
-                    .cacheControl(cacheControl)
-                    .build();
-        } else if (request.url().encodedPath().equals("/api/v1/verify")) {// only for the 'verify'
-            // api route
-            CacheControl cacheControl = new CacheControl.Builder()
-                    .onlyIfCached()
-                    .maxStale( 7, TimeUnit.DAYS )
-                    .build();
+        } else {
+            Request request = chain.request();
+            // only for the 'verify' api route
+            if (request.url().encodedPath().equals("/api/v1/verify")) {
+                CacheControl cacheControl = new CacheControl.Builder()
+                        .onlyIfCached()
+                        .maxStale(7, TimeUnit.DAYS)
+                        .build();
 
-            request = request.newBuilder()
-                    .cacheControl(cacheControl)
-                    .build();
+                request = request.newBuilder()
+                        .cacheControl(cacheControl)
+                        .build();
+            }
+            return chain.proceed(request);
         }
-        return chain.proceed(request);
     }
 }
