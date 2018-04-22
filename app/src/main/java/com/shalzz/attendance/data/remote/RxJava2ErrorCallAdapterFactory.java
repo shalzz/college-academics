@@ -86,7 +86,6 @@ public class RxJava2ErrorCallAdapterFactory extends CallAdapter.Factory {
                             .subscribeWith(new DisposableObserver() {
                                 @Override
                                 public void onNext(Object object) {
-                                    Timber.d("next: %s",object);
                                     if (object instanceof List && ((List)object).isEmpty() ) {
                                         source.tryOnError(RetrofitException.
                                                         emptyResponseError(retrofit, context));

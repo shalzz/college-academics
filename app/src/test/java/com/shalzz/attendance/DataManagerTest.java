@@ -131,9 +131,11 @@ public class DataManagerTest {
         when(mMockDataAPI.getUser(USERID))
                 .thenReturn(Observable.error(new RuntimeException()));
 
-        mDataManager.syncUser(USERID).subscribe(new TestObserver<>());
+        TestObserver<User> result = new TestObserver<>();
+        mDataManager.syncUser(USERID).subscribe(result);
         // Verify right calls to helper methods
         verify(mMockDataAPI).getUser(USERID);
+        result.assertNoValues();
         verify(mMockDatabaseHelper, never()).setUser(ArgumentMatchers.any());
     }
 

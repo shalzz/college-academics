@@ -19,11 +19,16 @@
 
 package com.shalzz.attendance.ui.login;
 
+import android.content.Context;
+
+import com.shalzz.attendance.R;
 import com.shalzz.attendance.data.DataManager;
 import com.shalzz.attendance.data.model.User;
 import com.shalzz.attendance.data.remote.RetrofitException;
+import com.shalzz.attendance.injection.ApplicationContext;
 import com.shalzz.attendance.injection.ConfigPersistent;
 import com.shalzz.attendance.ui.base.BasePresenter;
+import com.shalzz.attendance.utils.NetworkUtil;
 import com.shalzz.attendance.utils.RxUtil;
 
 import javax.inject.Inject;
@@ -38,12 +43,14 @@ import timber.log.Timber;
 public class LoginPresenter extends BasePresenter<LoginMvpView> {
 
     private DataManager mDataManager;
+    private Context mContext;
 
     private Disposable mDisposable;
 
     @Inject
-    LoginPresenter(DataManager dataManager) {
+    LoginPresenter(DataManager dataManager, @ApplicationContext Context context) {
         mDataManager = dataManager;
+        mContext = context;
     }
 
     @Override
@@ -59,6 +66,12 @@ public class LoginPresenter extends BasePresenter<LoginMvpView> {
 
     public void login(final String username) {
         checkViewAttached();
+        if (!NetworkUtil.isNetworkConnected(mContext)) {
+            Timber.i("Sync canceled, connection not available");
+            getMvpView().showError(mContext.getString(R.string.no_internet));
+            return;
+        }
+
         getMvpView().showProgressDialog();
         RxUtil.dispose(mDisposable);
         mDisposable = mDataManager.syncUser("Bearer " + username)

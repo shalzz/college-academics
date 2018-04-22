@@ -19,6 +19,7 @@
 
 package com.shalzz.attendance.ui.timetable;
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.os.Bundle;
@@ -41,6 +42,7 @@ import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.ui.main.MainActivity;
+import com.shalzz.attendance.utils.RxEventBus;
 import com.shalzz.attendance.wrapper.DateHelper;
 
 import java.util.Calendar;
@@ -64,6 +66,12 @@ public class TimeTablePagerFragment extends Fragment implements TimeTableMvpView
 
     @Inject
     TimeTablePresenter mTimeTablePresenter;
+
+    @Inject
+    Activity mActivity;
+
+    @Inject
+    RxEventBus eventBus;
 
     private int mPreviousPosition = 15;
     private TimeTablePagerAdapter mAdapter;
@@ -96,8 +104,9 @@ public class TimeTablePagerFragment extends Fragment implements TimeTableMvpView
         actionbar = ((AppCompatActivity) getActivity()).getSupportActionBar();
 
         mAdapter = new TimeTablePagerAdapter(getChildFragmentManager(),
-                mContext,
-                position -> mViewPager.setCurrentItem(position, true));
+                mActivity,
+                position -> mViewPager.setCurrentItem(position, true),
+                eventBus);
 
         mViewPager.setOffscreenPageLimit(3);
         mViewPager.setAdapter(mAdapter);
@@ -205,6 +214,7 @@ public class TimeTablePagerFragment extends Fragment implements TimeTableMvpView
         super.onDestroyView();
         unbinder.unbind();
         mTimeTablePresenter.detachView();
+        mAdapter.destroy();
     }
 
     /******* MVP View methods implementation *****/

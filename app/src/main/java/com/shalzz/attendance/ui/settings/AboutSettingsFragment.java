@@ -31,6 +31,7 @@ import com.google.android.gms.analytics.Tracker;
 import com.shalzz.attendance.BuildConfig;
 import com.shalzz.attendance.MyApplication;
 import com.shalzz.attendance.R;
+import com.shalzz.attendance.injection.ActivityContext;
 import com.shalzz.attendance.ui.main.MainActivity;
 
 import javax.inject.Inject;
@@ -43,16 +44,18 @@ import de.psdev.licensesdialog.model.Notice;
 
 public class AboutSettingsFragment extends PreferenceFragmentCompat {
 
-    private Context mContext;
     private MainActivity mainActivity;
 
     @Inject @Named("app")
     Tracker mTracker;
 
+    @ActivityContext
+    @Inject
+    Context mContext;
+
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
-        mContext = getActivity();
-        MyApplication.get(mContext).getComponent().inject(this);
+        ((MainActivity) getActivity()).activityComponent().inject(this);
         Bugsnag.setContext("About");
         mainActivity = ((MainActivity) getActivity());
         mainActivity.setDrawerAsUp(true);

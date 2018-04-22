@@ -19,7 +19,7 @@
 
 package com.shalzz.attendance.ui.timetable;
 
-import android.content.Context;
+import android.app.Activity;
 import android.content.SharedPreferences;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -27,13 +27,18 @@ import android.support.v7.preference.PreferenceManager;
 import android.util.SparseArray;
 
 import com.shalzz.attendance.R;
+import com.shalzz.attendance.billing.BillingProvider;
+import com.shalzz.attendance.event.ProKeyPurchaseEvent;
 import com.shalzz.attendance.ui.day.DayFragment;
+import com.shalzz.attendance.utils.RxEventBus;
+import com.shalzz.attendance.utils.RxUtil;
 import com.shalzz.attendance.wrapper.DateHelper;
 
 import java.util.Calendar;
 import java.util.Date;
 
 import io.reactivex.annotations.NonNull;
+import io.reactivex.disposables.Disposable;
 import timber.log.Timber;
 
 public class TimeTablePagerAdapter extends FragmentStatePagerAdapter {
@@ -43,21 +48,42 @@ public class TimeTablePagerAdapter extends FragmentStatePagerAdapter {
 	private final SparseArray<Date> dates = new SparseArray<>();
     private Date mToday;
     private Date mDate;
-    private boolean mShowWeekends;
+    private boolean mHideWeekends = false;
     private Callback mCallback;
+    private RxEventBus mEventBus;
+    private Disposable disposable;
 
-	TimeTablePagerAdapter(FragmentManager fm, Context context, Callback callback) {
+	TimeTablePagerAdapter(FragmentManager fm, Activity activity, Callback callback,
+                          RxEventBus eventBus) {
 		super(fm);
         mCallback = callback;
+        mEventBus = eventBus;
 
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
-        mShowWeekends = sharedPref.getBoolean(context.getString(R.string
-                .pref_key_show_weekends), true);
+        checkPreferences(activity);
+
+        disposable = mEventBus.filteredObservable(ProKeyPurchaseEvent.class)
+                .subscribe(proKeyPurchaseEvent -> {
+                    checkPreferences(activity);
+                    updateDates();
+                    scrollToToday();
+                });
 
         mToday = new Date();
         setDate(mToday);
 	}
 
+	private void checkPreferences(Activity activity) {
+        if (((BillingProvider)activity).isProKeyPurchased()) {
+            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(activity);
+            mHideWeekends = sharedPref.getBoolean(activity.getString(R.string.pref_key_hide_weekends), false);
+        } else {
+            mHideWeekends = false;
+        }
+    }
+
+    public void destroy() {
+        RxUtil.dispose(disposable);
+    }
 	@Override
 	public DayFragment getItem(int position) {
         return DayFragment.newInstance(dates.get(position));
@@ -88,24 +114,21 @@ public class TimeTablePagerAdapter extends FragmentStatePagerAdapter {
     }
 
     public void scrollToDate(Date date) {
-        mCallback.scrollToPosition(indexOfValue(dates, date));
-    }
-
-    public void scrollToToday() {
-	    Date date = mToday;
-        if(!mShowWeekends) {
+        if(mHideWeekends) {
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(date);
-            if(calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) {
-                calendar.add(Calendar.DATE, 1);
-            }
-            if(calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {
+            while(calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY ||
+                    calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY ) {
                 calendar.add(Calendar.DATE, 1);
             }
             date = calendar.getTime();
         }
+        Timber.d("Date: %s", date);
+        mCallback.scrollToPosition(indexOfValue(dates, date));
+    }
 
-        scrollToDate(date);
+    public void scrollToToday() {
+        scrollToDate(mToday);
     }
 
     public void setDate(@NonNull Date date) {
@@ -123,13 +146,10 @@ public class TimeTablePagerAdapter extends FragmentStatePagerAdapter {
         for(int i =0; i < getCount() ; i++) {
             calendar.setTime(mDate);
             calendar.add(Calendar.DATE, -15+i);
-            if(!mShowWeekends) {
+            if(mHideWeekends) {
                 calendar.add(Calendar.DATE, day_offset);
-                if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) {
-                    calendar.add(Calendar.DATE, 1);
-                    ++day_offset;
-                }
-                if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {
+                while(calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY ||
+                        calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY ) {
                     calendar.add(Calendar.DATE, 1);
                     ++day_offset;
                 }

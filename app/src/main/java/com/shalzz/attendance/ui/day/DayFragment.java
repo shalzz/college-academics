@@ -23,6 +23,7 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -247,7 +248,7 @@ public class DayFragment extends Fragment implements DayMvpView {
     @Override
     public void showNetworkErrorView(String error) {
         Drawable emptyDrawable = new IconDrawable(mContext,
-                Iconify.IconValue.zmdi_network_alert)
+                Iconify.IconValue.zmdi_cloud_off)
                 .colorRes(android.R.color.darker_gray);
         mEmptyView.ImageView.setImageDrawable(emptyDrawable);
         mEmptyView.TitleTextView.setText(R.string.network_error_message);
@@ -263,5 +264,13 @@ public class DayFragment extends Fragment implements DayMvpView {
         Timber.d("Error: %s", message);
         stopRefreshing();
         Miscellaneous.showSnackBar(mSwipeRefreshLayout, message);
+    }
+
+    @Override
+    public void showRetryError(String message) {
+        stopRefreshing();
+        Snackbar.make(mRecyclerView, message, Snackbar.LENGTH_LONG)
+                .setAction("Retry", v -> mDayPresenter.syncDay(mDate))
+                .show();
     }
 }

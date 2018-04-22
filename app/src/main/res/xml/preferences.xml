@@ -21,27 +21,28 @@
 <android.support.v7.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <android.support.v7.preference.PreferenceCategory android:title="General" >
-        <android.support.v7.preference.ListPreference
+        <android.support.v14.preference.SwitchPreference
+            android:key="@string/pref_key_pro_mode"
+            android:defaultValue="false"
+            android:title="@string/pref_pro_mode"
+            android:summaryOn="@string/pref_show_pro_mode_on"
+            android:summaryOff="@string/pref_show_pro_mode_off"/>
+        <com.shalzz.attendance.wrapper.ProModeListPreference
             android:key="@string/pref_key_day_night"
-            android:defaultValue="-1"
+            android:defaultValue="1"
             android:title="@string/pref_day_night"
             android:dialogTitle="@string/pref_day_night_dialog"
+            android:summary="@string/pref_day_night_summary"
             android:entries="@array/pref_day_night_entries"
             android:entryValues="@array/pref_day_night_values"/>
     </android.support.v7.preference.PreferenceCategory>
 
     <android.support.v7.preference.PreferenceCategory android:title="Timetable" >
         <android.support.v14.preference.SwitchPreference
-            android:key="@string/pref_key_show_weekends"
-            android:defaultValue="true"
-            android:title="@string/pref_show_weekends"
-            android:summaryOn="@string/pref_show_weekends_summary_on"
-            android:summaryOff="@string/pref_show_weekends_summary_off"/>
-        <android.support.v14.preference.SwitchPreference
-            android:key="@string/pref_key_notify_timetable_changed"
-            android:defaultValue="true"
-            android:title="@string/pref_notify_timetable_changed"
-            android:summary="@string/pref_notify_timetable_changed_summary"/>
+            android:key="@string/pref_key_hide_weekends"
+            android:defaultValue="false"
+            android:title="@string/pref_hide_weekends"
+            android:summary="@string/pref_hide_weekends_summary"/>
     </android.support.v7.preference.PreferenceCategory>
 
     <android.support.v7.preference.PreferenceCategory android:title="Network" >

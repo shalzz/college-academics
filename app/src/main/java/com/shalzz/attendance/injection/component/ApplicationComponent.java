@@ -34,6 +34,7 @@ import com.shalzz.attendance.sync.SyncService;
 import com.shalzz.attendance.ui.settings.AboutSettingsFragment;
 import com.shalzz.attendance.ui.settings.SettingsFragment;
 import com.shalzz.attendance.data.local.PreferencesHelper;
+import com.shalzz.attendance.utils.RxEventBus;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -53,10 +54,7 @@ public interface ApplicationComponent {
     PreferencesHelper preferenceManager();
     DatabaseHelper databaseHelper();
     DataManager dataManager();
+    RxEventBus eventBus();
 
     void inject(SyncService syncService);
-
-    void inject(SettingsFragment settingsFragment);
-
-    void inject(AboutSettingsFragment aboutSettingsFragment);
 }

@@ -22,21 +22,28 @@ package com.shalzz.attendance.ui.main;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.widget.Toast;
 
+import com.android.billingclient.api.BillingClient.BillingResponse;
+import com.android.billingclient.api.Purchase;
 import com.bugsnag.android.Bugsnag;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.shalzz.attendance.R;
+import com.shalzz.attendance.billing.BillingConstants;
+import com.shalzz.attendance.billing.BillingManager.BillingUpdatesListener;
 import com.shalzz.attendance.data.DataManager;
-import com.shalzz.attendance.data.local.DbOpenHelper;
 import com.shalzz.attendance.data.local.PreferencesHelper;
 import com.shalzz.attendance.data.model.User;
-import com.shalzz.attendance.data.remote.RetrofitException;
+import com.shalzz.attendance.event.ProKeyPurchaseEvent;
 import com.shalzz.attendance.injection.ApplicationContext;
 import com.shalzz.attendance.injection.ConfigPersistent;
 import com.shalzz.attendance.ui.base.BasePresenter;
 import com.shalzz.attendance.utils.Miscellaneous;
+import com.shalzz.attendance.utils.RxEventBus;
 import com.shalzz.attendance.utils.RxUtil;
+
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -55,10 +62,17 @@ public class MainPresenter extends BasePresenter<MainMvpView> {
 
     private Disposable mDisposable;
     private Context mContext;
+    private final UpdateListener mUpdateListener;
+
+    // Tracks if we currently own a pro key
+    private boolean mIsProUnlocked;
 
     @Inject
     @Named("app")
     Tracker mTracker;
+
+    @Inject
+    RxEventBus mEventBus;
 
     @Inject
     MainPresenter(DataManager dataManager,
@@ -67,6 +81,7 @@ public class MainPresenter extends BasePresenter<MainMvpView> {
         mDataManager = dataManager;
         mPreferenceHelper = preferencesHelper;
         mContext = context;
+        mUpdateListener = new UpdateListener();
     }
 
     @Override
@@ -133,5 +148,59 @@ public class MainPresenter extends BasePresenter<MainMvpView> {
         mDataManager.resetTables();
 
         getMvpView().logout();
+    }
+
+    public UpdateListener getUpdateListener() {
+        return mUpdateListener;
+    }
+
+    public boolean isProKeyPurchased() {
+        return mIsProUnlocked;
+    }
+
+    /**
+     * Handler to billing updates
+     */
+    private class UpdateListener implements BillingUpdatesListener {
+
+        @Override
+        public void onBillingClientSetupFinished() {
+            if(!isViewAttached())
+                return;
+            int billingResponseCode = getMvpView().getBillingManager()
+                    .getBillingClientResponseCode();
+
+            Timber.i("Billing response: %d", billingResponseCode);
+            switch (billingResponseCode) {
+                case BillingResponse.OK:
+                    // If manager was connected successfully, do nothing
+                    Timber.i("Billing response2: %d", billingResponseCode);
+                    break;
+                case BillingResponse.BILLING_UNAVAILABLE:
+                    Toast.makeText(mContext, R.string.error_billing_unavailable, Toast.LENGTH_LONG).show();
+                    break;
+                default:
+                    Toast.makeText(mContext, R.string.error_billing_default, Toast.LENGTH_LONG).show();
+            }
+        }
+
+        @Override
+        public void onConsumeFinished(String token, int result) {
+
+
+        }
+
+        @Override
+        public void onPurchasesUpdated(List<Purchase> purchaseList) {
+            for (Purchase purchase : purchaseList) {
+                switch (purchase.getSku()) {
+                    case BillingConstants.SKU_PRO_KEY:
+                        Timber.d("You are Premium! Congratulations!!!");
+                        mIsProUnlocked = true;
+                        mEventBus.post(new ProKeyPurchaseEvent());
+                        break;
+                }
+            }
+        }
     }
 }

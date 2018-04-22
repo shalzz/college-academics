@@ -20,32 +20,37 @@
 package com.shalzz.attendance.sync;
 
 import android.accounts.Account;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SyncResult;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.support.v7.app.NotificationCompat;
 
 import com.bugsnag.android.Bugsnag;
-import com.shalzz.attendance.R;
-import com.shalzz.attendance.data.local.PreferencesHelper;
-import com.shalzz.attendance.data.remote.DataAPI;
-import com.shalzz.attendance.ui.main.MainActivity;
+import com.shalzz.attendance.data.DataManager;
+import com.shalzz.attendance.data.model.Period;
+import com.shalzz.attendance.data.model.Subject;
+import com.shalzz.attendance.data.remote.RetrofitException;
+import com.shalzz.attendance.utils.RxUtil;
 
+import java.util.Calendar;
+import java.util.Date;
+
+import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Function;
+import io.reactivex.observers.DisposableObserver;
+import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
-    // Global variables
     private Context mContext;
+    private final DataManager mDataManager;
 
-    private final PreferencesHelper preferencesManager;
-    private final DataAPI api;
+    private Disposable mAttendanceDisposable;
+    private Disposable mTimetableDisposable;
 
     /**
      * Set up the sync adapter. This form of the
@@ -55,15 +60,15 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     public SyncAdapter(
             Context context,
             boolean autoInitialize,
-            boolean allowParallelSyncs, PreferencesHelper preferencesManager, DataAPI api) {
+            boolean allowParallelSyncs,
+            DataManager dataManager) {
         super(context, autoInitialize, allowParallelSyncs);
 		/*
 		 * If your app uses a content resolver, get an instance of it
 		 * from the incoming Context
 		 */
         mContext = context;
-        this.preferencesManager = preferencesManager;
-        this.api = api;
+        mDataManager = dataManager;
         Bugsnag.setContext("Sync Adapter");
     }
 
@@ -71,40 +76,54 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     public void onPerformSync(Account account, Bundle extras, String authority,
                               ContentProviderClient provider, SyncResult syncResult) {
         Timber.i("Running sync adapter");
-    }
 
-    /**
-     * Notifies the user that their timetable has changed.
-     */
-    private void showNotification() {
-        NotificationCompat.Builder mBuilder =
-                (NotificationCompat.Builder) new NotificationCompat.Builder(mContext)
-                        .setSmallIcon(R.drawable.ic_stat_human)
-                        .setLargeIcon(BitmapFactory.decodeResource(
-                                mContext.getResources(),
-                                R.mipmap.ic_launcher))
-                        .setAutoCancel(true)
-                        .setPriority(NotificationCompat.PRIORITY_LOW)
-                        .setCategory(NotificationCompat.CATEGORY_RECOMMENDATION)
-                        .setContentTitle(mContext.getString(
-                                R.string.notify_timetable_changed_title))
-                        .setContentText(mContext.getString(
-                                R.string.notify_timetable_changed_text));
+        RxUtil.dispose(mAttendanceDisposable);
+        mAttendanceDisposable = mDataManager.syncAttendance()
+                .subscribeOn(Schedulers.io())
+                .subscribeWith(new DisposableObserver<Subject>() {
+                    @Override
+                    public void onNext(Subject subject) { }
 
-        Intent resultIntent = new Intent(mContext, MainActivity.class);
-        resultIntent.putExtra(MainActivity.LAUNCH_FRAGMENT_EXTRA, MainActivity
-                .Fragments.TIMETABLE.getValue());
-        resultIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP |
-                Intent.FLAG_ACTIVITY_SINGLE_TOP)
-                .setAction(Intent.ACTION_MAIN)
-                .addCategory(Intent.CATEGORY_LAUNCHER);
+                    @Override
+                    public void onError(Throwable throwable) {
+                        RetrofitException error = (RetrofitException) throwable;
+                        if (error.getKind() == RetrofitException.Kind.UNEXPECTED) {
+                            Timber.e(throwable);
+                        }
+                    }
 
-        PendingIntent resultPendingIntent = PendingIntent.getActivity(mContext,
-                0, resultIntent,PendingIntent.FLAG_UPDATE_CURRENT);
-        mBuilder.setContentIntent(resultPendingIntent);
-        NotificationManager mNotificationManager =
-                (NotificationManager) mContext.getSystemService(
-                        Context.NOTIFICATION_SERVICE);
-        mNotificationManager.notify(0, mBuilder.build());
+                    @Override
+                    public void onComplete() {
+                        RxUtil.dispose(mAttendanceDisposable);
+                    }
+                });
+
+        RxUtil.dispose(mTimetableDisposable);
+        mTimetableDisposable = Observable
+                .range(-3, 7)
+                .concatMap((Function<Integer, ObservableSource<Date>>) offset -> {
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.add(Calendar.DATE, offset);
+                    return Observable.just(calendar.getTime());
+                })
+                .concatMap(mDataManager::syncDay)
+                .subscribeOn(Schedulers.io())
+                .subscribeWith(new DisposableObserver<Period>() {
+                    @Override
+                    public void onNext(Period period) { }
+
+                    @Override
+                    public void onError(Throwable throwable) {
+                        RetrofitException error = (RetrofitException) throwable;
+                        if (error.getKind() == RetrofitException.Kind.UNEXPECTED) {
+                            Timber.e(throwable);
+                        }
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        RxUtil.dispose(mTimetableDisposable);
+                    }
+                });
     }
 }

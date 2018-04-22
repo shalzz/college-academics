@@ -23,13 +23,13 @@ import com.shalzz.attendance.data.model.Period;
 import com.shalzz.attendance.data.model.Subject;
 import com.shalzz.attendance.data.model.User;
 
-import java.util.Date;
 import java.util.List;
 
 import io.reactivex.Observable;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 public interface DataAPI {
 
@@ -45,4 +45,7 @@ public interface DataAPI {
     @GET("me/timetable/{date}")
     Observable<List<Period>> getTimetable(@Path("date") String date);
 
+    @GET("verify")
+    Observable<Boolean> verifyValidSignature(@Query("data") String signedData,
+                                             @Query("sig") String signature);
 }

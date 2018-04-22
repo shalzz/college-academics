@@ -19,10 +19,15 @@
 
 package com.shalzz.attendance.ui.day;
 
+import android.content.Context;
+
+import com.shalzz.attendance.R;
 import com.shalzz.attendance.data.DataManager;
 import com.shalzz.attendance.data.model.Period;
 import com.shalzz.attendance.data.remote.RetrofitException;
+import com.shalzz.attendance.injection.ApplicationContext;
 import com.shalzz.attendance.ui.base.BasePresenter;
+import com.shalzz.attendance.utils.NetworkUtil;
 import com.shalzz.attendance.utils.RxUtil;
 
 import java.util.Date;
@@ -40,13 +45,15 @@ import timber.log.Timber;
 class DayPresenter extends BasePresenter<DayMvpView> {
 
     private DataManager mDataManager;
+    private Context mContext;
 
     private Disposable mNetworkDisposable;
     private Disposable mDbDisposable;
 
     @Inject
-    DayPresenter(DataManager dataManager) {
+    DayPresenter(DataManager dataManager, @ApplicationContext Context context) {
         mDataManager = dataManager;
+        mContext = context;
     }
 
     @Override
@@ -93,15 +100,21 @@ class DayPresenter extends BasePresenter<DayMvpView> {
                                                 //noinspection UnnecessaryReturnStatement
                                                 return;
                                             }
+                                            else if (!NetworkUtil.isNetworkConnected(mContext)) {
+                                                if (count > 0) {
+                                                    getMvpView().showRetryError(
+                                                            mContext.getString(R.string.no_internet));
+                                                } else {
+                                                    getMvpView().showNoConnectionErrorView();
+                                                }
+                                            }
                                             else if (count > 0) {
-                                                getMvpView().showError(error.getMessage());
+                                                getMvpView().showRetryError(error.getMessage());
                                             }
-                                            else if (error.getKind() == RetrofitException.Kind.HTTP){
+                                            else if (error.getKind() == RetrofitException.Kind.HTTP
+                                                    || error.getKind() == RetrofitException.Kind.NETWORK){
                                                 getMvpView().showNetworkErrorView(error.getMessage());
-                                            }
-                                            else if (error.getKind() == RetrofitException.Kind.NETWORK){
-                                                getMvpView().showNoConnectionErrorView();
-                                            } else if (error.getKind() == RetrofitException.Kind.EMPTY_RESPONSE) {
+                                            }else if (error.getKind() == RetrofitException.Kind.EMPTY_RESPONSE) {
                                                 getMvpView().clearDay();
                                                 // Prevent recursive calls
                                                 mDbDisposable.dispose();

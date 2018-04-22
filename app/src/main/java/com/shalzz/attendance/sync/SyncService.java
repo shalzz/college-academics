@@ -24,6 +24,7 @@ import android.content.Intent;
 import android.os.IBinder;
 
 import com.shalzz.attendance.MyApplication;
+import com.shalzz.attendance.data.DataManager;
 import com.shalzz.attendance.data.local.PreferencesHelper;
 import com.shalzz.attendance.data.remote.DataAPI;
 
@@ -37,10 +38,7 @@ import javax.inject.Inject;
 public class SyncService extends Service {
 
     @Inject
-    PreferencesHelper preferencesManager;
-
-    @Inject
-    DataAPI api;
+    DataManager mDataManager;
 
     // Storage for an instance of the sync adapter
     private SyncAdapter sSyncAdapter = null;
@@ -60,8 +58,7 @@ public class SyncService extends Service {
         synchronized (sSyncAdapterLock) {
             if (sSyncAdapter == null) {
                 sSyncAdapter = new SyncAdapter(getApplicationContext(), true, false,
-                        preferencesManager,
-                        api);
+                        mDataManager);
             }
         }
     }

@@ -20,7 +20,7 @@
 package com.shalzz.attendance.ui.settings;
 
 import android.Manifest;
-import android.app.NotificationManager;
+import android.app.Activity;
 import android.app.backup.BackupManager;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -39,30 +39,33 @@ import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.PreferenceScreen;
 import android.widget.Toast;
 
+import com.android.billingclient.api.BillingClient;
 import com.bugsnag.android.Bugsnag;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
-import com.shalzz.attendance.MyApplication;
 import com.shalzz.attendance.R;
+import com.shalzz.attendance.billing.BillingConstants;
+import com.shalzz.attendance.billing.BillingProvider;
 import com.shalzz.attendance.data.local.PreferencesHelper;
+import com.shalzz.attendance.event.ProKeyPurchaseEvent;
+import com.shalzz.attendance.injection.ActivityContext;
 import com.shalzz.attendance.ui.main.MainActivity;
+import com.shalzz.attendance.utils.RxEventBus;
+import com.shalzz.attendance.utils.RxUtil;
 import com.shalzz.attendance.wrapper.MySyncManager;
+import com.shalzz.attendance.wrapper.ProModeListPreference;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import io.reactivex.disposables.Disposable;
 import timber.log.Timber;
 
 public class SettingsFragment extends PreferenceFragmentCompat implements
         OnSharedPreferenceChangeListener {
 
     private final int MY_PERMISSIONS_REQUEST_GET_CONTACTS = 1;
-
-    private Context mContext;
-    private String key_sync_interval;
-    private String key_sync_day_night;
-    private SwitchPreference syncPref;
 
     @Inject
     @Named("app")
@@ -71,17 +74,33 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
     @Inject
     PreferencesHelper mPreferences;
 
+    @Inject
+    Activity mActivity;
+
+    @ActivityContext
+    @Inject
+    Context mContext;
+
+    @Inject
+    RxEventBus mEventBus;
+
+    private BillingProvider mBillingProvider;
+    private String key_sync_interval;
+    private SwitchPreference syncPref;
+    private SwitchPreference proModePref;
+    private ProModeListPreference proThemePref;
+    private SwitchPreference weekendsPref;
+
+    private Disposable PurchaseEventDisposable;
+
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
-        mContext = getActivity();
-        MyApplication.get(mContext).getComponent().inject(this);
+        ((MainActivity) getActivity()).activityComponent().inject(this);
 	    Bugsnag.setContext("Settings");
 
         addPreferencesFromResource(R.xml.preferences);
 
-        key_sync_day_night = getString(R.string.pref_key_day_night);
-        ListPreference dayNightListPref = (ListPreference) findPreference(key_sync_day_night);
-        dayNightListPref.setSummary(dayNightListPref.getEntry());
+        mBillingProvider = (BillingProvider) mActivity;
 
         key_sync_interval = getString(R.string.pref_key_sync_interval);
         ListPreference synclistPref = (ListPreference) findPreference(key_sync_interval);
@@ -93,6 +112,13 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
             toggleSync(false);
             syncPref.setChecked(false);
         }
+
+        proThemePref = (ProModeListPreference) findPreference(getString(R.string.pref_key_day_night));
+        weekendsPref = (SwitchPreference) findPreference(getString(R.string.pref_key_hide_weekends));
+
+        proModePref = (SwitchPreference) findPreference(getString(R.string.pref_key_pro_mode));
+        PurchaseEventDisposable = mEventBus.filteredObservable(ProKeyPurchaseEvent.class)
+                 .subscribe(proKeyPurchaseEvent -> proModePref.setChecked(true), Timber::e);
     }
 
     @Override
@@ -104,14 +130,17 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
     }
 
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        requestBackup();
-
-        if(key.equals(key_sync_day_night)) {
-            ListPreference connectionPref = (ListPreference) findPreference(key);
-            connectionPref.setSummary(connectionPref.getEntry());
+        if(key.equals(getString(R.string.pref_key_day_night))) {
+            proThemePref.setSummary(proThemePref.getEntry());
             //noinspection WrongConstant
             AppCompatDelegate.setDefaultNightMode(Integer.parseInt(sharedPreferences.
                     getString(key,"-1")));
+        }
+        else if(key.equals(getString(R.string.pref_key_hide_weekends))) {
+            if (!mBillingProvider.isProKeyPurchased()) {
+                weekendsPref.setChecked(false);
+                Toast.makeText(mContext, "Pro key required!", Toast.LENGTH_SHORT).show();
+            }
         }
         else if (key.equals(getString(R.string.pref_key_sync))) {
             if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.GET_ACCOUNTS) !=
@@ -133,15 +162,8 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
                     !optIn);
             Timber.i("Opted out of Google Analytics: %b", !optIn);
         }
-        else if(key.equals(getString(R.string.pref_key_notify_timetable_changed))) {
-            if(!sharedPreferences.getBoolean(key, true)) {
-                // Cancel a notification if it is shown.
-                NotificationManager mNotificationManager =
-                        (NotificationManager) mContext.getSystemService(
-                                Context.NOTIFICATION_SERVICE);
-                mNotificationManager.cancel(0 /** timetable changed notification id */);
-            }
-        }
+
+        requestBackup();
     }
 
     private void toggleSync(boolean sync) {
@@ -183,6 +205,12 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+        RxUtil.dispose(PurchaseEventDisposable);
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         getActivity().setTitle(getString(R.string.navigation_item_3));
@@ -190,6 +218,29 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
         // Set up a listener whenever a key changes
         getPreferenceScreen().getSharedPreferences()
                 .registerOnSharedPreferenceChangeListener(this);
+
+        if (mBillingProvider.isProKeyPurchased()) {
+            proModePref.setOnPreferenceClickListener(null);
+            proModePref.setChecked(true);
+            proModePref.setSelectable(false);
+        } else {
+            proModePref.setChecked(false);
+            proModePref.setOnPreferenceClickListener(preference -> {
+                proModePref.setChecked(false);
+                mBillingProvider.getBillingManager()
+                        .initiatePurchaseFlow(BillingConstants.SKU_PRO_KEY, BillingClient.SkuType.INAPP);
+                return true;
+            });
+        }
+
+        proThemePref.setProModeListPreferenceClickListener(preference -> {
+            if (mBillingProvider.isProKeyPurchased()) {
+                proThemePref.showDialog();
+            } else {
+                Toast.makeText(mContext, "Pro key required!", Toast.LENGTH_SHORT).show();
+            }
+            return true;
+        });
 
         PreferenceCategory prefCategory = (PreferenceCategory) getPreferenceScreen()
                 .getPreference(4);
@@ -203,7 +254,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
             transaction.addToBackStack(null);
 
             // TODO: use an EventBus
-            ((MainActivity)getActivity()).mPopSettingsBackStack = true;
+            ((MainActivity)mActivity).mPopSettingsBackStack = true;
 
             transaction.commit();
             mTracker.send(new HitBuilders.EventBuilder()

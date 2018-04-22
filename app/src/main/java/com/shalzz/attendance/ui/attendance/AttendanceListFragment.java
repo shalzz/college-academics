@@ -430,7 +430,7 @@ public class AttendanceListFragment extends Fragment implements
     @Override
     public void showNetworkErrorView(String error) {
         Drawable emptyDrawable = new IconDrawable(mContext,
-                Iconify.IconValue.zmdi_network_alert)
+                Iconify.IconValue.zmdi_cloud_off)
                 .colorRes(android.R.color.darker_gray);
         mEmptyView.ImageView.setImageDrawable(emptyDrawable);
         mEmptyView.TitleTextView.setText("Network Error");
