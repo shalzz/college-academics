@@ -28,13 +28,17 @@ import android.util.SparseArray;
 
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.billing.BillingProvider;
+import com.shalzz.attendance.event.ProKeyPurchaseEvent;
 import com.shalzz.attendance.ui.day.DayFragment;
+import com.shalzz.attendance.utils.RxEventBus;
+import com.shalzz.attendance.utils.RxUtil;
 import com.shalzz.attendance.wrapper.DateHelper;
 
 import java.util.Calendar;
 import java.util.Date;
 
 import io.reactivex.annotations.NonNull;
+import io.reactivex.disposables.Disposable;
 import timber.log.Timber;
 
 public class TimeTablePagerAdapter extends FragmentStatePagerAdapter {
@@ -44,24 +48,41 @@ public class TimeTablePagerAdapter extends FragmentStatePagerAdapter {
 	private final SparseArray<Date> dates = new SparseArray<>();
     private Date mToday;
     private Date mDate;
-    private boolean mHideWeekends;
+    private boolean mHideWeekends = false;
     private Callback mCallback;
+    private RxEventBus mEventBus;
+    private Disposable disposable;
 
-	TimeTablePagerAdapter(FragmentManager fm, Activity activity, Callback callback) {
+	TimeTablePagerAdapter(FragmentManager fm, Activity activity, Callback callback,
+                          RxEventBus eventBus) {
 		super(fm);
         mCallback = callback;
+        mEventBus = eventBus;
 
+        checkPreferences(activity);
+
+        disposable = mEventBus.filteredObservable(ProKeyPurchaseEvent.class)
+                .subscribe(proKeyPurchaseEvent -> {
+                    checkPreferences(activity);
+                    updateDates();
+                });
+
+        mToday = new Date();
+        setDate(mToday);
+	}
+
+	private void checkPreferences(Activity activity) {
         if (((BillingProvider)activity).isProKeyPurchased()) {
             SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(activity);
             mHideWeekends = sharedPref.getBoolean(activity.getString(R.string.pref_key_hide_weekends), false);
         } else {
             mHideWeekends = false;
         }
+    }
 
-        mToday = new Date();
-        setDate(mToday);
-	}
-
+    public void destroy() {
+        RxUtil.dispose(disposable);
+    }
 	@Override
 	public DayFragment getItem(int position) {
         return DayFragment.newInstance(dates.get(position));
