@@ -27,7 +27,10 @@ public final class PermissionsTest {
             "android.permission.GET_ACCOUNTS",
             "android.permission.MANAGE_ACCOUNTS",
             "com.android.vending.BILLING",
-            "android.permission.WAKE_LOCK"
+            "android.permission.WAKE_LOCK",
+            "com.shalzz.attendance.permission.C2D_MESSAGE",
+            "com.google.android.finsky.permission.BIND_GET_INSTALL_REFERRER_SERVICE",
+            "com.google.android.c2dm.permission.RECEIVE"
     };
 
     private static final String MERGED_MANIFEST =
