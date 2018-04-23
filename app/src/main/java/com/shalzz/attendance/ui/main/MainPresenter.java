@@ -162,12 +162,7 @@ public class MainPresenter extends BasePresenter<MainMvpView> {
     private class UpdateListener implements BillingUpdatesListener {
 
         @Override
-        public void onBillingClientSetupFinished() {
-            if(!isViewAttached())
-                return;
-            int billingResponseCode = getMvpView().getBillingManager()
-                    .getBillingClientResponseCode();
-
+        public void onBillingClientSetupFinished(int billingResponseCode) {
             Timber.i("Billing response: %d", billingResponseCode);
             switch (billingResponseCode) {
                 case BillingResponse.OK:

@@ -53,7 +53,7 @@ public class BillingManager implements PurchasesUpdatedListener {
      * item was finished
      */
     public interface BillingUpdatesListener {
-        void onBillingClientSetupFinished();
+        void onBillingClientSetupFinished(int code);
         void onConsumeFinished(String token, @BillingResponse int result);
         void onPurchasesUpdated(List<Purchase> purchases);
     }
@@ -77,8 +77,6 @@ public class BillingManager implements PurchasesUpdatedListener {
                         .subscribe(code -> {
                             Timber.d("First Connection. Response code: %d", code);
                             if (code == BillingResponse.OK) {
-                                // Notify the listener that the billing client is ready.
-                                mBillingUpdatesListener.onBillingClientSetupFinished();
                                 // IAB is fully setup. Now get an inventory of stuff the user owns.
                                 queryPurchases();
                             }
@@ -86,6 +84,7 @@ public class BillingManager implements PurchasesUpdatedListener {
     }
 
     private Observable<Integer> connect() {
+        // Notify the listener that the billing client is ready.
         return Observable.create((ObservableOnSubscribe<Integer>) source -> {
             if (source.isDisposed()) return;
             if (mBillingClient.isReady()) {
@@ -113,7 +112,9 @@ public class BillingManager implements PurchasesUpdatedListener {
         })
         .retry()
         .subscribeOn(Schedulers.io())
-        .observeOn(AndroidSchedulers.mainThread());
+        .observeOn(AndroidSchedulers.mainThread())
+         // Notify the listener that the billing client is ready.
+        .doOnNext(mBillingUpdatesListener::onBillingClientSetupFinished);
     }
 
     /**
