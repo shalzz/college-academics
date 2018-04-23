@@ -38,8 +38,7 @@ import android.view.ViewGroup;
 import com.bugsnag.android.Bugsnag;
 import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.Target;
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.ui.main.MainActivity;
 import com.shalzz.attendance.utils.RxEventBus;
@@ -62,7 +61,7 @@ public class TimeTablePagerFragment extends Fragment implements TimeTableMvpView
     public ViewPager mViewPager;
 
     @Inject @Named("app")
-    Tracker mTracker;
+    FirebaseAnalytics mTracker;
 
     @Inject
     TimeTablePresenter mTimeTablePresenter;
@@ -82,8 +81,7 @@ public class TimeTablePagerFragment extends Fragment implements TimeTableMvpView
     @Override
     public void onStart() {
         super.onStart();
-	    mTracker.setScreenName(getClass().getSimpleName());
-        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+        mTracker.setCurrentScreen(mActivity, getClass().getSimpleName(), getClass().getName());
     }
 
     @Override
@@ -162,19 +160,21 @@ public class TimeTablePagerFragment extends Fragment implements TimeTableMvpView
                     , today.get(Calendar.DAY_OF_MONTH));
             mDatePickerDialog.show();
 
-            mTracker.send(new HitBuilders.EventBuilder()
-                    .setCategory("Action")
-                    .setAction("Scroll to Date")
-                    .build());
-            return true;
+             Bundle bundle = new Bundle();
+             bundle.putString(FirebaseAnalytics.Param.ITEM_ID, item.getTitle().toString());
+             bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "Scroll to Date");
+             bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "menu");
+             mTracker.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+             return true;
         } else if (item.getItemId() == R.id.menu_today) {
             setDate(new Date());
 
-            mTracker.send(new HitBuilders.EventBuilder()
-                    .setCategory("Action")
-                    .setAction("Scroll to Today")
-                    .build());
-            return true;
+             Bundle bundle = new Bundle();
+             bundle.putString(FirebaseAnalytics.Param.ITEM_ID, item.getTitle().toString());
+             bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "Scroll to Today");
+             bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "menu");
+             mTracker.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+             return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -200,12 +200,6 @@ public class TimeTablePagerFragment extends Fragment implements TimeTableMvpView
             Calendar date = Calendar.getInstance();
             date.set(year, monthOfYear, dayOfMonth);
             setDate(date.getTime());
-            mTracker.send(new HitBuilders.EventBuilder()
-                    .setCategory("Scroll to Date")
-                    .setAction("Button")
-                    .setLabel("OK")
-                    .setValue(date.getTimeInMillis())
-                    .build());
         };
     }
 

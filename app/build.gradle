@@ -139,7 +139,7 @@ android {
         final AUTO_VALUE_GSON_VERSION = '0.7.0'
         final AUTO_VALUE_PARCEL_VERSION = '0.2.5'
 
-        implementation "com.google.android.gms:play-services-analytics:9.4.0"
+        implementation 'com.google.firebase:firebase-core:15.0.0'
 
         implementation "com.android.support:support-compat:$SUPPORT_LIBRARY_VERSION"
         implementation "com.android.support:support-core-utils:$SUPPORT_LIBRARY_VERSION"

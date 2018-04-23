@@ -29,8 +29,7 @@ import android.widget.EditText;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bugsnag.android.Bugsnag;
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.data.local.PreferencesHelper;
 import com.shalzz.attendance.data.model.User;
@@ -56,7 +55,7 @@ public class LoginActivity extends BaseActivity implements LoginMvpView {
 
     @Inject
     @Named("app")
-    Tracker mTracker;
+    FirebaseAnalytics mTracker;
 
     @Inject
     LoginPresenter mLoginPresenter;
@@ -98,14 +97,6 @@ public class LoginActivity extends BaseActivity implements LoginMvpView {
                 return false;
             });
         }
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-
-        mTracker.setScreenName(getClass().getSimpleName());
-        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
     }
 
     @OnClick(R.id.bLogin)
@@ -162,6 +153,10 @@ public class LoginActivity extends BaseActivity implements LoginMvpView {
 
     @Override
     public void showMainActivity(User user) {
+        Bundle bundle = new Bundle();
+        bundle.putString(FirebaseAnalytics.Param.METHOD, "manual");
+        mTracker.logEvent(FirebaseAnalytics.Event.LOGIN, bundle);
+
         dismissProgressDialog();
         mPreferencesHelper.saveUser(user.phone());
         MySyncManager.addPeriodicSync(this, user.phone());

@@ -27,8 +27,7 @@ import android.widget.Toast;
 import com.android.billingclient.api.BillingClient.BillingResponse;
 import com.android.billingclient.api.Purchase;
 import com.bugsnag.android.Bugsnag;
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.billing.BillingConstants;
 import com.shalzz.attendance.billing.BillingManager.BillingUpdatesListener;
@@ -39,7 +38,6 @@ import com.shalzz.attendance.event.ProKeyPurchaseEvent;
 import com.shalzz.attendance.injection.ApplicationContext;
 import com.shalzz.attendance.injection.ConfigPersistent;
 import com.shalzz.attendance.ui.base.BasePresenter;
-import com.shalzz.attendance.utils.Miscellaneous;
 import com.shalzz.attendance.utils.RxEventBus;
 import com.shalzz.attendance.utils.RxUtil;
 
@@ -69,7 +67,7 @@ public class MainPresenter extends BasePresenter<MainMvpView> {
 
     @Inject
     @Named("app")
-    Tracker mTracker;
+    FirebaseAnalytics mTracker;
 
     @Inject
     RxEventBus mEventBus;
@@ -116,11 +114,7 @@ public class MainPresenter extends BasePresenter<MainMvpView> {
                             Bugsnag.setUser(user.phone(), user.email(), user.name());
                         }
 
-                        mTracker.set("&uid", user.phone());
-                        mTracker.send(new HitBuilders.ScreenViewBuilder()
-                                .setCustomDimension(Miscellaneous.CUSTOM_DIMENSION_USER_ID,
-                                        user.phone())
-                                .build());
+                        mTracker.setUserId(user.phone());
                     }
 
                     @Override

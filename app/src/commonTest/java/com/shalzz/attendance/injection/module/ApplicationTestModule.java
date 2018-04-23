@@ -22,9 +22,9 @@ package com.shalzz.attendance.injection.module;
 import android.app.Application;
 import android.content.Context;
 
-import com.google.android.gms.analytics.Tracker;
-import com.shalzz.attendance.injection.ApplicationContext;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.shalzz.attendance.data.remote.DataAPI;
+import com.shalzz.attendance.injection.ApplicationContext;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -69,8 +69,8 @@ public class ApplicationTestModule {
     @Provides
     @Named("app")
     @Singleton
-    synchronized Tracker provideTracker(@ApplicationContext Context context) {
-        return mock(Tracker.class);
+    synchronized FirebaseAnalytics provideTracker(@ApplicationContext Context context) {
+        return mock(FirebaseAnalytics.class);
     }
 
 }
