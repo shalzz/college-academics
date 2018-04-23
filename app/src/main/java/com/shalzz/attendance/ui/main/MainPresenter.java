@@ -106,16 +106,14 @@ public class MainPresenter extends BasePresenter<MainMvpView> {
                         if (isViewAttached()) {
                             getMvpView().updateUserDetails(user);
                         }
-                        Bugsnag.setUserId(user.id());
+                        Bugsnag.setUserId(user.phone());
 
                         SharedPreferences sharedPref =
                                 PreferenceManager.getDefaultSharedPreferences(mContext);
                         boolean optIn = sharedPref.getBoolean(mContext.getString(
                                 R.string.pref_key_bugsnag_opt_in), true);
                         if(optIn) {
-                            Bugsnag.setUserName(user.name());
-                            Bugsnag.addToTab("User", "phone", user.phone());
-                            Bugsnag.addToTab("User", "email", user.email());
+                            Bugsnag.setUser(user.phone(), user.email(), user.name());
                         }
 
                         mTracker.set("&uid", user.phone());

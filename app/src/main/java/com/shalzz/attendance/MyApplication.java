@@ -44,6 +44,7 @@ public class MyApplication extends Application {
         Bugsnag.init(this)
                 .setMaxBreadcrumbs(100);
         Bugsnag.setNotifyReleaseStages("production", "development", "testing");
+        Bugsnag.setAutoCaptureSessions(true);
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
 
         if (BuildConfig.DEBUG) {
