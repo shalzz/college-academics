@@ -26,10 +26,8 @@ import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.PreferenceScreen;
 
 import com.bugsnag.android.Bugsnag;
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.shalzz.attendance.BuildConfig;
-import com.shalzz.attendance.MyApplication;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.injection.ActivityContext;
 import com.shalzz.attendance.ui.main.MainActivity;
@@ -38,16 +36,13 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import de.psdev.licensesdialog.LicensesDialog;
-import de.psdev.licensesdialog.licenses.GnuGeneralPublicLicense20;
-import de.psdev.licensesdialog.licenses.License;
-import de.psdev.licensesdialog.model.Notice;
 
 public class AboutSettingsFragment extends PreferenceFragmentCompat {
 
     private MainActivity mainActivity;
 
     @Inject @Named("app")
-    Tracker mTracker;
+    FirebaseAnalytics mTracker;
 
     @ActivityContext
     @Inject
@@ -66,9 +61,7 @@ public class AboutSettingsFragment extends PreferenceFragmentCompat {
     @Override
     public void onStart() {
         super.onStart();
-
-        mTracker.setScreenName(getClass().getSimpleName());
-        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+        mTracker.setCurrentScreen(mainActivity, getClass().getSimpleName(), getClass().getName());
     }
 
     @Override
@@ -83,10 +76,11 @@ public class AboutSettingsFragment extends PreferenceFragmentCompat {
         auth.setSummary(getString(R.string.copyright_year)+ " "
                 + getString(R.string.app_copyright));
 	    auth.setOnPreferenceClickListener(preference -> {
-            mTracker.send(new HitBuilders.EventBuilder()
-                    .setCategory("Click")
-                    .setAction("Author")
-                    .build());
+            Bundle bundle = new Bundle();
+            bundle.putString(FirebaseAnalytics.Param.ITEM_ID, getString(R.string.pref_author));
+            bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "Author");
+            bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "preference");
+            mTracker.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
             return true;
         });
 
@@ -119,20 +113,23 @@ public class AboutSettingsFragment extends PreferenceFragmentCompat {
                     .build()
                     .show();
 
-            mTracker.send(new HitBuilders.EventBuilder()
-                    .setCategory("Click")
-                    .setAction("OSS License")
-                    .build());
+            Bundle bundle = new Bundle();
+            bundle.putString(FirebaseAnalytics.Param.ITEM_ID, getString(R.string.pref_key_info_notices));
+            bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "OSS License");
+            bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "preference");
+            mTracker.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
             return true;
         });
 
         Preference versionPref = prefScreen.getPreference(index++);
         versionPref.setSummary(BuildConfig.VERSION_NAME);
         versionPref.setOnPreferenceClickListener(preference -> {
-            mTracker.send(new HitBuilders.EventBuilder()
-                    .setCategory("Click")
-                    .setAction("Version")
-                    .build());
+
+            Bundle bundle = new Bundle();
+            bundle.putString(FirebaseAnalytics.Param.ITEM_ID, getString(R.string.pref_key_info_version));
+            bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "Version");
+            bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "preference");
+            mTracker.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
             return true;
         });
     }

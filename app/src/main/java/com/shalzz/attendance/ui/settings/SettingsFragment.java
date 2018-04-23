@@ -41,9 +41,7 @@ import android.widget.Toast;
 
 import com.android.billingclient.api.BillingClient;
 import com.bugsnag.android.Bugsnag;
-import com.google.android.gms.analytics.GoogleAnalytics;
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.billing.BillingConstants;
 import com.shalzz.attendance.billing.BillingProvider;
@@ -69,7 +67,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
 
     @Inject
     @Named("app")
-    Tracker mTracker;
+    FirebaseAnalytics mTracker;
 
     @Inject
     PreferencesHelper mPreferences;
@@ -124,9 +122,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
     @Override
     public void onStart() {
         super.onStart();
-
-        mTracker.setScreenName(getClass().getSimpleName());
-        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+        mTracker.setCurrentScreen(mActivity, getClass().getSimpleName(), getClass().getName());
     }
 
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
@@ -135,6 +131,10 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
             //noinspection WrongConstant
             AppCompatDelegate.setDefaultNightMode(Integer.parseInt(sharedPreferences.
                     getString(key,"-1")));
+
+            Bundle params = new Bundle();
+            params.putString("theme", proThemePref.getEntry().toString());
+            mTracker.logEvent("theme_change", params);
         }
         else if(key.equals(getString(R.string.pref_key_hide_weekends))) {
             if (!mBillingProvider.isProKeyPurchased()) {
@@ -158,9 +158,8 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
         }
         else if(key.equals(getString(R.string.pref_key_ga_opt_in))) {
             boolean optIn = sharedPreferences.getBoolean(key, true);
-            GoogleAnalytics.getInstance(mContext).setAppOptOut(
-                    !optIn);
-            Timber.i("Opted out of Google Analytics: %b", !optIn);
+            mTracker.setAnalyticsCollectionEnabled(optIn);
+            Timber.i("Opted in to Google Analytics: %b", optIn);
         }
 
         requestBackup();
@@ -257,10 +256,12 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
             ((MainActivity)mActivity).mPopSettingsBackStack = true;
 
             transaction.commit();
-            mTracker.send(new HitBuilders.EventBuilder()
-                    .setCategory("Click")
-                    .setAction("About")
-                    .build());
+
+            Bundle bundle = new Bundle();
+            bundle.putString(FirebaseAnalytics.Param.ITEM_ID, getString(R.string.pref_about));
+            bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "About");
+            bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "preference");
+            mTracker.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
             return true;
         });
     }

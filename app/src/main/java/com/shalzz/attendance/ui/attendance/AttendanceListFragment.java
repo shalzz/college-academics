@@ -22,6 +22,7 @@ package com.shalzz.attendance.ui.attendance;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -50,8 +51,7 @@ import android.widget.TextView;
 import com.bugsnag.android.Bugsnag;
 import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.ViewTarget;
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.malinskiy.materialicons.IconDrawable;
 import com.malinskiy.materialicons.Iconify;
 import com.shalzz.attendance.R;
@@ -88,7 +88,7 @@ public class AttendanceListFragment extends Fragment implements
     ExpandableListAdapter mAdapter;
 
     @Inject @Named("app")
-    Tracker mTracker;
+    FirebaseAnalytics mTracker;
 
     static class EmptyView {
         @BindView(R.id.emptyStateImageView)
@@ -133,15 +133,10 @@ public class AttendanceListFragment extends Fragment implements
     @Nullable private StaggeredGridLayoutManager mGridLayoutManager;
     private Context mContext;
     private Unbinder unbinder;
-    public EmptyView mEmptyView = new EmptyView();
+    private Activity mActivity;
 
-    @Override
-    public void onStart() {
-        super.onStart();
+    private EmptyView mEmptyView = new EmptyView();
 
-        mTracker.setScreenName(getClass().getSimpleName());
-        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
-    }
 
     @Override
     public View onCreateView( @NonNull LayoutInflater inflater, ViewGroup container,
@@ -150,7 +145,8 @@ public class AttendanceListFragment extends Fragment implements
         unbinder = ButterKnife.bind(this, mView);
         ButterKnife.bind(mEmptyView, emptyView);
 
-        ((MainActivity) getActivity()).activityComponent().inject(this);
+        mActivity = getActivity();
+        ((MainActivity) mActivity).activityComponent().inject(this);
         Bugsnag.setContext("AttendanceList");
         mPresenter.attachView(this);
 
@@ -195,6 +191,11 @@ public class AttendanceListFragment extends Fragment implements
         return mView;
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        mTracker.setCurrentScreen(mActivity, getClass().getSimpleName(), getClass().getName());
+    }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
@@ -217,6 +218,9 @@ public class AttendanceListFragment extends Fragment implements
                 String filter = !TextUtils.isEmpty(arg0) ? arg0 : null;
                 clearSubjects();
                 mPresenter.loadAttendance(filter);
+                Bundle bundle = new Bundle();
+                bundle.putString(FirebaseAnalytics.Param.SEARCH_TERM, filter);
+                mTracker.logEvent(FirebaseAnalytics.Event.SEARCH, bundle);
                 return false;
             }
         });
@@ -233,10 +237,11 @@ public class AttendanceListFragment extends Fragment implements
             return true;
         }
         else if(item.getItemId() == R.id.menu_search) {
-            mTracker.send(new HitBuilders.EventBuilder()
-                    .setCategory("Action")
-                    .setAction("Search")
-                    .build());
+            Bundle bundle = new Bundle();
+            bundle.putString(FirebaseAnalytics.Param.ITEM_ID, item.getTitle().toString());
+            bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "Search");
+            bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "menu");
+            mTracker.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
         }
         return super.onOptionsItemSelected(item);
     }
