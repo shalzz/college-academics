@@ -61,7 +61,7 @@ public class AboutSettingsFragment extends PreferenceFragmentCompat {
     @Override
     public void onStart() {
         super.onStart();
-        mTracker.setCurrentScreen(mainActivity, getClass().getSimpleName(), getClass().getName());
+        mTracker.setCurrentScreen(mainActivity, getClass().getSimpleName(), getClass().getSimpleName());
     }
 
     @Override

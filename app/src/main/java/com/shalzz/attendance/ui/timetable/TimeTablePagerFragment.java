@@ -81,7 +81,7 @@ public class TimeTablePagerFragment extends Fragment implements TimeTableMvpView
     @Override
     public void onStart() {
         super.onStart();
-        mTracker.setCurrentScreen(mActivity, getClass().getSimpleName(), getClass().getName());
+        mTracker.setCurrentScreen(mActivity, getClass().getSimpleName(), getClass().getSimpleName());
     }
 
     @Override
