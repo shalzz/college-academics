@@ -122,7 +122,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
     @Override
     public void onStart() {
         super.onStart();
-        mTracker.setCurrentScreen(mActivity, getClass().getSimpleName(), getClass().getName());
+        mTracker.setCurrentScreen(mActivity, getClass().getSimpleName(), getClass().getSimpleName());
     }
 
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
