@@ -27,7 +27,6 @@ import android.support.v7.preference.PreferenceManager;
 import com.bugsnag.android.Bugsnag;
 import com.bugsnag.android.Severity;
 import com.google.firebase.analytics.FirebaseAnalytics;
-import com.shalzz.attendance.BuildConfig;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.data.local.PreferencesHelper;
 import com.shalzz.attendance.ui.base.BaseActivity;
