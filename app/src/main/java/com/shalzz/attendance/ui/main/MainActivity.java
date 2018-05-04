@@ -179,6 +179,7 @@ public class MainActivity extends BaseActivity implements MainMvpView, BillingPr
         // Set the list's click listener
         mNavigationView.setNavigationItemSelectedListener(new NavigationItemSelectedListener());
 
+        initDrawer();
         init(savedInstanceState);
     }
 
@@ -194,13 +195,6 @@ public class MainActivity extends BaseActivity implements MainMvpView, BillingPr
                 && mBillingManager.getBillingClientResponseCode() == BillingResponse.OK) {
             mBillingManager.queryPurchases();
         }
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        initDrawer();
     }
 
     /**

@@ -50,12 +50,16 @@ public class AboutSettingsFragment extends PreferenceFragmentCompat {
 
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
-        ((MainActivity) getActivity()).activityComponent().inject(this);
         Bugsnag.setContext("About");
-        mainActivity = ((MainActivity) getActivity());
-        mainActivity.setDrawerAsUp(true);
-
         addPreferencesFromResource(R.xml.pref_about);
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        mainActivity = ((MainActivity) getActivity());
+        mainActivity.activityComponent().inject(this);
+        mainActivity.setDrawerAsUp(true);
+        super.onActivityCreated(savedInstanceState);
     }
 
     @Override

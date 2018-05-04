@@ -72,9 +72,6 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
     @Inject
     PreferencesHelper mPreferences;
 
-    @Inject
-    Activity mActivity;
-
     @ActivityContext
     @Inject
     Context mContext;
@@ -88,41 +85,48 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
     private SwitchPreference proModePref;
     private ProModeListPreference proThemePref;
     private SwitchPreference weekendsPref;
+    private Activity mActivity;
 
     private Disposable PurchaseEventDisposable;
 
     @Override
+    public void onStart() {
+        super.onStart();
+        mTracker.setCurrentScreen(mActivity, getClass().getSimpleName(), getClass().getSimpleName());
+    }
+
+    @Override
     public void onCreatePreferences(Bundle bundle, String s) {
-        ((MainActivity) getActivity()).activityComponent().inject(this);
 	    Bugsnag.setContext("Settings");
 
         addPreferencesFromResource(R.xml.preferences);
-
-        mBillingProvider = (BillingProvider) mActivity;
 
         key_sync_interval = getString(R.string.pref_key_sync_interval);
         ListPreference synclistPref = (ListPreference) findPreference(key_sync_interval);
         synclistPref.setSummary(synclistPref.getEntry());
 
         syncPref = (SwitchPreference) findPreference(getString(R.string.pref_key_sync));
+        proThemePref = (ProModeListPreference) findPreference(getString(R.string.pref_key_day_night));
+        weekendsPref = (SwitchPreference) findPreference(getString(R.string.pref_key_hide_weekends));
+        proModePref = (SwitchPreference) findPreference(getString(R.string.pref_key_pro_mode));
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        mActivity = getActivity();
+        ((MainActivity) mActivity).activityComponent().inject(this);
+
+        mBillingProvider = (BillingProvider) mActivity;
+
         if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.GET_ACCOUNTS) !=
                 PackageManager.PERMISSION_GRANTED) {
             toggleSync(false);
             syncPref.setChecked(false);
         }
 
-        proThemePref = (ProModeListPreference) findPreference(getString(R.string.pref_key_day_night));
-        weekendsPref = (SwitchPreference) findPreference(getString(R.string.pref_key_hide_weekends));
-
-        proModePref = (SwitchPreference) findPreference(getString(R.string.pref_key_pro_mode));
         PurchaseEventDisposable = mEventBus.filteredObservable(ProKeyPurchaseEvent.class)
-                 .subscribe(proKeyPurchaseEvent -> proModePref.setChecked(true), Timber::e);
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        mTracker.setCurrentScreen(mActivity, getClass().getSimpleName(), getClass().getSimpleName());
+                .subscribe(proKeyPurchaseEvent -> proModePref.setChecked(true), Timber::e);
+        super.onActivityCreated(savedInstanceState);
     }
 
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
@@ -252,7 +256,6 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
             transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
             transaction.addToBackStack(null);
 
-            // TODO: use an EventBus
             ((MainActivity)mActivity).mPopSettingsBackStack = true;
 
             transaction.commit();
