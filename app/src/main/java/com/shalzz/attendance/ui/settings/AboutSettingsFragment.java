@@ -20,12 +20,14 @@
 package com.shalzz.attendance.ui.settings;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.PreferenceScreen;
 
 import com.bugsnag.android.Bugsnag;
+import com.google.android.gms.oss.licenses.OssLicensesMenuActivity;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.shalzz.attendance.BuildConfig;
 import com.shalzz.attendance.R;
@@ -34,8 +36,6 @@ import com.shalzz.attendance.ui.main.MainActivity;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-
-import de.psdev.licensesdialog.LicensesDialog;
 
 public class AboutSettingsFragment extends PreferenceFragmentCompat {
 
@@ -84,34 +84,9 @@ public class AboutSettingsFragment extends PreferenceFragmentCompat {
             return true;
         });
 
-//        Preference pref = prefScreen.getPreference(index++);
-//        pref.setOnPreferenceClickListener(preference -> {
-//            final String name = getString(R.string.app_name);
-//            final String url = getString(R.string.app_url);
-//            final String copyright = getString(R.string.copyright_year) + " "
-//                                        + getString(R.string.app_copyright);
-//            final License license = new GnuGeneralPublicLicense20();
-//            final Notice notice = new Notice(name, url, copyright, license);
-//            new LicensesDialog.Builder(mContext)
-//                    .setNotices(notice)
-//                    .setShowFullLicenseText(true)
-//                    .build()
-//                    .show();
-//
-//            mTracker.send(new HitBuilders.EventBuilder()
-//                    .setCategory("Click")
-//                    .setAction("License")
-//                    .build());
-//            return true;
-//        });
-
         Preference noticePref = prefScreen.getPreference(index++);
         noticePref.setOnPreferenceClickListener(preference -> {
-            new LicensesDialog.Builder(mContext)
-                    .setNotices(R.raw.notices)
-                    .setIncludeOwnLicense(true)
-                    .build()
-                    .show();
+            startActivity(new Intent(mContext, OssLicensesMenuActivity.class));
 
             Bundle bundle = new Bundle();
             bundle.putString(FirebaseAnalytics.Param.ITEM_ID, getString(R.string.pref_key_info_notices));
