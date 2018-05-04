@@ -256,18 +256,18 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     private void inflateChildView(final View view) {
         final GenericViewHolder views = (GenericViewHolder) view.getTag();
 
-        ViewStub stub = (ViewStub) view.findViewById(R.id.subject_details_stub);
+        ViewStub stub = view.findViewById(R.id.subject_details_stub);
         if (stub != null) {
             views.childView = (RelativeLayout) stub.inflate();
         }
         else
-            views.childView = (RelativeLayout) views.itemView.findViewById(R.id.subTree);
+            views.childView = views.itemView.findViewById(R.id.subTree);
 
         // child view
         View childView = views.childView;
-        views.tvAbsent = (TextView) childView.findViewById(R.id.tvAbsent);
-        views.tvReach = (TextView) childView.findViewById(R.id.tvReach);
-        views.ivAlert = (ImageView) childView.findViewById(R.id.imageView1);
+        views.tvAbsent = childView.findViewById(R.id.tvAbsent);
+        views.tvReach = childView.findViewById(R.id.tvReach);
+        views.ivAlert = childView.findViewById(R.id.imageView1);
 
         bindChildView(views,views.position);
     }
@@ -476,9 +476,9 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
 
         /** --------footer-------- */
         view.setVisibility(View.VISIBLE);
-        TextView tvPercent = (TextView) view.findViewById(R.id.tvTotalPercent);
-        TextView tvClasses = (TextView) view.findViewById(R.id.tvClass);
-        ProgressBar pbPercent = (ProgressBar) view.findViewById(R.id.pbTotalPercent);
+        TextView tvPercent = view.findViewById(R.id.tvTotalPercent);
+        TextView tvClasses = view.findViewById(R.id.tvClass);
+        ProgressBar pbPercent = view.findViewById(R.id.pbTotalPercent);
         tvPercent.setText(mResources.getString(R.string.atten_list_percentage,
                 mFooter.getPercentage()));
         tvClasses.setText(mResources.getString(R.string.atten_list_attended_upon_held,
