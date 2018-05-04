@@ -55,14 +55,7 @@ public class DbOpenHelper extends SupportSQLiteOpenHelper.Callback {
     @Override
     public void onUpgrade(SupportSQLiteDatabase db, int oldVersion, int newVersion) {
         switch (oldVersion) {
-            case 1:
-            case 2:
-            case 3:
-            case 4:
-            case 5:
-            case 6:
-            case 7:
-            case 8:
+            default:
 
                 // Drop older table if existed
                 db.execSQL("DROP TABLE IF EXISTS " + Subject.TABLE_NAME);
