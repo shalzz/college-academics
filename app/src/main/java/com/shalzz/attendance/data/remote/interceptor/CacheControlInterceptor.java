@@ -15,6 +15,7 @@ import okhttp3.CacheControl;
 import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.Response;
+import timber.log.Timber;
 
 public class CacheControlInterceptor implements Interceptor {
     private Context mContext;
@@ -26,27 +27,34 @@ public class CacheControlInterceptor implements Interceptor {
 
     @Override
     public Response intercept(@NonNull Chain chain) throws IOException {
+        Request request = chain.request();
         if (NetworkUtil.isNetworkConnected(mContext)) {
-            Response originalResponse = chain.proceed(chain.request());
-            int maxAge = 60; // read from cache for 1 minute
-            return originalResponse.newBuilder()
-                    .header("Cache-Control", "public, max-age=" + maxAge)
-                    .build();
-
-        } else {
-            Request request = chain.request();
-            // only for the 'verify' api route
-            if (request.url().encodedPath().equals("/api/v1/verify")) {
-                CacheControl cacheControl = new CacheControl.Builder()
-                        .onlyIfCached()
-                        .maxStale(7, TimeUnit.DAYS)
-                        .build();
-
-                request = request.newBuilder()
-                        .cacheControl(cacheControl)
+            // Do not cache the '/me' api route
+            if (request.url().encodedPath().equals("/api/v1/me")) {
+                Response originalResponse = chain.proceed(request);
+                return originalResponse.newBuilder()
+                        .header("Cache-Control", "public, max-age=0")
                         .build();
             }
-            return chain.proceed(request);
+            else {
+                Timber.d("Caching: %s",request.url().encodedPath());
+                Response originalResponse = chain.proceed(request);
+                int maxAge = 60; // read from cache for 1 minute
+                return originalResponse.newBuilder()
+                        .header("Cache-Control", "public, max-age=" + maxAge)
+                        .build();
+            }
+        // only for the 'verify' api route
+        } else if (request.url().encodedPath().equals("/api/v1/verify")) {
+            CacheControl cacheControl = new CacheControl.Builder()
+                    .onlyIfCached()
+                    .maxStale(7, TimeUnit.DAYS)
+                    .build();
+
+            request = request.newBuilder()
+                    .cacheControl(cacheControl)
+                    .build();
         }
+        return chain.proceed(request);
     }
 }
