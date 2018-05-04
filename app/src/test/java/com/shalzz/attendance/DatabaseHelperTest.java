@@ -101,7 +101,7 @@ public class DatabaseHelperTest {
     }
 
     @Test
-    public void getUserCount() throws Exception {
+    public void getUserCount() {
         TestObserver<Integer> result = new TestObserver<>();
         mDatabaseHelper.getUserCount().subscribe(result);
         result.assertNoErrors();
@@ -109,7 +109,7 @@ public class DatabaseHelperTest {
     }
 
     @Test
-    public void getSubjectCount() throws Exception {
+    public void getSubjectCount() {
         TestObserver<Integer> result = new TestObserver<>();
         mDatabaseHelper.getSubjectCount().subscribe(result);
         result.assertNoErrors();
@@ -117,7 +117,7 @@ public class DatabaseHelperTest {
     }
 
     @Test
-    public void getPeriodCount() throws Exception {
+    public void getPeriodCount() {
         TestObserver<Integer> result = new TestObserver<>();
         mDatabaseHelper.getPeriodCount(new Date()).subscribe(result);
         result.assertNoErrors();

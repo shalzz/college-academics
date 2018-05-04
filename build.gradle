@@ -25,10 +25,11 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.1.1'
+        classpath 'com.android.tools.build:gradle:3.1.2'
         classpath 'com.squareup.sqldelight:gradle-plugin:0.7.0'
         classpath 'com.github.triplet.gradle:play-publisher:1.2.0'
-        classpath 'com.google.gms:google-services:3.2.1'
+        classpath 'com.google.gms:google-services:3.3.0'
+        classpath "com.google.gms:oss-licenses:0.9.2"
 
 	    //noinspection GradleDynamicVersion
 	    classpath 'com.bugsnag:bugsnag-android-gradle-plugin:3.+'

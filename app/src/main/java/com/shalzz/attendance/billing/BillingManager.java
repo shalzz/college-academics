@@ -233,15 +233,17 @@ public class BillingManager implements PurchasesUpdatedListener {
                         if (areSubscriptionsSupported()) {
                             PurchasesResult subscriptionResult
                                     = mBillingClient.queryPurchases(SkuType.SUBS);
-                            Timber.i("Querying purchases and subscriptions elapsed time: %s ms",
-                                    (System.currentTimeMillis() - time));
-                            Timber.i( "Querying subscriptions result code: %d res: %d"
-                                    , subscriptionResult.getResponseCode()
-                                    ,  subscriptionResult.getPurchasesList().size());
 
-                            if (subscriptionResult.getResponseCode() == BillingResponse.OK) {
+                            if (subscriptionResult!= null && subscriptionResult.getResponseCode()
+                                    == BillingResponse.OK) {
                                 purchasesResult.getPurchasesList().addAll(
                                         subscriptionResult.getPurchasesList());
+
+                                Timber.i("Querying purchases and subscriptions elapsed time: %s ms",
+                                        (System.currentTimeMillis() - time));
+                                Timber.i( "Querying subscriptions result code: %d res: %d"
+                                        , subscriptionResult.getResponseCode()
+                                        ,  subscriptionResult.getPurchasesList().size());
                             } else {
                                 Timber.e( "Got an error response trying to query subscription purchases");
                             }

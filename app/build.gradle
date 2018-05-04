@@ -21,6 +21,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.squareup.sqldelight'
 apply plugin: 'com.github.triplet.play'
 apply plugin: 'com.bugsnag.android.gradle'
+apply plugin: 'com.google.gms.oss.licenses.plugin'
 
 bugsnag {
     apiKey '600a00bfd5bd72e5df7f288f74df8f9b'
@@ -139,7 +140,10 @@ android {
         final AUTO_VALUE_GSON_VERSION = '0.7.0'
         final AUTO_VALUE_PARCEL_VERSION = '0.2.5'
 
-        implementation 'com.google.firebase:firebase-core:15.0.0'
+        implementation 'com.google.firebase:firebase-core:15.0.2'
+        implementation 'com.google.firebase:firebase-analytics:15.0.2'
+
+        implementation 'com.google.android.gms:play-services-oss-licenses:15.0.1'
 
         implementation "com.android.support:support-compat:$SUPPORT_LIBRARY_VERSION"
         implementation "com.android.support:support-core-utils:$SUPPORT_LIBRARY_VERSION"
@@ -196,7 +200,6 @@ android {
         implementation 'com.malinskiy:materialicons:1.0.2'
         implementation 'com.github.amlcurran.showcaseview:library:5.4.0'
         implementation 'com.github.afollestad.material-dialogs:core:0.8.5.5'
-        implementation 'de.psdev.licensesdialog:licensesdialog:1.8.0'
 
 	    //noinspection GradleDynamicVersion
         implementation 'com.bugsnag:bugsnag-android:4.+'
