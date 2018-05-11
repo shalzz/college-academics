@@ -21,6 +21,7 @@ package com.shalzz.attendance.ui.splash;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.preference.PreferenceManager;
 
@@ -51,10 +52,10 @@ public class SplashActivity extends BaseActivity {
 	protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         activityComponent().inject(this);
-		Bugsnag.setContext("SplashActivity");
+        Bugsnag.setContext("SplashActivity");
 
-		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-		boolean optIn = sharedPref.getBoolean(getString(R.string.pref_key_ga_opt_in), true);
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean optIn = sharedPref.getBoolean(getString(R.string.pref_key_ga_opt_in), true);
         mTracker.setAnalyticsCollectionEnabled(optIn);
         Timber.i("Opted In to Google Analytics: %s", optIn);
 
@@ -62,20 +63,20 @@ public class SplashActivity extends BaseActivity {
         try {
             PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
         } catch (ClassCastException e) {
-	        Bugsnag.notify(e, Severity.INFO);
+            Bugsnag.notify(e, Severity.INFO);
             PreferenceManager.getDefaultSharedPreferences(this).edit().clear().apply();
             PreferenceManager.setDefaultValues(this, R.xml.preferences, true);
         }
 
-		boolean loggedin = mPreferencesHelper.getLoginStatus();
+        boolean loggedin = mPreferencesHelper.getLoginStatus();
 
         Intent intent;
-		if(!loggedin)
+        if (!loggedin)
             intent = new Intent(SplashActivity.this, LoginActivity.class);
-		else
+        else
             intent = new Intent(SplashActivity.this, MainActivity.class);
 
         startActivity(intent);
-		finish();
-	}
+        finish();
+    }
 }
