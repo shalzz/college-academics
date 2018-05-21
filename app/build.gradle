@@ -131,7 +131,7 @@ android {
 
     dependencies {
         final SUPPORT_LIBRARY_VERSION = '27.1.1'
-        final DAGGER_VERSION = '2.5'
+        final DAGGER_VERSION = '2.16'
         final ESPRESSO_VERSION = '2.2.1'
         final RUNNER_VERSION = '0.4'
         final RETROFIT_VERSION = '2.4.0'
