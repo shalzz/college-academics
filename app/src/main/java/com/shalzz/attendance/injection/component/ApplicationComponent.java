@@ -37,6 +37,7 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Component;
+import okhttp3.OkHttpClient;
 
 @Singleton
 @Component(modules = {ApplicationModule.class, NetworkModule.class})
@@ -52,6 +53,7 @@ public interface ApplicationComponent {
     DatabaseHelper databaseHelper();
     DataManager dataManager();
     RxEventBus eventBus();
+    OkHttpClient okhttpclient();
 
     void inject(SyncService syncService);
 }
