@@ -53,7 +53,9 @@
     <string name="unexpected_error">An unexpected error occurred</string>
     <string name="form_userid_error">Phone number is invalid.</string>
     <string name="form_password_error">Password is required.</string>
-    <string name="auth_error">Phone number is incorrect.</string>
+    <string name="auth_error">The phone number is not registered.
+        Please use your registered number or contact your college IT dept. to
+        register.</string>
     <string name="no_data_title">Nothing Here</string>
     <string name="no_data_content">No data available on the server right now</string>
     <string name="no_connection_title">No connection.</string>
