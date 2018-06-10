@@ -21,8 +21,10 @@ package com.shalzz.attendance.injection.module;
 
 import android.app.Application;
 import android.content.Context;
+import android.support.annotation.NonNull;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.shalzz.attendance.data.local.PreferencesHelper;
 import com.shalzz.attendance.data.remote.DataAPI;
 import com.shalzz.attendance.injection.ApplicationContext;
 
@@ -31,6 +33,7 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import okhttp3.OkHttpClient;
 
 import static org.mockito.Mockito.mock;
 
@@ -60,6 +63,11 @@ public class ApplicationTestModule {
 
     /************* MOCKS *************/
 
+    @Provides @Singleton @NonNull
+    static OkHttpClient provideClient() {
+        return mock(OkHttpClient.class);
+    }
+
     @Provides
     @Singleton
     DataAPI provideDataAPIService() {
@@ -69,7 +77,7 @@ public class ApplicationTestModule {
     @Provides
     @Named("app")
     @Singleton
-    synchronized FirebaseAnalytics provideTracker(@ApplicationContext Context context) {
+    synchronized FirebaseAnalytics provideTracker() {
         return mock(FirebaseAnalytics.class);
     }
 
