@@ -64,12 +64,15 @@ import com.shalzz.attendance.ui.settings.SettingsFragment;
 import com.shalzz.attendance.ui.timetable.TimeTablePagerFragment;
 import com.shalzz.attendance.wrapper.MySyncManager;
 
+import java.io.IOException;
+
 import javax.inject.Inject;
 
 import butterknife.BindArray;
 import butterknife.BindBool;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import okhttp3.OkHttpClient;
 import timber.log.Timber;
 
 public class MainActivity extends BaseActivity implements MainMvpView, BillingProvider {
@@ -137,6 +140,9 @@ public class MainActivity extends BaseActivity implements MainMvpView, BillingPr
 
     @Inject
     MainPresenter mMainPresenter;
+
+    @Inject
+    OkHttpClient httpClient;
 
     public boolean mPopSettingsBackStack =  false;
 
@@ -637,6 +643,13 @@ public class MainActivity extends BaseActivity implements MainMvpView, BillingPr
     public void logout() {
         // Remove Sync Account
         MySyncManager.removeSyncAccount(this);
+
+        // Invalidate the complete network cache
+        try {
+            httpClient.cache().evictAll();
+        } catch (IOException e) {
+            Timber.e(e);
+        }
 
         // Cancel a notification if it is shown.
         NotificationManager mNotificationManager =
