@@ -9,6 +9,6 @@ public class DataAPITest {
 
     @Test
     public void ApiEndpointIsCorrect() {
-        assertEquals(DataAPI.ENDPOINT, "https://academics.8bitlabs.tech/api/v1/");
+        assertEquals(DataAPI.ENDPOINT, "https://academics.8bitlabs.tech/v1/prod/");
     }
 }
