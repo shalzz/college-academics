@@ -87,6 +87,9 @@ public class DayListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 if(!oldItem.end().equals(newItem.end())) {
                     return false;
                 }
+                if(oldItem.absent() != newItem.absent()) {
+                    return false;
+                }
                 if((oldItem.batch() != null && newItem.batch() != null)
                         && !oldItem.batch().equals(newItem.batch())) {
                     return false;

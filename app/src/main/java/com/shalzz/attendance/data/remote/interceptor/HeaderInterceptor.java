@@ -19,20 +19,40 @@
 
 package com.shalzz.attendance.data.remote.interceptor;
 
+import android.util.Base64;
+
 import java.io.IOException;
 
 import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class HeaderInterceptor implements Interceptor{
+public class HeaderInterceptor implements Interceptor {
+    private static final String[] composites = new String[]{
+            "T42aKlVuy+lWuSyqOSo1obdXgZWK5oZiZzuzOz5Dh1uAJ3jzzV6Tdw==",
+            "HdjWQhtavr0n/R2fUxhE1eA5z/nh1bQXMXaAaks28R+zaD2avD/xOA=="
+    };
+
     @Override
     public Response intercept(Chain chain) throws IOException {
         Request originalRequest = chain.request();
         Request newRequest = originalRequest.newBuilder()
                 .header("Accept", "application/json")
                 .header("User-Agent","academics-android-app")
+                .header("x-api-key", useXorStringHiding())
                 .build();
         return chain.proceed(newRequest);
+    }
+
+    private String useXorStringHiding() {
+        byte[] xorParts0 = Base64.decode(composites[0],0);
+        byte[] xorParts1 = Base64.decode(composites[1], 0);
+
+        byte[] xorKey = new byte[xorParts0.length];
+        for(int i = 0; i < xorParts1.length; i++){
+            xorKey[i] = (byte) (xorParts0[i] ^ xorParts1[i]);
+        }
+
+        return new String(xorKey);
     }
 }

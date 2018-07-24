@@ -158,6 +158,7 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
 
     void addAll(List<Subject> subjects) {
         mSubjects.addAll(subjects);
+        notifyDataSetChanged();
     }
 
     public int getSubjectCount() {
