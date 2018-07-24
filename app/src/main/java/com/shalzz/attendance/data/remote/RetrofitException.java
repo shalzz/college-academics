@@ -19,9 +19,14 @@ public class RetrofitException extends RuntimeException {
 
         switch (response.code()) {
             case 401:
+                message = context.getString(R.string.token_error);
+                break;
+            case 403:
                 message = context.getString(R.string.auth_error);
                 break;
             case 404:
+                message = context.getString(R.string.generic_server_down);
+                break;
             case 407:
                 message =  context.getString(R.string.proxy_error);
                 break;
