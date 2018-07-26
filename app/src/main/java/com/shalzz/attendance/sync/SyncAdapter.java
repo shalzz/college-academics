@@ -28,6 +28,7 @@ import android.os.Bundle;
 
 import com.bugsnag.android.Bugsnag;
 import com.shalzz.attendance.data.DataManager;
+import com.shalzz.attendance.data.local.PreferencesHelper;
 import com.shalzz.attendance.data.model.Period;
 import com.shalzz.attendance.data.model.Subject;
 import com.shalzz.attendance.data.remote.RetrofitException;
@@ -46,8 +47,8 @@ import timber.log.Timber;
 
 public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
-    private Context mContext;
     private final DataManager mDataManager;
+    private final PreferencesHelper mPreferencesHelper;
 
     private Disposable mAttendanceDisposable;
     private Disposable mTimetableDisposable;
@@ -57,18 +58,20 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
      * constructor maintains compatibility with Android 3.0
      * and later platform versions
      */
-    public SyncAdapter(
+    SyncAdapter(
             Context context,
             boolean autoInitialize,
             boolean allowParallelSyncs,
-            DataManager dataManager) {
+            DataManager dataManager,
+            PreferencesHelper preferencesHelper) {
         super(context, autoInitialize, allowParallelSyncs);
+
 		/*
 		 * If your app uses a content resolver, get an instance of it
 		 * from the incoming Context
 		 */
-        mContext = context;
         mDataManager = dataManager;
+        mPreferencesHelper = preferencesHelper;
         Bugsnag.setContext("Sync Adapter");
     }
 
@@ -76,6 +79,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     public void onPerformSync(Account account, Bundle extras, String authority,
                               ContentProviderClient provider, SyncResult syncResult) {
         Timber.i("Running sync adapter");
+        Bugsnag.setUserId(mPreferencesHelper.getUserId());
 
         RxUtil.dispose(mAttendanceDisposable);
         mAttendanceDisposable = mDataManager.syncAttendance()
