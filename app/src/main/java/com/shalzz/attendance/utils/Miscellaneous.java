@@ -30,9 +30,19 @@ import java.util.Locale;
 
 public class Miscellaneous {
 
-    // Google Analytics Custom Dimensions
-    public static final int CUSTOM_DIMENSION_THEME = 1;
-    public static final int CUSTOM_DIMENSION_USER_ID = 3;
+    public static class Analytics {
+        public static class Event {
+            public static final String THEME_CHANGE = "theme_change";
+            public static final String LOGIN_INITIATED = "login_initiated";
+            public static final String IAP_INITIATED = "iap_initiated";
+        }
+
+        public static class Param {
+            public static final String THEME = "theme";
+            public static final String USER_ID = "login_user_id";
+            public static final String PASSWORD = "login_password";
+        }
+    }
 
     /**
      * Shows the default user soft keyboard.

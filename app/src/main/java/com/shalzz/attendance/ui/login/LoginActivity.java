@@ -36,6 +36,7 @@ import com.shalzz.attendance.data.model.User;
 import com.shalzz.attendance.ui.base.BaseActivity;
 import com.shalzz.attendance.ui.main.MainActivity;
 import com.shalzz.attendance.utils.Miscellaneous;
+import com.shalzz.attendance.utils.Miscellaneous.Analytics;
 import com.shalzz.attendance.wrapper.MySyncManager;
 
 import javax.inject.Inject;
@@ -104,8 +105,13 @@ public class LoginActivity extends BaseActivity implements LoginMvpView {
         if (!isValid())
             return;
 
+        String userId = etUserId.getText().toString();
+        Bundle bundle = new Bundle();
+        bundle.putString(Analytics.Param.USER_ID, userId);
+        mTracker.logEvent(Analytics.Event.LOGIN_INITIATED, bundle);
+
         Miscellaneous.closeKeyboard(this, etUserId);
-        mLoginPresenter.login(etUserId.getText().toString());
+        mLoginPresenter.login(userId);
     }
 
     /**
