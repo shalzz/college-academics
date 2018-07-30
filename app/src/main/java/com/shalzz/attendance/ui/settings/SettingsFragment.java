@@ -49,6 +49,7 @@ import com.shalzz.attendance.data.local.PreferencesHelper;
 import com.shalzz.attendance.event.ProKeyPurchaseEvent;
 import com.shalzz.attendance.injection.ActivityContext;
 import com.shalzz.attendance.ui.main.MainActivity;
+import com.shalzz.attendance.utils.Miscellaneous.Analytics;
 import com.shalzz.attendance.utils.RxEventBus;
 import com.shalzz.attendance.utils.RxUtil;
 import com.shalzz.attendance.wrapper.MySyncManager;
@@ -137,8 +138,8 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
                     getString(key,"-1")));
 
             Bundle params = new Bundle();
-            params.putString("theme", proThemePref.getEntry().toString());
-            mTracker.logEvent("theme_change", params);
+            params.putString(Analytics.Param.THEME, proThemePref.getEntry().toString());
+            mTracker.logEvent(Analytics.Event.THEME_CHANGE, params);
         }
         else if(key.equals(getString(R.string.pref_key_hide_weekends))) {
             if (!mBillingProvider.isProKeyPurchased()) {
@@ -232,6 +233,11 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
                 proModePref.setChecked(false);
                 mBillingProvider.getBillingManager()
                         .initiatePurchaseFlow(BillingConstants.SKU_PRO_KEY, BillingClient.SkuType.INAPP);
+
+                // Fire an analytics event
+                Bundle params = new Bundle();
+                params.putString(Analytics.Param.USER_ID, mPreferences.getUserId());
+                mTracker.logEvent(Analytics.Event.IAP_INITIATED, params);
                 return true;
             });
         }

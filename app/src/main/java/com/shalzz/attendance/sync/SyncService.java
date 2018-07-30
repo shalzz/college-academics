@@ -40,6 +40,9 @@ public class SyncService extends Service {
     @Inject
     DataManager mDataManager;
 
+    @Inject
+    PreferencesHelper mPreferencesHelper;
+
     // Storage for an instance of the sync adapter
     private SyncAdapter sSyncAdapter = null;
     // Object to use as a thread-safe lock
@@ -57,8 +60,11 @@ public class SyncService extends Service {
          */
         synchronized (sSyncAdapterLock) {
             if (sSyncAdapter == null) {
-                sSyncAdapter = new SyncAdapter(getApplicationContext(), true, false,
-                        mDataManager);
+                sSyncAdapter = new SyncAdapter(getApplicationContext(),
+                        true,
+                        false,
+                        mDataManager,
+                        mPreferencesHelper);
             }
         }
     }

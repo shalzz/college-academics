@@ -108,7 +108,7 @@
     <string name="pref_notice">Open Source Licenses</string>
     <string name="pref_notice_summary">License details for open source softwares</string>
     <string name="pref_version">Build Version</string>
-    <string name="pref_ga_opt_in">Google Analytics</string>
+    <string name="pref_ga_opt_in">Usage Reports</string>
     <string name="pref_ga_opt_in_summary">Collect and send anonymous data to help improve the app</string>
     <string name="pref_hide_weekends">Hide Weekends (Pro feature)</string>
     <string name="pref_hide_weekends_summary">Show or Hide the weekends</string>

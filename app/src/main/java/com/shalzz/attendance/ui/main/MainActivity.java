@@ -635,8 +635,10 @@ public class MainActivity extends BaseActivity implements MainMvpView, BillingPr
 
     @Override
     public void updateUserDetails(User user) {
-        DrawerheaderVH.tv_name.setText(user.name());
-        DrawerheaderVH.tv_course.setText(user.course());
+        if (user.name() != null && !user.name().isEmpty())
+            DrawerheaderVH.tv_name.setText(user.name());
+        if (user.course() != null && !user.course().isEmpty())
+            DrawerheaderVH.tv_course.setText(user.course());
     }
 
     @Override

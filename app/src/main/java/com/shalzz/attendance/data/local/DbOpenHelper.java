@@ -21,24 +21,17 @@ package com.shalzz.attendance.data.local;
 
 import android.arch.persistence.db.SupportSQLiteDatabase;
 import android.arch.persistence.db.SupportSQLiteOpenHelper;
-import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 
 import com.shalzz.attendance.data.model.AbsentDate;
 import com.shalzz.attendance.data.model.Period;
 import com.shalzz.attendance.data.model.Subject;
 import com.shalzz.attendance.data.model.User;
-import com.shalzz.attendance.injection.ApplicationContext;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
 
 public class DbOpenHelper extends SupportSQLiteOpenHelper.Callback {
 
     public static final String DATABASE_NAME = "academics.db";
 
-    public static final int DATABASE_VERSION = 10;
+    public static final int DATABASE_VERSION = 11;
 
     public DbOpenHelper() {
         super(DATABASE_VERSION);
@@ -55,12 +48,21 @@ public class DbOpenHelper extends SupportSQLiteOpenHelper.Callback {
     @Override
     public void onUpgrade(SupportSQLiteDatabase db, int oldVersion, int newVersion) {
         switch (oldVersion) {
+            case 10:
+                String TEMP_TABLE = "user2";
+                db.execSQL("ALTER TABLE user RENAME TO " + TEMP_TABLE);
+                db.execSQL(User.CREATE_TABLE);
+                db.execSQL("INSERT INTO user (id, phone, roll_number, name, course, email) " +
+                                "SELECT id, phone, roll_number, name, course, email FROM " + TEMP_TABLE);
+                db.execSQL("DROP TABLE IF EXISTS " + TEMP_TABLE);
+
+                break;
             default:
 
                 // Drop older table if existed
                 db.execSQL("DROP TABLE IF EXISTS " + Subject.TABLE_NAME);
                 db.execSQL("DROP TABLE IF EXISTS " + Period.TABLE_NAME);
-                db.execSQL("DROP TABLE IF EXISTS " + User.TABLE_NAME);
+                db.execSQL(User.DROPTABLE);
                 db.execSQL("DROP TABLE IF EXISTS " + AbsentDate.TABLE_NAME);
 
                 // Create tables again

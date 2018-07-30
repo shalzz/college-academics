@@ -1,9 +1,9 @@
 CREATE TABLE user (
     id TEXT PRIMARY KEY NOT NULL,
-    roll_number TEXT NOT NULL,
-    name TEXT NOT NULL,
-    course TEXT NOT NULL,
     phone TEXT NOT NULL,
+    roll_number TEXT,
+    name TEXT,
+    course TEXT,
     email TEXT
 );
 
@@ -27,3 +27,6 @@ VALUES (?, ?, ?, ?, ?, ?);
 
 deleteAll:
 DELETE FROM user;
+
+dropTable:
+DROP TABLE IF EXISTS user;

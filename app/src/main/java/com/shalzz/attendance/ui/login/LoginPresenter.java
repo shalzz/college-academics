@@ -84,14 +84,18 @@ public class LoginPresenter extends BasePresenter<LoginMvpView> {
                     }
 
                     @Override
-                    public void onError(Throwable e) {
+                    public void onError(Throwable throwable) {
+                        if (!(throwable instanceof RetrofitException)) {
+                            Timber.e(throwable);
+                            return;
+                        }
                         if (isViewAttached()) {
-                            RetrofitException error = (RetrofitException) e;
+                            RetrofitException error = (RetrofitException) throwable;
                             if (error.getKind() == RetrofitException.Kind.HTTP) {
                                 getMvpView().showError(error.getMessage());
                             } else {
                                 getMvpView().showError(error.getMessage());
-                                Timber.e(e);
+                                Timber.e(throwable);
                             }
                         }
                     }
