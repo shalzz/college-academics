@@ -1,7 +1,7 @@
 package com.shalzz.attendance.data.remote.interceptor;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.shalzz.attendance.injection.ApplicationContext;
 import com.shalzz.attendance.utils.NetworkUtil;

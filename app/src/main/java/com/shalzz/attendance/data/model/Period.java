@@ -20,19 +20,16 @@
 package com.shalzz.attendance.data.model;
 
 import android.os.Parcelable;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.google.auto.value.AutoValue;
 import com.google.gson.TypeAdapter;
 import com.shalzz.attendance.model.PeriodModel;
 import com.shalzz.attendance.wrapper.DateHelper;
-import com.squareup.sqldelight.ColumnAdapter;
 import com.squareup.sqldelight.RowMapper;
 
 import java.text.ParseException;
 import java.util.Date;
-
-import timber.log.Timber;
 
 @AutoValue
 public abstract class Period implements PeriodModel, Parcelable {

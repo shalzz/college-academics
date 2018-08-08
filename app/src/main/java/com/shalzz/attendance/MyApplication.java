@@ -22,8 +22,8 @@ package com.shalzz.attendance;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.support.v7.app.AppCompatDelegate;
-import android.support.v7.preference.PreferenceManager;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.preference.PreferenceManager;
 
 import com.bugsnag.android.Bugsnag;
 import com.shalzz.attendance.utils.BugsnagTree;

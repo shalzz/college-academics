@@ -20,7 +20,7 @@
 package com.shalzz.attendance.data.model;
 
 import android.os.Parcelable;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.google.auto.value.AutoValue;
 import com.google.gson.TypeAdapter;

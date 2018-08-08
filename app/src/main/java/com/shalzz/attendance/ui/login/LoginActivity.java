@@ -22,8 +22,8 @@ package com.shalzz.attendance.ui.login;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
-import android.support.v7.app.AppCompatDelegate;
-import android.support.v7.widget.Toolbar;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.appcompat.widget.Toolbar;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 

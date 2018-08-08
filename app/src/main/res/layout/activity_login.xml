@@ -24,7 +24,7 @@
     android:layout_height="match_parent"
     tools:context=".ui.login.LoginActivity">
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.ConstraintLayout
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -87,5 +87,5 @@
             app:layout_constraintStart_toStartOf="@+id/etUserId"
             app:layout_constraintTop_toBottomOf="@+id/etUserId" />
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.ConstraintLayout>
 </ScrollView>

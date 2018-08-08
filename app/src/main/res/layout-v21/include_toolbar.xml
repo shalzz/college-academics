@@ -24,7 +24,7 @@
 
     <!-- use View#elevation property for realistic shadowing -->
 
-    <android.support.v7.widget.Toolbar
+    <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"

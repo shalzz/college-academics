@@ -21,7 +21,7 @@ package com.shalzz.attendance.utils;
 
 import android.content.Context;
 import android.support.design.widget.Snackbar;
-import android.support.v7.widget.SearchView;
+import androidx.appcompat.widget.SearchView;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;

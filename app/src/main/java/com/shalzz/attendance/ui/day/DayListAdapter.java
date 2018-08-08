@@ -19,9 +19,9 @@
 
 package com.shalzz.attendance.ui.day;
 
-import android.support.v7.util.SortedList;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.util.SortedListAdapterCallback;
+import androidx.recyclerview.widget.SortedList;
+import androidx.appcompat.widget.RecyclerView;
+import androidx.recyclerview.widget.SortedListAdapterCallback;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;

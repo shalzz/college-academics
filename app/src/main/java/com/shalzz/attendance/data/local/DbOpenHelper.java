@@ -19,8 +19,8 @@
 
 package com.shalzz.attendance.data.local;
 
-import android.arch.persistence.db.SupportSQLiteDatabase;
-import android.arch.persistence.db.SupportSQLiteOpenHelper;
+import androidx.sqlite.db.SupportSQLiteDatabase;
+import androidx.sqlite.db.SupportSQLiteOpenHelper;
 
 import com.shalzz.attendance.data.model.AbsentDate;
 import com.shalzz.attendance.data.model.Period;

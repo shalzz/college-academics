@@ -22,11 +22,11 @@ package com.shalzz.attendance.ui.day;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.core.app.Fragment;
+import androidx.appcompat.widget.LinearLayoutManager;
+import androidx.appcompat.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -43,7 +43,6 @@ import com.shalzz.attendance.R;
 import com.shalzz.attendance.data.model.Period;
 import com.shalzz.attendance.injection.ActivityContext;
 import com.shalzz.attendance.ui.main.MainActivity;
-import com.shalzz.attendance.utils.CircularIndeterminate;
 import com.shalzz.attendance.utils.DividerItemDecoration;
 import com.shalzz.attendance.utils.Miscellaneous;
 import com.shalzz.attendance.wrapper.MultiSwipeRefreshLayout;
@@ -73,7 +72,7 @@ public class DayFragment extends Fragment implements DayMvpView {
     Context mContext;
 
     /**
-     * The {@link android.support.v4.widget.SwipeRefreshLayout} that detects swipe gestures and
+     * The {@link androidx.core.widget.SwipeRefreshLayout} that detects swipe gestures and
      * triggers callbacks in the app.
      */
     @BindView(R.id.swiperefresh)

@@ -21,10 +21,9 @@ package com.shalzz.attendance.injection.module;
 
 import android.app.Application;
 import android.content.Context;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
-import com.shalzz.attendance.data.local.PreferencesHelper;
 import com.shalzz.attendance.data.remote.DataAPI;
 import com.shalzz.attendance.injection.ApplicationContext;
 

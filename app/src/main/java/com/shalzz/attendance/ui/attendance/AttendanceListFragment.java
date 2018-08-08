@@ -26,15 +26,15 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
-import android.support.v4.view.MenuItemCompat;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
+import androidx.core.app.Fragment;
+import androidx.core.view.MenuItemCompat;
+import androidx.appcompat.widget.LinearLayoutManager;
+import androidx.appcompat.widget.RecyclerView;
+import androidx.appcompat.widget.SearchView;
+import androidx.appcompat.widget.StaggeredGridLayoutManager;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -105,7 +105,7 @@ public class AttendanceListFragment extends Fragment implements
     }
 
     /**
-     * The {@link android.support.v4.widget.SwipeRefreshLayout} that detects swipe gestures and
+     * The {@link androidx.core.widget.SwipeRefreshLayout} that detects swipe gestures and
      * triggers callbacks in the app.
      */
     @BindView(R.id.swipe_refresh_atten)

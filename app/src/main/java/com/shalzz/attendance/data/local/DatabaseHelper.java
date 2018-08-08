@@ -1,12 +1,12 @@
 package com.shalzz.attendance.data.local;
 
-import android.arch.persistence.db.SupportSQLiteDatabase;
-import android.arch.persistence.db.SupportSQLiteOpenHelper;
-import android.arch.persistence.db.SupportSQLiteOpenHelper.Configuration;
-import android.arch.persistence.db.framework.FrameworkSQLiteOpenHelperFactory;
+import androidx.sqlite.db.SupportSQLiteDatabase;
+import androidx.sqlite.db.SupportSQLiteOpenHelper;
+import androidx.sqlite.db.SupportSQLiteOpenHelper.Configuration;
+import androidx.sqlite.db.framework.FrameworkSQLiteOpenHelperFactory;
 import android.content.Context;
 import android.os.Build;
-import android.support.annotation.VisibleForTesting;
+import androidx.annotation.VisibleForTesting;
 
 import com.shalzz.attendance.BuildConfig;
 import com.shalzz.attendance.data.model.AbsentDate;
@@ -33,7 +33,7 @@ import io.reactivex.Scheduler;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
-import static android.arch.persistence.db.SupportSQLiteOpenHelper.Factory;
+import static androidx.sqlite.db.SupportSQLiteOpenHelper.Factory;
 
 /**
  * Helper Class for SQLite database
