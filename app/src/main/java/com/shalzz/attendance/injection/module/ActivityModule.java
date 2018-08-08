@@ -1,7 +1,7 @@
 package com.shalzz.attendance.injection.module;
 
-import android.app.Activity;
 import android.content.Context;
+import android.support.v7.app.AppCompatActivity;
 
 import com.shalzz.attendance.injection.ActivityContext;
 
@@ -11,14 +11,14 @@ import dagger.Provides;
 @Module
 public class ActivityModule {
 
-    private Activity mActivity;
+    private AppCompatActivity mActivity;
 
-    public ActivityModule(Activity activity) {
+    public ActivityModule(AppCompatActivity activity) {
         mActivity = activity;
     }
 
     @Provides
-    Activity provideActivity() {
+    AppCompatActivity provideActivity() {
         return mActivity;
     }
 

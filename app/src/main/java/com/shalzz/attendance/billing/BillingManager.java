@@ -1,6 +1,6 @@
 package com.shalzz.attendance.billing;
 
-import android.app.Activity;
+import android.support.v7.app.AppCompatActivity;
 
 import com.android.billingclient.api.BillingClient;
 import com.android.billingclient.api.BillingClient.BillingResponse;
@@ -43,7 +43,7 @@ public class BillingManager implements PurchasesUpdatedListener {
 
     private Set<String> mTokensToBeConsumed;
 
-    private Activity mActivity;
+    private AppCompatActivity mActivity;
     private DataManager mDataManager;
     private CompositeDisposable mConnectionDisposable = new CompositeDisposable();
     private PublishSubject<List<Purchase>> publishSubject = PublishSubject.create();
@@ -58,7 +58,7 @@ public class BillingManager implements PurchasesUpdatedListener {
         void onPurchasesUpdated(List<Purchase> purchases);
     }
 
-    public BillingManager(Activity activity,
+    public BillingManager(AppCompatActivity activity,
                           DataManager dataManager,
                           final BillingUpdatesListener updatesListener) {
         mActivity = activity;

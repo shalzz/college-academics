@@ -32,6 +32,7 @@ import android.support.v14.preference.SwitchPreference;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.preference.ListPreference;
 import android.support.v7.preference.PreferenceCategory;

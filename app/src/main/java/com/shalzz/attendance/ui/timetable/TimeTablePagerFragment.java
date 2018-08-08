@@ -19,7 +19,6 @@
 
 package com.shalzz.attendance.ui.timetable;
 
-import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.os.Bundle;
@@ -67,7 +66,7 @@ public class TimeTablePagerFragment extends Fragment implements TimeTableMvpView
     TimeTablePresenter mTimeTablePresenter;
 
     @Inject
-    Activity mActivity;
+    AppCompatActivity mActivity;
 
     @Inject
     RxEventBus eventBus;
