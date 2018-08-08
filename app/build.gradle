@@ -132,7 +132,7 @@ android {
     dependencies {
         final SUPPORT_LIBRARY_VERSION = '27.1.1'
         final DAGGER_VERSION = '2.16'
-        final ESPRESSO_VERSION = '2.2.1'
+        final ESPRESSO_VERSION = '3.1.0-alpha1'
         final RUNNER_VERSION = '0.4'
         final RETROFIT_VERSION = '2.4.0'
         final BUTTERKNIFE_VERSION = '8.4.0'
@@ -144,24 +144,28 @@ android {
         implementation 'com.google.firebase:firebase-analytics:15.0.2'
 
         implementation 'com.google.android.gms:play-services-oss-licenses:15.0.1'
+        implementation "com.google.android.material:material:1.0.0-rc01"
 
-        implementation "com.android.support:support-compat:28.0.0-rc01"
-        implementation "com.android.support:support-core-utils:28.0.0-rc01"
-        implementation "com.android.support:support-core-ui:28.0.0-rc01"
-        implementation "com.android.support:support-fragment:28.0.0-rc01"
-        implementation "com.android.support:appcompat-v7:28.0.0-rc01"
-        implementation "com.android.support:recyclerview-v7:28.0.0-rc01"
-        implementation "com.android.support:support-v4:28.0.0-rc01"
-        implementation "com.android.support:appcompat-v7:28.0.0-rc01"
-        implementation "com.android.support:preference-v7:28.0.0-rc01"
-        implementation "com.android.support:preference-v14:28.0.0-rc01"
-        implementation "com.android.support:support-annotations:27.1.1"
-        implementation "com.android.support:design:28.0.0-rc01"
-        implementation 'com.android.support.constraint:constraint-layout:1.1.0'
+        implementation "androidx.core:core:1.0.0-rc01"
+        implementation "androidx.appcompat:appcompat:1.0.0-rc01"
+        implementation "androidx.fragment:fragment:1.0.0-rc01"
+        implementation "androidx.recyclerview:recyclerview:1.0.0-rc01"
+        implementation "androidx.preference:preference:1.0.0-rc01"
+        implementation "androidx.annotation:annotation:1.0.0-rc01"
+        implementation 'androidx.constraintlayout:constraintlayout:1.1.0'
+        implementation 'androidx.constraintlayout:constraintlayout-solver:1.1.0'
+
+        implementation "androidx.sqlite:sqlite:2.0.0-rc01"
+        implementation "androidx.sqlite:sqlite-framework:2.0.0-rc01"
+
         implementation 'com.android.billingclient:billing:1.0'
 
-        implementation "android.arch.persistence:db:1.0.0"
-        implementation "android.arch.persistence:db-framework:1.0.0"
+//        implementation "androidx.legacy:legacy-support-core-utils:1.0.0-rc01"
+//        implementation "androidx.legacy:legacy-support-core-ui:1.0.0-rc01"
+//        implementation "androidx.legacy:legacy-support-v4:1.0.0-rc01"
+//        implementation "androidx.legacy:legacy-preference-v14:1.0.0-rc01"
+//        implementation "android.arch.persistence:db:1.0.0"
+//        implementation "android.arch.persistence:db-framework:1.0.0"
 
         def daggerCompiler = "com.google.dagger:dagger-compiler:$DAGGER_VERSION"
         implementation  "com.google.dagger:dagger:$DAGGER_VERSION"
@@ -210,11 +214,11 @@ android {
         // Instrumentation test dependencies
         androidTestImplementation jUnit
         androidTestImplementation mockito
-        androidTestImplementation "com.android.support:support-annotations:27.1.1"
-        androidTestImplementation("com.android.support.test.espresso:espresso-contrib:$ESPRESSO_VERSION")
-        androidTestImplementation "com.android.support.test.espresso:espresso-core:$ESPRESSO_VERSION"
-        androidTestImplementation "com.android.support.test:runner:$RUNNER_VERSION"
-        androidTestImplementation "com.android.support.test:rules:$RUNNER_VERSION"
+        androidTestImplementation "androidx.annotation:annotation:1.0.0-rc01"
+        androidTestImplementation "androidx.test.espresso:espresso-contrib:$ESPRESSO_VERSION"
+        androidTestImplementation "androidx.test.espresso:espresso-core:$ESPRESSO_VERSION"
+        androidTestImplementation "androidx.test:runner:1.1.0-alpha1"
+        androidTestImplementation "androidx.test:rules:1.1.0-alpha1"
         androidTestImplementation "com.google.code.findbugs:jsr305:3.0.0"
 
         // Unit tests dependencies
