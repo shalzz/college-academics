@@ -34,13 +34,13 @@ def gitCommitCount = 2007050 +
         Integer.parseInt('git rev-list --count HEAD --no-merges'.execute([], project.rootDir).text.trim())
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion 28
     buildToolsVersion '27.0.3'
 
     defaultConfig {
         applicationId 'com.shalzz.attendance'
         minSdkVersion 14
-        targetSdkVersion 27
+        targetSdkVersion 28
 	    versionCode gitCommitCount
 	    versionName gitTag
 
@@ -145,18 +145,18 @@ android {
 
         implementation 'com.google.android.gms:play-services-oss-licenses:15.0.1'
 
-        implementation "com.android.support:support-compat:$SUPPORT_LIBRARY_VERSION"
-        implementation "com.android.support:support-core-utils:$SUPPORT_LIBRARY_VERSION"
-        implementation "com.android.support:support-core-ui:$SUPPORT_LIBRARY_VERSION"
-        implementation "com.android.support:support-fragment:$SUPPORT_LIBRARY_VERSION"
-        implementation "com.android.support:appcompat-v7:$SUPPORT_LIBRARY_VERSION"
-        implementation "com.android.support:recyclerview-v7:$SUPPORT_LIBRARY_VERSION"
-        implementation "com.android.support:support-v4:$SUPPORT_LIBRARY_VERSION"
-        implementation "com.android.support:appcompat-v7:$SUPPORT_LIBRARY_VERSION"
-        implementation "com.android.support:preference-v7:$SUPPORT_LIBRARY_VERSION"
-        implementation "com.android.support:preference-v14:$SUPPORT_LIBRARY_VERSION"
-        implementation "com.android.support:support-annotations:$SUPPORT_LIBRARY_VERSION"
-        implementation "com.android.support:design:$SUPPORT_LIBRARY_VERSION"
+        implementation "com.android.support:support-compat:27.1.1"
+        implementation "com.android.support:support-core-utils:27.1.1"
+        implementation "com.android.support:support-core-ui:27.1.1"
+        implementation "com.android.support:support-fragment:27.1.1"
+        implementation "com.android.support:appcompat-v7:27.1.1"
+        implementation "com.android.support:recyclerview-v7:27.1.1"
+        implementation "com.android.support:support-v4:27.1.1"
+        implementation "com.android.support:appcompat-v7:27.1.1"
+        implementation "com.android.support:preference-v7:27.1.1"
+        implementation "com.android.support:preference-v14:27.1.1"
+        implementation "com.android.support:support-annotations:27.1.1"
+        implementation "com.android.support:design:27.1.1"
         implementation 'com.android.support.constraint:constraint-layout:1.1.0'
         implementation 'com.android.billingclient:billing:1.0'
 
@@ -210,7 +210,7 @@ android {
         // Instrumentation test dependencies
         androidTestImplementation jUnit
         androidTestImplementation mockito
-        androidTestImplementation "com.android.support:support-annotations:$SUPPORT_LIBRARY_VERSION"
+        androidTestImplementation "com.android.support:support-annotations:27.1.1"
         androidTestImplementation("com.android.support.test.espresso:espresso-contrib:$ESPRESSO_VERSION")
         androidTestImplementation "com.android.support.test.espresso:espresso-core:$ESPRESSO_VERSION"
         androidTestImplementation "com.android.support.test:runner:$RUNNER_VERSION"
