@@ -1,7 +1,6 @@
 package com.shalzz.attendance.data.remote.interceptor;
 
 import android.content.Context;
-import androidx.annotation.NonNull;
 
 import com.shalzz.attendance.injection.ApplicationContext;
 import com.shalzz.attendance.utils.NetworkUtil;
@@ -11,6 +10,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
+import androidx.annotation.NonNull;
 import okhttp3.CacheControl;
 import okhttp3.Interceptor;
 import okhttp3.Request;

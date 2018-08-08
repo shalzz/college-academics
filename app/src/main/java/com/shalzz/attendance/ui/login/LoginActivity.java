@@ -21,14 +21,12 @@ package com.shalzz.attendance.ui.login;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.TextInputLayout;
-import androidx.appcompat.app.AppCompatDelegate;
-import androidx.appcompat.widget.Toolbar;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bugsnag.android.Bugsnag;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.data.local.PreferencesHelper;
@@ -42,6 +40,8 @@ import com.shalzz.attendance.wrapper.MySyncManager;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.appcompat.widget.Toolbar;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;

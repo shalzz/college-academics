@@ -19,9 +19,6 @@
 
 package com.shalzz.attendance.ui.day;
 
-import androidx.recyclerview.widget.SortedList;
-import androidx.appcompat.widget.RecyclerView;
-import androidx.recyclerview.widget.SortedListAdapterCallback;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,6 +31,9 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SortedList;
+import androidx.recyclerview.widget.SortedListAdapterCallback;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 

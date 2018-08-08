@@ -20,10 +20,6 @@
 package com.shalzz.attendance.ui.timetable;
 
 import android.content.SharedPreferences;
-import androidx.core.app.FragmentManager;
-import androidx.core.app.FragmentStatePagerAdapter;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.preference.PreferenceManager;
 import android.util.SparseArray;
 
 import com.shalzz.attendance.R;
@@ -37,6 +33,10 @@ import com.shalzz.attendance.wrapper.DateHelper;
 import java.util.Calendar;
 import java.util.Date;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentStatePagerAdapter;
+import androidx.preference.PreferenceManager;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import timber.log.Timber;

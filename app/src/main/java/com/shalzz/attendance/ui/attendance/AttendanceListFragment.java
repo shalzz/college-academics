@@ -26,15 +26,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import android.support.design.widget.Snackbar;
-import androidx.core.app.Fragment;
-import androidx.core.view.MenuItemCompat;
-import androidx.appcompat.widget.LinearLayoutManager;
-import androidx.appcompat.widget.RecyclerView;
-import androidx.appcompat.widget.SearchView;
-import androidx.appcompat.widget.StaggeredGridLayoutManager;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -51,6 +42,7 @@ import android.widget.TextView;
 import com.bugsnag.android.Bugsnag;
 import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.ViewTarget;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.malinskiy.materialicons.IconDrawable;
 import com.malinskiy.materialicons.Iconify;
@@ -68,6 +60,14 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SearchView;
+import androidx.core.view.MenuItemCompat;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import butterknife.BindBool;
 import butterknife.BindInt;
 import butterknife.BindString;
@@ -105,7 +105,7 @@ public class AttendanceListFragment extends Fragment implements
     }
 
     /**
-     * The {@link androidx.core.widget.SwipeRefreshLayout} that detects swipe gestures and
+     * The {@link androidx.swiperefreshlayout.widget.SwipeRefreshLayout} that detects swipe gestures and
      * triggers callbacks in the app.
      */
     @BindView(R.id.swipe_refresh_atten)
