@@ -21,6 +21,10 @@ package com.shalzz.attendance.data.model;
 
 import android.os.Parcelable;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.room.Entity;
+import androidx.room.Ignore;
+import androidx.room.PrimaryKey;
 
 import com.google.auto.value.AutoValue;
 import com.google.gson.TypeAdapter;
@@ -37,43 +41,24 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+@Entity
 @AutoValue
-public abstract class Subject implements SubjectModel, Parcelable {
+public abstract class Subject implements Parcelable {
 
-    private static final ColumnAdapter<List<Date>, String> DATE_ADAPTER =
-            new ColumnAdapter<List<Date>, String>() {
+    @PrimaryKey
+    abstract int id();
 
-                @NonNull
-                @Override
-                public List<Date> decode(String databaseValue) {
-                    List<Date> dates = new ArrayList<>();
-                    for(String date : databaseValue.split(",")) {
-                        dates.add(DateHelper.parseDate(date));
-                    }
-                    return dates;
-                }
+    @NonNull
+    abstract String name();
+    abstract float attended();
+    abstract float held();
+    @Nullable
+    abstract List<Date> absent_dates();
 
-                @Override
-                public String encode(@NonNull List<Date> value) {
-                    String SEPARATOR = ",";
-                    StringBuilder csvBuilder = new StringBuilder();
-                    for(Date date : value){
-                        csvBuilder.append(DateHelper.toTechnicalFormat(date));
-                        csvBuilder.append(SEPARATOR);
-                    }
-
-                    String csv = csvBuilder.toString();
-                    //Remove last comma
-                    csv = csv.substring(0, csv.length() - SEPARATOR.length());
-
-                    return csv;
-                }
-
-            };
-
-    public static final Factory<Subject> FACTORY = new Factory<>(AutoValue_Subject::new, DATE_ADAPTER);
-
-    public static final RowMapper<Subject> MAPPER = FACTORY.selectLikeNameMapper();
+    @Ignore
+    private String absentDates;
+    @Ignore
+    private Float percentage;
 
     public static TypeAdapter<Subject> typeAdapter(com.google.gson.Gson gson) {
         return new AutoValue_Subject.GsonTypeAdapter(gson);
@@ -93,9 +78,6 @@ public abstract class Subject implements SubjectModel, Parcelable {
         public abstract Subject build();
     }
 
-    private String absentDates;
-    private Float percentage;
-
 	public final String getAbsentDatesAsString() {
         if(absentDates == null) {
             if(absent_dates() == null) {
@@ -109,20 +91,20 @@ public abstract class Subject implements SubjectModel, Parcelable {
             if (dates.size() == 0)
                 return "";
 
-            String datesStr = "";
+            StringBuilder datesStr = new StringBuilder();
             String prevMonth = "";
             Collections.sort(dates);
             for (Date date : dates) {
                 int day = Integer.parseInt(dayFormat.format(date));
                 String month = monthFormat.format(date);
                 if (prevMonth.length() == 0) {
-                    datesStr += month + ": ";
+                    datesStr.append(month).append(": ");
                     prevMonth = month;
                 } else if (!prevMonth.equals(month)) {
-                    datesStr += "\n" + month + ": ";
+                    datesStr.append("\n").append(month).append(": ");
                     prevMonth = month;
                 }
-                datesStr += day + DateHelper.getDayOfMonthSuffix(day) + ", ";
+                datesStr.append(day).append(DateHelper.getDayOfMonthSuffix(day)).append(", ");
             }
             absentDates = datesStr.substring(0,datesStr.length()-2);
         }

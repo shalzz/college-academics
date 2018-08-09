@@ -32,26 +32,11 @@ import java.util.Date;
 
 @AutoValue
 public abstract class AbsentDate implements AbsentDatesModel, Parcelable {
-    private static final ColumnAdapter<Date, String> DATE_ADAPTER =
-            new ColumnAdapter<Date, String>() {
 
-                @NonNull
-                @Override
-                public Date decode(String databaseValue) {
-                    return DateHelper.parseDate(databaseValue);
-                }
+    int subject_id();
 
-                @Override
-                public String encode(@NonNull Date value) {
-                    return DateHelper.toTechnicalFormat(value);
-                }
-
-            };
-
-    public static final Factory<AbsentDate> FACTORY = new Factory<>(
-            AutoValue_AbsentDate::new, DATE_ADAPTER);
-
-    public static final RowMapper<AbsentDate> MAPPER = FACTORY.selectByIdMapper();
+    @NonNull
+    Date absent_date();
 
     public static AbsentDate create(Integer subject_id, Date absent_date) {
         return new AutoValue_AbsentDate(subject_id, absent_date);

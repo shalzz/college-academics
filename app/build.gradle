@@ -139,6 +139,7 @@ android {
         final AUTO_VALUE_VERSION = '1.5'
         final AUTO_VALUE_GSON_VERSION = '0.7.0'
         final AUTO_VALUE_PARCEL_VERSION = '0.2.5'
+        final ROOM_VERSION = "2.0.0-beta01"
 
         implementation 'com.google.firebase:firebase-core:15.0.2'
         implementation 'com.google.firebase:firebase-analytics:15.0.2'
@@ -207,6 +208,12 @@ android {
 
 	    //noinspection GradleDynamicVersion
         implementation 'com.bugsnag:bugsnag-android:4.+'
+
+        // Room Persistence
+        implementation "androidx.room:room-runtime:$ROOM_VERSION"
+        annotationProcessor "androidx.room:room-compiler:$ROOM_VERSION" // use kapt for Kotlin
+        implementation "androidx.room:room-rxjava2:$ROOM_VERSION"
+        testImplementation "androidx.room:room-testing:$ROOM_VERSION"
 
         def jUnit = "junit:junit:4.12"
         def mockito = "org.mockito:mockito-core:2.6.2"
