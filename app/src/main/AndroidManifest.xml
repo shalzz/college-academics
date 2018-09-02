@@ -65,11 +65,6 @@
             android:name="com.google.android.backup.api_key"
             android:value="AEdPqrEAAAAIBDAW2fQxJuS7rNRsQul_vvfk_9XNbzwvC_IgrQ" />
 
-        <!--Bugsnag API Key -->
-        <meta-data
-            android:name="com.bugsnag.android.API_KEY"
-            android:value="@string/bugsnag_api" />
-
         <provider
             android:name=".sync.StubProvider"
             android:authorities="${applicationId}.provider"

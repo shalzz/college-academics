@@ -26,6 +26,8 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.preference.PreferenceManager;
 
 import com.bugsnag.android.Bugsnag;
+import com.bugsnag.android.Client;
+import com.bugsnag.android.Configuration;
 import com.shalzz.attendance.utils.BugsnagTree;
 import com.shalzz.attendance.injection.component.ApplicationComponent;
 import com.shalzz.attendance.injection.component.DaggerApplicationComponent;
@@ -41,10 +43,12 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        Bugsnag.init(this)
-                .setMaxBreadcrumbs(100);
+        Configuration config = new Configuration(getString(R.string.bugsnag_api));
+        config.setMaxBreadcrumbs(100);
+        config.setAutomaticallyCollectBreadcrumbs(false);
+        config.setAutoCaptureSessions(false);
+        Bugsnag.init(this, config);
         Bugsnag.setNotifyReleaseStages("production", "development", "testing");
-        Bugsnag.setAutoCaptureSessions(true);
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
 
         if (BuildConfig.DEBUG) {
