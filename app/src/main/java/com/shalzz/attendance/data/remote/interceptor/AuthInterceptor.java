@@ -46,8 +46,12 @@ public class AuthInterceptor implements Interceptor{
             return chain.proceed(originalRequest);
         }
 
+        String id = preferencesManager.getUserId();
+        if (id == null || id.isEmpty()) {
+            throw new RuntimeException("User Auth token cannot be empty");
+        }
         Request newRequest = originalRequest.newBuilder()
-                .header("Authorization", "Bearer " + preferencesManager.getUserId())
+                .header("Authorization", "Bearer " + id)
                 .build();
         return chain.proceed(newRequest);
     }
