@@ -2,6 +2,7 @@ package com.shalzz.attendance.data.remote.interceptor;
 
 import android.content.Context;
 
+import com.shalzz.attendance.data.remote.DataAPI;
 import com.shalzz.attendance.injection.ApplicationContext;
 import com.shalzz.attendance.utils.NetworkUtil;
 
@@ -30,7 +31,7 @@ public class CacheControlInterceptor implements Interceptor {
         Request request = chain.request();
         if (NetworkUtil.isNetworkConnected(mContext)) {
             // Do not cache the '/me' api route
-            if (request.url().encodedPath().equals("/api/v1/me")) {
+            if (request.url().encodedPath().equals(DataAPI.Companion.getAPI_VERSION() + "me")) {
                 Response originalResponse = chain.proceed(request);
                 return originalResponse.newBuilder()
                         .header("Cache-Control", "public, max-age=0")
@@ -45,7 +46,7 @@ public class CacheControlInterceptor implements Interceptor {
                         .build();
             }
         // only for the 'verify' api route
-        } else if (request.url().encodedPath().equals("/api/v1/verify")) {
+        } else if (request.url().encodedPath().equals(DataAPI.Companion.getAPI_VERSION() + "verify")) {
             CacheControl cacheControl = new CacheControl.Builder()
                     .onlyIfCached()
                     .maxStale(7, TimeUnit.DAYS)

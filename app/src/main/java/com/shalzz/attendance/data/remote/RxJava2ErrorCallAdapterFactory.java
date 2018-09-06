@@ -8,8 +8,6 @@ import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import io.reactivex.Completable;
@@ -22,7 +20,6 @@ import retrofit2.Call;
 import retrofit2.CallAdapter;
 import retrofit2.Response;
 import retrofit2.Retrofit;
-import timber.log.Timber;
 
 public class RxJava2ErrorCallAdapterFactory extends CallAdapter.Factory {
     private final RxJava2CallAdapterFactory original;

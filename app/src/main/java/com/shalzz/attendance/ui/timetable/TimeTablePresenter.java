@@ -20,16 +20,9 @@
 package com.shalzz.attendance.ui.timetable;
 
 import com.shalzz.attendance.data.DataManager;
-import com.shalzz.attendance.data.remote.RetrofitException;
 import com.shalzz.attendance.ui.base.BasePresenter;
-import com.shalzz.attendance.utils.RxUtil;
 
 import javax.inject.Inject;
-
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
-import timber.log.Timber;
 
 public class TimeTablePresenter extends BasePresenter<TimeTableMvpView> {
 

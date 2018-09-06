@@ -5,15 +5,12 @@ import com.shalzz.attendance.data.model.entity.Period
 import com.shalzz.attendance.data.model.entity.Subject
 import com.shalzz.attendance.data.model.entity.User
 import com.shalzz.attendance.wrapper.DateHelper
-import java.util.Date
-
-import javax.inject.Inject
-import javax.inject.Singleton
-
 import io.reactivex.Observable
 import io.reactivex.Single
 import timber.log.Timber
-import java.util.concurrent.Callable
+import java.util.*
+import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * Helper Class for SQLite database

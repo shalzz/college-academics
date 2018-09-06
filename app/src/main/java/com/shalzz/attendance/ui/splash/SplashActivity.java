@@ -36,7 +36,6 @@ import com.shalzz.attendance.ui.main.MainActivity;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import androidx.preference.SwitchPreference;
 import timber.log.Timber;
 
 public class SplashActivity extends BaseActivity {
@@ -48,12 +47,16 @@ public class SplashActivity extends BaseActivity {
     @Named("app")
     FirebaseAnalytics mTracker;
 
+    @Inject
+    SplashPresenter mPresenter;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         activityComponent().inject(this);
         Bugsnag.setContext("SplashActivity");
 
+        mPresenter.getToken(getString(R.string.onedu_gcmSenderId));
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         boolean optIn = sharedPref.getBoolean(getString(R.string.pref_key_ga_opt_in), true);
         mTracker.setAnalyticsCollectionEnabled(optIn);

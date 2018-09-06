@@ -20,6 +20,7 @@
 package com.shalzz.attendance.data.remote.interceptor;
 
 import com.shalzz.attendance.data.local.PreferencesHelper;
+import com.shalzz.attendance.data.remote.DataAPI;
 
 import java.io.IOException;
 
@@ -28,6 +29,7 @@ import javax.inject.Inject;
 import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.Response;
+import timber.log.Timber;
 
 public class AuthInterceptor implements Interceptor{
 
@@ -50,8 +52,15 @@ public class AuthInterceptor implements Interceptor{
         if (id == null || id.isEmpty()) {
             throw new RuntimeException("User Auth token cannot be empty");
         }
+
+        String token = preferencesManager.getToken();
+        if (token == null || token.isEmpty()) {
+            throw new RuntimeException("GCM Registration token cannot be empty");
+        }
+
         Request newRequest = originalRequest.newBuilder()
                 .header("Authorization", "Bearer " + id)
+                .header("x-reg-id", token)
                 .build();
         return chain.proceed(newRequest);
     }

@@ -30,6 +30,7 @@ import com.shalzz.attendance.data.remote.DataAPI;
 import com.shalzz.attendance.injection.ApplicationContext;
 import com.shalzz.attendance.injection.module.ApplicationModule;
 import com.shalzz.attendance.injection.module.NetworkModule;
+import com.shalzz.attendance.service.MyFirebaseMessagingService;
 import com.shalzz.attendance.sync.SyncService;
 import com.shalzz.attendance.utils.RxEventBus;
 
@@ -56,4 +57,6 @@ public interface ApplicationComponent {
     OkHttpClient okhttpclient();
 
     void inject(SyncService syncService);
+
+    void inject(MyFirebaseMessagingService myFirebaseMessagingService);
 }

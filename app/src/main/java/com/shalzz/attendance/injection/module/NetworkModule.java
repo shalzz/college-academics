@@ -79,7 +79,7 @@ public class NetworkModule {
                               @NonNull Moshi moshi,
                               @ApplicationContext Context context) {
         return new Retrofit.Builder()
-                .baseUrl(DataAPI.ENDPOINT)
+                .baseUrl(DataAPI.Companion.getENDPOINT())
                 .addCallAdapterFactory(RxJava2ErrorCallAdapterFactory.create(context))
                 .addConverterFactory(MoshiConverterFactory.create(moshi))
                 .client(okHttpClient)

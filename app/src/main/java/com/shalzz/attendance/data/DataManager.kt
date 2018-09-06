@@ -48,6 +48,10 @@ constructor(private val mDataAPI: DataAPI,
         return mDatabaseHelper.getPeriods(date).toList()
     }
 
+    fun sendRegID(token: String, auth: String): Observable<Boolean> {
+        return mDataAPI.sendRegID(token, auth)
+    }
+
     fun syncUser(auth: String): Observable<User> {
         return mDataAPI.getUser(auth)
                 .concatMap(mDatabaseHelper::setUser)

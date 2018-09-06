@@ -29,9 +29,6 @@ import com.shalzz.attendance.ui.main.MainActivity;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import okhttp3.Credentials;
-import timber.log.Timber;
-
 @SuppressLint("CommitPrefEdits")
 @Singleton
 public class PreferencesHelper {
@@ -78,4 +75,14 @@ public class PreferencesHelper {
 		editor.remove("USERNAME");
 		editor.commit();
 	}
+
+    public void saveToken(String token) {
+        SharedPreferences.Editor editor = mPref.edit();
+        editor.putString("REGID", token);
+        editor.commit();
+    }
+
+    public String getToken() {
+        return mPref.getString("REGID", null);
+    }
 }
