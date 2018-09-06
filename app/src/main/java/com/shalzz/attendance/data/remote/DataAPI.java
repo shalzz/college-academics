@@ -26,15 +26,18 @@ import com.shalzz.attendance.data.model.entity.User;
 import java.util.List;
 
 import io.reactivex.Observable;
+import retrofit2.http.Field;
+import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
+import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 public interface DataAPI {
 
-    String ENDPOINT = "https://academics.8bitlabs.tech/v1/dev/";
-//    String ENDPOINT = "http://192.168.1.160:8080/api/v1/";
+    String ENDPOINT = "https://academics.8bitlabs.tech/v2/prod/";
+//    String ENDPOINT = "http://192.168.1.160:3000/";
 
     @GET("me")
     Observable<User> getUser(@Header("Authorization") String authorization);
@@ -45,7 +48,8 @@ public interface DataAPI {
     @GET("me/timetable/{date}")
     Observable<List<Period>> getTimetable(@Path("date") String date);
 
-    @GET("verify")
-    Observable<Boolean> verifyValidSignature(@Query("data") String signedData,
-                                             @Query("sig") String signature);
+    @FormUrlEncoded
+    @POST("verify")
+    Observable<Boolean> verifyValidSignature(@Field("data") String signedData,
+                                             @Field("sig") String signature);
 }
