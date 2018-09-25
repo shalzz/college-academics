@@ -20,12 +20,11 @@
 package com.shalzz.attendance.injection.module;
 
 import android.content.Context;
-import androidx.annotation.NonNull;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.shalzz.attendance.BuildConfig;
 import com.shalzz.attendance.data.local.PreferencesHelper;
+import com.shalzz.attendance.data.model.entity.Subject;
+import com.shalzz.attendance.data.model.entity.SubjectJsonAdapter;
 import com.shalzz.attendance.data.remote.DataAPI;
 import com.shalzz.attendance.data.remote.RxJava2ErrorCallAdapterFactory;
 import com.shalzz.attendance.data.remote.interceptor.AuthInterceptor;
@@ -33,26 +32,30 @@ import com.shalzz.attendance.data.remote.interceptor.CacheControlInterceptor;
 import com.shalzz.attendance.data.remote.interceptor.HeaderInterceptor;
 import com.shalzz.attendance.data.remote.interceptor.LoggingInterceptor;
 import com.shalzz.attendance.injection.ApplicationContext;
+import com.squareup.moshi.Moshi;
+import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter;
 
 import java.io.File;
+import java.util.Date;
 
 import javax.inject.Singleton;
 
+import androidx.annotation.NonNull;
 import dagger.Module;
 import dagger.Provides;
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.converter.moshi.MoshiConverterFactory;
 
 @Module
 public class NetworkModule {
 
     @Provides @Singleton
-    static Gson provideGson() {
-        return new GsonBuilder()
-                .setDateFormat("yyyy-MM-dd")
-                .create();
+    static Moshi provideMoshi() {
+        return new Moshi.Builder()
+                .add(Date.class, new Rfc3339DateJsonAdapter())
+                .build();
     }
 
     @Provides @Singleton @NonNull
@@ -75,12 +78,12 @@ public class NetworkModule {
 
     @Provides @Singleton @NonNull
     static DataAPI provideApi(@NonNull OkHttpClient okHttpClient,
-                              @NonNull Gson gson,
+                              @NonNull Moshi moshi,
                               @ApplicationContext Context context) {
         return new Retrofit.Builder()
                 .baseUrl(DataAPI.ENDPOINT)
                 .addCallAdapterFactory(RxJava2ErrorCallAdapterFactory.create(context))
-                .addConverterFactory(GsonConverterFactory.create(gson))
+                .addConverterFactory(MoshiConverterFactory.create(moshi))
                 .client(okHttpClient)
                 .validateEagerly(BuildConfig.DEBUG) // Fail early: check Retrofit configuration at creation time in Debug build.
                 .build()

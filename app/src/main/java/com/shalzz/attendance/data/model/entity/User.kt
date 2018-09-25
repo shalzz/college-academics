@@ -21,11 +21,13 @@ package com.shalzz.attendance.data.model.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.squareup.moshi.JsonClass
 
+@JsonClass(generateAdapter = true)
 @Entity
 data class User (
         @PrimaryKey val id: String,
-        val phone: Int,
+        val phone: String,
         val roll_number: String,
         val name: String,
         val course: String,

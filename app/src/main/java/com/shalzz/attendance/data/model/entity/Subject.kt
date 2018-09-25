@@ -22,9 +22,11 @@ package com.shalzz.attendance.data.model.entity
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.shalzz.attendance.wrapper.DateHelper
+import com.squareup.moshi.JsonClass
 import java.text.SimpleDateFormat
 import java.util.*
 
+@JsonClass(generateAdapter = true)
 @Entity
 data class Subject (
         @PrimaryKey val id: Int,

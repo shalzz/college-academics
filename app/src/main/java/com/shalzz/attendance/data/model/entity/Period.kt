@@ -21,9 +21,11 @@ package com.shalzz.attendance.data.model.entity
 
 import androidx.room.Entity
 import com.shalzz.attendance.wrapper.DateHelper
+import com.squareup.moshi.JsonClass
 import java.text.ParseException
 import java.util.*
 
+@JsonClass(generateAdapter = true)
 @Entity(primaryKeys = ["id", "date"])
 data class Period(
         val id: Int,
