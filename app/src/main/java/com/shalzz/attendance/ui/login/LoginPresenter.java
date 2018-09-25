@@ -74,6 +74,8 @@ public class LoginPresenter extends BasePresenter<LoginMvpView> {
 
         getMvpView().showProgressDialog();
         RxUtil.dispose(mDisposable);
+
+        Timber.d("Calling sync user on: %s ", Thread.currentThread().getId());
         mDisposable = mDataManager.syncUser("Bearer " + username)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

@@ -157,8 +157,8 @@ class LoginActivity : BaseActivity(), LoginMvpView {
         mTracker.logEvent(FirebaseAnalytics.Event.LOGIN, bundle)
 
         dismissProgressDialog()
-        mPreferencesHelper.saveUser(user.phone.toString())
-        MySyncManager.addPeriodicSync(this, user.phone.toString())
+        mPreferencesHelper.saveUser(user.phone)
+        MySyncManager.addPeriodicSync(this, user.phone)
         val ourIntent = Intent(this, MainActivity::class.java)
         startActivity(ourIntent)
         finish()

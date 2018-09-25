@@ -11,15 +11,15 @@ import com.shalzz.attendance.data.remote.DataAPI
 import com.shalzz.attendance.wrapper.DateHelper
 import io.reactivex.Observable
 import io.reactivex.Single
-import io.reactivex.functions.Function
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
 
-
 @Singleton
 class DataManager @Inject
-constructor(private val mDataAPI: DataAPI, private val mDatabaseHelper: DatabaseHelper, private val mPreferencesHelper: PreferencesHelper) {
+constructor(private val mDataAPI: DataAPI,
+            private val mDatabaseHelper: DatabaseHelper,
+            private val mPreferencesHelper: PreferencesHelper) {
 
     val listFooter: Observable<ListFooter>
         get() = mDatabaseHelper.listFooter
@@ -35,7 +35,7 @@ constructor(private val mDataAPI: DataAPI, private val mDatabaseHelper: Database
                 .concatMap(mDatabaseHelper::setSubjects)
     }
 
-    fun loadAttendance(filter: String): Single<List<Subject>> {
+    fun loadAttendance(filter: String?): Single<List<Subject>> {
         return mDatabaseHelper.getSubjects(filter).toList()
     }
 

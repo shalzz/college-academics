@@ -85,16 +85,16 @@ internal constructor(private val mDataManager: DataManager,
                         if (isViewAttached) {
                             mvpView.updateUserDetails(user)
                         }
-                        Bugsnag.setUserId(user.phone.toString())
+                        Bugsnag.setUserId(user.phone)
 
                         val sharedPref = PreferenceManager.getDefaultSharedPreferences(mContext)
                         val optIn = sharedPref.getBoolean(mContext.getString(
                                 R.string.pref_key_bugsnag_opt_in), true)
                         if (optIn) {
-                            Bugsnag.setUser(user.phone.toString(), user.email, user.name)
+                            Bugsnag.setUser(user.phone, user.email, user.name)
                         }
 
-                        mTracker.setUserId(user.phone.toString())
+                        mTracker.setUserId(user.phone)
                     }
 
                     override fun onError(e: Throwable) {

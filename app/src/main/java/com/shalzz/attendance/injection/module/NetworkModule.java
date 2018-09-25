@@ -23,8 +23,6 @@ import android.content.Context;
 
 import com.shalzz.attendance.BuildConfig;
 import com.shalzz.attendance.data.local.PreferencesHelper;
-import com.shalzz.attendance.data.model.entity.Subject;
-import com.shalzz.attendance.data.model.entity.SubjectJsonAdapter;
 import com.shalzz.attendance.data.remote.DataAPI;
 import com.shalzz.attendance.data.remote.RxJava2ErrorCallAdapterFactory;
 import com.shalzz.attendance.data.remote.interceptor.AuthInterceptor;

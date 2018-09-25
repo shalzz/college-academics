@@ -36,6 +36,7 @@ import com.shalzz.attendance.ui.main.MainActivity;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import androidx.preference.SwitchPreference;
 import timber.log.Timber;
 
 public class SplashActivity extends BaseActivity {

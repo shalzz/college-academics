@@ -14,8 +14,9 @@ import com.shalzz.attendance.data.model.entity.Period
 import com.shalzz.attendance.data.model.entity.Subject
 import com.shalzz.attendance.data.model.entity.User
 import com.shalzz.attendance.injection.ApplicationContext
+import javax.inject.Singleton
 
-
+@Singleton
 @Database(entities = [User::class, Subject::class, Period::class], version = 12)
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
@@ -24,23 +25,15 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun periodDao(): PeriodDao
 
     companion object {
-        private var INSTANCE: AppDatabase? = null
-
         fun getInstance(@ApplicationContext context: Context): AppDatabase {
-            if (INSTANCE == null) {
-                INSTANCE = Room.databaseBuilder(context,
-                        AppDatabase::class.java, "academics.db")
-                        .addMigrations(MIGRATION_10_11, MIGRATION_11_12)
-                        .build()
-            }
-            return INSTANCE as AppDatabase
+            return Room.databaseBuilder(context,
+                    AppDatabase::class.java, "academics.db")
+                    .allowMainThreadQueries() //TODO: fix and remove this
+                    .addMigrations(MIGRATION_10_11, MIGRATION_11_12)
+                    .build()
         }
 
-        fun destroyInstance() {
-            INSTANCE = null
-        }
-
-        val MIGRATION_11_12: Migration = object : Migration(10, 11) {
+        val MIGRATION_11_12: Migration = object : Migration(11, 12) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 db.execSQL("DROP TABLE IF EXISTS absent")
             }

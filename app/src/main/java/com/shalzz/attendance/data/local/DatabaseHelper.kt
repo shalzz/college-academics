@@ -12,6 +12,8 @@ import javax.inject.Singleton
 
 import io.reactivex.Observable
 import io.reactivex.Single
+import timber.log.Timber
+import java.util.concurrent.Callable
 
 /**
  * Helper Class for SQLite database
@@ -85,6 +87,7 @@ constructor(private val mDb: AppDatabase) {
     fun setUser(user: User): Observable<User> {
         return Observable.create { subscriber ->
             if (subscriber.isDisposed) return@create
+            Timber.d("Running database on: %s", Thread.currentThread().getId())
             mDb.userDao().insert(user)
             subscriber.onNext(user)
             subscriber.onComplete()
