@@ -3,9 +3,9 @@ package com.shalzz.attendance;
 import com.shalzz.attendance.data.DataManager;
 import com.shalzz.attendance.data.local.DatabaseHelper;
 import com.shalzz.attendance.data.local.PreferencesHelper;
-import com.shalzz.attendance.data.model.Period;
-import com.shalzz.attendance.data.model.Subject;
-import com.shalzz.attendance.data.model.User;
+import com.shalzz.attendance.data.model.entity.Period;
+import com.shalzz.attendance.data.model.entity.Subject;
+import com.shalzz.attendance.data.model.entity.User;
 import com.shalzz.attendance.data.remote.DataAPI;
 import com.shalzz.attendance.wrapper.DateHelper;
 

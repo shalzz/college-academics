@@ -24,7 +24,7 @@ import android.content.Context;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.data.DataManager;
 import com.shalzz.attendance.data.model.ListFooter;
-import com.shalzz.attendance.data.model.Subject;
+import com.shalzz.attendance.data.model.entity.Subject;
 import com.shalzz.attendance.data.remote.RetrofitException;
 import com.shalzz.attendance.injection.ApplicationContext;
 import com.shalzz.attendance.injection.ConfigPersistent;
@@ -144,10 +144,12 @@ public class AttendancePresenter extends BasePresenter<AttendanceMvpView> {
         mDbDisposable = mDataManager.loadAttendance(filter)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableObserver<List<Subject>> () {
+                .subscribeWith(new DisposableSingleObserver<List<Subject>>() {
+
                     @Override
-                    public void onNext(List<Subject> subjects) {
+                    public void onSuccess(List<Subject> subjects) {
                         if (isViewAttached()) {
+                            getMvpView().showcaseView();
                             // if data is null
                             // sync with network
                             // while showing the loading screen
@@ -166,13 +168,6 @@ public class AttendancePresenter extends BasePresenter<AttendanceMvpView> {
                     @Override
                     public void onError(Throwable e) {
                         Timber.e(e);
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        if (isViewAttached()) {
-                            getMvpView().showcaseView();
-                        }
                     }
                 });
     }

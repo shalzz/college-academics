@@ -1,8 +1,11 @@
 package com.shalzz.attendance.injection.component;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.shalzz.attendance.ui.base.BaseActivity;
 import com.shalzz.attendance.injection.ConfigPersistent;
 import com.shalzz.attendance.injection.module.ActivityModule;
+
+import javax.inject.Named;
 
 import dagger.Component;
 
@@ -18,5 +21,4 @@ import dagger.Component;
 public interface ConfigPersistentComponent {
 
     ActivityComponent activityComponent(ActivityModule activityModule);
-
 }

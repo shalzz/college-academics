@@ -17,28 +17,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.shalzz.attendance.data.model;
+package com.shalzz.attendance.data.model
 
-import android.os.Parcelable;
-import androidx.annotation.NonNull;
-
-import com.google.auto.value.AutoValue;
-import com.shalzz.attendance.model.AbsentDatesModel;
-import com.shalzz.attendance.wrapper.DateHelper;
-import com.squareup.sqldelight.ColumnAdapter;
-import com.squareup.sqldelight.RowMapper;
-
-import java.util.Date;
-
-@AutoValue
-public abstract class AbsentDate implements AbsentDatesModel, Parcelable {
-
-    int subject_id();
-
-    @NonNull
-    Date absent_date();
-
-    public static AbsentDate create(Integer subject_id, Date absent_date) {
-        return new AutoValue_AbsentDate(subject_id, absent_date);
+/**
+ * Model class for the ExpandableListView footer.
+ * @author shalzz
+ */
+data class ListFooter (
+    val held: Float,
+    val attended: Float
+    ) {
+    fun getPercentage(): Float? {
+        return if (held > 0f) attended / held * 100 else 0.0f
     }
 }

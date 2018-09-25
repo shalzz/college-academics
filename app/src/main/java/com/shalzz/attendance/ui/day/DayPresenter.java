@@ -23,7 +23,7 @@ import android.content.Context;
 
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.data.DataManager;
-import com.shalzz.attendance.data.model.Period;
+import com.shalzz.attendance.data.model.entity.Period;
 import com.shalzz.attendance.data.remote.RetrofitException;
 import com.shalzz.attendance.injection.ApplicationContext;
 import com.shalzz.attendance.ui.base.BasePresenter;
@@ -143,9 +143,9 @@ class DayPresenter extends BasePresenter<DayMvpView> {
         mDbDisposable = mDataManager.loadDay(day)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableObserver<List<Period>>() {
+                .subscribeWith(new DisposableSingleObserver<List<Period>>() {
                     @Override
-                    public void onNext(List<Period> periods) {
+                    public void onSuccess(List<Period> periods) {
                         if(!isViewAttached())
                             return;
                         if (periods.size() == 0) {
@@ -159,11 +159,6 @@ class DayPresenter extends BasePresenter<DayMvpView> {
                     @Override
                     public void onError(Throwable e) {
                         Timber.e(e);
-                    }
-
-                    @Override
-                    public void onComplete() {
-
                     }
                 });
     }

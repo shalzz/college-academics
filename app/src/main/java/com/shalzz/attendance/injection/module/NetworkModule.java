@@ -25,7 +25,6 @@ import androidx.annotation.NonNull;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.shalzz.attendance.BuildConfig;
-import com.shalzz.attendance.data.MyGsonTypeAdapterFactory;
 import com.shalzz.attendance.data.local.PreferencesHelper;
 import com.shalzz.attendance.data.remote.DataAPI;
 import com.shalzz.attendance.data.remote.RxJava2ErrorCallAdapterFactory;
@@ -52,7 +51,6 @@ public class NetworkModule {
     @Provides @Singleton
     static Gson provideGson() {
         return new GsonBuilder()
-                .registerTypeAdapterFactory(MyGsonTypeAdapterFactory.create())
                 .setDateFormat("yyyy-MM-dd")
                 .create();
     }

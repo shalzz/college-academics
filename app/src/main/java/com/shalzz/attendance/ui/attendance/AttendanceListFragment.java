@@ -48,7 +48,7 @@ import com.malinskiy.materialicons.IconDrawable;
 import com.malinskiy.materialicons.Iconify;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.data.model.ListFooter;
-import com.shalzz.attendance.data.model.Subject;
+import com.shalzz.attendance.data.model.entity.Subject;
 import com.shalzz.attendance.ui.main.MainActivity;
 import com.shalzz.attendance.utils.CircularIndeterminate;
 import com.shalzz.attendance.utils.DividerItemDecoration;
@@ -250,7 +250,7 @@ public class AttendanceListFragment extends Fragment implements
     public void onItemExpanded(final View view) {
         final int spec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
         final ExpandableListAdapter.GenericViewHolder viewHolder = (ExpandableListAdapter.GenericViewHolder) view.getTag();
-        final RelativeLayout childView = viewHolder.childView;
+        final RelativeLayout childView = viewHolder.getChildView();
         childView.measure(spec, spec);
         final int startingHeight = view.getHeight();
         final ViewTreeObserver observer = mRecyclerView.getViewTreeObserver();
@@ -270,7 +270,7 @@ public class AttendanceListFragment extends Fragment implements
                 // Set the views back to the start state of the animation
                 view.getLayoutParams().height = startingHeight;
                 if (!isExpanded) {
-                    viewHolder.childView.setVisibility(View.VISIBLE);
+                    viewHolder.getChildView().setVisibility(View.VISIBLE);
                 }
 
                 // Set up the animator to animate the expansion and shadow depth.
@@ -278,7 +278,7 @@ public class AttendanceListFragment extends Fragment implements
                         : ValueAnimator.ofFloat(1f, 0f);
 
                 // scroll to make the view fully visible.
-                mRecyclerView.smoothScrollToPosition(viewHolder.position);
+                mRecyclerView.smoothScrollToPosition(viewHolder.getPosition());
 
                 animator.addUpdateListener(animator1 -> {
                     Float value = (Float) animator1.getAnimatedValue();
@@ -295,7 +295,7 @@ public class AttendanceListFragment extends Fragment implements
                         view.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
 
                         if (!isExpanded) {
-                            viewHolder.childView.setVisibility(View.GONE);
+                            viewHolder.getChildView().setVisibility(View.GONE);
                         }
                     }
                 });
@@ -323,7 +323,7 @@ public class AttendanceListFragment extends Fragment implements
                 if (view != null) {
                     final ExpandableListAdapter.GenericViewHolder viewHolder =
                             (ExpandableListAdapter.GenericViewHolder) view.getTag();
-                    if (viewHolder != null && viewHolder.position == callId) {
+                    if (viewHolder != null && viewHolder.getPosition() == callId) {
                         return view;
                     }
                 }
@@ -342,7 +342,7 @@ public class AttendanceListFragment extends Fragment implements
                     if (view != null) {
                         final ExpandableListAdapter.GenericViewHolder viewHolder =
                                 (ExpandableListAdapter.GenericViewHolder) view.getTag();
-                        if (viewHolder != null && viewHolder.position == callId) {
+                        if (viewHolder != null && viewHolder.getPosition() == callId) {
                             return view;
                         }
                     }

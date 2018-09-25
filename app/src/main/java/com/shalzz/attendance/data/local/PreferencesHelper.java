@@ -73,7 +73,7 @@ public class PreferencesHelper {
 	 */
 	public void removeUser() {
 		SharedPreferences.Editor editor = mPref.edit();
-        editor.remove(MainActivity.PREFERENCE_ACTIVATED_FRAGMENT);
+        editor.remove(MainActivity.Companion.getPREFERENCE_ACTIVATED_FRAGMENT());
 		editor.putBoolean("LOGGEDIN", false);
 		editor.remove("USERNAME");
 		editor.commit();

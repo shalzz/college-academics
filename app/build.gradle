@@ -18,7 +18,8 @@
  */
 
 apply plugin: 'com.android.application'
-apply plugin: 'com.squareup.sqldelight'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
 apply plugin: 'com.github.triplet.play'
 apply plugin: 'com.bugsnag.android.gradle'
 apply plugin: 'com.google.gms.oss.licenses.plugin'
@@ -35,7 +36,7 @@ def gitCommitCount = 2007050 +
 
 android {
     compileSdkVersion 28
-    buildToolsVersion '27.0.3'
+    buildToolsVersion '28.0.2'
 
     defaultConfig {
         applicationId 'com.shalzz.attendance'
@@ -102,13 +103,14 @@ android {
     }
 
     sourceSets {
+
+        // Main source set is Kotlin!
+        main.java.srcDirs += 'src/main/kotlin'
+
+        // Test helps
         def commonTestDir = 'src/commonTest/java'
-        test {
-            java.srcDir commonTestDir
-        }
-        androidTest {
-            java.srcDir commonTestDir
-        }
+        test.java.srcDir commonTestDir
+        androidTest.java.srcDir commonTestDir
     }
 
     //Needed because of this https://github.com/square/okio/issues/58
@@ -131,28 +133,27 @@ android {
 
     dependencies {
         final SUPPORT_LIBRARY_VERSION = '27.1.1'
-        final DAGGER_VERSION = '2.16'
+        final DAGGER_VERSION = '2.17'
         final ESPRESSO_VERSION = '3.1.0-alpha1'
         final RUNNER_VERSION = '0.4'
         final RETROFIT_VERSION = '2.4.0'
         final BUTTERKNIFE_VERSION = '9.0.0-SNAPSHOT'
-        final AUTO_VALUE_VERSION = '1.5'
-        final AUTO_VALUE_GSON_VERSION = '0.7.0'
-        final AUTO_VALUE_PARCEL_VERSION = '0.2.5'
-        final ROOM_VERSION = "2.0.0-beta01"
+        final ROOM_VERSION = "2.0.0-rc01"
+
+        implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
         implementation 'com.google.firebase:firebase-core:15.0.2'
         implementation 'com.google.firebase:firebase-analytics:15.0.2'
 
         implementation 'com.google.android.gms:play-services-oss-licenses:15.0.1'
-        implementation "com.google.android.material:material:1.0.0-rc01"
+        implementation "com.google.android.material:material:1.0.0"
 
-        implementation "androidx.core:core:1.0.0-rc01"
-        implementation "androidx.appcompat:appcompat:1.0.0-rc01"
-        implementation "androidx.fragment:fragment:1.0.0-rc01"
-        implementation "androidx.recyclerview:recyclerview:1.0.0-rc01"
-        implementation "androidx.preference:preference:1.0.0-rc01"
-        implementation "androidx.annotation:annotation:1.0.0-rc01"
+        implementation "androidx.core:core:1.0.0"
+        implementation "androidx.appcompat:appcompat:1.0.0"
+        implementation "androidx.fragment:fragment:1.0.0"
+        implementation "androidx.recyclerview:recyclerview:1.0.0"
+        implementation "androidx.preference:preference:1.0.0"
+        implementation "androidx.annotation:annotation:1.0.0"
         implementation 'androidx.constraintlayout:constraintlayout:1.1.0'
         implementation 'androidx.constraintlayout:constraintlayout-solver:1.1.0'
 
@@ -171,28 +172,15 @@ android {
         def daggerCompiler = "com.google.dagger:dagger-compiler:$DAGGER_VERSION"
         implementation  "com.google.dagger:dagger:$DAGGER_VERSION"
         compileOnly 'javax.annotation:jsr250-api:1.0'
-        annotationProcessor daggerCompiler
+        kapt daggerCompiler
         testAnnotationProcessor daggerCompiler
         androidTestAnnotationProcessor daggerCompiler
-
-        compileOnly "com.jakewharton.auto.value:auto-value-annotations:$AUTO_VALUE_VERSION"
-        implementation "com.google.auto.value:auto-value:$AUTO_VALUE_VERSION"
-        def autoValueCompiler = "com.google.auto.value:auto-value:$AUTO_VALUE_VERSION"
-        annotationProcessor     autoValueCompiler
-        testAnnotationProcessor autoValueCompiler
-        androidTestAnnotationProcessor autoValueCompiler
-
-        compileOnly "com.ryanharter.auto.value:auto-value-gson:$AUTO_VALUE_GSON_VERSION"
-        annotationProcessor     "com.ryanharter.auto.value:auto-value-gson:$AUTO_VALUE_GSON_VERSION"
-
-        annotationProcessor     "com.ryanharter.auto.value:auto-value-parcel:$AUTO_VALUE_PARCEL_VERSION"
-        implementation "com.ryanharter.auto.value:auto-value-parcel-adapter:$AUTO_VALUE_PARCEL_VERSION"
 
         implementation 'com.google.code.gson:gson:2.8.2'
 
         implementation 'com.jakewharton.timber:timber:4.7.0'
         implementation "com.jakewharton:butterknife:$BUTTERKNIFE_VERSION"
-        annotationProcessor "com.jakewharton:butterknife-compiler:$BUTTERKNIFE_VERSION"
+        kapt "com.jakewharton:butterknife-compiler:$BUTTERKNIFE_VERSION"
 
         implementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
         implementation 'io.reactivex.rxjava2:rxjava:2.1.3'
@@ -211,7 +199,7 @@ android {
 
         // Room Persistence
         implementation "androidx.room:room-runtime:$ROOM_VERSION"
-        annotationProcessor "androidx.room:room-compiler:$ROOM_VERSION" // use kapt for Kotlin
+        kapt "androidx.room:room-compiler:$ROOM_VERSION"
         implementation "androidx.room:room-rxjava2:$ROOM_VERSION"
         testImplementation "androidx.room:room-testing:$ROOM_VERSION"
 
@@ -239,8 +227,3 @@ android {
 
 // ADD THIS AT THE BOTTOM
 apply plugin: 'com.google.gms.google-services'
-
-// Log out test results to console
-tasks.matching {it instanceof Test}.all {
-    testLogging.events = ["failed", "passed", "skipped"]
-}

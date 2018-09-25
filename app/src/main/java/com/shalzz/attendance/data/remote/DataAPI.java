@@ -19,9 +19,9 @@
 
 package com.shalzz.attendance.data.remote;
 
-import com.shalzz.attendance.data.model.Period;
-import com.shalzz.attendance.data.model.Subject;
-import com.shalzz.attendance.data.model.User;
+import com.shalzz.attendance.data.model.entity.Period;
+import com.shalzz.attendance.data.model.entity.Subject;
+import com.shalzz.attendance.data.model.entity.User;
 
 import java.util.List;
 

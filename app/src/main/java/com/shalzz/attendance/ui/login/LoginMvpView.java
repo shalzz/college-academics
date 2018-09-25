@@ -1,6 +1,6 @@
 package com.shalzz.attendance.ui.login;
 
-import com.shalzz.attendance.data.model.User;
+import com.shalzz.attendance.data.model.entity.User;
 import com.shalzz.attendance.ui.base.MvpView;
 
 /**

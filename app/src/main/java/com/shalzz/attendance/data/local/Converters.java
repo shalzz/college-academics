@@ -9,7 +9,7 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.room.TypeConverter;
 
-public class TypeConverters {
+public class Converters {
 
     @NonNull
     @TypeConverter

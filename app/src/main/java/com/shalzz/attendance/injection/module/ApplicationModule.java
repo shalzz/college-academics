@@ -23,6 +23,7 @@ import android.app.Application;
 import android.content.Context;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.shalzz.attendance.data.local.AppDatabase;
 import com.shalzz.attendance.injection.ApplicationContext;
 
 import javax.inject.Named;
@@ -48,6 +49,11 @@ public class ApplicationModule {
     @ApplicationContext
     Context provideContext() {
         return mApplication;
+    }
+
+    @Provides
+    AppDatabase provideAppDatabase() {
+        return AppDatabase.Companion.getInstance(mApplication);
     }
 
     @Provides

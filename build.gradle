@@ -19,16 +19,17 @@
 
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
+    ext.kotlin_version = '1.2.71'
     repositories {
         google()
         jcenter()
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.2.0-beta05'
-        classpath 'com.squareup.sqldelight:gradle-plugin:0.7.0'
+        classpath 'com.android.tools.build:gradle:3.2.0'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath 'com.github.triplet.gradle:play-publisher:1.2.0'
-        classpath 'com.google.gms:google-services:3.3.0'
+        classpath 'com.google.gms:google-services:4.0.0'
         classpath "com.google.gms:oss-licenses:0.9.2"
 
 	    //noinspection GradleDynamicVersion
@@ -44,4 +45,9 @@ allprojects {
         maven{ url 'https://jitpack.io' }
         maven{ url "https://oss.sonatype.org/content/repositories/snapshots" }
     }
+}
+
+// Log out test results to console
+tasks.matching {it instanceof Test}.all {
+    testLogging.events = ["failed", "passed", "skipped"]
 }

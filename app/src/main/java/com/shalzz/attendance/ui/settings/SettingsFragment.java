@@ -258,11 +258,11 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
             Fragment mFragment = new AboutSettingsFragment();
             FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
-            transaction.replace(R.id.frame_container, mFragment, MainActivity.FRAGMENT_TAG);
+            transaction.replace(R.id.frame_container, mFragment, MainActivity.Companion.getFRAGMENT_TAG());
             transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
             transaction.addToBackStack(null);
 
-            ((MainActivity)mActivity).mPopSettingsBackStack = true;
+            ((MainActivity) mActivity).setMPopSettingsBackStack(true);
 
             transaction.commit();
 

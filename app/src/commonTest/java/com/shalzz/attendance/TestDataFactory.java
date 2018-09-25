@@ -1,8 +1,8 @@
 package com.shalzz.attendance;
 
-import com.shalzz.attendance.data.model.Period;
-import com.shalzz.attendance.data.model.Subject;
-import com.shalzz.attendance.data.model.User;
+import com.shalzz.attendance.data.model.entity.Period;
+import com.shalzz.attendance.data.model.entity.Subject;
+import com.shalzz.attendance.data.model.entity.User;
 import com.shalzz.attendance.wrapper.DateHelper;
 
 import java.util.Date;
@@ -27,7 +27,7 @@ public class TestDataFactory {
     }
 
     public static User makeUser(String uniqueSuffix) {
-        return User.builder()
+        return User.Companion.builder()
                 .setId(randomUuid())
                 .setRoll_number(randomUuid())
                 .setName("Name-" + uniqueSuffix)
@@ -38,7 +38,7 @@ public class TestDataFactory {
     }
 
     public static Subject makeSubject(String uniqueSuffix) {
-        return Subject.builder()
+        return Subject.Companion.builder()
                 .setId(makeInt(uniqueSuffix))
                 .setName("Name-" + uniqueSuffix)
                 .setAttended(1f)
@@ -47,7 +47,7 @@ public class TestDataFactory {
     }
 
     public static Period makePeriod(String uniqueSuffix, Date date) {
-        return Period.builder()
+        return Period.Companion.builder()
                 .setId(makeInt(uniqueSuffix))
                 .setName("Name-" + uniqueSuffix)
                 .setDate(DateHelper.toTechnicalFormat(date))

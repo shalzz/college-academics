@@ -1,7 +1,5 @@
 package com.shalzz.attendance.billing;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import com.android.billingclient.api.BillingClient;
 import com.android.billingclient.api.BillingClient.BillingResponse;
 import com.android.billingclient.api.BillingClient.FeatureType;
@@ -22,6 +20,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import androidx.appcompat.app.AppCompatActivity;
 import io.reactivex.Observable;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -144,7 +143,7 @@ public class BillingManager implements PurchasesUpdatedListener {
     private Observable<List<Purchase>> handlePurchases(List<Purchase> purchases) {
         return Observable.fromIterable(purchases)
                 .flatMap(purchase ->
-                        mDataManager.verifyValidSignature(purchase, mActivity)
+                        mDataManager.verifyValidSignature(purchase)
                         .filter(aBoolean -> aBoolean)
                         .map(aBoolean -> purchase)
                 )

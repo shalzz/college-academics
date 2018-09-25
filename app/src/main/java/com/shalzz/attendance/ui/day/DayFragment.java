@@ -36,7 +36,7 @@ import com.google.android.material.snackbar.Snackbar;
 import com.malinskiy.materialicons.IconDrawable;
 import com.malinskiy.materialicons.Iconify;
 import com.shalzz.attendance.R;
-import com.shalzz.attendance.data.model.Period;
+import com.shalzz.attendance.data.model.entity.Period;
 import com.shalzz.attendance.injection.ActivityContext;
 import com.shalzz.attendance.ui.main.MainActivity;
 import com.shalzz.attendance.utils.DividerItemDecoration;
