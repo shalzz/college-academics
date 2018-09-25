@@ -162,13 +162,6 @@ android {
 
         implementation 'com.android.billingclient:billing:1.0'
 
-//        implementation "androidx.legacy:legacy-support-core-utils:1.0.0-rc01"
-//        implementation "androidx.legacy:legacy-support-core-ui:1.0.0-rc01"
-//        implementation "androidx.legacy:legacy-support-v4:1.0.0-rc01"
-//        implementation "androidx.legacy:legacy-preference-v14:1.0.0-rc01"
-//        implementation "android.arch.persistence:db:1.0.0"
-//        implementation "android.arch.persistence:db-framework:1.0.0"
-
         def daggerCompiler = "com.google.dagger:dagger-compiler:$DAGGER_VERSION"
         implementation  "com.google.dagger:dagger:$DAGGER_VERSION"
         compileOnly 'javax.annotation:jsr250-api:1.0'
@@ -176,7 +169,7 @@ android {
         testAnnotationProcessor daggerCompiler
         androidTestAnnotationProcessor daggerCompiler
 
-        implementation 'com.google.code.gson:gson:2.8.2'
+        implementation 'com.google.code.gson:gson:2.8.5'
 
         implementation 'com.jakewharton.timber:timber:4.7.0'
         implementation "com.jakewharton:butterknife:$BUTTERKNIFE_VERSION"
