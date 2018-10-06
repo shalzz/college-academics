@@ -49,7 +49,7 @@ constructor(private val mDataAPI: DataAPI,
     }
 
     fun sendRegID(token: String, auth: String): Observable<Boolean> {
-        return mDataAPI.sendRegID(token, auth)
+        return mDataAPI.sendRegID(authorization=auth, registerationID=token)
     }
 
     fun syncUser(auth: String): Observable<User> {

@@ -33,16 +33,16 @@ import retrofit2.http.Path
 
 interface DataAPI {
 
-    @get:GET("me/attendance")
-    val attendance: Observable<List<Subject>>
+    @GET("me")
+    fun getUser(@Header("Authorization") authorization: String): Observable<User>
 
     @FormUrlEncoded
-    @POST("regid")
+    @POST("me/regid")
     fun sendRegID(@Header("Authorization") authorization: String,
                   @Field("regid") registerationID: String): Observable<Boolean>
 
-    @GET("me")
-    fun getUser(@Header("Authorization") authorization: String): Observable<User>
+    @get:GET("me/attendance")
+    val attendance: Observable<List<Subject>>
 
     @GET("me/timetable/{date}")
     fun getTimetable(@Path("date") date: String): Observable<List<Period>>

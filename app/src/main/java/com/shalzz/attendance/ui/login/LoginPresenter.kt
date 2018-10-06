@@ -80,7 +80,7 @@ internal constructor(private val mDataManager: DataManager,
         RxUtil.dispose(mDisposable)
         Timber.d("Calling sync user on: %s ", Thread.currentThread().id)
         val auth = "Bearer $username"
-        mDisposable = mDataManager.sendRegID(mPreferenceHelper.token, auth)
+        mDisposable = mDataManager.sendRegID(token=mPreferenceHelper.token, auth=auth)
                 .doOnNext { result-> Timber.d("Sent token to server successfully: %b",
                         result) }
                 .doOnError(onError)
