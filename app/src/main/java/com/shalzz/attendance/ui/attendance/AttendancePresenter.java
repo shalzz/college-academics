@@ -72,7 +72,7 @@ public class AttendancePresenter extends BasePresenter<AttendanceMvpView> {
         RxUtil.dispose(mFooterDisposable);
     }
 
-    public void syncAttendance() {
+    void syncAttendance() {
         checkViewAttached();
         RxUtil.dispose(mSyncDisposable);
         mSyncDisposable = mDataManager.syncAttendance()
@@ -138,18 +138,17 @@ public class AttendancePresenter extends BasePresenter<AttendanceMvpView> {
                 });
     }
 
-    public void loadAttendance(String filter) {
+    void loadAttendance(String filter) {
         checkViewAttached();
         RxUtil.dispose(mDbDisposable);
         mDbDisposable = mDataManager.loadAttendance(filter)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableSingleObserver<List<Subject>>() {
+                .subscribeWith(new DisposableObserver<List<Subject>>() {
 
                     @Override
-                    public void onSuccess(List<Subject> subjects) {
+                    public void onNext(List<Subject> subjects) {
                         if (isViewAttached()) {
-                            getMvpView().showcaseView();
                             // if data is null
                             // sync with network
                             // while showing the loading screen
@@ -169,10 +168,13 @@ public class AttendancePresenter extends BasePresenter<AttendanceMvpView> {
                     public void onError(Throwable e) {
                         Timber.e(e);
                     }
+
+                    @Override
+                    public void onComplete() { }
                 });
     }
 
-    public void loadListFooter() {
+    private void loadListFooter() {
         checkViewAttached();
         RxUtil.dispose(mFooterDisposable);
         mFooterDisposable = mDataManager.getListFooter()

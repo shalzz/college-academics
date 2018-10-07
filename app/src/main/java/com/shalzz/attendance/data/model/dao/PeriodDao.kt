@@ -12,7 +12,7 @@ import io.reactivex.Single
 interface PeriodDao {
 
     @Query("SELECT * FROM period WHERE date = :date ORDER BY start")
-    fun getAllByDate(date: String): Observable<Period>
+    fun getAllByDate(date: String): Observable<List<Period>>
 
     @Query("SELECT count(*) FROM period WHERE date = :date")
     fun getCountByDate(date: String): Single<Int>

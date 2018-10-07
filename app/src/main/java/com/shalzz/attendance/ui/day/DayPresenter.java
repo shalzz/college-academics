@@ -143,9 +143,9 @@ class DayPresenter extends BasePresenter<DayMvpView> {
         mDbDisposable = mDataManager.loadDay(day)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableSingleObserver<List<Period>>() {
+                .subscribeWith(new DisposableObserver<List<Period>>() {
                     @Override
-                    public void onSuccess(List<Period> periods) {
+                    public void onNext(List<Period> periods) {
                         if(!isViewAttached())
                             return;
                         if (periods.size() == 0) {
@@ -160,6 +160,9 @@ class DayPresenter extends BasePresenter<DayMvpView> {
                     public void onError(Throwable e) {
                         Timber.e(e);
                     }
+
+                    @Override
+                    public void onComplete() { }
                 });
     }
 }

@@ -31,7 +31,6 @@ import com.shalzz.attendance.utils.NetworkUtil
 import com.shalzz.attendance.utils.RxUtil
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
-import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 import javax.inject.Inject
@@ -83,7 +82,6 @@ internal constructor(private val mDataManager: DataManager,
         mDisposable = mDataManager.sendRegID(token=mPreferenceHelper.token, auth=auth)
                 .doOnNext { result-> Timber.d("Sent token to server successfully: %b",
                         result) }
-                .doOnError(onError)
                 .flatMap { mDataManager.syncUser(auth) }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

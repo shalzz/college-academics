@@ -13,7 +13,7 @@ import io.reactivex.Single
 interface SubjectDao {
 
     @Query("SELECT * FROM subject WHERE name LIKE :name")
-    fun getAllLikeName(name: String): Observable<Subject>
+    fun getAllLikeName(name: String): Observable<List<Subject>>
 
     @Query("SELECT sum(attended) as attended, sum(held) as held FROM subject")
     fun getTotalAttendance(): Observable<ListFooter>

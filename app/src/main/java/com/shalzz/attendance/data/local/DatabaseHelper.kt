@@ -52,8 +52,8 @@ constructor(private val mDb: AppDatabase) {
         }
     }
 
-    fun getSubjects(filter: String?): Observable<Subject> {
-        val name = if (filter == null) "" else "%$filter%"
+    fun getSubjects(filter: String?): Observable<List<Subject>> {
+        val name = if (filter == null) "%%" else "%$filter%"
         return mDb.subjectDao().getAllLikeName(name)
     }
 
@@ -77,7 +77,7 @@ constructor(private val mDb: AppDatabase) {
         }
     }
 
-    fun getPeriods(date: Date): Observable<Period> {
+    fun getPeriods(date: Date): Observable<List<Period>> {
         return mDb.periodDao().getAllByDate(DateHelper.toTechnicalFormat(date))
     }
 

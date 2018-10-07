@@ -35,8 +35,8 @@ constructor(private val mDataAPI: DataAPI,
                 .concatMap(mDatabaseHelper::setSubjects)
     }
 
-    fun loadAttendance(filter: String?): Single<List<Subject>> {
-        return mDatabaseHelper.getSubjects(filter).toList()
+    fun loadAttendance(filter: String?): Observable<List<Subject>> {
+        return mDatabaseHelper.getSubjects(filter)
     }
 
     fun syncDay(date: Date): Observable<Period> {
@@ -44,8 +44,8 @@ constructor(private val mDataAPI: DataAPI,
                 .concatMap(mDatabaseHelper::setPeriods)
     }
 
-    fun loadDay(date: Date): Single<List<Period>> {
-        return mDatabaseHelper.getPeriods(date).toList()
+    fun loadDay(date: Date): Observable<List<Period>> {
+        return mDatabaseHelper.getPeriods(date)
     }
 
     fun sendRegID(token: String, auth: String): Observable<Boolean> {
