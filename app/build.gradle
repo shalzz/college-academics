@@ -42,6 +42,14 @@ android {
 	    versionName gitTag
 
         resConfigs "en"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = ["room.schemaLocation":
+                                     "$projectDir/schemas".toString()]
+            }
+        }
     }
 
     compileOptions {
@@ -188,19 +196,22 @@ android {
         kapt "androidx.room:room-compiler:$ROOM_VERSION"
         implementation "androidx.room:room-rxjava2:$ROOM_VERSION"
         testImplementation "androidx.room:room-testing:$ROOM_VERSION"
+        androidTestImplementation "androidx.room:room-testing:$ROOM_VERSION"
 
         def jUnit = "junit:junit:4.12"
-        def mockito = "org.mockito:mockito-core:2.6.2"
+        def mockito = "org.mockito:mockito-core:2.8.9"
 
         // Instrumentation test dependencies
         androidTestImplementation jUnit
         androidTestImplementation mockito
-        androidTestImplementation "androidx.annotation:annotation:1.0.0-rc01"
+        androidTestImplementation "com.google.code.findbugs:jsr305:3.0.0"
+        androidTestImplementation "androidx.annotation:annotation:1.0.0"
+
+        androidTestImplementation "androidx.test:runner:1.1.0-alpha4"
+        androidTestImplementation "androidx.test:rules:1.1.0-alpha4"
+
         androidTestImplementation "androidx.test.espresso:espresso-contrib:$ESPRESSO_VERSION"
         androidTestImplementation "androidx.test.espresso:espresso-core:$ESPRESSO_VERSION"
-        androidTestImplementation "androidx.test:runner:1.1.0-alpha1"
-        androidTestImplementation "androidx.test:rules:1.1.0-alpha1"
-        androidTestImplementation "com.google.code.findbugs:jsr305:3.0.0"
 
         // Unit tests dependencies
         testImplementation jUnit

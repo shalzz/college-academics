@@ -1,4 +1,4 @@
-package com.shalzz.attendance.util.runner;
+package com.shalzz.attendance.runner;
 
 import android.annotation.SuppressLint;
 import android.app.Application;
