@@ -14,7 +14,7 @@ import java.util.HashSet;
 import static com.google.common.truth.Truth.assertThat;
 
 @RunWith(RobolectricTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = DefaultConfig.EMULATE_SDK)
+@Config(sdk = DefaultConfig.EMULATE_SDK)
 public final class PermissionsTest {
 
     private static final String[] EXPECTED_PERMISSIONS = {
