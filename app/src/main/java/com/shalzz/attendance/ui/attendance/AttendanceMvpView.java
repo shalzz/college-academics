@@ -1,8 +1,7 @@
 package com.shalzz.attendance.ui.attendance;
 
 import com.shalzz.attendance.data.model.ListFooter;
-import com.shalzz.attendance.data.model.Subject;
-import com.shalzz.attendance.data.remote.RetrofitException;
+import com.shalzz.attendance.data.model.entity.Subject;
 import com.shalzz.attendance.ui.base.MvpView;
 
 import java.util.List;

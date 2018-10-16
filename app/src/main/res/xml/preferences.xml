@@ -18,10 +18,10 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<android.support.v7.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
 
-    <android.support.v7.preference.PreferenceCategory android:title="General" >
-        <android.support.v14.preference.SwitchPreference
+    <androidx.preference.PreferenceCategory android:title="General" >
+        <androidx.preference.SwitchPreference
             android:key="@string/pref_key_pro_mode"
             android:defaultValue="false"
             android:title="@string/pref_pro_mode"
@@ -35,24 +35,24 @@
             android:summary="@string/pref_day_night_summary"
             android:entries="@array/pref_day_night_entries"
             android:entryValues="@array/pref_day_night_values"/>
-    </android.support.v7.preference.PreferenceCategory>
+    </androidx.preference.PreferenceCategory>
 
-    <android.support.v7.preference.PreferenceCategory android:title="Timetable" >
-        <android.support.v14.preference.SwitchPreference
+    <androidx.preference.PreferenceCategory android:title="Timetable" >
+        <androidx.preference.SwitchPreference
             android:key="@string/pref_key_hide_weekends"
             android:defaultValue="false"
             android:title="@string/pref_hide_weekends"
             android:summary="@string/pref_hide_weekends_summary"/>
-    </android.support.v7.preference.PreferenceCategory>
+    </androidx.preference.PreferenceCategory>
 
-    <android.support.v7.preference.PreferenceCategory android:title="Network" >
-        <android.support.v14.preference.SwitchPreference
+    <androidx.preference.PreferenceCategory android:title="Network" >
+        <androidx.preference.SwitchPreference
             android:key="@string/pref_key_sync"
             android:defaultValue="true"
             android:title="@string/pref_sync"
             android:summary="@string/pref_sync_summary" />
 
-        <android.support.v7.preference.ListPreference
+        <androidx.preference.ListPreference
             android:key="@string/pref_key_sync_interval"
             android:defaultValue="480"
             android:title="@string/pref_refresh"
@@ -60,28 +60,28 @@
             android:dependency="@string/pref_key_sync"
             android:entries="@array/pref_data_sync_interval_entries"
             android:entryValues="@array/pref_data_sync_interval_values"/>
-    </android.support.v7.preference.PreferenceCategory>
+    </androidx.preference.PreferenceCategory>
 
-    <android.support.v7.preference.PreferenceCategory android:title="Privacy" >
-        <android.support.v14.preference.SwitchPreference
+    <androidx.preference.PreferenceCategory android:title="Privacy" >
+        <androidx.preference.SwitchPreference
             android:key="@string/pref_key_ga_opt_in"
             android:defaultValue="true"
             android:title="@string/pref_ga_opt_in"
             android:summary="@string/pref_ga_opt_in_summary" />
-	<android.support.v14.preference.SwitchPreference
+	<androidx.preference.SwitchPreference
             android:key="@string/pref_key_bugsnag_opt_in"
             android:defaultValue="true"
             android:title="@string/pref_bugsnag_opt_in"
             android:summary="@string/pref_bugsnag_opt_in_summary" />
-    </android.support.v7.preference.PreferenceCategory>
+    </androidx.preference.PreferenceCategory>
 
-    <android.support.v7.preference.PreferenceCategory
+    <androidx.preference.PreferenceCategory
         android:title="Info" >
 
-        <android.support.v7.preference.PreferenceScreen
+        <androidx.preference.PreferenceScreen
             android:key="@string/pref_key_info_about"
             android:persistent="false"
             android:title="@string/pref_about" />
-    </android.support.v7.preference.PreferenceCategory>
+    </androidx.preference.PreferenceCategory>
 
-</android.support.v7.preference.PreferenceScreen>
+</androidx.preference.PreferenceScreen>

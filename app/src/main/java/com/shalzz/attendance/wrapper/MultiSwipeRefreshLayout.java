@@ -17,16 +17,17 @@
 package com.shalzz.attendance.wrapper;
 
 import android.content.Context;
-import android.support.v4.view.ViewCompat;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.AbsListView;
 
 import javax.inject.Inject;
 
+import androidx.core.view.ViewCompat;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 /**
- * A descendant of {@link android.support.v4.widget.SwipeRefreshLayout} which supports multiple
+ * A descendant of {@link androidx.swiperefreshlayout.widget.SwipeRefreshLayout} which supports multiple
  * child views triggering a refresh gesture. You set the views which can trigger the gesture via
  * {@link #setSwipeableChildren(int...)}, providing it the child ids.
  */
@@ -62,7 +63,7 @@ public class MultiSwipeRefreshLayout extends SwipeRefreshLayout {
      * This method controls when the swipe-to-refresh gesture is triggered. By returning false here
      * we are signifying that the view is in a state where a refresh gesture can start.
      *
-     * <p>As {@link android.support.v4.widget.SwipeRefreshLayout} only supports one direct child by
+     * <p>As {@link androidx.swiperefreshlayout.widget.SwipeRefreshLayout} only supports one direct child by
      * default, we need to manually iterate through our swipeable children to see if any are in a
      * state to trigger the gesture. If so we return false to start the gesture.
      */

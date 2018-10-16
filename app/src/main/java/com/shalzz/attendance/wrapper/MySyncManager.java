@@ -28,8 +28,8 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
-import android.support.v7.preference.PreferenceManager;
+import androidx.core.app.ActivityCompat;
+import androidx.preference.PreferenceManager;
 
 import com.shalzz.attendance.BuildConfig;
 import com.shalzz.attendance.R;

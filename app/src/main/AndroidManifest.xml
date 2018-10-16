@@ -55,6 +55,11 @@
         android:fullBackupOnly="true"
         android:fullBackupContent="@xml/backup_scheme">
 
+        <!--Bugsnag API Key -->
+        <meta-data
+            android:name="com.bugsnag.android.API_KEY"
+            android:value="@string/bugsnag_api" />
+
         <!--This meta-data tag is required to use Google Play Services.-->
         <meta-data
             android:name="com.google.android.gms.version"
@@ -64,11 +69,6 @@
         <meta-data
             android:name="com.google.android.backup.api_key"
             android:value="AEdPqrEAAAAIBDAW2fQxJuS7rNRsQul_vvfk_9XNbzwvC_IgrQ" />
-
-        <!--Bugsnag API Key -->
-        <meta-data
-            android:name="com.bugsnag.android.API_KEY"
-            android:value="@string/bugsnag_api" />
 
         <provider
             android:name=".sync.StubProvider"
@@ -97,6 +97,12 @@
                 android:name="android.accounts.AccountAuthenticator"
                 android:resource="@xml/authenticator" />
         </service>
+        <service
+            android:name=".service.MyFirebaseMessagingService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+            </intent-filter>
+        </service>
 
         <activity
             android:name=".ui.splash.SplashActivity"
@@ -124,7 +130,7 @@
         <activity
             android:name=".ui.login.LoginActivity"
             android:label="Login"
-            android:theme="@style/AppTheme"></activity>
+            android:theme="@style/AppTheme"/>
 
         <activity
             android:name=".ui.main.MainActivity"

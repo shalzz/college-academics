@@ -24,7 +24,7 @@ import android.content.Context;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.data.DataManager;
 import com.shalzz.attendance.data.model.ListFooter;
-import com.shalzz.attendance.data.model.Subject;
+import com.shalzz.attendance.data.model.entity.Subject;
 import com.shalzz.attendance.data.remote.RetrofitException;
 import com.shalzz.attendance.injection.ApplicationContext;
 import com.shalzz.attendance.injection.ConfigPersistent;
@@ -72,7 +72,7 @@ public class AttendancePresenter extends BasePresenter<AttendanceMvpView> {
         RxUtil.dispose(mFooterDisposable);
     }
 
-    public void syncAttendance() {
+    void syncAttendance() {
         checkViewAttached();
         RxUtil.dispose(mSyncDisposable);
         mSyncDisposable = mDataManager.syncAttendance()
@@ -138,13 +138,14 @@ public class AttendancePresenter extends BasePresenter<AttendanceMvpView> {
                 });
     }
 
-    public void loadAttendance(String filter) {
+    void loadAttendance(String filter) {
         checkViewAttached();
         RxUtil.dispose(mDbDisposable);
         mDbDisposable = mDataManager.loadAttendance(filter)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableObserver<List<Subject>> () {
+                .subscribeWith(new DisposableObserver<List<Subject>>() {
+
                     @Override
                     public void onNext(List<Subject> subjects) {
                         if (isViewAttached()) {
@@ -169,15 +170,11 @@ public class AttendancePresenter extends BasePresenter<AttendanceMvpView> {
                     }
 
                     @Override
-                    public void onComplete() {
-                        if (isViewAttached()) {
-                            getMvpView().showcaseView();
-                        }
-                    }
+                    public void onComplete() { }
                 });
     }
 
-    public void loadListFooter() {
+    private void loadListFooter() {
         checkViewAttached();
         RxUtil.dispose(mFooterDisposable);
         mFooterDisposable = mDataManager.getListFooter()

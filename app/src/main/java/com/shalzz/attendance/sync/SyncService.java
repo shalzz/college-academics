@@ -26,7 +26,6 @@ import android.os.IBinder;
 import com.shalzz.attendance.MyApplication;
 import com.shalzz.attendance.data.DataManager;
 import com.shalzz.attendance.data.local.PreferencesHelper;
-import com.shalzz.attendance.data.remote.DataAPI;
 
 import javax.inject.Inject;
 

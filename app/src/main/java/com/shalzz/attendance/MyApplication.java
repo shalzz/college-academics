@@ -22,14 +22,15 @@ package com.shalzz.attendance;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.support.v7.app.AppCompatDelegate;
-import android.support.v7.preference.PreferenceManager;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.preference.PreferenceManager;
 
 import com.bugsnag.android.Bugsnag;
-import com.shalzz.attendance.utils.BugsnagTree;
+import com.bugsnag.android.Configuration;
 import com.shalzz.attendance.injection.component.ApplicationComponent;
 import com.shalzz.attendance.injection.component.DaggerApplicationComponent;
 import com.shalzz.attendance.injection.module.ApplicationModule;
+import com.shalzz.attendance.utils.BugsnagTree;
 
 import timber.log.Timber;
 
@@ -41,10 +42,12 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        Bugsnag.init(this)
-                .setMaxBreadcrumbs(100);
+        Configuration config = new Configuration(getString(R.string.bugsnag_api));
+        config.setMaxBreadcrumbs(100);
+        config.setAutomaticallyCollectBreadcrumbs(false);
+        config.setAutoCaptureSessions(false);
+        Bugsnag.init(this, config);
         Bugsnag.setNotifyReleaseStages("production", "development", "testing");
-        Bugsnag.setAutoCaptureSessions(true);
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
 
         if (BuildConfig.DEBUG) {

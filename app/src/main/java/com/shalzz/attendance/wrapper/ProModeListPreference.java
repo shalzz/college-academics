@@ -1,9 +1,9 @@
 package com.shalzz.attendance.wrapper;
 
 import android.content.Context;
-import android.support.v7.preference.ListPreference;
-import android.support.v7.preference.Preference;
 import android.util.AttributeSet;
+
+import androidx.preference.ListPreference;
 
 /**
  * @author shalzz

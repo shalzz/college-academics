@@ -1,7 +1,5 @@
 package com.shalzz.attendance.billing;
 
-import android.app.Activity;
-
 import com.android.billingclient.api.BillingClient;
 import com.android.billingclient.api.BillingClient.BillingResponse;
 import com.android.billingclient.api.BillingClient.FeatureType;
@@ -22,6 +20,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import androidx.appcompat.app.AppCompatActivity;
 import io.reactivex.Observable;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -43,7 +42,7 @@ public class BillingManager implements PurchasesUpdatedListener {
 
     private Set<String> mTokensToBeConsumed;
 
-    private Activity mActivity;
+    private AppCompatActivity mActivity;
     private DataManager mDataManager;
     private CompositeDisposable mConnectionDisposable = new CompositeDisposable();
     private PublishSubject<List<Purchase>> publishSubject = PublishSubject.create();
@@ -58,7 +57,7 @@ public class BillingManager implements PurchasesUpdatedListener {
         void onPurchasesUpdated(List<Purchase> purchases);
     }
 
-    public BillingManager(Activity activity,
+    public BillingManager(AppCompatActivity activity,
                           DataManager dataManager,
                           final BillingUpdatesListener updatesListener) {
         mActivity = activity;
@@ -144,7 +143,7 @@ public class BillingManager implements PurchasesUpdatedListener {
     private Observable<List<Purchase>> handlePurchases(List<Purchase> purchases) {
         return Observable.fromIterable(purchases)
                 .flatMap(purchase ->
-                        mDataManager.verifyValidSignature(purchase, mActivity)
+                        mDataManager.verifyValidSignature(purchase)
                         .filter(aBoolean -> aBoolean)
                         .map(aBoolean -> purchase)
                 )

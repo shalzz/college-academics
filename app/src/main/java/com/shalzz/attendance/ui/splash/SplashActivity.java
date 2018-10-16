@@ -21,9 +21,8 @@ package com.shalzz.attendance.ui.splash;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.preference.PreferenceManager;
+import androidx.preference.PreferenceManager;
 
 import com.bugsnag.android.Bugsnag;
 import com.bugsnag.android.Severity;
@@ -48,12 +47,17 @@ public class SplashActivity extends BaseActivity {
     @Named("app")
     FirebaseAnalytics mTracker;
 
+    @Inject
+    SplashPresenter mPresenter;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         activityComponent().inject(this);
         Bugsnag.setContext("SplashActivity");
+        mPreferencesHelper.upgradePrefsIfNecessary(this);
 
+        mPresenter.getToken(getString(R.string.onedu_gcmSenderId));
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         boolean optIn = sharedPref.getBoolean(getString(R.string.pref_key_ga_opt_in), true);
         mTracker.setAnalyticsCollectionEnabled(optIn);

@@ -23,7 +23,7 @@ import android.content.Context;
 
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.data.DataManager;
-import com.shalzz.attendance.data.model.Period;
+import com.shalzz.attendance.data.model.entity.Period;
 import com.shalzz.attendance.data.remote.RetrofitException;
 import com.shalzz.attendance.injection.ApplicationContext;
 import com.shalzz.attendance.ui.base.BasePresenter;
@@ -162,9 +162,7 @@ class DayPresenter extends BasePresenter<DayMvpView> {
                     }
 
                     @Override
-                    public void onComplete() {
-
-                    }
+                    public void onComplete() { }
                 });
     }
 }

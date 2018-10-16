@@ -29,8 +29,8 @@ import android.os.Bundle;
 import com.bugsnag.android.Bugsnag;
 import com.shalzz.attendance.data.DataManager;
 import com.shalzz.attendance.data.local.PreferencesHelper;
-import com.shalzz.attendance.data.model.Period;
-import com.shalzz.attendance.data.model.Subject;
+import com.shalzz.attendance.data.model.entity.Period;
+import com.shalzz.attendance.data.model.entity.Subject;
 import com.shalzz.attendance.data.remote.RetrofitException;
 import com.shalzz.attendance.utils.RxUtil;
 

@@ -26,15 +26,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
-import android.support.v4.view.MenuItemCompat;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -51,12 +42,13 @@ import android.widget.TextView;
 import com.bugsnag.android.Bugsnag;
 import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.ViewTarget;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.malinskiy.materialicons.IconDrawable;
 import com.malinskiy.materialicons.Iconify;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.data.model.ListFooter;
-import com.shalzz.attendance.data.model.Subject;
+import com.shalzz.attendance.data.model.entity.Subject;
 import com.shalzz.attendance.ui.main.MainActivity;
 import com.shalzz.attendance.utils.CircularIndeterminate;
 import com.shalzz.attendance.utils.DividerItemDecoration;
@@ -68,6 +60,14 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SearchView;
+import androidx.core.view.MenuItemCompat;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import butterknife.BindBool;
 import butterknife.BindInt;
 import butterknife.BindString;
@@ -105,7 +105,7 @@ public class AttendanceListFragment extends Fragment implements
     }
 
     /**
-     * The {@link android.support.v4.widget.SwipeRefreshLayout} that detects swipe gestures and
+     * The {@link androidx.swiperefreshlayout.widget.SwipeRefreshLayout} that detects swipe gestures and
      * triggers callbacks in the app.
      */
     @BindView(R.id.swipe_refresh_atten)
@@ -250,7 +250,7 @@ public class AttendanceListFragment extends Fragment implements
     public void onItemExpanded(final View view) {
         final int spec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
         final ExpandableListAdapter.GenericViewHolder viewHolder = (ExpandableListAdapter.GenericViewHolder) view.getTag();
-        final RelativeLayout childView = viewHolder.childView;
+        final RelativeLayout childView = viewHolder.getChildView();
         childView.measure(spec, spec);
         final int startingHeight = view.getHeight();
         final ViewTreeObserver observer = mRecyclerView.getViewTreeObserver();
@@ -270,7 +270,7 @@ public class AttendanceListFragment extends Fragment implements
                 // Set the views back to the start state of the animation
                 view.getLayoutParams().height = startingHeight;
                 if (!isExpanded) {
-                    viewHolder.childView.setVisibility(View.VISIBLE);
+                    viewHolder.getChildView().setVisibility(View.VISIBLE);
                 }
 
                 // Set up the animator to animate the expansion and shadow depth.
@@ -278,7 +278,7 @@ public class AttendanceListFragment extends Fragment implements
                         : ValueAnimator.ofFloat(1f, 0f);
 
                 // scroll to make the view fully visible.
-                mRecyclerView.smoothScrollToPosition(viewHolder.position);
+                mRecyclerView.smoothScrollToPosition(viewHolder.getPosition());
 
                 animator.addUpdateListener(animator1 -> {
                     Float value = (Float) animator1.getAnimatedValue();
@@ -295,7 +295,7 @@ public class AttendanceListFragment extends Fragment implements
                         view.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
 
                         if (!isExpanded) {
-                            viewHolder.childView.setVisibility(View.GONE);
+                            viewHolder.getChildView().setVisibility(View.GONE);
                         }
                     }
                 });
@@ -323,7 +323,7 @@ public class AttendanceListFragment extends Fragment implements
                 if (view != null) {
                     final ExpandableListAdapter.GenericViewHolder viewHolder =
                             (ExpandableListAdapter.GenericViewHolder) view.getTag();
-                    if (viewHolder != null && viewHolder.position == callId) {
+                    if (viewHolder != null && viewHolder.getPosition() == callId) {
                         return view;
                     }
                 }
@@ -342,7 +342,7 @@ public class AttendanceListFragment extends Fragment implements
                     if (view != null) {
                         final ExpandableListAdapter.GenericViewHolder viewHolder =
                                 (ExpandableListAdapter.GenericViewHolder) view.getTag();
-                        if (viewHolder != null && viewHolder.position == callId) {
+                        if (viewHolder != null && viewHolder.getPosition() == callId) {
                             return view;
                         }
                     }

@@ -27,16 +27,6 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v14.preference.SwitchPreference;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatDelegate;
-import android.support.v7.preference.ListPreference;
-import android.support.v7.preference.PreferenceCategory;
-import android.support.v7.preference.PreferenceFragmentCompat;
-import android.support.v7.preference.PreferenceScreen;
 import android.widget.Toast;
 
 import com.android.billingclient.api.BillingClient;
@@ -58,6 +48,16 @@ import com.shalzz.attendance.wrapper.ProModeListPreference;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.preference.ListPreference;
+import androidx.preference.PreferenceCategory;
+import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.PreferenceScreen;
+import androidx.preference.SwitchPreference;
 import io.reactivex.disposables.Disposable;
 import timber.log.Timber;
 
@@ -258,11 +258,11 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
             Fragment mFragment = new AboutSettingsFragment();
             FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
-            transaction.replace(R.id.frame_container, mFragment, MainActivity.FRAGMENT_TAG);
+            transaction.replace(R.id.frame_container, mFragment, MainActivity.Companion.getFRAGMENT_TAG());
             transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
             transaction.addToBackStack(null);
 
-            ((MainActivity)mActivity).mPopSettingsBackStack = true;
+            ((MainActivity) mActivity).setMPopSettingsBackStack(true);
 
             transaction.commit();
 
