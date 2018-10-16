@@ -167,10 +167,9 @@ public class AttendanceListFragment extends Fragment implements
             mGridLayoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_NONE);
         } else {
             mLinearLayoutManager = new LinearLayoutManager(mContext,
-                    LinearLayoutManager.VERTICAL, false);
+                    RecyclerView.VERTICAL, false);
             mLinearLayoutManager.setSmoothScrollbarEnabled(false);
             mLinearLayoutManager.setStackFromEnd(false);
-            mLinearLayoutManager.setAutoMeasureEnabled(true);
         }
 
         mRecyclerView.setLayoutManager(useGridLayout ? mGridLayoutManager : mLinearLayoutManager);

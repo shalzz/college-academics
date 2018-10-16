@@ -141,8 +141,8 @@ public class DayFragment extends Fragment implements DayMvpView {
         mRecyclerView.setHasFixedSize(true);
 
         // use a linear layout manager
-        LinearLayoutManager mLayoutManager = new LinearLayoutManager(mContext);
-        mLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        LinearLayoutManager mLayoutManager = new LinearLayoutManager(mContext,
+                RecyclerView.VERTICAL, false);
         mLayoutManager.setSmoothScrollbarEnabled(true);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
