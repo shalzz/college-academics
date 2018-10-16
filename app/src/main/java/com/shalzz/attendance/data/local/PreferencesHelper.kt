@@ -100,9 +100,9 @@ constructor(@ApplicationContext context: Context) {
                     editor.putBoolean("LOGGEDIN", false)
                     editor.putBoolean("update_required", false)
                     editor.commit()
-                }
 
-                Timber.d("Upgrading preferences to: %s", version)
+                    Timber.d("Upgrading preferences to: %s", version)
+                }
             }
             else -> Timber.d("Preference upgrade not required.")
         }

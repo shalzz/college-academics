@@ -24,6 +24,10 @@ apply plugin: 'com.github.triplet.play'
 apply plugin: 'com.bugsnag.android.gradle'
 apply plugin: 'com.google.gms.oss.licenses.plugin'
 
+bugsnag {
+    apiKey '600a00bfd5bd72e5df7f288f74df8f9b'
+}
+
 // query git for the SHA, Tag and commit count. Use these to automate versioning.
 def gitSha = 'git rev-parse --short HEAD'.execute([], project.rootDir).text.trim()
 def gitTag = 'git describe --tags'.execute([], project.rootDir).text.trim()
