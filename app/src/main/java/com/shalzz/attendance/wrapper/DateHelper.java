@@ -44,14 +44,14 @@ public class DateHelper {
         Calendar today = Calendar.getInstance();
         today.setTime(date);
         int weekday = today.get(Calendar.DAY_OF_WEEK);
-        return Week.getShortDay(weekday - 1);
+        return Week.Companion.getShortDay(weekday - 1);
     }
 
     public static String getProperWeekday(Date date) {
         Calendar today = Calendar.getInstance();
         today.setTime(date);
         int weekday = today.get(Calendar.DAY_OF_WEEK);
-        return Week.getFullDay(weekday - 1);
+        return Week.Companion.getFullDay(weekday - 1);
     }
 
     public static String getFormatedCurrentTime() {

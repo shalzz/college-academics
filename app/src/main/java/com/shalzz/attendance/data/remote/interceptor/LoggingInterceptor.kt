@@ -17,31 +17,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.shalzz.attendance.data.remote.interceptor;
+package com.shalzz.attendance.data.remote.interceptor
 
-import java.io.IOException;
+import okhttp3.Interceptor
+import okhttp3.Response
+import timber.log.Timber
+import java.io.IOException
 
-import okhttp3.Interceptor;
-import okhttp3.Request;
-import okhttp3.Response;
-import timber.log.Timber;
+class LoggingInterceptor : Interceptor {
+    @Throws(IOException::class)
+    override fun intercept(chain: Interceptor.Chain): Response {
+        val request = chain.request()
 
-public class LoggingInterceptor implements Interceptor {
-    @Override public Response intercept(Interceptor.Chain chain) throws IOException {
-        Request request = chain.request();
-
-        long t1 = System.nanoTime();
+        val t1 = System.nanoTime()
         Timber.i("Sending request %s on %s%n%s",
-                request.url(), chain.connection(), request.headers());
+                request.url(), chain.connection(), request.headers())
 
-        Response response = chain.proceed(request);
+        val response = chain.proceed(request)
 
-        long t2 = System.nanoTime();
+        val t2 = System.nanoTime()
         Timber.i("Received response %s for %s in %.1fms%nstatus: %s %n%scached: %s",
-                 response.message(), response.request().url(),
-                (t2 - t1) / 1e6d, response.code(), response.headers(),
-                response.cacheResponse() != null);
+                response.message(), response.request().url(),
+                (t2 - t1) / 1e6, response.code(), response.headers(),
+                response.cacheResponse() != null)
 
-        return response;
+        return response
     }
 }

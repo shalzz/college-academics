@@ -17,39 +17,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.shalzz.attendance.data.model;
+package com.shalzz.attendance.data.model
 
-public enum Week {
+enum class Week constructor(val shortDay: String, val fullDay: String) {
 
-    SUNDAY ("Sun","Sunday"),
-    MONDAY ("Mon","Monday"),
-    TUESDAY ("Tue","Tuesday"),
-    WEDNESDAY ("Wed","Wednesday"),
-    THURSDAY ("Thu","Thursday"),
-    FRIDAY ("Fri","Friday"),
-    SATURDAY ("Sat","Saturday");
+    SUNDAY("Sun", "Sunday"),
+    MONDAY("Mon", "Monday"),
+    TUESDAY("Tue", "Tuesday"),
+    WEDNESDAY("Wed", "Wednesday"),
+    THURSDAY("Thu", "Thursday"),
+    FRIDAY("Fri", "Friday"),
+    SATURDAY("Sat", "Saturday");
 
-    private final String shortDay;
-    private final String fullDay;
 
-    Week(String t, String p) {
-        shortDay = t;
-        fullDay = p;
-    }
+    companion object {
 
-    public String getShortDay() {
-        return shortDay;
-    }
+        fun getShortDay(i: Int): String {
+            return Week.values()[i].shortDay
+        }
 
-    public static String getShortDay(int i) {
-        return Week.values()[i].getShortDay();
-    }
-
-    public String getFullDay() {
-        return fullDay;
-    }
-
-    public static String getFullDay(int i) {
-        return Week.values()[i].getFullDay();
+        fun getFullDay(i: Int): String {
+            return Week.values()[i].fullDay
+        }
     }
 }
