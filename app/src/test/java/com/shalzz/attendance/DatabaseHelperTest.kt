@@ -36,7 +36,9 @@ class DatabaseHelperTest {
     @Before
     fun setup() {
         mDb = Room.inMemoryDatabaseBuilder(RuntimeEnvironment.application,
-                AppDatabase::class.java).allowMainThreadQueries().build()
+                AppDatabase::class.java)
+                .allowMainThreadQueries()
+                .build()
         mDatabaseHelper = DatabaseHelper(mDb)
     }
 
@@ -50,12 +52,15 @@ class DatabaseHelperTest {
     fun writeUserAndReadUser() {
         val user = TestDataFactory.makeUser("u1")
 
-        mDatabaseHelper.setUser(user).subscribe()
+        val writeResult = TestObserver<User>()
+        mDatabaseHelper.setUser(user).subscribe(writeResult)
+        writeResult.assertNoErrors()
+        writeResult.assertValue(user)
 
-        val result = TestObserver<User>()
-        mDatabaseHelper.user.subscribe(result)
-        result.assertNoErrors()
-        result.assertValue(user)
+        val readResult = TestObserver<User>()
+        mDatabaseHelper.user.subscribe(readResult)
+        readResult.assertNoErrors()
+        readResult.onNext(user) // Since this is reactive streams, onComplete will never be called.
     }
 
     @Test
@@ -68,7 +73,7 @@ class DatabaseHelperTest {
         val result = TestObserver<List<Subject>>()
         mDatabaseHelper.getSubjects(null).subscribe(result)
         result.assertNoErrors()
-        result.assertValue(subjects)
+        result.onNext(subjects)
     }
 
     @Test
@@ -82,7 +87,7 @@ class DatabaseHelperTest {
         val result = TestObserver<List<Period>>()
         mDatabaseHelper.getPeriods(day).subscribe(result)
         result.assertNoErrors()
-        result.assertValue(periods)
+        result.onNext(periods)
     }
 
     @Test

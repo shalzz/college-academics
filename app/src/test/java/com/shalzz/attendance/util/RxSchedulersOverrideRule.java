@@ -36,6 +36,7 @@ public class RxSchedulersOverrideRule implements TestRule {
 
                 RxJavaPlugins.reset();
                 RxJavaPlugins.setIoSchedulerHandler(mRxJavaImmediateScheduler);
+                RxJavaPlugins.setSingleSchedulerHandler(mRxJavaImmediateScheduler);
                 RxJavaPlugins.setNewThreadSchedulerHandler(mRxJavaImmediateScheduler);
 
                 base.evaluate();

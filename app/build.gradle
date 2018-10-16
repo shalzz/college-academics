@@ -110,9 +110,9 @@ android {
     }
 
     sourceSets {
-
-        // Main source set is Kotlin!
-        main.java.srcDirs += 'src/main/kotlin'
+        // used by Room, to test migrations
+        androidTest.assets.srcDirs +=
+                files("$projectDir/schemas".toString())
 
         // Test helps
         def commonTestDir = 'src/commonTest/java'

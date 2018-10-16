@@ -7,6 +7,7 @@ import com.shalzz.attendance.data.model.entity.Period
 import com.shalzz.attendance.data.model.entity.Subject
 import com.shalzz.attendance.data.model.entity.User
 import com.shalzz.attendance.data.remote.DataAPI
+import com.shalzz.attendance.util.RxSchedulersOverrideRule
 import com.shalzz.attendance.wrapper.DateHelper
 
 import org.junit.Before
@@ -21,6 +22,7 @@ import java.util.Date
 
 import io.reactivex.Observable
 import io.reactivex.observers.TestObserver
+import org.junit.Rule
 import org.mockito.Mockito
 
 import org.mockito.Mockito.never
@@ -38,6 +40,10 @@ import org.mockito.MockitoAnnotations
  */
 @RunWith(MockitoJUnitRunner::class)
 class DataManagerTest {
+
+    @Rule
+    @JvmField
+    val mOverrideSchedulersRule = RxSchedulersOverrideRule()
 
     @Mock
     internal lateinit var mMockDatabaseHelper: DatabaseHelper
