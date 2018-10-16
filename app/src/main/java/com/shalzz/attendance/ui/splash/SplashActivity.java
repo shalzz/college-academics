@@ -55,6 +55,7 @@ public class SplashActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         activityComponent().inject(this);
         Bugsnag.setContext("SplashActivity");
+        mPreferencesHelper.upgradePrefsIfNecessary(this);
 
         mPresenter.getToken(getString(R.string.onedu_gcmSenderId));
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);

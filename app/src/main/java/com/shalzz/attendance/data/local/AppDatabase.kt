@@ -29,14 +29,8 @@ abstract class AppDatabase : RoomDatabase() {
             return Room.databaseBuilder(context,
                     AppDatabase::class.java, "academics.db")
                     .allowMainThreadQueries() //TODO: fix and remove this
-                    .addMigrations(MIGRATION_10_11, MIGRATION_11_12)
+                    .fallbackToDestructiveMigrationFrom(10, 11)
                     .build()
-        }
-
-        val MIGRATION_11_12: Migration = object : Migration(11, 12) {
-            override fun migrate(db: SupportSQLiteDatabase) {
-                db.execSQL("DROP TABLE IF EXISTS absent")
-            }
         }
 
         val MIGRATION_10_11: Migration = object : Migration(10, 11) {

@@ -1,30 +1,20 @@
 package com.shalzz.attendance.ui.splash
 
-import android.content.Context
 import com.google.firebase.iid.FirebaseInstanceId
-import com.shalzz.attendance.data.DataManager
 import com.shalzz.attendance.data.local.PreferencesHelper
-import com.shalzz.attendance.injection.ApplicationContext
-import com.shalzz.attendance.injection.ConfigPersistent
 import com.shalzz.attendance.ui.base.BasePresenter
-import com.shalzz.attendance.ui.main.MainMvpView
 import com.shalzz.attendance.utils.RxExponentialBackoff
 import com.shalzz.attendance.utils.RxUtil
 import io.reactivex.Observable
-import io.reactivex.ObservableEmitter
 import io.reactivex.ObservableOnSubscribe
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
-import io.reactivex.observers.DisposableCompletableObserver
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 import javax.inject.Inject
 
 class SplashPresenter @Inject
-internal constructor(private val mDataManager: DataManager,
-                     private val mPreferenceHelper: PreferencesHelper,
-                     @param:ApplicationContext private val mContext: Context) : BasePresenter<SplashMvpView>() {
-
+internal constructor(private val mPreferenceHelper: PreferencesHelper) : BasePresenter<SplashMvpView>() {
 
     private var mDisposable: Disposable? = null
 
@@ -33,9 +23,10 @@ internal constructor(private val mDataManager: DataManager,
         super.attachView(mvpView)
     }
 
+    @Suppress("RedundantOverride")
     override fun detachView() {
         super.detachView()
-        RxUtil.dispose(mDisposable)
+        // Do not dispose off getToken disposable here!!
     }
 
     fun getToken(senderId: String) {

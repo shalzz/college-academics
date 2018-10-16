@@ -27,8 +27,10 @@ import com.shalzz.attendance.data.remote.RetrofitException
 import com.shalzz.attendance.injection.ApplicationContext
 import com.shalzz.attendance.injection.ConfigPersistent
 import com.shalzz.attendance.ui.base.BasePresenter
+import com.shalzz.attendance.ui.splash.SplashPresenter
 import com.shalzz.attendance.utils.NetworkUtil
 import com.shalzz.attendance.utils.RxUtil
+import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
@@ -39,7 +41,9 @@ import javax.inject.Inject
 class LoginPresenter @Inject
 internal constructor(private val mDataManager: DataManager,
                      private val mPreferenceHelper: PreferencesHelper,
-                     @param:ApplicationContext private val mContext: Context) : BasePresenter<LoginMvpView>() {
+                     @param:ApplicationContext private val mContext: Context,
+                     private val mSplashPresenter: SplashPresenter = SplashPresenter(mPreferenceHelper)
+    ) : BasePresenter<LoginMvpView>() {
 
     private var mDisposable: Disposable? = null
 
@@ -79,7 +83,10 @@ internal constructor(private val mDataManager: DataManager,
         RxUtil.dispose(mDisposable)
         Timber.d("Calling sync user on: %s ", Thread.currentThread().id)
         val auth = "Bearer $username"
-        mDisposable = mDataManager.sendRegID(token=mPreferenceHelper.token, auth=auth)
+        if (mPreferenceHelper.token == null) {
+            mSplashPresenter.getToken(mContext.getString(R.string.onedu_gcmSenderId))
+        }
+        mDisposable = mDataManager.sendRegID(token=mPreferenceHelper.token!!, auth=auth)
                 .doOnNext { result-> Timber.d("Sent token to server successfully: %b",
                         result) }
                 .flatMap { mDataManager.syncUser(auth) }
