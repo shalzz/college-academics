@@ -126,7 +126,14 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
         }
 
         PurchaseEventDisposable = mEventBus.filteredObservable(ProKeyPurchaseEvent.class)
-                .subscribe(proKeyPurchaseEvent -> proModePref.setChecked(true), Timber::e);
+                .subscribe(proKeyPurchaseEvent -> {
+                    proModePref.setChecked(true);
+                    // Fire an analytics event
+                    Bundle params = new Bundle();
+                    params.putString(Analytics.Param.USER_ID, mPreferences.getUserId());
+                    params.putString(Analytics.Param.IAP_PRODUCT_ID, "prokey");
+                    mTracker.logEvent(Analytics.Event.IAP_PURCHASE, params);
+                }, Timber::e);
         super.onActivityCreated(savedInstanceState);
     }
 
