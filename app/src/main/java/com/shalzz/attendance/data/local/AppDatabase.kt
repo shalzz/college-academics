@@ -28,7 +28,6 @@ abstract class AppDatabase : RoomDatabase() {
         fun getInstance(@ApplicationContext context: Context): AppDatabase {
             return Room.databaseBuilder(context,
                     AppDatabase::class.java, "academics.db")
-                    .allowMainThreadQueries() //TODO: fix and remove this
                     .fallbackToDestructiveMigrationFrom(10, 11)
                     .build()
         }

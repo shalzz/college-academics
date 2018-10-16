@@ -78,8 +78,6 @@ public class RxJava2ErrorCallAdapterFactory extends CallAdapter.Factory {
                     if (source.isDisposed()) return;
 
                     ((Observable) adaptedCall)
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
                             .subscribeWith(new DisposableObserver() {
                                 @Override
                                 public void onNext(Object object) {
