@@ -31,5 +31,5 @@ data class User (
         val roll_number: String,
         val name: String,
         val course: String,
-        val email: String
+        val email: String = ""
 )

@@ -104,28 +104,13 @@ internal constructor(@param:ApplicationContext private val mContext: Context) : 
                     }
 
                     override fun areContentsTheSame(oldItem: Subject, newItem: Subject): Boolean {
-                        if (oldItem.id != newItem.id) {
-                            return false
+                        return when {
+                            oldItem.id != newItem.id -> false
+                            oldItem.name != newItem.name -> false
+                            java.lang.Float.compare(oldItem.attended, newItem.attended) != 0 -> false
+                            java.lang.Float.compare(oldItem.held, newItem.held) != 0 -> false
+                            else -> oldItem.absentDatesAsString == newItem.absentDatesAsString
                         }
-                        if (oldItem.name != newItem.name) {
-                            return false
-                        }
-                        if (java.lang.Float.compare(oldItem.attended, newItem.attended) != 0) {
-                            return false
-                        }
-                        if (java.lang.Float.compare(oldItem.held, newItem.held) != 0) {
-                            return false
-                        }
-                        if (oldItem.absent_dates != null && newItem.absent_dates == null) {
-                            return false
-                        }
-                        if (oldItem.absent_dates == null && newItem.absent_dates != null) {
-                            return false
-                        }
-                        return if (oldItem.absent_dates == null && newItem.absent_dates == null) {
-                            true
-                        } else
-                            oldItem.absentDatesAsString == newItem.absentDatesAsString
                     }
 
                     override fun areItemsTheSame(item1: Subject, item2: Subject): Boolean {
