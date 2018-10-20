@@ -7,6 +7,7 @@ import com.shalzz.attendance.data.model.entity.User
 import com.shalzz.attendance.wrapper.DateHelper
 import io.reactivex.Observable
 import io.reactivex.Single
+import kotlinx.coroutines.experimental.*
 import timber.log.Timber
 import java.util.*
 import javax.inject.Inject
@@ -98,9 +99,11 @@ constructor(private val mDb: AppDatabase) {
     /**
      * Delete All Rows
      */
-    fun resetTables() {
-        mDb.subjectDao().deleteAll()
-        mDb.periodDao().deleteAll()
-        mDb.userDao().deleteAll()
+    fun resetTables() : Job  {
+        return GlobalScope.launch (Dispatchers.IO) {
+            mDb.subjectDao().deleteAll()
+            mDb.periodDao().deleteAll()
+            mDb.userDao().deleteAll()
+        }
     }
 }

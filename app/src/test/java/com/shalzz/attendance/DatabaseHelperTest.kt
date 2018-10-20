@@ -9,6 +9,7 @@ import com.shalzz.attendance.data.model.entity.User
 import com.shalzz.attendance.util.DefaultConfig
 import com.shalzz.attendance.util.RxSchedulersOverrideRule
 import io.reactivex.observers.TestObserver
+import kotlinx.coroutines.experimental.runBlocking
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -108,6 +109,24 @@ class DatabaseHelperTest {
 
     @Test
     fun getPeriodCount() {
+        val result = TestObserver<Int>()
+        mDatabaseHelper.getPeriodCount(Date()).subscribe(result)
+        result.assertNoErrors()
+        result.assertValue(0)
+    }
+
+    @Test
+    fun resetAllTables() {
+        val day = Date()
+        val periods = Arrays.asList(TestDataFactory.makePeriod("p1", day),
+                TestDataFactory.makePeriod("p2", day))
+
+        mDatabaseHelper.setPeriods(periods).subscribe()
+
+        runBlocking {
+            mDatabaseHelper.resetTables().join()
+        }
+
         val result = TestObserver<Int>()
         mDatabaseHelper.getPeriodCount(Date()).subscribe(result)
         result.assertNoErrors()
