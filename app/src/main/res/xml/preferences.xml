@@ -18,10 +18,10 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
 
-    <androidx.preference.PreferenceCategory android:title="General" >
-        <androidx.preference.SwitchPreference
+    <PreferenceCategory android:title="General" >
+        <SwitchPreference
             android:key="@string/pref_key_pro_mode"
             android:defaultValue="false"
             android:title="@string/pref_pro_mode"
@@ -35,24 +35,24 @@
             android:summary="@string/pref_day_night_summary"
             android:entries="@array/pref_day_night_entries"
             android:entryValues="@array/pref_day_night_values"/>
-    </androidx.preference.PreferenceCategory>
+    </PreferenceCategory>
 
-    <androidx.preference.PreferenceCategory android:title="Timetable" >
-        <androidx.preference.SwitchPreference
+    <PreferenceCategory android:title="Timetable" >
+        <SwitchPreference
             android:key="@string/pref_key_hide_weekends"
             android:defaultValue="false"
             android:title="@string/pref_hide_weekends"
             android:summary="@string/pref_hide_weekends_summary"/>
-    </androidx.preference.PreferenceCategory>
+    </PreferenceCategory>
 
-    <androidx.preference.PreferenceCategory android:title="Network" >
-        <androidx.preference.SwitchPreference
+    <PreferenceCategory android:title="Network" >
+        <SwitchPreference
             android:key="@string/pref_key_sync"
             android:defaultValue="true"
             android:title="@string/pref_sync"
             android:summary="@string/pref_sync_summary" />
 
-        <androidx.preference.ListPreference
+        <ListPreference
             android:key="@string/pref_key_sync_interval"
             android:defaultValue="480"
             android:title="@string/pref_refresh"
@@ -60,28 +60,28 @@
             android:dependency="@string/pref_key_sync"
             android:entries="@array/pref_data_sync_interval_entries"
             android:entryValues="@array/pref_data_sync_interval_values"/>
-    </androidx.preference.PreferenceCategory>
+    </PreferenceCategory>
 
-    <androidx.preference.PreferenceCategory android:title="Privacy" >
-        <androidx.preference.SwitchPreference
+    <PreferenceCategory android:title="Privacy" >
+        <SwitchPreference
             android:key="@string/pref_key_ga_opt_in"
             android:defaultValue="true"
             android:title="@string/pref_ga_opt_in"
             android:summary="@string/pref_ga_opt_in_summary" />
-	<androidx.preference.SwitchPreference
+	<SwitchPreference
             android:key="@string/pref_key_bugsnag_opt_in"
             android:defaultValue="true"
             android:title="@string/pref_bugsnag_opt_in"
             android:summary="@string/pref_bugsnag_opt_in_summary" />
-    </androidx.preference.PreferenceCategory>
+    </PreferenceCategory>
 
-    <androidx.preference.PreferenceCategory
+    <PreferenceCategory
         android:title="Info" >
 
-        <androidx.preference.PreferenceScreen
+        <PreferenceScreen
             android:key="@string/pref_key_info_about"
             android:persistent="false"
             android:title="@string/pref_about" />
-    </androidx.preference.PreferenceCategory>
+    </PreferenceCategory>
 
-</androidx.preference.PreferenceScreen>
+</PreferenceScreen>

@@ -18,19 +18,19 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <androidx.preference.Preference
+    <Preference
         android:key="@string/pref_key_info_author"
         android:title="@string/pref_author"
         android:persistent="false"/>
-    <androidx.preference.Preference
+    <Preference
         android:key="@string/pref_key_info_notices"
         android:title="@string/pref_notice"
         android:summary="@string/pref_notice_summary"
         android:persistent="false"/>
-    <androidx.preference.Preference
+    <Preference
         android:key="@string/pref_key_info_version"
         android:title="@string/pref_version"
         android:persistent="false"/>
-</androidx.preference.PreferenceScreen>
+</PreferenceScreen>
