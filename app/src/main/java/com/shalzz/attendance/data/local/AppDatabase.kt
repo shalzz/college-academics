@@ -25,9 +25,11 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun periodDao(): PeriodDao
 
     companion object {
+        const val DATABASE_NAME = "academics.db"
+
         fun getInstance(@ApplicationContext context: Context): AppDatabase {
             return Room.databaseBuilder(context,
-                    AppDatabase::class.java, "academics.db")
+                    AppDatabase::class.java, DATABASE_NAME)
                     .addMigrations(MIGRATION_12_13)
                     .fallbackToDestructiveMigrationFrom(10, 11)
                     .build()

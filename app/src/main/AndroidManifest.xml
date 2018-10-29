@@ -128,7 +128,7 @@
         </activity>
 
         <activity
-            android:name=".ui.login.LoginActivity"
+            android:name=".ui.login.AuthenticatorActivity"
             android:label="Login"
             android:theme="@style/AppTheme"/>
 

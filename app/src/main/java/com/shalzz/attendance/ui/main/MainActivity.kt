@@ -58,10 +58,10 @@ import com.shalzz.attendance.data.DataManager
 import com.shalzz.attendance.data.model.entity.User
 import com.shalzz.attendance.ui.attendance.AttendanceListFragment
 import com.shalzz.attendance.ui.base.BaseActivity
-import com.shalzz.attendance.ui.login.LoginActivity
 import com.shalzz.attendance.ui.settings.SettingsFragment
 import com.shalzz.attendance.ui.timetable.TimeTablePagerFragment
-import com.shalzz.attendance.wrapper.MySyncManager
+import com.shalzz.attendance.sync.MyAccountManager
+import com.shalzz.attendance.ui.login.AuthenticatorActivity
 import okhttp3.OkHttpClient
 import timber.log.Timber
 import java.io.IOException
@@ -573,7 +573,7 @@ class MainActivity : BaseActivity(), MainMvpView, BillingProvider {
 
     override fun logout() {
         // Remove Sync Account
-        MySyncManager.removeSyncAccount(this)
+        MyAccountManager.removeSyncAccount(this)
 
         // Invalidate the complete network cache
         try {
@@ -587,8 +587,8 @@ class MainActivity : BaseActivity(), MainMvpView, BillingProvider {
                 Context.NOTIFICATION_SERVICE) as NotificationManager
         mNotificationManager.cancel(0 /* timetable changed notification id */)
 
-        // Destroy current activity and start doLogin Activity
-        val ourIntent = Intent(this, LoginActivity::class.java)
+        // Destroy current activity and start Login Activity
+        val ourIntent = Intent(this, AuthenticatorActivity::class.java)
         startActivity(ourIntent)
         finish()
     }

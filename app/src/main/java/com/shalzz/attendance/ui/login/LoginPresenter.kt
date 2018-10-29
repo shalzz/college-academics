@@ -30,7 +30,6 @@ import com.shalzz.attendance.ui.base.BasePresenter
 import com.shalzz.attendance.ui.splash.SplashPresenter
 import com.shalzz.attendance.utils.NetworkUtil
 import com.shalzz.attendance.utils.RxUtil
-import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers

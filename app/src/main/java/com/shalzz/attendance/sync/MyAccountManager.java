@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.shalzz.attendance.wrapper;
+package com.shalzz.attendance.sync;
 
 import android.Manifest;
 import android.accounts.Account;
@@ -36,12 +36,25 @@ import com.shalzz.attendance.R;
 
 import timber.log.Timber;
 
-public class MySyncManager {
+public class MyAccountManager {
 
     // Sync interval constants
     private static final long SECONDS_PER_MINUTE = 60L;
-    private static final String AUTHORITY = BuildConfig.APPLICATION_ID + ".provider";
-    private static final String ACCOUNT_TYPE = BuildConfig.ACCOUNT_TYPE;
+    public static final String AUTHORITY = BuildConfig.APPLICATION_ID + ".provider";
+
+    /**
+     * Account type id
+     */
+    public static final String ACCOUNT_TYPE = BuildConfig.ACCOUNT_TYPE;
+
+    /**
+     * Auth token types
+     */
+    public static final String AUTHTOKEN_TYPE_READ_ONLY = "Read only";
+    public static final String AUTHTOKEN_TYPE_READ_ONLY_LABEL = "Read only access to an account";
+
+    public static final String AUTHTOKEN_TYPE_FULL_ACCESS = "Full access";
+    public static final String AUTHTOKEN_TYPE_FULL_ACCESS_LABEL = "Full access to an account";
 
     /**
      * Create a new dummy account for the sync adapter

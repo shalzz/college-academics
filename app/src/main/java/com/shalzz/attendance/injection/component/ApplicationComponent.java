@@ -31,6 +31,7 @@ import com.shalzz.attendance.injection.ApplicationContext;
 import com.shalzz.attendance.injection.module.ApplicationModule;
 import com.shalzz.attendance.injection.module.NetworkModule;
 import com.shalzz.attendance.service.MyFirebaseMessagingService;
+import com.shalzz.attendance.sync.AuthenticatorService;
 import com.shalzz.attendance.sync.SyncService;
 import com.shalzz.attendance.utils.RxEventBus;
 
@@ -59,4 +60,6 @@ public interface ApplicationComponent {
     void inject(SyncService syncService);
 
     void inject(MyFirebaseMessagingService myFirebaseMessagingService);
+
+    void inject(AuthenticatorService authenticatorService);
 }

@@ -42,7 +42,7 @@ import com.shalzz.attendance.ui.main.MainActivity;
 import com.shalzz.attendance.utils.Miscellaneous.Analytics;
 import com.shalzz.attendance.utils.RxEventBus;
 import com.shalzz.attendance.utils.RxUtil;
-import com.shalzz.attendance.wrapper.MySyncManager;
+import com.shalzz.attendance.sync.MyAccountManager;
 import com.shalzz.attendance.wrapper.ProModeListPreference;
 
 import javax.inject.Inject;
@@ -166,7 +166,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
         else if(key.equals(key_sync_interval)) {
             ListPreference connectionPref = (ListPreference) findPreference(key);
             connectionPref.setSummary(connectionPref.getEntry());
-            MySyncManager.addPeriodicSync(mContext, mPreferences.getUserId());
+            MyAccountManager.addPeriodicSync(mContext, mPreferences.getUserId());
         }
         else if(key.equals(getString(R.string.pref_key_ga_opt_in))) {
             boolean optIn = sharedPreferences.getBoolean(key, true);
@@ -180,9 +180,9 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
     private void toggleSync(boolean sync) {
         String account_name = mPreferences.getUserId();
         if (sync)
-            MySyncManager.enableAutomaticSync(mContext, account_name);
+            MyAccountManager.enableAutomaticSync(mContext, account_name);
         else
-            MySyncManager.disableAutomaticSync(mContext, account_name);
+            MyAccountManager.disableAutomaticSync(mContext, account_name);
     }
 
     @Override

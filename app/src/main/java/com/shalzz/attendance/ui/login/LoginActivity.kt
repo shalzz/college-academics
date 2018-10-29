@@ -19,31 +19,34 @@
 
 package com.shalzz.attendance.ui.login
 
+import android.accounts.AccountManager
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
-import androidx.appcompat.app.AppCompatDelegate
+import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
+import androidx.fragment.app.Fragment
 import butterknife.BindView
 import butterknife.ButterKnife
 import butterknife.OnClick
+import butterknife.Unbinder
 import com.afollestad.materialdialogs.MaterialDialog
 import com.bugsnag.android.Bugsnag
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.shalzz.attendance.R
 import com.shalzz.attendance.data.local.PreferencesHelper
-import com.shalzz.attendance.data.model.entity.User
-import com.shalzz.attendance.ui.base.BaseActivity
-import com.shalzz.attendance.ui.main.MainActivity
 import com.shalzz.attendance.utils.Miscellaneous
 import com.shalzz.attendance.utils.Miscellaneous.Analytics
-import com.shalzz.attendance.wrapper.MySyncManager
 import javax.inject.Inject
 import javax.inject.Named
 
-class LoginActivity : BaseActivity(), LoginMvpView {
+class LoginFragment : Fragment(), LoginMvpView {
 
     @BindView(R.id.etUserId)
     lateinit var textInputUserId: TextInputLayout
@@ -65,6 +68,9 @@ class LoginActivity : BaseActivity(), LoginMvpView {
 
     var progressDialog: MaterialDialog? = null
 
+    private lateinit var unbinder: Unbinder
+    private lateinit var mActivity: Activity
+
     /**
      * Checks if the form is valid
      * @return true or false
@@ -76,28 +82,27 @@ class LoginActivity : BaseActivity(), LoginMvpView {
             if (sapid.isEmpty() || sapid.length != 10) {
                 textInputUserId.requestFocus()
                 textInputUserId.error = getString(R.string.form_userid_error)
-                Miscellaneous.showKeyboard(this, etUserId)
+                Miscellaneous.showKeyboard(mActivity, etUserId)
                 return false
             }
             return true
         }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        if (savedInstanceState == null) {
-            delegate.setLocalNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-        }
-        super.onCreate(savedInstanceState)
-        activityComponent().inject(this)
-        setContentView(R.layout.activity_login)
-        ButterKnife.bind(this)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
+                              savedInstanceState: Bundle?): View? {
+        val mView = inflater.inflate(R.layout.activity_login, container, false)
+        unbinder = ButterKnife.bind(this, mView)
+
+        mActivity = activity as Activity
+        (mActivity as AuthenticatorActivity).activityComponent().inject(this)
         Bugsnag.setContext("LoginActivity")
         mLoginPresenter.attachView(this)
 
         // set toolbar as actionbar
-        setSupportActionBar(mToolbar)
+        mActivity.setSupportActionBar(mToolbar)
 
         // Static background with ScrollView
-        window.setBackgroundDrawableResource(R.drawable.background)
+        mActivity.window.setBackgroundDrawableResource(R.drawable.background)
 
         etUserId = textInputUserId.editText
 
@@ -123,7 +128,7 @@ class LoginActivity : BaseActivity(), LoginMvpView {
         bundle.putString(Analytics.Param.USER_ID, userId)
         mTracker.logEvent(Analytics.Event.LOGIN_INITIATED, bundle)
 
-        Miscellaneous.closeKeyboard(this, etUserId)
+        Miscellaneous.closeKeyboard(mActivity, etUserId)
         mLoginPresenter.login(userId)
     }
 
@@ -136,7 +141,7 @@ class LoginActivity : BaseActivity(), LoginMvpView {
 
     override fun showProgressDialog() {
         if (progressDialog == null) {
-            progressDialog = MaterialDialog.Builder(this)
+            progressDialog = MaterialDialog.Builder(mActivity)
                     .content("Logging in...")
                     .cancelable(false)
                     .autoDismiss(false)
@@ -151,21 +156,28 @@ class LoginActivity : BaseActivity(), LoginMvpView {
             progressDialog!!.dismiss()
     }
 
-    override fun showMainActivity(user: User) {
-        val bundle = Bundle()
-        bundle.putString(FirebaseAnalytics.Param.METHOD, "manual")
-        mTracker.logEvent(FirebaseAnalytics.Event.LOGIN, bundle)
-
-        dismissProgressDialog()
-        mPreferencesHelper.saveUser(user.phone)
-        MySyncManager.addPeriodicSync(this, user.phone)
-        val ourIntent = Intent(this, MainActivity::class.java)
-        startActivity(ourIntent)
-        finish()
+    override fun successfulLogin(authtoken: String) {
+        val data = Bundle()
+//        data.putString(AccountManager.KEY_ACCOUNT_NAME, userName)
+//        data.putString(AccountManager.KEY_ACCOUNT_TYPE, accountType)
+//        data.putString(AccountManager.KEY_AUTHTOKEN, authtoken)
+//        data.putString(PARAM_USER_PASS, userPass)
+        val res = Intent()
+        res.putExtras(data)
+        if (res.hasExtra(AccountManager.KEY_ERROR_MESSAGE)) {
+            Toast.makeText(mActivity, res.getStringExtra(AccountManager.KEY_ERROR_MESSAGE), Toast
+                    .LENGTH_SHORT).show()
+        } else {
+            finishLogin(res)
+        }
     }
 
-    override fun showError(message: String) {
+    override fun showError(message: String?) {
         dismissProgressDialog()
-        Miscellaneous.showSnackBar(mToolbar, message)
+
+        Miscellaneous.showSnackBar(mToolbar,
+                if (message == null) message
+                else getString(R.string.unexpected_error)
+        )
     }
 }

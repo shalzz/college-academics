@@ -22,7 +22,6 @@ package com.shalzz.attendance.ui.splash;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import androidx.preference.PreferenceManager;
 
 import com.bugsnag.android.Bugsnag;
 import com.bugsnag.android.Severity;
@@ -30,12 +29,13 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.data.local.PreferencesHelper;
 import com.shalzz.attendance.ui.base.BaseActivity;
-import com.shalzz.attendance.ui.login.LoginActivity;
+import com.shalzz.attendance.ui.login.AuthenticatorActivity;
 import com.shalzz.attendance.ui.main.MainActivity;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import androidx.preference.PreferenceManager;
 import timber.log.Timber;
 
 public class SplashActivity extends BaseActivity {
@@ -76,7 +76,7 @@ public class SplashActivity extends BaseActivity {
 
         Intent intent;
         if (!loggedin)
-            intent = new Intent(SplashActivity.this, LoginActivity.class);
+            intent = new Intent(SplashActivity.this, AuthenticatorActivity.class);
         else
             intent = new Intent(SplashActivity.this, MainActivity.class);
 

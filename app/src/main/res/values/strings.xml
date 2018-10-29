@@ -165,5 +165,6 @@
         manage a sync account</string>
     <string name="network_error_message">Network Error</string>
     <string name="default_notification_channel_id">1</string>
+    <string name="account_manager_title">College Academics</string>
 
 </resources>
