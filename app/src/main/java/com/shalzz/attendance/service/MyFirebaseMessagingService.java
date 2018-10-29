@@ -72,8 +72,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     @Override
     public void onNewToken(String token) {
-        // Ignore the token registered with the default firebase project/sender id
-        Timber.d("Refreshed token: %s", token);
+        // Ignore the regId registered with the default firebase project/sender id
+        Timber.d("Refreshed regId: %s", token);
     }
 
     /**

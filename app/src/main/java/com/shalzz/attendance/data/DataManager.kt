@@ -58,13 +58,13 @@ constructor(private val mDataAPI: DataAPI,
                 .subscribeOn(Schedulers.single())
     }
 
-    fun sendRegID(token: String, auth: String): Observable<Boolean> {
-        return mDataAPI.sendRegID(authorization=auth, registerationID=token)
+    fun sendRegID(regId: String, auth: String): Observable<Boolean> {
+        return mDataAPI.sendRegID(authorization="Basic $auth", registerationID=regId)
                 .subscribeOn(Schedulers.io())
     }
 
     fun syncUser(auth: String): Observable<User> {
-        return mDataAPI.getUser(auth)
+        return mDataAPI.getUser("Basic $auth")
                 .subscribeOn(Schedulers.io())
                 .concatMap(mDatabaseHelper::setUser)
                 .subscribeOn(Schedulers.single())

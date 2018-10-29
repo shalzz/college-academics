@@ -24,6 +24,7 @@ import com.shalzz.attendance.data.model.entity.Subject
 import com.shalzz.attendance.data.model.entity.User
 
 import io.reactivex.Observable
+import okhttp3.ResponseBody
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
@@ -32,6 +33,12 @@ import retrofit2.http.POST
 import retrofit2.http.Path
 
 interface DataAPI {
+
+    @GET("login/{phone}")
+    fun login(@Path("phone") phone: String): Observable<ResponseBody>
+
+    @GET("verify-otp/{phone}")
+    fun verifyOTP(@Path("phone") phone: String): Observable<ResponseBody>
 
     @GET("me")
     fun getUser(@Header("Authorization") authorization: String): Observable<User>
@@ -48,12 +55,12 @@ interface DataAPI {
     fun getTimetable(@Path("date") date: String): Observable<List<Period>>
 
     @FormUrlEncoded
-    @POST("verify")
+    @POST("me/verify")
     fun verifyValidSignature(@Field("data") signedData: String,
                              @Field("sig") signature: String): Observable<Boolean>
 
     companion object {
-        val API_VERSION = "v2/prod/"
+        val API_VERSION = "v3/prod/"
         val ENDPOINT = "https://academics.8bitlabs.tech/$API_VERSION"
         //    String ENDPOINT = "http://192.168.1.160:3000/";
     }

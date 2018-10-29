@@ -26,14 +26,14 @@ internal constructor(private val mPreferenceHelper: PreferencesHelper) : BasePre
     @Suppress("RedundantOverride")
     override fun detachView() {
         super.detachView()
-        // Do not dispose off getToken disposable here!!
+        // Do not dispose off getRegId disposable here!!
     }
 
     fun getToken(senderId: String) {
         mDisposable = Observable.create(ObservableOnSubscribe<String> { source ->
             if (source.isDisposed) return@ObservableOnSubscribe
             val token = FirebaseInstanceId.getInstance().getToken(senderId, "FCM")
-            Timber.d("Got new token: %s", token)
+            Timber.d("Got new regId: %s", token)
             if (token != null && !token.isEmpty())
                 source.onNext(token)
             source.onComplete()

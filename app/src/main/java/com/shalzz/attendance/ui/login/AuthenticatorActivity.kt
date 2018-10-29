@@ -130,8 +130,8 @@ class AuthenticatorActivity: AccountAuthenticatorActivity(), LoginMvpView {
             val authtoken = intent.getStringExtra(AccountManager.KEY_AUTHTOKEN)
             val authtokenType = mAuthTokenType
 
-            // Creating the account on the device and setting the auth token we got
-            // (Not setting the auth token will cause another call to the server to authenticate the user)
+            // Creating the account on the device and setting the auth regId we got
+            // (Not setting the auth regId will cause another call to the server to authenticate the user)
             mAccountManager.addAccountExplicitly(account, accountPassword, null)
             mAccountManager.setAuthToken(account, authtokenType, authtoken)
         } else {

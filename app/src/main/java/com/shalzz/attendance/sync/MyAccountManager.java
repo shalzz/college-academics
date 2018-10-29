@@ -48,7 +48,7 @@ public class MyAccountManager {
     public static final String ACCOUNT_TYPE = BuildConfig.ACCOUNT_TYPE;
 
     /**
-     * Auth token types
+     * Auth regId types
      */
     public static final String AUTHTOKEN_TYPE_READ_ONLY = "Read only";
     public static final String AUTHTOKEN_TYPE_READ_ONLY_LABEL = "Read only access to an account";

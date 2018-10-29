@@ -81,14 +81,13 @@ internal constructor(private val mDataManager: DataManager,
         mvpView.showProgressDialog()
         RxUtil.dispose(mDisposable)
         Timber.d("Calling sync user on: %s ", Thread.currentThread().id)
-        val auth = "Bearer $username"
-        if (mPreferenceHelper.token == null) {
+        if (mPreferenceHelper.regId == null) {
             mSplashPresenter.getToken(mContext.getString(R.string.onedu_gcmSenderId))
         }
-        mDisposable = mDataManager.sendRegID(token=mPreferenceHelper.token!!, auth=auth)
-                .doOnNext { result-> Timber.d("Sent token to server successfully: %b",
+        mDisposable = mDataManager.sendRegID(regId=mPreferenceHelper.regId!!, auth=username)
+                .doOnNext { result-> Timber.d("Sent regId to server successfully: %b",
                         result) }
-                .flatMap { mDataManager.syncUser(auth) }
+                .flatMap { mDataManager.syncUser(username) }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ user -> mvpView.showMainActivity(user) }, onError)
