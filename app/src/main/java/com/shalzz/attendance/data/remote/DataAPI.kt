@@ -62,10 +62,10 @@ interface DataAPI {
                              @Field("sig") signature: String): Observable<Boolean>
 
     companion object {
-//        val API_VERSION = "/v3/prod/"
-//        val ENDPOINT = "https://academics.8bitlabs.tech$API_VERSION"
-        val API_VERSION = "/"
-        val ENDPOINT = "http://192.168.1.160:3000$API_VERSION"
+        val API_VERSION = "/v3/prod/"
+        val ENDPOINT = "https://academics.8bitlabs.tech$API_VERSION"
+//        val API_VERSION = "/"
+//        val ENDPOINT = "http://192.168.1.160:3000$API_VERSION"
     }
 
 }
