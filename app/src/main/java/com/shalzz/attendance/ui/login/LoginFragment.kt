@@ -19,116 +19,93 @@
 
 package com.shalzz.attendance.ui.login
 
-import android.accounts.AccountManager
 import android.app.Activity
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
-import android.widget.EditText
-import android.widget.Toast
-import androidx.appcompat.widget.Toolbar
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
-import butterknife.BindView
-import butterknife.ButterKnife
-import butterknife.OnClick
-import butterknife.Unbinder
+import androidx.navigation.findNavController
 import com.afollestad.materialdialogs.MaterialDialog
 import com.bugsnag.android.Bugsnag
-import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.shalzz.attendance.R
 import com.shalzz.attendance.data.local.PreferencesHelper
 import com.shalzz.attendance.utils.Miscellaneous
 import com.shalzz.attendance.utils.Miscellaneous.Analytics
+import kotlinx.android.synthetic.main.fragment_login.*
+import kotlinx.android.synthetic.main.fragment_login.view.*
+import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Named
 
 class LoginFragment : Fragment(), LoginMvpView {
 
-    @BindView(R.id.etUserId)
-    lateinit var textInputUserId: TextInputLayout
-
-    @BindView(R.id.toolbar)
-    lateinit var mToolbar: Toolbar
-
     @Inject
     @field:Named("app")
     lateinit var mTracker: FirebaseAnalytics
-
     @Inject
     lateinit var mLoginPresenter: LoginPresenter
-
     @Inject
     lateinit var mPreferencesHelper: PreferencesHelper
 
-    var etUserId: EditText? = null
-
-    var progressDialog: MaterialDialog? = null
-
-    private lateinit var unbinder: Unbinder
+    private var progressDialog: MaterialDialog? = null
     private lateinit var mActivity: Activity
 
-    /**
-     * Checks if the form is valid
-     * @return true or false
-     */
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        mActivity = activity as Activity
+        (mActivity as AuthenticatorActivity).activityComponent().inject(this)
+        Bugsnag.setContext("Login Fragment")
+    }
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
+                              savedInstanceState: Bundle?): View? {
+        val mView = inflater.inflate(R.layout.fragment_login, container, false)
+        mLoginPresenter.attachView(this)
+
+        // Static background with ScrollView
+        mActivity.window.setBackgroundDrawableResource(R.drawable.background)
+
+        // Attempt login when user presses 'Done' on keyboard.
+        mView.etUserId.editText!!.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                doLogin()
+                return@setOnEditorActionListener true
+            }
+            false
+        }
+
+        mView.bLogin.setOnClickListener { doLogin() }
+
+        return mView
+    }
+
     private val isValid: Boolean
         get() {
-            val sapid = etUserId!!.text.toString()
+            val sapid = etUserId.editText!!.text.toString()
 
             if (sapid.isEmpty() || sapid.length != 10) {
-                textInputUserId.requestFocus()
-                textInputUserId.error = getString(R.string.form_userid_error)
-                Miscellaneous.showKeyboard(mActivity, etUserId)
+                etUserId.requestFocus()
+                etUserId.error = getString(R.string.form_userid_error)
+                Miscellaneous.showKeyboard(mActivity, etUserId.editText)
                 return false
             }
             return true
         }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
-        val mView = inflater.inflate(R.layout.activity_login, container, false)
-        unbinder = ButterKnife.bind(this, mView)
-
-        mActivity = activity as Activity
-        (mActivity as AuthenticatorActivity).activityComponent().inject(this)
-        Bugsnag.setContext("LoginActivity")
-        mLoginPresenter.attachView(this)
-
-        // set toolbar as actionbar
-        mActivity.setSupportActionBar(mToolbar)
-
-        // Static background with ScrollView
-        mActivity.window.setBackgroundDrawableResource(R.drawable.background)
-
-        etUserId = textInputUserId.editText
-
-        // Shows the CaptchaDialog when user presses 'Done' on keyboard.
-        if (etUserId != null) {
-            etUserId!!.setOnEditorActionListener { _, actionId, _ ->
-                if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    doLogin()
-                    return@setOnEditorActionListener true
-                }
-                false
-            }
-        }
-    }
-
-    @OnClick(R.id.bLogin)
-    fun doLogin() {
+    private fun doLogin() {
         if (!isValid)
             return
 
-        val userId = etUserId!!.text.toString()
+        val userId = etUserId.editText!!.text.toString()
         val bundle = Bundle()
         bundle.putString(Analytics.Param.USER_ID, userId)
         mTracker.logEvent(Analytics.Event.LOGIN_INITIATED, bundle)
 
-        Miscellaneous.closeKeyboard(mActivity, etUserId)
+//        Miscellaneous.closeKeyboard(mActivity, etUserId.editText)
         mLoginPresenter.login(userId)
     }
 
@@ -156,28 +133,19 @@ class LoginFragment : Fragment(), LoginMvpView {
             progressDialog!!.dismiss()
     }
 
-    override fun successfulLogin(authtoken: String) {
-        val data = Bundle()
-//        data.putString(AccountManager.KEY_ACCOUNT_NAME, userName)
-//        data.putString(AccountManager.KEY_ACCOUNT_TYPE, accountType)
-//        data.putString(AccountManager.KEY_AUTHTOKEN, authtoken)
-//        data.putString(PARAM_USER_PASS, userPass)
-        val res = Intent()
-        res.putExtras(data)
-        if (res.hasExtra(AccountManager.KEY_ERROR_MESSAGE)) {
-            Toast.makeText(mActivity, res.getStringExtra(AccountManager.KEY_ERROR_MESSAGE), Toast
-                    .LENGTH_SHORT).show()
-        } else {
-            finishLogin(res)
-        }
+    override fun showOtpScreen(phone: String, sender: String) {
+        Timber.d("Got sender %s for phone: %s", sender, phone)
+        dismissProgressDialog()
+        val bundle = bundleOf(OTPFragment.ARG_PHONE to phone,
+                        OTPFragment.ARG_SENDER to sender)
+        etUserId.findNavController().navigate(R.id.action_loginFragment_to_OTPFragment, bundle)
     }
 
     override fun showError(message: String?) {
         dismissProgressDialog()
 
-        Miscellaneous.showSnackBar(mToolbar,
-                if (message == null) message
-                else getString(R.string.unexpected_error)
+        Miscellaneous.showSnackBar(etUserId,
+            message ?: getString(R.string.unexpected_error)
         )
     }
 }

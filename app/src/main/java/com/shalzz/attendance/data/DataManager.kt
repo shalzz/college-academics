@@ -4,6 +4,8 @@ import com.android.billingclient.api.Purchase
 import com.shalzz.attendance.data.local.DatabaseHelper
 import com.shalzz.attendance.data.local.PreferencesHelper
 import com.shalzz.attendance.data.model.ListFooter
+import com.shalzz.attendance.data.model.SenderModel
+import com.shalzz.attendance.data.model.TokenModel
 import com.shalzz.attendance.data.model.entity.Period
 import com.shalzz.attendance.data.model.entity.Subject
 import com.shalzz.attendance.data.model.entity.User
@@ -33,6 +35,16 @@ constructor(private val mDataAPI: DataAPI,
     val userCount: Single<Int>
         get() = mDatabaseHelper.userCount
                 .subscribeOn(Schedulers.single())
+
+    fun login(phone: String): Observable<SenderModel> {
+        return mDataAPI.login(phone)
+                .subscribeOn(Schedulers.io())
+    }
+
+    fun verifyOTP(phone: String, otp: Number): Observable<TokenModel> {
+        return mDataAPI.verifyOTP(phone, otp)
+                .subscribeOn(Schedulers.io())
+    }
 
     fun syncAttendance(): Observable<Subject> {
         return mDataAPI.attendance

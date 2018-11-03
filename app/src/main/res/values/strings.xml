@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (c) 2013-2016 Shaleen Jain <shaleen.jain95@gmail.com>
   ~
   ~ This file is part of UPES Academics.
@@ -23,7 +22,7 @@
     <string name="app_url" translatable="false">http://www.github.com/shalzz/college-academics</string>
     <string name="copyright_year" translatable="false">Copyright © 2013&#8211;2018</string>
     <string name="app_copyright" translatable="false">Shaleen Jain &#60;shaleen.jain95@gmail.com&#62;</string>
-    
+
     <!--API keys-->
     <string name="bugsnag_api" translatable="false">600a00bfd5bd72e5df7f288f74df8f9b</string>
     <string name="onedu_gcmSenderId" translatable="false">3087313396</string>
@@ -53,6 +52,7 @@
     <string name="proxy_error">Proxy Authentication failed. Please check your credentials.</string>
     <string name="unexpected_error">An unexpected error occurred</string>
     <string name="form_userid_error">Phone number is invalid.</string>
+    <string name="form_otp_error">Please enter a valid OTP.</string>
     <string name="form_password_error">Password is required.</string>
     <string name="token_error">Phone number not registered. Please use your registered number or
         contact your college IT dept.</string>
@@ -82,7 +82,7 @@
 
     <!--Plurals-->
     <plurals name="tv_last_refresh">
-        <item quantity="zero" >Last refreshed few moments ago</item>
+        <item quantity="zero">Last refreshed few moments ago</item>
         <item quantity="one">Last refreshed <xliff:g id="time">%d</xliff:g> hour ago</item>
         <item quantity="other">Last refreshed <xliff:g id="time">%d</xliff:g> hours ago</item>
     </plurals>
@@ -166,5 +166,8 @@
     <string name="network_error_message">Network Error</string>
     <string name="default_notification_channel_id">1</string>
     <string name="account_manager_title">College Academics</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_login_graph"
+    app:startDestination="@id/loginFragment">
+
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.shalzz.attendance.ui.login.LoginFragment"
+        android:label="fragment_login"
+        tools:layout="@layout/fragment_login" >
+        <action
+            android:id="@+id/action_loginFragment_to_OTPFragment"
+            app:destination="@id/OTPFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/OTPFragment"
+        android:name="com.shalzz.attendance.ui.login.OTPFragment"
+        android:label="OTPFragment"
+        tools:layout="@layout/fragment_otp" >
+        <action
+            android:id="@+id/action_OTPFragment_to_mainActivity2"
+            app:destination="@id/mainActivity2" />
+        <argument android:name="phone" app:argType="string"/>
+        <argument android:name="sender" app:argType="string"/>
+    </fragment>
+    <activity
+        android:id="@+id/mainActivity2"
+        android:name="com.shalzz.attendance.ui.main.MainActivity"
+        android:label="drawer"
+        tools:layout="@layout/drawer" />
+</navigation>

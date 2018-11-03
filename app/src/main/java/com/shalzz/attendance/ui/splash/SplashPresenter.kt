@@ -4,7 +4,6 @@ import com.google.firebase.iid.FirebaseInstanceId
 import com.shalzz.attendance.data.local.PreferencesHelper
 import com.shalzz.attendance.ui.base.BasePresenter
 import com.shalzz.attendance.utils.RxExponentialBackoff
-import com.shalzz.attendance.utils.RxUtil
 import io.reactivex.Observable
 import io.reactivex.ObservableOnSubscribe
 import io.reactivex.android.schedulers.AndroidSchedulers

@@ -19,26 +19,28 @@
 
 package com.shalzz.attendance.data.remote
 
+import com.shalzz.attendance.data.model.SenderModel
+import com.shalzz.attendance.data.model.TokenModel
 import com.shalzz.attendance.data.model.entity.Period
 import com.shalzz.attendance.data.model.entity.Subject
 import com.shalzz.attendance.data.model.entity.User
-
 import io.reactivex.Observable
-import okhttp3.ResponseBody
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface DataAPI {
 
     @GET("login/{phone}")
-    fun login(@Path("phone") phone: String): Observable<ResponseBody>
+    fun login(@Path("phone") phone: String): Observable<SenderModel>
 
     @GET("verify-otp/{phone}")
-    fun verifyOTP(@Path("phone") phone: String): Observable<ResponseBody>
+    fun verifyOTP(@Path("phone") phone: String, @Query("otp") otp: Number):
+            Observable<TokenModel>
 
     @GET("me")
     fun getUser(@Header("Authorization") authorization: String): Observable<User>
@@ -60,9 +62,10 @@ interface DataAPI {
                              @Field("sig") signature: String): Observable<Boolean>
 
     companion object {
-        val API_VERSION = "v3/prod/"
-        val ENDPOINT = "https://academics.8bitlabs.tech/$API_VERSION"
-        //    String ENDPOINT = "http://192.168.1.160:3000/";
+//        val API_VERSION = "/v3/prod/"
+//        val ENDPOINT = "https://academics.8bitlabs.tech$API_VERSION"
+        val API_VERSION = "/"
+        val ENDPOINT = "http://192.168.1.160:3000$API_VERSION"
     }
 
 }

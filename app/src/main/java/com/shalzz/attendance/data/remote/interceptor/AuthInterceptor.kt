@@ -21,6 +21,7 @@ package com.shalzz.attendance.data.remote.interceptor
 
 import android.util.Base64
 import com.shalzz.attendance.data.local.PreferencesHelper
+import com.shalzz.attendance.data.remote.DataAPI
 import okhttp3.Interceptor
 import okhttp3.Response
 import java.io.IOException
@@ -37,6 +38,11 @@ constructor(private val preferencesManager: PreferencesHelper) : Interceptor {
             return chain.proceed(originalRequest)
         }
 
+        if (originalRequest.url().encodedPath().startsWith(DataAPI.API_VERSION + "login/")
+           || originalRequest.url().encodedPath().startsWith(DataAPI.API_VERSION + "verify-otp/")) {
+            return chain.proceed(originalRequest)
+        }
+
         val id = preferencesManager.userId
         val token = preferencesManager.token
         val auth = Base64.encodeToString("$id:$token".toByteArray(), Base64.DEFAULT)
@@ -44,14 +50,8 @@ constructor(private val preferencesManager: PreferencesHelper) : Interceptor {
             throw RuntimeException("User Auth regId cannot be empty")
         }
 
-        val regId = preferencesManager.regId
-        if (regId == null || token.isEmpty()) {
-            throw RuntimeException("GCM Registration regId cannot be empty")
-        }
-
         val newRequest = originalRequest.newBuilder()
                 .header("Authorization", "Basic $auth")
-                .header("x-reg-id", regId)
                 .build()
         return chain.proceed(newRequest)
     }

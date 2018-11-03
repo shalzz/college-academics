@@ -49,13 +49,13 @@ public class Miscellaneous {
 
     /**
      * Shows the default user soft keyboard.
-     * @param mTextView The view to focus the cursor on.
+     * @param editText The view to focus the cursor on.
      */
-    public static void showKeyboard(Context context, EditText mTextView) {
+    public static void showKeyboard(Context context, EditText editText) {
         InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
         if (imm != null) {
             // will trigger it only if no physical keyboard is open
-            imm.showSoftInput(mTextView, 0);
+            imm.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT);
         }
     }
 

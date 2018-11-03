@@ -20,6 +20,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
+apply plugin: 'kotlin-android-extensions'
 apply plugin: 'com.github.triplet.play'
 apply plugin: 'com.bugsnag.android.gradle'
 apply plugin: 'com.google.gms.oss.licenses.plugin'
@@ -41,8 +42,8 @@ android {
         applicationId 'com.shalzz.attendance'
         minSdkVersion 14
         targetSdkVersion 28
-	    versionCode gitCommitCount
-	    versionName gitTag
+        versionCode gitCommitCount
+        versionName gitTag
 
         resConfigs "en"
 
@@ -145,10 +146,15 @@ android {
         final RETROFIT_VERSION = '2.4.0'
         final BUTTERKNIFE_VERSION = '9.0.0-SNAPSHOT'
         final ROOM_VERSION = "2.0.0"
+        final NAV_VERSION = "1.0.0-alpha07"
 
         implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
         implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:0.30.2'
         implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:0.30.2'
+
+        implementation 'androidx.core:core-ktx:1.0.0'
+        implementation "android.arch.navigation:navigation-fragment-ktx:$NAV_VERSION"
+        implementation "android.arch.navigation:navigation-ui-ktx:$NAV_VERSION"
 
         implementation 'com.google.firebase:firebase-core:16.0.3'
         implementation 'com.google.firebase:firebase-analytics:16.0.3'
@@ -169,7 +175,7 @@ android {
         implementation 'com.android.billingclient:billing:1.0'
 
         def daggerCompiler = "com.google.dagger:dagger-compiler:$DAGGER_VERSION"
-        implementation  "com.google.dagger:dagger:$DAGGER_VERSION"
+        implementation "com.google.dagger:dagger:$DAGGER_VERSION"
         compileOnly 'javax.annotation:jsr250-api:1.0'
         kapt daggerCompiler
         testAnnotationProcessor daggerCompiler
@@ -193,7 +199,7 @@ android {
         implementation 'com.github.amlcurran.showcaseview:library:5.4.0'
         implementation 'com.github.afollestad.material-dialogs:core:0.8.5.5'
 
-	    //noinspection GradleDynamicVersion
+        //noinspection GradleDynamicVersion
         implementation 'com.bugsnag:bugsnag-android:4.+'
 
         // Room Persistence
@@ -228,8 +234,13 @@ android {
 
 // ADD THIS AT THE BOTTOM
 apply plugin: 'com.google.gms.google-services'
+apply plugin: 'kotlin-android-extensions'
 
 // Log out test results to console
-tasks.matching {it instanceof Test}.all {
+tasks.matching { it instanceof Test }.all {
     testLogging.events = ["failed", "passed", "skipped"]
+}
+
+dependencies {
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0-alpha1'
 }
