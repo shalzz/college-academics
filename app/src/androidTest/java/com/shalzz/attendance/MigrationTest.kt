@@ -6,8 +6,10 @@ import androidx.room.Room
 import androidx.room.testing.MigrationTestHelper
 import androidx.sqlite.db.SupportSQLiteDatabase
 import androidx.sqlite.db.framework.FrameworkSQLiteOpenHelperFactory
-import androidx.test.InstrumentationRegistry
-import androidx.test.runner.AndroidJUnit4
+import androidx.test.core.app.ApplicationProvider
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.filters.SmallTest
+import androidx.test.platform.app.InstrumentationRegistry
 import com.shalzz.attendance.data.local.AppDatabase
 import com.shalzz.attendance.data.model.entity.Subject
 import io.reactivex.observers.TestObserver
@@ -15,10 +17,10 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.IOException
-import java.util.*
-
+import java.util.Arrays
 
 @RunWith(AndroidJUnit4::class)
+@SmallTest
 class MigrationTest {
 
     @get:Rule
@@ -54,7 +56,8 @@ class MigrationTest {
     }
 
     private fun getMigratedRoomDatabase(): AppDatabase {
-        val database = Room.databaseBuilder(InstrumentationRegistry.getTargetContext(),
+        val database = Room.databaseBuilder(
+            ApplicationProvider.getApplicationContext(),
                 AppDatabase::class.java, TEST_DB_NAME)
                 .addMigrations(AppDatabase.MIGRATION_12_13)
                 .build()
