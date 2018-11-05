@@ -52,7 +52,7 @@ class DataManagerTest {
     @Mock
     internal lateinit var mMockDataAPI: DataAPI
 
-    private var mDataManager: DataManager? = null
+    private lateinit var mDataManager: DataManager
     private fun <T> any(type: Class<T>): T = Mockito.any<T>(type)
 
     @Before
@@ -68,7 +68,7 @@ class DataManagerTest {
         stubSyncUserHelperCalls(USERID, user)
 
         val result = TestObserver<User>()
-        mDataManager!!.syncUser(USERID).subscribe(result)
+        mDataManager.syncUser(USERID).subscribe(result)
         result.assertNoErrors()
         result.assertValue(user)
     }
@@ -80,7 +80,7 @@ class DataManagerTest {
         stubSyncAttendanceHelperCalls(subjects)
 
         val result = TestObserver<Subject>()
-        mDataManager!!.syncAttendance().subscribe(result)
+        mDataManager.syncAttendance().subscribe(result)
         result.assertNoErrors()
         result.assertValueSequence(subjects)
     }
@@ -93,7 +93,7 @@ class DataManagerTest {
         stubSyncDayHelperCalls(day, periods)
 
         val result = TestObserver<Period>()
-        mDataManager!!.syncDay(day).subscribe(result)
+        mDataManager.syncDay(day).subscribe(result)
         result.assertNoErrors()
         result.assertValueSequence(periods)
     }
@@ -104,9 +104,9 @@ class DataManagerTest {
         val user = TestDataFactory.makeUser("u1")
         stubSyncUserHelperCalls(USERID, user)
 
-        mDataManager!!.syncUser(USERID).subscribe()
+        mDataManager.syncUser(USERID).subscribe()
         // Verify right calls to helper methods
-        verify<DataAPI>(mMockDataAPI).getUser(USERID)
+        verify<DataAPI>(mMockDataAPI).getUser("Basic $USERID")
         verify<DatabaseHelper>(mMockDatabaseHelper).setUser(user)
     }
 
@@ -116,7 +116,7 @@ class DataManagerTest {
                 TestDataFactory.makeSubject("s2"))
         stubSyncAttendanceHelperCalls(subjects)
 
-        mDataManager!!.syncAttendance().subscribe()
+        mDataManager.syncAttendance().subscribe()
         // Verify right calls to helper methods
         verify<DataAPI>(mMockDataAPI).attendance
         verify<DatabaseHelper>(mMockDatabaseHelper).setSubjects(subjects)
@@ -129,7 +129,7 @@ class DataManagerTest {
                 TestDataFactory.makePeriod("p2", day))
         stubSyncDayHelperCalls(day, periods)
 
-        mDataManager!!.syncDay(day).subscribe()
+        mDataManager.syncDay(day).subscribe()
         // Verify right calls to helper methods
         verify<DataAPI>(mMockDataAPI).getTimetable(DateHelper.toTechnicalFormat(day))
         verify<DatabaseHelper>(mMockDatabaseHelper).setPeriods(periods)
@@ -142,9 +142,9 @@ class DataManagerTest {
                 .thenReturn(Observable.error(RuntimeException()))
 
         val result = TestObserver<User>()
-        mDataManager!!.syncUser(USERID).subscribe(result)
+        mDataManager.syncUser(USERID).subscribe(result)
         // Verify right calls to helper methods
-        verify<DataAPI>(mMockDataAPI).getUser(USERID)
+        verify<DataAPI>(mMockDataAPI).getUser("Basic $USERID")
         result.assertNoValues()
         verify<DatabaseHelper>(mMockDatabaseHelper, never()).setUser(any(User::class.java))
     }
@@ -154,7 +154,7 @@ class DataManagerTest {
         `when`(mMockDataAPI.attendance)
                 .thenReturn(Observable.error(RuntimeException()))
 
-        mDataManager!!.syncAttendance().subscribe(TestObserver())
+        mDataManager.syncAttendance().subscribe(TestObserver())
         // Verify right calls to helper methods
         verify<DataAPI>(mMockDataAPI).attendance
         verify<DatabaseHelper>(mMockDatabaseHelper, never()).setSubjects(ArgumentMatchers.anyList())
@@ -166,7 +166,7 @@ class DataManagerTest {
         `when`(mMockDataAPI.getTimetable(DateHelper.toTechnicalFormat(day)))
                 .thenReturn(Observable.error(RuntimeException()))
 
-        mDataManager!!.syncDay(day).subscribe(TestObserver())
+        mDataManager.syncDay(day).subscribe(TestObserver())
         // Verify right calls to helper methods
         verify<DataAPI>(mMockDataAPI).getTimetable(DateHelper.toTechnicalFormat(day))
         verify<DatabaseHelper>(mMockDatabaseHelper, never()).setPeriods(ArgumentMatchers.anyList())
@@ -174,7 +174,7 @@ class DataManagerTest {
 
     private fun stubSyncUserHelperCalls(userid: String, user: User) {
         // Stub calls to the DataAPI service and database helper.
-        `when`(mMockDataAPI.getUser(userid))
+        `when`(mMockDataAPI.getUser("Basic $userid"))
                 .thenReturn(Observable.just(user))
         `when`(mMockDatabaseHelper.setUser(user))
                 .thenReturn(Observable.just(user))

@@ -1,20 +1,17 @@
 package com.shalzz.attendance
 
+import com.google.common.truth.Truth.assertThat
 import com.shalzz.attendance.util.DefaultConfig
-
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.robolectric.manifest.AndroidManifest
 import org.robolectric.res.Fs
-
 import java.util.HashSet
 
-import com.google.common.truth.Truth.assertThat
-
 @RunWith(RobolectricTestRunner::class)
-@Config(sdk = [DefaultConfig.EMULATE_SDK], manifest = Config.DEFAULT_MANIFEST_NAME)
+@Config(sdk = [DefaultConfig.EMULATE_SDK])
 class PermissionsTest {
 
     @Test

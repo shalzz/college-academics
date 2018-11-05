@@ -1,6 +1,7 @@
 package com.shalzz.attendance
 
 import androidx.room.Room
+import androidx.test.core.app.ApplicationProvider
 import com.shalzz.attendance.data.local.AppDatabase
 import com.shalzz.attendance.data.local.DatabaseHelper
 import com.shalzz.attendance.data.model.entity.Period
@@ -16,10 +17,10 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 import java.io.IOException
-import java.util.*
+import java.util.Arrays
+import java.util.Date
 
 /**
  * Unit tests integration with a SQLite Database using Robolectric
@@ -36,10 +37,10 @@ class DatabaseHelperTest {
 
     @Before
     fun setup() {
-        mDb = Room.inMemoryDatabaseBuilder(RuntimeEnvironment.application,
-                AppDatabase::class.java)
-                .allowMainThreadQueries()
-                .build()
+        mDb = Room.inMemoryDatabaseBuilder(ApplicationProvider.getApplicationContext(),
+            AppDatabase::class.java)
+            .allowMainThreadQueries()
+            .build()
         mDatabaseHelper = DatabaseHelper(mDb)
     }
 
@@ -67,7 +68,7 @@ class DatabaseHelperTest {
     @Test
     fun writeAndReadSubjects() {
         val subjects = Arrays.asList(TestDataFactory.makeSubject("s1"),
-                TestDataFactory.makeSubject("s2"))
+            TestDataFactory.makeSubject("s2"))
 
         mDatabaseHelper.setSubjects(subjects).subscribe()
 
@@ -81,7 +82,7 @@ class DatabaseHelperTest {
     fun writeAndReadPeriods() {
         val day = Date()
         val periods = Arrays.asList(TestDataFactory.makePeriod("p1", day),
-                TestDataFactory.makePeriod("p2", day))
+            TestDataFactory.makePeriod("p2", day))
 
         mDatabaseHelper.setPeriods(periods).subscribe()
 
@@ -119,7 +120,7 @@ class DatabaseHelperTest {
     fun resetAllTables() {
         val day = Date()
         val periods = Arrays.asList(TestDataFactory.makePeriod("p1", day),
-                TestDataFactory.makePeriod("p2", day))
+            TestDataFactory.makePeriod("p2", day))
 
         mDatabaseHelper.setPeriods(periods).subscribe()
 

@@ -42,11 +42,13 @@ android {
         applicationId 'com.shalzz.attendance'
         minSdkVersion 14
         targetSdkVersion 28
+        multiDexEnabled true
         versionCode gitCommitCount
         versionName gitTag
 
         resConfigs "en"
 
+        testOptions.unitTests.includeAndroidResources = true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         javaCompileOptions {
             annotationProcessorOptions {
@@ -148,6 +150,9 @@ android {
         final ROOM_VERSION = "2.0.0"
         final NAV_VERSION = "1.0.0-alpha07"
 
+        // TODO: revaluate when RxJava is completely replaced with kotlin co-routines
+        implementation 'com.android.support:multidex:1.0.3'
+
         implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
         implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:0.30.2'
         implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:0.30.2'
@@ -218,8 +223,9 @@ android {
         androidTestImplementation "com.google.code.findbugs:jsr305:3.0.0"
         androidTestImplementation "androidx.annotation:annotation:1.0.0"
 
-        androidTestImplementation "androidx.test:runner:1.1.0-alpha4"
-        androidTestImplementation "androidx.test:rules:1.1.0-alpha4"
+        androidTestImplementation "androidx.test:core:1.0.0"
+        androidTestImplementation "androidx.test:runner:1.1.0"
+        androidTestImplementation "androidx.test:rules:1.1.0"
 
         androidTestImplementation "androidx.test.espresso:espresso-contrib:$ESPRESSO_VERSION"
         androidTestImplementation "androidx.test.espresso:espresso-core:$ESPRESSO_VERSION"
@@ -227,7 +233,9 @@ android {
         // Unit tests dependencies
         testImplementation jUnit
         testImplementation mockito
-        testImplementation "org.robolectric:robolectric:4.0-beta-2-SNAPSHOT"
+        testImplementation "androidx.test:core:1.0.0"
+        testImplementation "org.robolectric:robolectric:4.0"
+        testImplementation "org.robolectric:shadows-multidex:4.0"
         testImplementation "com.google.truth:truth:0.27"
     }
 }
@@ -239,8 +247,4 @@ apply plugin: 'kotlin-android-extensions'
 // Log out test results to console
 tasks.matching { it instanceof Test }.all {
     testLogging.events = ["failed", "passed", "skipped"]
-}
-
-dependencies {
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0-alpha1'
 }
