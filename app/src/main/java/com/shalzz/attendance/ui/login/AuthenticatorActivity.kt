@@ -14,6 +14,7 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import com.shalzz.attendance.R
 import com.shalzz.attendance.sync.AccountAuthenticatorActivity
 import com.shalzz.attendance.sync.MyAccountManager
+import com.shalzz.attendance.ui.main.MainActivity
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Named
@@ -67,6 +68,10 @@ class AuthenticatorActivity: AccountAuthenticatorActivity(), OTPFragment.OnFragm
         data.putString(AccountManager.KEY_AUTHTOKEN, authToken)
         val res = Intent()
         res.putExtras(data)
+
+        MyAccountManager.addPeriodicSync(this, phone)
+        val ourIntent = Intent(this, MainActivity::class.java)
+        startActivity(ourIntent)
         finishLogin(res)
     }
 

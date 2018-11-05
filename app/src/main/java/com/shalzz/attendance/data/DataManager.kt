@@ -14,7 +14,7 @@ import com.shalzz.attendance.wrapper.DateHelper
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
-import java.util.*
+import java.util.Date
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -70,13 +70,13 @@ constructor(private val mDataAPI: DataAPI,
                 .subscribeOn(Schedulers.single())
     }
 
-    fun sendRegID(regId: String, auth: String): Observable<Boolean> {
-        return mDataAPI.sendRegID(authorization="Basic $auth", registerationID=regId)
+    fun sendRegID(regId: String): Observable<Boolean> {
+        return mDataAPI.sendRegID(registerationID=regId)
                 .subscribeOn(Schedulers.io())
     }
 
-    fun syncUser(auth: String): Observable<User> {
-        return mDataAPI.getUser("Basic $auth")
+    fun syncUser(): Observable<User> {
+        return mDataAPI.getUser()
                 .subscribeOn(Schedulers.io())
                 .concatMap(mDatabaseHelper::setUser)
                 .subscribeOn(Schedulers.single())

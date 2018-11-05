@@ -164,6 +164,7 @@ class MainActivity : BaseActivity(), MainMvpView, BillingProvider {
         // Set the list's click listener
         mNavigationView.setNavigationItemSelectedListener(NavigationItemSelectedListener())
 
+        mMainPresenter.syncUser()
         initDrawer()
         init(savedInstanceState)
     }

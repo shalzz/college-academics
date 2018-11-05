@@ -82,7 +82,7 @@ constructor(@ApplicationContext context: Context) {
         editor.commit()
     }
 
-    fun saveToken(token: String) {
+    fun saveRegId(token: String) {
         val editor = mPref.edit()
         editor.putString("REGID", token)
         editor.commit()

@@ -43,12 +43,11 @@ interface DataAPI {
             Observable<TokenModel>
 
     @GET("me")
-    fun getUser(@Header("Authorization") authorization: String): Observable<User>
+    fun getUser(): Observable<User>
 
     @FormUrlEncoded
     @POST("me/regid")
-    fun sendRegID(@Header("Authorization") authorization: String,
-                  @Field("regid") registerationID: String): Observable<Boolean>
+    fun sendRegID(@Field("regid") registerationID: String): Observable<Boolean>
 
     @get:GET("me/attendance")
     val attendance: Observable<List<Subject>>

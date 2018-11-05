@@ -1,7 +1,6 @@
 package com.shalzz.attendance.ui.login
 
 import android.content.Context
-import android.util.Base64
 import com.shalzz.attendance.R
 import com.shalzz.attendance.data.DataManager
 import com.shalzz.attendance.data.local.PreferencesHelper
@@ -69,9 +68,8 @@ internal constructor(private val mDataManager: DataManager,
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { token ->
-                    mDataManager.sendRegID(regId=mPreferenceHelper.regId!!,
-                        auth= Base64.encodeToString("$phone:${token.token}".toByteArray(),
-                            Base64.DEFAULT))
+                    mPreferenceHelper.saveUser(phone, token.token)
+                    mDataManager.sendRegID(regId=mPreferenceHelper.regId!!)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .retryWhen(RxExponentialBackoff.maxCount(3))

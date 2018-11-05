@@ -39,6 +39,6 @@ internal constructor(private val mPreferenceHelper: PreferencesHelper) : BasePre
         }).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .retryWhen(RxExponentialBackoff.maxCount(3))
-                .subscribe { token -> mPreferenceHelper.saveToken(token) }
+                .subscribe { token -> mPreferenceHelper.saveRegId(token) }
     }
 }

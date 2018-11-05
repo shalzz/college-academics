@@ -9,26 +9,22 @@ import com.shalzz.attendance.data.model.entity.User
 import com.shalzz.attendance.data.remote.DataAPI
 import com.shalzz.attendance.util.RxSchedulersOverrideRule
 import com.shalzz.attendance.wrapper.DateHelper
-
+import io.reactivex.Observable
+import io.reactivex.observers.TestObserver
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers
 import org.mockito.Mock
-import org.mockito.junit.MockitoJUnitRunner
-
-import java.util.Arrays
-import java.util.Date
-
-import io.reactivex.Observable
-import io.reactivex.observers.TestObserver
-import org.junit.Rule
 import org.mockito.Mockito
-
+import org.mockito.Mockito.`when`
 import org.mockito.Mockito.never
 import org.mockito.Mockito.verify
-import org.mockito.Mockito.`when`
 import org.mockito.MockitoAnnotations
+import org.mockito.junit.MockitoJUnitRunner
+import java.util.Arrays
+import java.util.Date
 
 /**
  * This test class performs local unit tests without dependencies on the Android framework
@@ -63,12 +59,11 @@ class DataManagerTest {
 
     @Test
     fun syncUserEmitsValues() {
-        val USERID = "1234567890"
         val user = TestDataFactory.makeUser("u1")
-        stubSyncUserHelperCalls(USERID, user)
+        stubSyncUserHelperCalls(user)
 
         val result = TestObserver<User>()
-        mDataManager.syncUser(USERID).subscribe(result)
+        mDataManager.syncUser().subscribe(result)
         result.assertNoErrors()
         result.assertValue(user)
     }
@@ -100,13 +95,12 @@ class DataManagerTest {
 
     @Test
     fun syncUserCallsApiAndDatabase() {
-        val USERID = "1234567890"
         val user = TestDataFactory.makeUser("u1")
-        stubSyncUserHelperCalls(USERID, user)
+        stubSyncUserHelperCalls(user)
 
-        mDataManager.syncUser(USERID).subscribe()
+        mDataManager.syncUser().subscribe()
         // Verify right calls to helper methods
-        verify<DataAPI>(mMockDataAPI).getUser("Basic $USERID")
+        verify<DataAPI>(mMockDataAPI).getUser()
         verify<DatabaseHelper>(mMockDatabaseHelper).setUser(user)
     }
 
@@ -137,14 +131,13 @@ class DataManagerTest {
 
     @Test
     fun syncUserDoesNotCallDatabaseWhenApiFails() {
-        val USERID = "1234567890"
-        `when`(mMockDataAPI.getUser(USERID))
+        `when`(mMockDataAPI.getUser())
                 .thenReturn(Observable.error(RuntimeException()))
 
         val result = TestObserver<User>()
-        mDataManager.syncUser(USERID).subscribe(result)
+        mDataManager.syncUser().subscribe(result)
         // Verify right calls to helper methods
-        verify<DataAPI>(mMockDataAPI).getUser("Basic $USERID")
+        verify<DataAPI>(mMockDataAPI).getUser()
         result.assertNoValues()
         verify<DatabaseHelper>(mMockDatabaseHelper, never()).setUser(any(User::class.java))
     }
@@ -172,9 +165,9 @@ class DataManagerTest {
         verify<DatabaseHelper>(mMockDatabaseHelper, never()).setPeriods(ArgumentMatchers.anyList())
     }
 
-    private fun stubSyncUserHelperCalls(userid: String, user: User) {
+    private fun stubSyncUserHelperCalls(user: User) {
         // Stub calls to the DataAPI service and database helper.
-        `when`(mMockDataAPI.getUser("Basic $userid"))
+        `when`(mMockDataAPI.getUser())
                 .thenReturn(Observable.just(user))
         `when`(mMockDatabaseHelper.setUser(user))
                 .thenReturn(Observable.just(user))

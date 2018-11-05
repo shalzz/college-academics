@@ -53,6 +53,7 @@ internal constructor(private val mDataManager: DataManager,
                      @param:ApplicationContext private val mContext: Context) : BasePresenter<MainMvpView>() {
 
     private var mDisposable: Disposable? = null
+    private var mSyncDisposable: Disposable? = null
     val updateListener: UpdateListener
 
     // Tracks if we currently own a pro key
@@ -73,6 +74,14 @@ internal constructor(private val mDataManager: DataManager,
     override fun detachView() {
         super.detachView()
         RxUtil.dispose(mDisposable)
+    }
+
+    fun syncUser() {
+        RxUtil.dispose(mSyncDisposable)
+        mSyncDisposable = mDataManager.syncUser()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe()
     }
 
     fun loadUser() {
