@@ -10,7 +10,7 @@ import com.shalzz.attendance.data.model.entity.User
 import com.shalzz.attendance.util.DefaultConfig
 import com.shalzz.attendance.util.RxSchedulersOverrideRule
 import io.reactivex.observers.TestObserver
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule

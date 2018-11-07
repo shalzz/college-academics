@@ -8,9 +8,7 @@ import androidx.test.runner.AndroidJUnitRunner;
 
 import static android.content.Context.KEYGUARD_SERVICE;
 import static android.content.Context.POWER_SERVICE;
-import static android.os.PowerManager.ACQUIRE_CAUSES_WAKEUP;
-import static android.os.PowerManager.FULL_WAKE_LOCK;
-import static android.os.PowerManager.ON_AFTER_RELEASE;
+import static android.os.PowerManager.*;
 
 /**
  * Extension of AndroidJUnitRunner that adds some functionality to unblock the device screen
