@@ -97,6 +97,7 @@ android {
             resValue "string", "contentAuthority", defaultConfig.applicationId + '.debug.provider'
             resValue "string", "account_type", "com.shalzz.debug"
             buildConfigField "String", "ACCOUNT_TYPE", '"com.shalzz.debug"'
+            multiDexKeepProguard file('./proguard/proguard-multidex-rules.pro')
         }
         release {
             shrinkResources true
