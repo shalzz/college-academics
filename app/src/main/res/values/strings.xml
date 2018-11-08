@@ -137,12 +137,12 @@
     <string name="sv_main_activity_content">Press this button or swipe from the left edge to access the navigation bar</string>
 
     <!--EditText Hint's-->
-    <string name="hint_userid">Phone number</string>
+    <string name="hint_userid">Enter Phone Number</string>
     <string name="hint_password">Password</string>
     <string name="hint_search">Search subjects</string>
 
     <!--Buttons-->
-    <string name="log_in">Log In</string>
+    <string name="log_in">Send OTP</string>
 
     <!--Accessibility-->
     <string name="drawer_open">Navigation drawer opened</string>
@@ -169,5 +169,7 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="login_notice">Please use a phone number registered with your University</string>
+    <string name="college_academics_logo">College Academics</string>
 
 </resources>

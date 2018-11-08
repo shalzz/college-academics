@@ -53,8 +53,8 @@ internal constructor(private val mDataManager: DataManager,
                 Timber.e(error)
             }
             else if (isViewAttached) {
-                if (error.kind == RetrofitException.Kind.HTTP) {
-                    val msg = JSONObject(error.response.errorBody()?.string())
+                if (error.kind == RetrofitException.Kind.HTTP && error.response.errorBody() != null) {
+                    val msg = JSONObject(error.response.errorBody()!!.string())
                     mvpView.showError(msg.getString("error"))
                 } else {
                     mvpView.showError(error.message)

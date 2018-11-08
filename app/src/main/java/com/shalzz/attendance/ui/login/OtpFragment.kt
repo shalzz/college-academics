@@ -52,9 +52,6 @@ class OTPFragment : Fragment(), OtpMvpView {
         Bugsnag.setContext("OTP Fragment")
         mOtpPresenter.attachView(this)
 
-        // Static background with ScrollView
-        mActivity.window.setBackgroundDrawableResource(R.drawable.background)
-
         mView.button.setOnClickListener {
             val otp : String = mView.etOTP.editText!!.text.toString()
             if (otp.isEmpty() || otp.length !in 4..6  ) {

@@ -6,10 +6,6 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.appcompat.widget.Toolbar
-import androidx.navigation.findNavController
-import butterknife.BindView
-import butterknife.ButterKnife
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.shalzz.attendance.R
 import com.shalzz.attendance.sync.AccountAuthenticatorActivity
@@ -20,9 +16,6 @@ import javax.inject.Inject
 import javax.inject.Named
 
 class AuthenticatorActivity: AccountAuthenticatorActivity(), OTPFragment.OnFragmentInteractionListener {
-
-    @BindView(R.id.toolbar)
-    lateinit var mToolbar: Toolbar
 
     @Inject
     @field:Named("app")
@@ -41,16 +34,9 @@ class AuthenticatorActivity: AccountAuthenticatorActivity(), OTPFragment.OnFragm
         super.onCreate(savedInstanceState)
         activityComponent().inject(this)
         setContentView(R.layout.activity_login)
-        ButterKnife.bind(this)
-
-        // set toolbar as actionbar
-        setSupportActionBar(mToolbar)
 
         mAuthTokenType = MyAccountManager.AUTHTOKEN_TYPE_READ_ONLY
     }
-
-    override fun onSupportNavigateUp()
-            = findNavController(R.id.login_nav_host_fragment).navigateUp()
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
 

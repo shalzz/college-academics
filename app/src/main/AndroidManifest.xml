@@ -17,8 +17,6 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<!--Semantic versioning: MAJOR.MINOR.PATCH--><!-- Version Code: MAJOR * 1,000,000 + MINOR * 1000 + PATCH -->
-
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.shalzz.attendance">
@@ -130,7 +128,7 @@
         <activity
             android:name=".ui.login.AuthenticatorActivity"
             android:label="Login"
-            android:theme="@style/AppTheme"/>
+            android:theme="@style/AppTheme.Login"/>
 
         <activity
             android:name=".ui.main.MainActivity"

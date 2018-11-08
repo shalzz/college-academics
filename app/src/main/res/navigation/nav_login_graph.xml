@@ -8,7 +8,6 @@
     <fragment
         android:id="@+id/loginFragment"
         android:name="com.shalzz.attendance.ui.login.LoginFragment"
-        android:label="fragment_login"
         tools:layout="@layout/fragment_login" >
         <action
             android:id="@+id/action_loginFragment_to_OTPFragment"
@@ -17,7 +16,6 @@
     <fragment
         android:id="@+id/OTPFragment"
         android:name="com.shalzz.attendance.ui.login.OTPFragment"
-        android:label="OTPFragment"
         tools:layout="@layout/fragment_otp" >
         <action
             android:id="@+id/action_OTPFragment_to_mainActivity2"

@@ -66,11 +66,8 @@ class LoginFragment : Fragment(), LoginMvpView {
         val mView = inflater.inflate(R.layout.fragment_login, container, false)
         mLoginPresenter.attachView(this)
 
-        // Static background with ScrollView
-        mActivity.window.setBackgroundDrawableResource(R.drawable.background)
-
         // Attempt login when user presses 'Done' on keyboard.
-        mView.etUserId.editText!!.setOnEditorActionListener { _, actionId, _ ->
+        mView.etUserId!!.editText!!.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 doLogin()
                 return@setOnEditorActionListener true
@@ -85,7 +82,7 @@ class LoginFragment : Fragment(), LoginMvpView {
 
     private val isValid: Boolean
         get() {
-            val sapid = etUserId.editText!!.text.toString()
+            val sapid = etUserId!!.editText!!.text.toString()
 
             if (sapid.isEmpty() || sapid.length != 10) {
                 etUserId.requestFocus()
@@ -100,12 +97,12 @@ class LoginFragment : Fragment(), LoginMvpView {
         if (!isValid)
             return
 
-        val userId = etUserId.editText!!.text.toString()
+        val userId = etUserId!!.editText!!.text.toString()
         val bundle = Bundle()
         bundle.putString(Analytics.Param.USER_ID, userId)
         mTracker.logEvent(Analytics.Event.LOGIN_INITIATED, bundle)
 
-//        Miscellaneous.closeKeyboard(mActivity, etUserId.editText)
+        Miscellaneous.closeKeyboard(mActivity, etUserId.editText!!)
         mLoginPresenter.login(userId)
     }
 

@@ -57,6 +57,10 @@
         <item name="android:windowBackground">@drawable/launch_screen</item>
     </style>
 
+    <style name="AppTheme.Login">
+        <item name="android:windowBackground">@color/white</item>
+    </style>
+
     <style name="MyActionBarSubTitleText" parent="TextAppearance.AppCompat.Widget.ActionBar.Subtitle">
         <item name="android:textSize">@dimen/action_bar_subtitle_text_size</item>
     </style>
@@ -67,9 +71,15 @@
 
     </style>
 
-    <style name="HintTextAppearance">
-        <item name="colorControlActivated">@color/primary</item>
-        <item name="colorControlHighlight">@color/primary</item>
+    <!--  College Academics Text Logo -->
+
+    <style name="college_aca_logo">
+        <item name="android:textSize">49.08sp</item>
+        <item name="android:textColor">#FFFFFF</item>
+        <item name="android:shadowColor">#40000000</item>
+        <item name="android:shadowDx">0</item>
+        <item name="android:shadowDy">3.18</item>
+        <item name="android:shadowRadius">3.18</item>
     </style>
 
     <!-- Showcase View Styles -->

@@ -49,6 +49,7 @@ android {
         resConfigs "en"
 
         testOptions.unitTests.includeAndroidResources = true
+        vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         javaCompileOptions {
             annotationProcessorOptions {
