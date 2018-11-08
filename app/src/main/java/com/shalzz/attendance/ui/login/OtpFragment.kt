@@ -56,8 +56,8 @@ class OTPFragment : Fragment(), OtpMvpView {
         mActivity.window.setBackgroundDrawableResource(R.drawable.background)
 
         mView.button.setOnClickListener {
-            val otp = mView.etOTP.editText!!.text.toString()
-            if (otp.isEmpty() /* || otp.length() != 4||6 */) {
+            val otp : String = mView.etOTP.editText!!.text.toString()
+            if (otp.isEmpty() || otp.length !in 4..6  ) {
                 mView.etOTP.requestFocus()
                 mView.etOTP.error = getString(R.string.form_otp_error)
                 Miscellaneous.showKeyboard(mActivity, mView.etOTP.editText)

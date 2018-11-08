@@ -14,6 +14,7 @@ import com.shalzz.attendance.utils.RxUtil
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import org.json.JSONObject
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -53,7 +54,8 @@ internal constructor(private val mDataManager: DataManager,
             }
             else if (isViewAttached) {
                 if (error.kind == RetrofitException.Kind.HTTP) {
-                    mvpView.showError(error.response.message())
+                    val msg = JSONObject(error.response.errorBody()?.string())
+                    mvpView.showError(msg.getString("error"))
                 } else {
                     mvpView.showError(error.message)
                     Timber.e(error)
