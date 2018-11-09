@@ -35,6 +35,8 @@ import com.shalzz.attendance.R
 import com.shalzz.attendance.data.local.PreferencesHelper
 import com.shalzz.attendance.utils.Miscellaneous
 import com.shalzz.attendance.utils.Miscellaneous.Analytics
+import io.michaelrocks.libphonenumber.android.PhoneNumberUtil
+import io.michaelrocks.libphonenumber.android.Phonenumber
 import kotlinx.android.synthetic.main.fragment_login.*
 import kotlinx.android.synthetic.main.fragment_login.view.*
 import timber.log.Timber
@@ -50,6 +52,8 @@ class LoginFragment : Fragment(), LoginMvpView {
     lateinit var mLoginPresenter: LoginPresenter
     @Inject
     lateinit var mPreferencesHelper: PreferencesHelper
+    @Inject
+    lateinit var mPhoneNumberUtil: PhoneNumberUtil
 
     private var progressDialog: MaterialDialog? = null
     private lateinit var mActivity: Activity
@@ -74,36 +78,47 @@ class LoginFragment : Fragment(), LoginMvpView {
             }
             false
         }
-
         mView.bLogin.setOnClickListener { doLogin() }
 
         return mView
     }
 
-    private val isValid: Boolean
-        get() {
-            val sapid = etUserId!!.editText!!.text.toString()
+    private fun showInvalidNumberError() {
+        etUserId.requestFocus()
+        etUserId.error = getString(R.string.form_userid_error)
+        Miscellaneous.showKeyboard(mActivity, etUserId.editText)
+    }
 
-            if (sapid.isEmpty() || sapid.length != 10) {
-                etUserId.requestFocus()
-                etUserId.error = getString(R.string.form_userid_error)
-                Miscellaneous.showKeyboard(mActivity, etUserId.editText)
-                return false
+    private val getPhoneNumber: Long
+        get() {
+            val phone = etUserId!!.editText!!.text.toString()
+            val number : Phonenumber.PhoneNumber
+
+            try {
+                number = mPhoneNumberUtil.parse(phone, "IN")
+                if (phone.isEmpty() || !mPhoneNumberUtil.isPossibleNumber(number)) {
+                    showInvalidNumberError()
+                    return -1
+                }
+            } catch (e: Exception) {
+                showInvalidNumberError()
+                return -1
             }
-            return true
+
+            return number.nationalNumber
         }
 
     private fun doLogin() {
-        if (!isValid)
+        val userId = getPhoneNumber
+        if (userId == -1L) // Invalid number
             return
 
-        val userId = etUserId!!.editText!!.text.toString()
         val bundle = Bundle()
-        bundle.putString(Analytics.Param.USER_ID, userId)
+        bundle.putString(Analytics.Param.USER_ID, userId.toString())
         mTracker.logEvent(Analytics.Event.LOGIN_INITIATED, bundle)
 
         Miscellaneous.closeKeyboard(mActivity, etUserId.editText!!)
-        mLoginPresenter.login(userId)
+        mLoginPresenter.login(userId.toString())
     }
 
     override fun onDestroy() {
