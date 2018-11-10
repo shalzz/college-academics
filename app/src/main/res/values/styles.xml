@@ -54,11 +54,7 @@
     </style>
 
     <style name="AppTheme.Launcher">
-        <item name="android:windowBackground">@drawable/launch_screen</item>
-    </style>
-
-    <style name="AppTheme.Login">
-        <item name="android:windowBackground">@color/white</item>
+        <item name="android:windowBackground">@drawable/login_background</item>
     </style>
 
     <style name="MyActionBarSubTitleText" parent="TextAppearance.AppCompat.Widget.ActionBar.Subtitle">
