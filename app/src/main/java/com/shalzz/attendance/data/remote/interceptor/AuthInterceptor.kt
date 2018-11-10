@@ -45,7 +45,7 @@ constructor(private val preferencesManager: PreferencesHelper) : Interceptor {
 
         val id = preferencesManager.userId
         val token = preferencesManager.token
-        val auth = Base64.encodeToString("$id:$token".toByteArray(), Base64.DEFAULT)
+        val auth = Base64.encodeToString("$id:$token".toByteArray(), Base64.NO_WRAP)
         if (id == null || token == null || id.isEmpty()) {
             throw RuntimeException("User Auth regId cannot be empty")
         }

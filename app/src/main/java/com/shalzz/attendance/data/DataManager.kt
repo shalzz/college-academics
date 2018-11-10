@@ -1,5 +1,6 @@
 package com.shalzz.attendance.data
 
+import android.util.Base64
 import com.android.billingclient.api.Purchase
 import com.shalzz.attendance.data.local.DatabaseHelper
 import com.shalzz.attendance.data.local.PreferencesHelper
@@ -21,81 +22,83 @@ import javax.inject.Singleton
 @Singleton
 class DataManager @Inject
 constructor(private val mDataAPI: DataAPI,
-            private val mDatabaseHelper: DatabaseHelper,
-            private val mPreferencesHelper: PreferencesHelper) {
+    private val mDatabaseHelper: DatabaseHelper,
+    private val mPreferencesHelper: PreferencesHelper) {
 
     val listFooter: Observable<ListFooter>
         get() = mDatabaseHelper.listFooter
-                .subscribeOn(Schedulers.single())
+            .subscribeOn(Schedulers.single())
 
     val subjectCount: Single<Int>
         get() = mDatabaseHelper.subjectCount
-                .subscribeOn(Schedulers.single())
+            .subscribeOn(Schedulers.single())
 
     val userCount: Single<Int>
         get() = mDatabaseHelper.userCount
-                .subscribeOn(Schedulers.single())
+            .subscribeOn(Schedulers.single())
 
     fun login(phone: String): Observable<SenderModel> {
         return mDataAPI.login(phone)
-                .subscribeOn(Schedulers.io())
+            .subscribeOn(Schedulers.io())
     }
 
-    fun verifyOTP(phone: String, otp: Number): Observable<TokenModel> {
-        return mDataAPI.verifyOTP(phone, otp)
-                .subscribeOn(Schedulers.io())
+    fun verifyOTP(phone: String, otp: Number, bypass: Boolean = false): Observable<TokenModel> {
+        return mDataAPI.verifyOTP(phone, otp, bypass)
+            .subscribeOn(Schedulers.io())
     }
 
     fun syncAttendance(): Observable<Subject> {
         return mDataAPI.attendance
-                .subscribeOn(Schedulers.io())
-                .concatMap(mDatabaseHelper::setSubjects)
-                .subscribeOn(Schedulers.single())
+            .subscribeOn(Schedulers.io())
+            .concatMap(mDatabaseHelper::setSubjects)
+            .subscribeOn(Schedulers.single())
     }
 
     fun loadAttendance(filter: String?): Observable<List<Subject>> {
         return mDatabaseHelper.getSubjects(filter)
-                .subscribeOn(Schedulers.single())
+            .subscribeOn(Schedulers.single())
     }
 
     fun syncDay(date: Date): Observable<Period> {
         return mDataAPI.getTimetable(DateHelper.toTechnicalFormat(date))
-                .subscribeOn(Schedulers.io())
-                .concatMap(mDatabaseHelper::setPeriods)
-                .subscribeOn(Schedulers.single())
+            .subscribeOn(Schedulers.io())
+            .concatMap(mDatabaseHelper::setPeriods)
+            .subscribeOn(Schedulers.single())
     }
 
     fun loadDay(date: Date): Observable<List<Period>> {
         return mDatabaseHelper.getPeriods(date)
-                .subscribeOn(Schedulers.single())
+            .subscribeOn(Schedulers.single())
     }
 
-    fun sendRegID(regId: String): Observable<Boolean> {
-        return mDataAPI.sendRegID(registerationID=regId)
-                .subscribeOn(Schedulers.io())
+    fun sendRegID(regId: String, auth: String): Observable<Boolean> {
+        val base64 = Base64.encodeToString(auth.toByteArray(), Base64.NO_WRAP)
+        return mDataAPI.sendRegID(registerationID=regId,
+            auth="Basic $base64")
+            .subscribeOn(Schedulers.io())
     }
 
     fun syncUser(): Observable<User> {
         return mDataAPI.getUser()
-                .subscribeOn(Schedulers.io())
-                .concatMap(mDatabaseHelper::setUser)
-                .subscribeOn(Schedulers.single())
+            .subscribeOn(Schedulers.io())
+            .concatMap(mDatabaseHelper::setUser)
+            .subscribeOn(Schedulers.single())
     }
 
     fun loadUser(): Observable<User> {
         return mDatabaseHelper.user
-                .subscribeOn(Schedulers.single())
+            .subscribeOn(Schedulers.single())
     }
 
     fun getPeriodCount(date: Date): Single<Int> {
         return mDatabaseHelper.getPeriodCount(date)
-                .subscribeOn(Schedulers.single())
+            .subscribeOn(Schedulers.single())
     }
 
     fun verifyValidSignature(purchase: Purchase): Observable<Boolean> {
         return mDataAPI.verifyValidSignature(purchase.originalJson,
-                purchase.signature)
-                .subscribeOn(Schedulers.io())
+            purchase.signature)
+            .subscribeOn(Schedulers.io())
     }
 
     fun resetTables() {

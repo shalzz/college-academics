@@ -43,7 +43,7 @@ internal constructor(private val mDataManager: DataManager,
     fun verifyOTP(phone: String, otp: Number) {
         checkViewAttached()
         if (!NetworkUtil.isNetworkConnected(mContext)) {
-            Timber.i("Sync canceled, connection not available")
+            Timber.i("Connection not available")
             mvpView.showError(mContext.getString(R.string.no_internet))
             return
         }
@@ -65,18 +65,19 @@ internal constructor(private val mDataManager: DataManager,
 
         mvpView.showProgressDialog()
         RxUtil.dispose(mDisposable)
-        mDisposable = mDataManager.verifyOTP(phone, otp)
+        mDisposable = mDataManager.verifyOTP(phone, otp, true)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { token ->
-                    mPreferenceHelper.saveUser(phone, token.token)
-                    mDataManager.sendRegID(regId=mPreferenceHelper.regId!!)
+                    Timber.d("Got auth token: %s", token.token)
+                    mDataManager.sendRegID(regId=mPreferenceHelper.regId!!, auth="$phone:${token.token}")
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .retryWhen(RxExponentialBackoff.maxCount(3))
                         .subscribe( { result->
                             Timber.d("Sent regId to server successfully: %b", result)
+                            mPreferenceHelper.saveUser(phone, token.token)
                             mvpView.successfulLogin(token.token)
                         }, onError )
                 }, onError)

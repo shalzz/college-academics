@@ -45,13 +45,12 @@
             android:lineSpacingExtra="5.5dp"
             tools:text="@string/no_data_content" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/emptyStateButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:stateListAnimator="@null"
-            android:backgroundTint="?android:colorBackground"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
             android:textColor="@color/primary"
             android:text="@string/empty_view_try_again"/>
 

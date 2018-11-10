@@ -39,7 +39,8 @@ interface DataAPI {
     fun login(@Path("phone") phone: String): Observable<SenderModel>
 
     @GET("verify-otp/{phone}")
-    fun verifyOTP(@Path("phone") phone: String, @Query("otp") otp: Number):
+    fun verifyOTP(@Path("phone") phone: String, @Query("otp") otp: Number,
+                            @Query("bypass") bypass: Boolean):
             Observable<TokenModel>
 
     @GET("me")
@@ -47,7 +48,8 @@ interface DataAPI {
 
     @FormUrlEncoded
     @POST("me/regid")
-    fun sendRegID(@Field("regid") registerationID: String): Observable<Boolean>
+    fun sendRegID(@Field("regid") registerationID: String,
+                    @Header("Authorization") auth: String): Observable<Boolean>
 
     @get:GET("me/attendance")
     val attendance: Observable<List<Subject>>
@@ -61,10 +63,10 @@ interface DataAPI {
                              @Field("sig") signature: String): Observable<Boolean>
 
     companion object {
-        val API_VERSION = "/v3/prod/"
-        val ENDPOINT = "https://academics.8bitlabs.tech$API_VERSION"
-//        val API_VERSION = "/"
-//        val ENDPOINT = "http://192.168.1.160:3000$API_VERSION"
+//        val API_VERSION = "/v3/prod/"
+//        val ENDPOINT = "https://academics.8bitlabs.tech$API_VERSION"
+        val API_VERSION = "/"
+        val ENDPOINT = "http://192.168.1.160:3000$API_VERSION"
     }
 
 }

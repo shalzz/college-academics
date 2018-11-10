@@ -21,6 +21,7 @@ constructor(@param:ApplicationContext private val mContext: Context) : Intercept
         if (NetworkUtil.isNetworkConnected(mContext)) {
             // Do not cache the '/me' api route
             return if (request.url().encodedPath().startsWith(DataAPI.API_VERSION + "login/")
+                || request.url().encodedPath().startsWith(DataAPI.API_VERSION + "me/regid")
                 || request.url().encodedPath().startsWith(DataAPI.API_VERSION + "verify-otp/")) {
                 val originalResponse = chain.proceed(request)
                 originalResponse.newBuilder()
