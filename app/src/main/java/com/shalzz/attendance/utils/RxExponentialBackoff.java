@@ -12,6 +12,7 @@ import timber.log.Timber;
  */
 public class RxExponentialBackoff {
 
+    // TODO: fix not exiting
     public static Function<Observable<Throwable>, ObservableSource<?>> maxCount(int maxCount) {
         return throwableObservable ->
                 throwableObservable.zipWith(Observable.range(0, maxCount), (n, i) -> i)

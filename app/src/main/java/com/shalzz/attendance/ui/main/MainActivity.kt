@@ -56,12 +56,12 @@ import com.shalzz.attendance.billing.BillingManager
 import com.shalzz.attendance.billing.BillingProvider
 import com.shalzz.attendance.data.DataManager
 import com.shalzz.attendance.data.model.entity.User
+import com.shalzz.attendance.sync.MyAccountManager
 import com.shalzz.attendance.ui.attendance.AttendanceListFragment
 import com.shalzz.attendance.ui.base.BaseActivity
+import com.shalzz.attendance.ui.login.AuthenticatorActivity
 import com.shalzz.attendance.ui.settings.SettingsFragment
 import com.shalzz.attendance.ui.timetable.TimeTablePagerFragment
-import com.shalzz.attendance.sync.MyAccountManager
-import com.shalzz.attendance.ui.login.AuthenticatorActivity
 import okhttp3.OkHttpClient
 import timber.log.Timber
 import java.io.IOException
@@ -164,7 +164,6 @@ class MainActivity : BaseActivity(), MainMvpView, BillingProvider {
         // Set the list's click listener
         mNavigationView.setNavigationItemSelectedListener(NavigationItemSelectedListener())
 
-        mMainPresenter.syncUser()
         initDrawer()
         init(savedInstanceState)
     }

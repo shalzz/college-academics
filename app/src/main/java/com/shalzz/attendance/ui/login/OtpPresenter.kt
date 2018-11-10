@@ -71,13 +71,17 @@ internal constructor(private val mDataManager: DataManager,
             .subscribe(
                 { token ->
                     Timber.d("Got auth token: %s", token.token)
-                    mDataManager.sendRegID(regId=mPreferenceHelper.regId!!, auth="$phone:${token.token}")
+                    mPreferenceHelper.saveUser(phone, token.token)
+                    mDataManager.sendRegID(regId=mPreferenceHelper.regId!!)
+                        .subscribeOn(Schedulers.io())
+                        .doOnNext {result ->
+                            Timber.d("Sent regId to server successfully: %b", result)}
+                        .flatMap { mDataManager.syncUser() }
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .retryWhen(RxExponentialBackoff.maxCount(3))
-                        .subscribe( { result->
-                            Timber.d("Sent regId to server successfully: %b", result)
-                            mPreferenceHelper.saveUser(phone, token.token)
+                        .subscribe( {
+                            mPreferenceHelper.setLoggedIn()
                             mvpView.successfulLogin(token.token)
                         }, onError )
                 }, onError)

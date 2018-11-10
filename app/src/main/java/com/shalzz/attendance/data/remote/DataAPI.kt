@@ -28,7 +28,6 @@ import io.reactivex.Observable
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
-import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -48,8 +47,7 @@ interface DataAPI {
 
     @FormUrlEncoded
     @POST("me/regid")
-    fun sendRegID(@Field("regid") registerationID: String,
-                    @Header("Authorization") auth: String): Observable<Boolean>
+    fun sendRegID(@Field("regid") registerationID: String): Observable<Boolean>
 
     @get:GET("me/attendance")
     val attendance: Observable<List<Subject>>
@@ -63,10 +61,10 @@ interface DataAPI {
                              @Field("sig") signature: String): Observable<Boolean>
 
     companion object {
-//        val API_VERSION = "/v3/prod/"
-//        val ENDPOINT = "https://academics.8bitlabs.tech$API_VERSION"
-        val API_VERSION = "/"
-        val ENDPOINT = "http://192.168.1.160:3000$API_VERSION"
+        val API_VERSION = "/v3/prod/"
+        val ENDPOINT = "https://academics.8bitlabs.tech$API_VERSION"
+//        val API_VERSION = "/"
+//        val ENDPOINT = "http://192.168.1.160:3000$API_VERSION"
     }
 
 }

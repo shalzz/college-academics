@@ -1,6 +1,5 @@
 package com.shalzz.attendance.data
 
-import android.util.Base64
 import com.android.billingclient.api.Purchase
 import com.shalzz.attendance.data.local.DatabaseHelper
 import com.shalzz.attendance.data.local.PreferencesHelper
@@ -71,10 +70,8 @@ constructor(private val mDataAPI: DataAPI,
             .subscribeOn(Schedulers.single())
     }
 
-    fun sendRegID(regId: String, auth: String): Observable<Boolean> {
-        val base64 = Base64.encodeToString(auth.toByteArray(), Base64.NO_WRAP)
-        return mDataAPI.sendRegID(registerationID=regId,
-            auth="Basic $base64")
+    fun sendRegID(regId: String): Observable<Boolean> {
+        return mDataAPI.sendRegID(registerationID=regId)
             .subscribeOn(Schedulers.io())
     }
 

@@ -22,16 +22,7 @@
     android:opacity="opaque">
     <item>
         <shape>
-            <solid android:color="@android:color/white"/>
+            <solid android:color="?colorPrimary"/>
         </shape>
     </item>
-
-    <item
-        android:top="@dimen/status_bar_height"
-        android:gravity="top">
-        <shape android:shape="rectangle">
-            <solid android:color="@color/primary"/>
-        </shape>
-    </item>
-
 </layer-list>

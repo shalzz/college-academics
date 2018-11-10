@@ -59,13 +59,18 @@ constructor(@ApplicationContext context: Context) {
         mPref.edit().clear().apply()
     }
 
+    fun setLoggedIn() {
+        mPref.edit().putBoolean(
+            "LOGGEDIN", true
+        ).commit()
+    }
+
     /**
      * Saves the user details in shared preferences and sets login status to true.
      * @param username Username
      */
     fun saveUser(username: String, token: String) {
         val editor = mPref.edit()
-        editor.putBoolean("LOGGEDIN", true)
         editor.putString("USERNAME", username)
         editor.putString("TOKEN", token)
         editor.commit()
