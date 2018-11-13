@@ -19,27 +19,26 @@
   -->
 
 <merge
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <!-- use View#elevation property for realistic shadowing -->
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        android:minHeight="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
-        android:elevation="@dimen/toolbar_elevation"
-        android:subtitleTextAppearance="@style/MyActionBarSubTitleText"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+    <com.google.android.material.appbar.AppBarLayout
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+    >
 
-    <!-- use a view stub so that all other views can find their anchor -->
-    <!-- and align properly -->
-    <ViewStub android:id="@+id/drop_shadow"
-          android:layout_width="0dp"
-          android:layout_height="0dp"
-          android:layout_below="@id/toolbar"/>
+        <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:minHeight="?attr/actionBarSize"
+                android:background="?attr/colorPrimary"
+                app:elevation="@dimen/toolbar_elevation"
+                android:subtitleTextAppearance="@style/MyActionBarSubTitleText"
+                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+    </com.google.android.material.appbar.AppBarLayout>
 
 </merge>

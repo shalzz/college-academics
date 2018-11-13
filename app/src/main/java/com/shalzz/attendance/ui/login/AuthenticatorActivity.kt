@@ -10,7 +10,6 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import com.shalzz.attendance.R
 import com.shalzz.attendance.sync.AccountAuthenticatorActivity
 import com.shalzz.attendance.sync.MyAccountManager
-import com.shalzz.attendance.ui.main.MainActivity
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Named
@@ -27,24 +26,16 @@ class AuthenticatorActivity: AccountAuthenticatorActivity(), OTPFragment.OnFragm
     /**
      * Called when the activity is first created.
      */
-    public override fun onCreate(savedInstanceState: Bundle?) {
-        if (savedInstanceState == null) {
+    public override fun onCreate(icicle: Bundle?) {
+        if (icicle == null) {
             delegate.setLocalNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         }
-        super.onCreate(savedInstanceState)
+        super.onCreate(icicle)
         activityComponent().inject(this)
         setContentView(R.layout.activity_login)
 
+        mAccountManager = AccountManager.get(this)
         mAuthTokenType = MyAccountManager.AUTHTOKEN_TYPE_READ_ONLY
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-
-        // The sign up activity returned that the user has successfully created an account
-        if (requestCode == REQ_SIGNUP && resultCode == Activity.RESULT_OK) {
-            finishLogin(data!!)
-        } else
-            super.onActivityResult(requestCode, resultCode, data)
     }
 
     override fun onFragmentInteraction(authToken: String, phone: String) {
@@ -55,9 +46,6 @@ class AuthenticatorActivity: AccountAuthenticatorActivity(), OTPFragment.OnFragm
         val res = Intent()
         res.putExtras(data)
 
-        MyAccountManager.addPeriodicSync(this, phone)
-        val ourIntent = Intent(this, MainActivity::class.java)
-        startActivity(ourIntent)
         finishLogin(res)
     }
 
@@ -76,9 +64,13 @@ class AuthenticatorActivity: AccountAuthenticatorActivity(), OTPFragment.OnFragm
             // (Not setting the auth regId will cause another call to the server to authenticate the user)
             mAccountManager.addAccountExplicitly(account, null, null)
             mAccountManager.setAuthToken(account, authtokenType, authtoken)
+
+            // Set up sync
+            MyAccountManager.addPeriodicSync(this, account)
+
         }
 
-        setAccountAuthenticatorResult(intent.extras)
+        setAccountAuthenticatorResult(intent.extras!!)
         setResult(Activity.RESULT_OK, intent)
         finish()
     }
@@ -87,6 +79,5 @@ class AuthenticatorActivity: AccountAuthenticatorActivity(), OTPFragment.OnFragm
         var ARG_ACCOUNT_TYPE: String = "ACCOUNT_TYPE"
         var ARG_AUTH_TYPE: String = "AUTH_TYPE"
         var ARG_IS_ADDING_NEW_ACCOUNT: String = "IS_ADDING_ACCOUNT"
-        private val REQ_SIGNUP = 1
     }
 }

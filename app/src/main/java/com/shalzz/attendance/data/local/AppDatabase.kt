@@ -17,7 +17,7 @@ import com.shalzz.attendance.injection.ApplicationContext
 import javax.inject.Singleton
 
 @Singleton
-@Database(entities = [User::class, Subject::class, Period::class], version = 13)
+@Database(entities = [User::class, Subject::class, Period::class], version = 14)
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao
@@ -31,7 +31,7 @@ abstract class AppDatabase : RoomDatabase() {
             return Room.databaseBuilder(context,
                     AppDatabase::class.java, DATABASE_NAME)
                     .addMigrations(MIGRATION_12_13)
-                    .fallbackToDestructiveMigrationFrom(10, 11)
+                    .fallbackToDestructiveMigration()
                     .build()
         }
 

@@ -53,6 +53,13 @@ constructor(private val mDataAPI: DataAPI,
             .subscribeOn(Schedulers.single())
     }
 
+    fun syncAttendance(auth: String): Observable<Subject> {
+        return mDataAPI.getAttendance(auth)
+            .subscribeOn(Schedulers.io())
+            .concatMap(mDatabaseHelper::setSubjects)
+            .subscribeOn(Schedulers.single())
+    }
+
     fun loadAttendance(filter: String?): Observable<List<Subject>> {
         return mDatabaseHelper.getSubjects(filter)
             .subscribeOn(Schedulers.single())
@@ -60,6 +67,13 @@ constructor(private val mDataAPI: DataAPI,
 
     fun syncDay(date: Date): Observable<Period> {
         return mDataAPI.getTimetable(DateHelper.toTechnicalFormat(date))
+            .subscribeOn(Schedulers.io())
+            .concatMap(mDatabaseHelper::setPeriods)
+            .subscribeOn(Schedulers.single())
+    }
+
+    fun syncDay(auth: String, date: Date): Observable<Period> {
+        return mDataAPI.getTimetable(auth, DateHelper.toTechnicalFormat(date))
             .subscribeOn(Schedulers.io())
             .concatMap(mDatabaseHelper::setPeriods)
             .subscribeOn(Schedulers.single())
@@ -82,8 +96,8 @@ constructor(private val mDataAPI: DataAPI,
             .subscribeOn(Schedulers.single())
     }
 
-    fun loadUser(): Observable<User> {
-        return mDatabaseHelper.user
+    fun loadUser(phone: String): Observable<User> {
+        return mDatabaseHelper.getUser(phone)
             .subscribeOn(Schedulers.single())
     }
 

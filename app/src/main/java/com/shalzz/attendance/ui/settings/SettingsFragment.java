@@ -28,7 +28,11 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.widget.Toast;
-
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.preference.*;
 import com.android.billingclient.api.BillingClient;
 import com.bugsnag.android.Bugsnag;
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -38,33 +42,20 @@ import com.shalzz.attendance.billing.BillingProvider;
 import com.shalzz.attendance.data.local.PreferencesHelper;
 import com.shalzz.attendance.event.ProKeyPurchaseEvent;
 import com.shalzz.attendance.injection.ActivityContext;
+import com.shalzz.attendance.sync.MyAccountManager;
 import com.shalzz.attendance.ui.main.MainActivity;
 import com.shalzz.attendance.utils.Miscellaneous.Analytics;
 import com.shalzz.attendance.utils.RxEventBus;
 import com.shalzz.attendance.utils.RxUtil;
-import com.shalzz.attendance.sync.MyAccountManager;
 import com.shalzz.attendance.wrapper.ProModeListPreference;
+import io.reactivex.disposables.Disposable;
+import timber.log.Timber;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatDelegate;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.preference.ListPreference;
-import androidx.preference.PreferenceCategory;
-import androidx.preference.PreferenceFragmentCompat;
-import androidx.preference.PreferenceScreen;
-import androidx.preference.SwitchPreference;
-import io.reactivex.disposables.Disposable;
-import timber.log.Timber;
-
 public class SettingsFragment extends PreferenceFragmentCompat implements
         OnSharedPreferenceChangeListener {
-
-    private final int MY_PERMISSIONS_REQUEST_GET_CONTACTS = 1;
 
     @Inject
     @Named("app")
@@ -155,18 +146,12 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
             }
         }
         else if (key.equals(getString(R.string.pref_key_sync))) {
-            if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.GET_ACCOUNTS) !=
-                    PackageManager.PERMISSION_GRANTED) {
-                    requestPermissions( new String[] {Manifest.permission.GET_ACCOUNTS},
-                        MY_PERMISSIONS_REQUEST_GET_CONTACTS);
-            } else {
-                toggleSync(sharedPreferences.getBoolean(key,true));
-            }
+            toggleSync(sharedPreferences.getBoolean(key,true));
         }
         else if(key.equals(key_sync_interval)) {
             ListPreference connectionPref = (ListPreference) findPreference(key);
             connectionPref.setSummary(connectionPref.getEntry());
-            MyAccountManager.addPeriodicSync(mContext, mPreferences.getUserId());
+            MyAccountManager.addPeriodicSync(mContext, MyAccountManager.getSyncAccount(mContext));
         }
         else if(key.equals(getString(R.string.pref_key_ga_opt_in))) {
             boolean optIn = sharedPreferences.getBoolean(key, true);
@@ -178,33 +163,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
     }
 
     private void toggleSync(boolean sync) {
-        String account_name = mPreferences.getUserId();
-        if (sync)
-            MyAccountManager.enableAutomaticSync(mContext, account_name);
-        else
-            MyAccountManager.disableAutomaticSync(mContext, account_name);
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case MY_PERMISSIONS_REQUEST_GET_CONTACTS: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    toggleSync(true);
-                } else {
-                    toggleSync(false);
-                    syncPref.setChecked(false);
-                    // Show an explanation why we need this permission.
-                    Toast.makeText(mContext, getString(R.string.contacts_permission_discription),
-                            Toast.LENGTH_LONG).show();
-                }
-                break;
-            }
-        }
+        MyAccountManager.toggleAutomaticSync(mContext, sync);
     }
 
     @Override

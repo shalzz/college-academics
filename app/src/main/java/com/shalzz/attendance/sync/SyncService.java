@@ -62,8 +62,7 @@ public class SyncService extends Service {
                 sSyncAdapter = new SyncAdapter(getApplicationContext(),
                         true,
                         false,
-                        mDataManager,
-                        mPreferencesHelper);
+                        mDataManager);
             }
         }
     }

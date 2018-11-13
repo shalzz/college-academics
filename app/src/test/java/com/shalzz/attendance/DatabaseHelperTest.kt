@@ -60,7 +60,7 @@ class DatabaseHelperTest {
         writeResult.assertValue(user)
 
         val readResult = TestObserver<User>()
-        mDatabaseHelper.user.subscribe(readResult)
+        mDatabaseHelper.getUser(user.phone).subscribe(readResult)
         readResult.assertNoErrors()
         readResult.onNext(user) // Since this is reactive streams, onComplete will never be called.
     }

@@ -36,7 +36,6 @@ import com.shalzz.attendance.event.ProKeyPurchaseEvent
 import com.shalzz.attendance.injection.ApplicationContext
 import com.shalzz.attendance.injection.ConfigPersistent
 import com.shalzz.attendance.ui.base.BasePresenter
-import com.shalzz.attendance.utils.NetworkUtil
 import com.shalzz.attendance.utils.RxEventBus
 import com.shalzz.attendance.utils.RxUtil
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -77,9 +76,9 @@ internal constructor(private val mDataManager: DataManager,
         RxUtil.dispose(mDisposable)
     }
 
-    fun loadUser() {
+    fun loadUser(phone: String) {
         RxUtil.dispose(mDisposable)
-        mDisposable = mDataManager.loadUser()
+        mDisposable = mDataManager.loadUser(phone)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(object : DisposableObserver<User>() {

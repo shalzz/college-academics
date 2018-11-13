@@ -32,7 +32,6 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.animation.DecelerateInterpolator
-import android.widget.TextView
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
@@ -44,7 +43,6 @@ import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.RecyclerView
 import butterknife.BindArray
 import butterknife.BindBool
-import butterknife.BindView
 import butterknife.ButterKnife
 import com.android.billingclient.api.BillingClient.BillingResponse
 import com.bugsnag.android.Bugsnag
@@ -55,6 +53,7 @@ import com.shalzz.attendance.R
 import com.shalzz.attendance.billing.BillingManager
 import com.shalzz.attendance.billing.BillingProvider
 import com.shalzz.attendance.data.DataManager
+import com.shalzz.attendance.data.local.PreferencesHelper
 import com.shalzz.attendance.data.model.entity.User
 import com.shalzz.attendance.sync.MyAccountManager
 import com.shalzz.attendance.ui.attendance.AttendanceListFragment
@@ -62,6 +61,10 @@ import com.shalzz.attendance.ui.base.BaseActivity
 import com.shalzz.attendance.ui.login.AuthenticatorActivity
 import com.shalzz.attendance.ui.settings.SettingsFragment
 import com.shalzz.attendance.ui.timetable.TimeTablePagerFragment
+import kotlinx.android.synthetic.main.drawer.*
+import kotlinx.android.synthetic.main.drawer_header.view.*
+import kotlinx.android.synthetic.main.include_drawer_list.*
+import kotlinx.android.synthetic.main.include_toolbar.*
 import okhttp3.OkHttpClient
 import timber.log.Timber
 import java.io.IOException
@@ -72,13 +75,8 @@ class MainActivity : BaseActivity(), MainMvpView, BillingProvider {
     /**
      * Null on tablets
      */
-    @BindView(R.id.drawer_layout)
     lateinit var mDrawerLayout: DrawerLayout
-
-    @BindView(R.id.list_slidermenu)
     lateinit var mNavigationView: NavigationView
-
-    @BindView(R.id.toolbar)
     lateinit var mToolbar: Toolbar
 
     /**
@@ -93,6 +91,9 @@ class MainActivity : BaseActivity(), MainMvpView, BillingProvider {
     @Inject lateinit var mDataManager: DataManager
 
     @Inject lateinit var mMainPresenter: MainPresenter
+
+    @Inject
+    lateinit var mPreferencesHelper: PreferencesHelper
 
     @Inject
     lateinit var httpClient: OkHttpClient
@@ -135,16 +136,9 @@ class MainActivity : BaseActivity(), MainMvpView, BillingProvider {
     }
 
     class DrawerHeaderViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        @BindView(R.id.drawer_header_name)
-        lateinit  var tv_name: TextView
-        @BindView(R.id.drawer_header_course)
-        lateinit  var tv_course: TextView
-        @BindView(R.id.last_refreshed)
-        lateinit  var last_refresh: TextView
-
-        init {
-            ButterKnife.bind(this, itemView)
-        }
+        val tv_name = itemView.drawer_header_name
+        val tv_course = itemView.drawer_header_course
+        val last_refresh = itemView.last_refreshed
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -155,10 +149,14 @@ class MainActivity : BaseActivity(), MainMvpView, BillingProvider {
         Bugsnag.setContext("MainActivity")
         mMainPresenter.attachView(this)
 
+        mDrawerLayout = drawer_layout
+        mNavigationView = list_slidermenu
+        mToolbar = toolbar
+
         mFragmentManager = supportFragmentManager
         DrawerheaderVH = DrawerHeaderViewHolder(mNavigationView.getHeaderView(0))
         mBillingManager = BillingManager(this, mDataManager,
-                mMainPresenter.updateListener)
+            mMainPresenter.updateListener)
         setSupportActionBar(mToolbar)
 
         // Set the list's click listener
@@ -200,7 +198,7 @@ class MainActivity : BaseActivity(), MainMvpView, BillingProvider {
 
             if (intent.hasExtra(LAUNCH_FRAGMENT_EXTRA)) {
                 mCurrentSelectedPosition = intent.getIntExtra(LAUNCH_FRAGMENT_EXTRA,
-                        Fragments.ATTENDANCE.value)
+                    Fragments.ATTENDANCE.value)
             } else if (intent.action != null && intent.action == Intent.ACTION_MANAGE_NETWORK_USAGE) {
                 mCurrentSelectedPosition = Fragments.SETTINGS.value
                 Timber.i("MANAGE_NETWORK_USAGE intent received")
@@ -208,12 +206,12 @@ class MainActivity : BaseActivity(), MainMvpView, BillingProvider {
             displayView(mCurrentSelectedPosition)
         }
 
-        mMainPresenter.loadUser()
+        mMainPresenter.loadUser(mPreferencesHelper.userId!!)
     }
 
     private fun initDrawer() {
         mDrawerToggle = object : ActionBarDrawerToggle(this, mDrawerLayout, mToolbar,
-                R.string.drawer_open, R.string.drawer_close) {
+            R.string.drawer_open, R.string.drawer_close) {
 
             /** Called when a drawer has settled in a completely closed state.  */
             override fun onDrawerClosed(view: View) {
@@ -243,11 +241,11 @@ class MainActivity : BaseActivity(), MainMvpView, BillingProvider {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             mDrawerLayout.setStatusBarBackgroundColor(resources.getColor(R.color.primary_dark,
-                    theme))
+                theme))
         } else {
 
             mDrawerLayout.setStatusBarBackgroundColor(resources.getColor(
-                    R.color.primary_dark))
+                R.color.primary_dark))
         }
     }
 
@@ -269,12 +267,12 @@ class MainActivity : BaseActivity(), MainMvpView, BillingProvider {
         }
 
         val sv = ShowcaseView.Builder(this)
-                .setTarget(homeTarget)
-                .setStyle(R.style.ShowcaseTheme)
-                .singleShot(1111)
-                .setContentTitle(getString(R.string.sv_main_activity_title))
-                .setContentText(getString(R.string.sv_main_activity_content))
-                .build()
+            .setTarget(homeTarget)
+            .setStyle(R.style.ShowcaseTheme)
+            .singleShot(1111)
+            .setContentTitle(getString(R.string.sv_main_activity_title))
+            .setContentText(getString(R.string.sv_main_activity_content))
+            .build()
 
         sv.overrideButtonClick {
             mDrawerLayout.closeDrawer( mNavigationView as View)
@@ -371,14 +369,14 @@ class MainActivity : BaseActivity(), MainMvpView, BillingProvider {
 
         // return if the fragment is already installed
         if (isAttendanceListInstalled && fragment is AttendanceListFragment ||
-                isTimeTablePagerInstalled && fragment is TimeTablePagerFragment ||
-                isSettingsInstalled && fragment is SettingsFragment) {
+            isTimeTablePagerInstalled && fragment is TimeTablePagerFragment ||
+            isSettingsInstalled && fragment is SettingsFragment) {
             return
         }
 
         if (mPreviousFragment != null) {
             Timber.d("showFragment: destroying previous fragment %s",
-                    mPreviousFragment!!.javaClass.simpleName)
+                mPreviousFragment!!.javaClass.simpleName)
             ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
             ft.remove(mPreviousFragment!!)
             mPreviousFragment = null
@@ -451,8 +449,8 @@ class MainActivity : BaseActivity(), MainMvpView, BillingProvider {
             return false // Nothing in the back stack
         }
         val installed = installedFragment
-                ?: // If no fragment is installed right now, do nothing.
-                return false
+            ?: // If no fragment is installed right now, do nothing.
+            return false
 // Okay now we have 2 fragments; the one in the back stack and the one that's currently
         // installed.
         return !(installed is AttendanceListFragment || installed is TimeTablePagerFragment)
@@ -470,7 +468,7 @@ class MainActivity : BaseActivity(), MainMvpView, BillingProvider {
         val installed = installedFragment
         var position = Fragments.ATTENDANCE.value
         Timber.i("backstack: [pop] %s -> %s", installed!!.javaClass.simpleName,
-                mPreviousFragment!!.javaClass.simpleName)
+            mPreviousFragment!!.javaClass.simpleName)
 
         ft.remove(installed)
         ft.attach(mPreviousFragment!!)
@@ -584,7 +582,7 @@ class MainActivity : BaseActivity(), MainMvpView, BillingProvider {
 
         // Cancel a notification if it is shown.
         val mNotificationManager = getSystemService(
-                Context.NOTIFICATION_SERVICE) as NotificationManager
+            Context.NOTIFICATION_SERVICE) as NotificationManager
         mNotificationManager.cancel(0 /* timetable changed notification id */)
 
         // Destroy current activity and start Login Activity
