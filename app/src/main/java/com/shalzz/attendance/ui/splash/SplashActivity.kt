@@ -60,6 +60,8 @@ class SplashActivity : BaseActivity() {
         mTracker.setAnalyticsCollectionEnabled(optIn)
         Timber.i("Opted In to Google Analytics: %s", optIn)
 
+        // TODO: check for play services
+
         // Set all default values once for this application
         try {
             PreferenceManager.setDefaultValues(this, R.xml.preferences, false)

@@ -134,11 +134,8 @@ class MainActivity : BaseActivity(), MainMvpView, BillingProvider {
                 resources.getColor(R.color.primary_dark))
         }
 
-        if (intent.hasExtra(LAUNCH_FRAGMENT_EXTRA)) {
-            mCurrentSelectedPosition = intent.getIntExtra(LAUNCH_FRAGMENT_EXTRA,
-                Fragments.ATTENDANCE.value)
-        } else if (intent.action != null && intent.action == Intent.ACTION_MANAGE_NETWORK_USAGE) {
-            mCurrentSelectedPosition = Fragments.SETTINGS.value // TODO: manual
+        if (intent.action != null && intent.action == Intent.ACTION_MANAGE_NETWORK_USAGE) {
+            navController.navigate(R.id.settingsFragment)
             Timber.i("MANAGE_NETWORK_USAGE intent received")
         }
 
