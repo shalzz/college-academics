@@ -24,28 +24,21 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         tools:ignore="UnusedAttribute">
 
-    <com.google.android.material.appbar.AppBarLayout
+    <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
-    >
+            android:minHeight="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            android:subtitleTextAppearance="@style/MyActionBarSubTitleText"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
-        <androidx.appcompat.widget.Toolbar
-                android:id="@+id/toolbar"
-                android:layout_height="wrap_content"
-                android:layout_width="match_parent"
-                android:minHeight="?attr/actionBarSize"
-                android:background="?attr/colorPrimary"
-                android:subtitleTextAppearance="@style/MyActionBarSubTitleText"
-                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
-
-        <View
-                android:id="@+id/drop_shadow"
-                android:layout_below="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/shadow_depth"
-                android:background="@drawable/toolbar_dropshadow" />
-
-    </com.google.android.material.appbar.AppBarLayout>
+    <View
+            android:id="@+id/drop_shadow"
+            android:layout_below="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/shadow_depth"
+            android:background="@drawable/toolbar_dropshadow" />
 
 </merge>

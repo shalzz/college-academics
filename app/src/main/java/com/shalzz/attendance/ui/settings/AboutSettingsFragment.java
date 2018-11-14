@@ -25,7 +25,6 @@ import android.os.Bundle;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceScreen;
-
 import com.bugsnag.android.Bugsnag;
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity;
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -58,7 +57,6 @@ public class AboutSettingsFragment extends PreferenceFragmentCompat {
     public void onActivityCreated(Bundle savedInstanceState) {
         mainActivity = ((MainActivity) getActivity());
         mainActivity.activityComponent().inject(this);
-        mainActivity.setDrawerAsUp(true);
         super.onActivityCreated(savedInstanceState);
     }
 
@@ -71,7 +69,6 @@ public class AboutSettingsFragment extends PreferenceFragmentCompat {
     @Override
     public void onResume() {
         super.onResume();
-        mainActivity.setTitle(getString(R.string.about_settings_title));
         int index = 0;
 
         PreferenceScreen prefScreen =  getPreferenceScreen();

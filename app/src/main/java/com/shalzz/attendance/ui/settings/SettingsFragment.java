@@ -30,8 +30,7 @@ import android.os.Bundle;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.preference.*;
 import com.android.billingclient.api.BillingClient;
 import com.bugsnag.android.Bugsnag;
@@ -146,6 +145,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
             }
         }
         else if (key.equals(getString(R.string.pref_key_sync))) {
+            // TODO: fix default
             toggleSync(sharedPreferences.getBoolean(key,true));
         }
         else if(key.equals(key_sync_interval)) {
@@ -221,16 +221,9 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
                 .getPreference(4);
         PreferenceScreen prefScreen =  (PreferenceScreen) prefCategory.getPreference(0);
         prefScreen.setOnPreferenceClickListener(preference -> {
-            Fragment mFragment = new AboutSettingsFragment();
-            FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
-            transaction.replace(R.id.frame_container, mFragment, MainActivity.Companion.getFRAGMENT_TAG());
-            transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-            transaction.addToBackStack(null);
-
-            ((MainActivity) mActivity).setMPopSettingsBackStack(true);
-
-            transaction.commit();
+            NavHostFragment.findNavController(this)
+                    .navigate(R.id.action_settingsFragment_to_aboutSettingsFragment);
 
             Bundle bundle = new Bundle();
             bundle.putString(FirebaseAnalytics.Param.ITEM_ID, getString(R.string.pref_about));

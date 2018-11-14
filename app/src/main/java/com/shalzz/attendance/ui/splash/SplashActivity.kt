@@ -83,7 +83,8 @@ class SplashActivity : BaseActivity() {
                 this,
                 { future ->
                     try {
-                        val bundle = future.result
+                        val bundle = future.result // TO ensure we do not have any errors
+                        Timber.d("Successfully logged In: %s", bundle.getString(AccountManager.KEY_ACCOUNT_NAME))
                         startActivity(Intent(this@SplashActivity, MainActivity::class.java))
                     } catch (e: Exception) {
                         // ignore
@@ -94,10 +95,5 @@ class SplashActivity : BaseActivity() {
                 null
             )
         }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        Timber.d("requestCode: %d, resultCode: %d, data: %s", requestCode, resultCode, data!!.extras)
     }
 }

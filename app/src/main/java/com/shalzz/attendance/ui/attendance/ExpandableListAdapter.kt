@@ -19,7 +19,6 @@
 
 package com.shalzz.attendance.ui.attendance
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.Resources
 import android.graphics.Bitmap
@@ -29,20 +28,24 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewStub
-import android.widget.*
+import android.widget.FrameLayout
+import android.widget.ImageView
+import android.widget.ProgressBar
+import android.widget.RelativeLayout
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SortedList
 import androidx.recyclerview.widget.SortedListAdapterCallback
-import butterknife.BindView
-import butterknife.ButterKnife
 import com.shalzz.attendance.BuildConfig
 import com.shalzz.attendance.R
 import com.shalzz.attendance.data.model.ListFooter
 import com.shalzz.attendance.data.model.entity.Subject
 import com.shalzz.attendance.injection.ApplicationContext
 import com.shalzz.attendance.utils.Miscellaneous
+import kotlinx.android.synthetic.main.list_child_item.view.*
+import kotlinx.android.synthetic.main.list_group_item.view.*
 import timber.log.Timber
-import java.util.*
+import java.util.ArrayList
 import javax.inject.Inject
 
 class ExpandableListAdapter @Inject
@@ -148,24 +151,16 @@ internal constructor(@param:ApplicationContext private val mContext: Context) : 
     (itemView) {
         internal var position = -1
 
-        @BindView(R.id.tvSubj)
-        lateinit var subject: TextView
-        @BindView(R.id.tvPercent)
-        lateinit var percentage: TextView
-        @BindView(R.id.tvClasses)
-        lateinit var classes: TextView
-        @BindView(R.id.pbPercent)
-        lateinit var percent: ProgressBar
+        var subject: TextView = itemView.tvSubj
+        var percentage: TextView = itemView.tvPercent
+        var classes: TextView = itemView.tvClasses
+        var percent: ProgressBar = itemView.pbPercent
 
         //child views
         var childView: RelativeLayout? = null
         var tvAbsent: TextView? = null
         var tvReach: TextView? = null
         var ivAlert: ImageView? = null
-
-        init {
-            ButterKnife.bind(this, itemView)
-        }
 
     }
 
@@ -213,7 +208,6 @@ internal constructor(@param:ApplicationContext private val mContext: Context) : 
      *
      * @param view The call log list item view.
      */
-    @SuppressLint("WrongViewCast")
     private fun inflateChildView(view: View) {
         val views = view.tag as GenericViewHolder
 
@@ -224,10 +218,10 @@ internal constructor(@param:ApplicationContext private val mContext: Context) : 
             views.childView = views.itemView.findViewById(R.id.subTree)
 
         // child view
-        val childView = views.childView
-        views.tvAbsent = childView!!.findViewById(R.id.tvAbsent)
-        views.tvReach = childView.findViewById(R.id.tvReach)
-        views.ivAlert = childView.findViewById(R.id.imageView1)
+        val childView = views.childView!!
+        views.tvAbsent = childView.tvAbsent
+        views.tvReach = childView.tvReach
+        views.ivAlert = childView.imageView1
 
         bindChildView(views, views.position)
     }

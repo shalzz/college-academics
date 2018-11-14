@@ -19,11 +19,9 @@
 
 package com.shalzz.attendance.ui.main
 
-import android.animation.ValueAnimator
 import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
-import android.content.res.Configuration
 import android.graphics.Point
 import android.os.Build
 import android.os.Bundle
@@ -31,19 +29,13 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import android.view.animation.DecelerateInterpolator
-import androidx.appcompat.app.ActionBarDrawerToggle
+import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
-import androidx.core.app.ActivityCompat
-import androidx.core.view.GravityCompat
-import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentTransaction
+import androidx.navigation.Navigation
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.NavigationUI
 import androidx.recyclerview.widget.RecyclerView
-import butterknife.BindArray
-import butterknife.BindBool
-import butterknife.ButterKnife
 import com.android.billingclient.api.BillingClient.BillingResponse
 import com.bugsnag.android.Bugsnag
 import com.github.amlcurran.showcaseview.ShowcaseView
@@ -59,8 +51,6 @@ import com.shalzz.attendance.sync.MyAccountManager
 import com.shalzz.attendance.ui.attendance.AttendanceListFragment
 import com.shalzz.attendance.ui.base.BaseActivity
 import com.shalzz.attendance.ui.login.AuthenticatorActivity
-import com.shalzz.attendance.ui.settings.SettingsFragment
-import com.shalzz.attendance.ui.timetable.TimeTablePagerFragment
 import kotlinx.android.synthetic.main.drawer.*
 import kotlinx.android.synthetic.main.drawer_header.view.*
 import kotlinx.android.synthetic.main.include_drawer_list.*
@@ -75,56 +65,24 @@ class MainActivity : BaseActivity(), MainMvpView, BillingProvider {
     /**
      * Null on tablets
      */
-    lateinit var mDrawerLayout: DrawerLayout
-    lateinit var mNavigationView: NavigationView
-    lateinit var mToolbar: Toolbar
+    private lateinit var mNavigationView: NavigationView
+    private lateinit var mToolbar: Toolbar
 
     /**
      * Drawer lock state. True for tablets, false otherwise .
      */
-    @BindBool(R.bool.tablet_layout)
-    @JvmField var isTabletLayout: Boolean = false
-
-    @BindArray(R.array.drawer_array)
-    lateinit var mNavTitles: Array<String>
+    private var isTabletLayout: Boolean = false
 
     @Inject lateinit var mDataManager: DataManager
-
     @Inject lateinit var mMainPresenter: MainPresenter
-
-    @Inject
-    lateinit var mPreferencesHelper: PreferencesHelper
-
-    @Inject
-    lateinit var httpClient: OkHttpClient
-
-    var mPopSettingsBackStack = false
+    @Inject lateinit var mPreferencesHelper: PreferencesHelper
+    @Inject lateinit var httpClient: OkHttpClient
 
     private var mCurrentSelectedPosition = Fragments.ATTENDANCE.value
-    private var mDrawerToggle: ActionBarDrawerToggle? = null
-    private var DrawerheaderVH: DrawerHeaderViewHolder? = null
+    private var drawerHeaderVH: DrawerHeaderViewHolder? = null
 
-    private var mFragmentManager: FragmentManager? = null
     private var fragment: Fragment? = null
-    // Our custom poor-man's back stack which has only one entry at maximum.
-    private var mPreviousFragment: Fragment? = null
     private var mBillingManager: BillingManager? = null
-
-    /**
-     * @return currently installed [Fragment] (1-pane has only one at most), or null if none
-     * exists.
-     */
-    private val installedFragment: Fragment?
-        get() = mFragmentManager!!.findFragmentByTag(FRAGMENT_TAG)
-
-    private val isAttendanceListInstalled: Boolean
-        get() = installedFragment is AttendanceListFragment
-
-    private val isTimeTablePagerInstalled: Boolean
-        get() = installedFragment is TimeTablePagerFragment
-
-    private val isSettingsInstalled: Boolean
-        get() = installedFragment is SettingsFragment
 
     /**
      * Reference to fragment positions
@@ -136,34 +94,51 @@ class MainActivity : BaseActivity(), MainMvpView, BillingProvider {
     }
 
     class DrawerHeaderViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val tv_name = itemView.drawer_header_name
-        val tv_course = itemView.drawer_header_course
-        val last_refresh = itemView.last_refreshed
+        val tvName: TextView = itemView.drawer_header_name
+        val tvCourse: TextView = itemView.drawer_header_course
+        val lastRefresh: TextView = itemView.last_refreshed
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.drawer)
-        ButterKnife.bind(this)
-        activityComponent().inject(this)
         Bugsnag.setContext("MainActivity")
-        mMainPresenter.attachView(this)
 
-        mDrawerLayout = drawer_layout
+        activityComponent().inject(this)
+        mMainPresenter.attachView(this)
+        mBillingManager = BillingManager(this, mDataManager, mMainPresenter.updateListener)
+
         mNavigationView = list_slidermenu
         mToolbar = toolbar
+        isTabletLayout = resources.getBoolean(R.bool.tablet_layout)
 
-        mFragmentManager = supportFragmentManager
-        DrawerheaderVH = DrawerHeaderViewHolder(mNavigationView.getHeaderView(0))
-        mBillingManager = BillingManager(this, mDataManager,
-            mMainPresenter.updateListener)
-        setSupportActionBar(mToolbar)
+        setSupportActionBar(toolbar)
+        val navController = Navigation.findNavController(this, R.id.nav_main_host_fragment)
+        val appBarConfiguration = AppBarConfiguration(
+                    setOf(R.id.attendanceListFragment, R.id.timeTablePagerFragment),
+                    drawer_layout)
+        NavigationUI.setupWithNavController(toolbar, navController, appBarConfiguration)
+        NavigationUI.setupWithNavController(mNavigationView, navController)
 
-        // Set the list's click listener
-        mNavigationView.setNavigationItemSelectedListener(NavigationItemSelectedListener())
+        drawerHeaderVH = DrawerHeaderViewHolder(mNavigationView.getHeaderView(0))
 
-        initDrawer()
-        init(savedInstanceState)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            drawer_layout.setStatusBarBackgroundColor(
+                resources.getColor(R.color.primary_dark, theme))
+        } else {
+            drawer_layout.setStatusBarBackgroundColor(
+                resources.getColor(R.color.primary_dark))
+        }
+
+        if (intent.hasExtra(LAUNCH_FRAGMENT_EXTRA)) {
+            mCurrentSelectedPosition = intent.getIntExtra(LAUNCH_FRAGMENT_EXTRA,
+                Fragments.ATTENDANCE.value)
+        } else if (intent.action != null && intent.action == Intent.ACTION_MANAGE_NETWORK_USAGE) {
+            mCurrentSelectedPosition = Fragments.SETTINGS.value // TODO: manual
+            Timber.i("MANAGE_NETWORK_USAGE intent received")
+        }
+
+        mMainPresenter.loadUser(mPreferencesHelper.userId!!)
     }
 
     override fun onResume() {
@@ -178,79 +153,7 @@ class MainActivity : BaseActivity(), MainMvpView, BillingProvider {
         }
     }
 
-    /**
-     * Initialise a fragment
-     */
-    fun init(bundle: Bundle?) {
-
-        // Select either the default item (Fragments.ATTENDANCE) or the last selected item.
-        mCurrentSelectedPosition = reloadCurrentFragment()
-
-        // Recycle fragment
-        if (bundle != null) {
-            fragment = mFragmentManager!!.findFragmentByTag(FRAGMENT_TAG)
-            mPreviousFragment = mFragmentManager!!.getFragment(bundle, PREVIOUS_FRAGMENT_TAG)
-            Timber.d("current fag found: %s", fragment)
-            Timber.d("previous fag found: %s", mPreviousFragment)
-            selectItem(mCurrentSelectedPosition)
-            showFragment(fragment!!)
-        } else {
-
-            if (intent.hasExtra(LAUNCH_FRAGMENT_EXTRA)) {
-                mCurrentSelectedPosition = intent.getIntExtra(LAUNCH_FRAGMENT_EXTRA,
-                    Fragments.ATTENDANCE.value)
-            } else if (intent.action != null && intent.action == Intent.ACTION_MANAGE_NETWORK_USAGE) {
-                mCurrentSelectedPosition = Fragments.SETTINGS.value
-                Timber.i("MANAGE_NETWORK_USAGE intent received")
-            }
-            displayView(mCurrentSelectedPosition)
-        }
-
-        mMainPresenter.loadUser(mPreferencesHelper.userId!!)
-    }
-
-    private fun initDrawer() {
-        mDrawerToggle = object : ActionBarDrawerToggle(this, mDrawerLayout, mToolbar,
-            R.string.drawer_open, R.string.drawer_close) {
-
-            /** Called when a drawer has settled in a completely closed state.  */
-            override fun onDrawerClosed(view: View) {
-                super.onDrawerClosed(view)
-                invalidateOptionsMenu() // creates call to onPrepareOptionsMenu()
-            }
-
-            /** Called when a drawer has settled in a completely open state.  */
-            override fun onDrawerOpened(drawerView: View) {
-                super.onDrawerOpened(drawerView)
-                invalidateOptionsMenu() // creates call to onPrepareOptionsMenu()
-            }
-        }
-        mDrawerToggle!!.isDrawerIndicatorEnabled = true
-        mToolbar.setNavigationOnClickListener {
-            val drawerLockMode = mDrawerLayout.getDrawerLockMode(GravityCompat.START)
-            // check if drawer is shown as up
-            if (drawerLockMode == DrawerLayout.LOCK_MODE_LOCKED_CLOSED) {
-                onBackPressed()
-            } else if (mDrawerLayout.isDrawerVisible(GravityCompat.START) && drawerLockMode != DrawerLayout.LOCK_MODE_LOCKED_OPEN) {
-                mDrawerLayout.closeDrawer(GravityCompat.START)
-            } else {
-                mDrawerLayout.openDrawer(GravityCompat.START)
-            }
-        }
-        mDrawerLayout.addDrawerListener(mDrawerToggle as ActionBarDrawerToggle)
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            mDrawerLayout.setStatusBarBackgroundColor(resources.getColor(R.color.primary_dark,
-                theme))
-        } else {
-
-            mDrawerLayout.setStatusBarBackgroundColor(resources.getColor(
-                R.color.primary_dark))
-        }
-    }
-
     private fun showcaseView() {
-
         if (isTabletLayout) {
             if (fragment is AttendanceListFragment) {
                 (fragment as AttendanceListFragment).showcaseView()
@@ -275,123 +178,12 @@ class MainActivity : BaseActivity(), MainMvpView, BillingProvider {
             .build()
 
         sv.overrideButtonClick {
-            mDrawerLayout.closeDrawer( mNavigationView as View)
+            drawer_layout.closeDrawer( mNavigationView as View)
             sv.hide()
             if (fragment is AttendanceListFragment) {
                 (fragment as AttendanceListFragment).showcaseView()
             }
         }
-    }
-
-    fun setDrawerAsUp(enabled: Boolean) {
-        val start = if (enabled) 0f else 1f
-        val end = if (enabled) 1f else 0f
-        mDrawerLayout.setDrawerLockMode(if (enabled)
-            DrawerLayout.LOCK_MODE_LOCKED_CLOSED
-        else
-            DrawerLayout.LOCK_MODE_UNLOCKED)
-
-        val anim = ValueAnimator.ofFloat(start, end)
-        anim.addUpdateListener { valueAnimator ->
-            val slideOffset = valueAnimator.animatedValue as Float
-            mDrawerToggle!!.onDrawerSlide(mDrawerLayout, slideOffset)
-        }
-        anim.interpolator = DecelerateInterpolator()
-        anim.duration = 300
-        anim.start()
-    }
-
-    private inner class NavigationItemSelectedListener : NavigationView.OnNavigationItemSelectedListener {
-        override fun onNavigationItemSelected(menuItem: MenuItem): Boolean {
-            displayView(menuItem.order)
-            return false
-        }
-    }
-
-    internal fun displayView(position: Int) {
-        val actionBar = supportActionBar
-        // update the main content by replacing fragments
-        when (position) {
-            0 -> return
-            1 -> {
-                fragment = AttendanceListFragment()
-                mPreviousFragment = null // GC
-                if (isTabletLayout && actionBar != null) {
-                    actionBar.setDisplayHomeAsUpEnabled(false)
-                }
-            }
-            2 -> {
-                fragment = TimeTablePagerFragment()
-                mPreviousFragment = null // GC
-                if (isTabletLayout && actionBar != null) {
-                    actionBar.setDisplayHomeAsUpEnabled(false)
-                }
-            }
-            3 -> {
-                fragment = SettingsFragment()
-                if (isTabletLayout && actionBar != null) {
-                    actionBar.setDisplayHomeAsUpEnabled(true)
-                }
-            }
-            else -> {
-            }
-        }
-
-        if (fragment != null) {
-            selectItem(position)
-            showFragment(fragment!!)
-        } else {
-            Timber.e("Error in creating fragment")
-        }
-    }
-
-    /**
-     * Update selected item and title, then close the drawer
-     * @param position the item to highlight
-     */
-    private fun selectItem(position: Int) {
-        mCurrentSelectedPosition = position
-        mNavigationView.menu.getItem(position - 1).isChecked = true
-        title = mNavTitles[position - 1]
-        if (mDrawerLayout.isDrawerOpen(mNavigationView))
-            mDrawerLayout.closeDrawer(mNavigationView)
-    }
-
-    /**
-     * Push the installed fragment into our custom back stack (or optionally
-     * [FragmentTransaction.remove] it) and [FragmentTransaction.add] `fragment`.
-     *
-     * @param fragment [Fragment] to be added.
-     */
-    private fun showFragment(fragment: Fragment) {
-        val ft = mFragmentManager!!.beginTransaction()
-        val installed = installedFragment
-
-        // return if the fragment is already installed
-        if (isAttendanceListInstalled && fragment is AttendanceListFragment ||
-            isTimeTablePagerInstalled && fragment is TimeTablePagerFragment ||
-            isSettingsInstalled && fragment is SettingsFragment) {
-            return
-        }
-
-        if (mPreviousFragment != null) {
-            Timber.d("showFragment: destroying previous fragment %s",
-                mPreviousFragment!!.javaClass.simpleName)
-            ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-            ft.remove(mPreviousFragment!!)
-            mPreviousFragment = null
-        }
-
-        // Remove the current fragment and push it into the backstack.
-        if (installed != null) {
-            mPreviousFragment = installed
-            ft.detach(mPreviousFragment!!)
-        }
-
-        // Show the new one
-        ft.add(R.id.frame_container, fragment, FRAGMENT_TAG)
-        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-        ft.commit()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -415,134 +207,12 @@ class MainActivity : BaseActivity(), MainMvpView, BillingProvider {
         return super.onOptionsItemSelected(item)
     }
 
-    override fun onBackPressed() {
-        // close drawer if it is open
-        if (mDrawerLayout.isDrawerOpen(mNavigationView)) {
-            mDrawerLayout.closeDrawer(mNavigationView)
-        } else if (shouldPopFromBackStack()) {
-            if (mPopSettingsBackStack) {
-                Timber.i("Back: Popping from internal back stack")
-                mPopSettingsBackStack = false
-                mFragmentManager!!.popBackStackImmediate()
-                setDrawerAsUp(false)
-            } else {
-                Timber.i("Back: Popping from custom back stack")
-                // Custom back stack
-                popFromBackStack()
-                val actionBar = supportActionBar
-                if (isTabletLayout && actionBar != null) {
-                    actionBar.setDisplayHomeAsUpEnabled(false)
-                }
-            }
-        } else {
-            ActivityCompat.finishAfterTransition(this)
-            Timber.i("Back: App closed")
-        }
-    }
-
-    /**
-     * @return true if we should pop from our custom back stack.
-     */
-    private fun shouldPopFromBackStack(): Boolean {
-
-        if (mPreviousFragment == null) {
-            return false // Nothing in the back stack
-        }
-        val installed = installedFragment
-            ?: // If no fragment is installed right now, do nothing.
-            return false
-// Okay now we have 2 fragments; the one in the back stack and the one that's currently
-        // installed.
-        return !(installed is AttendanceListFragment || installed is TimeTablePagerFragment)
-
-    }
-
-    /**
-     * Pop from our custom back stack.
-     */
-    private fun popFromBackStack() {
-        if (mPreviousFragment == null) {
-            return
-        }
-        val ft = mFragmentManager!!.beginTransaction()
-        val installed = installedFragment
-        var position = Fragments.ATTENDANCE.value
-        Timber.i("backstack: [pop] %s -> %s", installed!!.javaClass.simpleName,
-            mPreviousFragment!!.javaClass.simpleName)
-
-        ft.remove(installed)
-        ft.attach(mPreviousFragment!!)
-        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
-        ft.commit()
-
-        // redraw fragment
-        if (mPreviousFragment is AttendanceListFragment) {
-            position = Fragments.ATTENDANCE.value
-        } else if (mPreviousFragment is TimeTablePagerFragment) {
-            position = Fragments.TIMETABLE.value
-            //((TimeTablePagerFragment) mPreviousFragment).updateFragmentsData();
-        }
-        selectItem(position)
-        mPreviousFragment = null
-    }
-
-    private fun persistCurrentFragment() {
-        if (!LOGGED_OUT) {
-            val editor = getSharedPreferences("SETTINGS", 0).edit()
-            mCurrentSelectedPosition = if (mCurrentSelectedPosition == Fragments.SETTINGS.value)
-                Fragments.ATTENDANCE.value
-            else
-                mCurrentSelectedPosition
-            editor.putInt(PREFERENCE_ACTIVATED_FRAGMENT, mCurrentSelectedPosition).commit()
-        }
-    }
-
-    private fun reloadCurrentFragment(): Int {
-        val settings = getSharedPreferences("SETTINGS", 0)
-        return settings.getInt(PREFERENCE_ACTIVATED_FRAGMENT, Fragments.ATTENDANCE.value)
-    }
-
     override fun setTitle(title: CharSequence) {
         mToolbar.title = title
         mToolbar.subtitle = ""
     }
 
-    override fun onPostCreate(savedInstanceState: Bundle?) {
-        super.onPostCreate(savedInstanceState)
-        // Sync the toggle state after onRestoreInstanceState has occurred.
-        if (mDrawerToggle != null)
-            mDrawerToggle!!.syncState()
-
-        // Toolbar#setTitle is called by the system on onCreate and
-        // again over here which sets the activity label
-        // as the title.
-        // So we need to call setTitle again as well
-        // to show the correct title.
-        title = mNavTitles[mCurrentSelectedPosition - 1]
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        // for orientation changes, etc.
-        if (mPreviousFragment != null) {
-            mFragmentManager!!.putFragment(outState, PREVIOUS_FRAGMENT_TAG, mPreviousFragment!!)
-            Timber.d("previous fag saved: %s", mPreviousFragment!!.javaClass.simpleName)
-        }
-    }
-
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        super.onConfigurationChanged(newConfig)
-        if (mDrawerToggle != null)
-            mDrawerToggle!!.onConfigurationChanged(newConfig)
-    }
-
-    public override fun onPause() {
-        persistCurrentFragment()
-        super.onPause()
-    }
-
     public override fun onDestroy() {
-        mDrawerLayout.removeDrawerListener(mDrawerToggle as ActionBarDrawerToggle)
         if (mBillingManager != null) {
             mBillingManager!!.destroy()
         }
@@ -564,9 +234,9 @@ class MainActivity : BaseActivity(), MainMvpView, BillingProvider {
 
     override fun updateUserDetails(user: User) {
         if (!user.name.isEmpty())
-            DrawerheaderVH!!.tv_name.text = user.name
+            drawerHeaderVH!!.tvName.text = user.name
         if (!user.course.isEmpty())
-            DrawerheaderVH!!.tv_course.text = user.course
+            drawerHeaderVH!!.tvCourse.text = user.course
     }
 
     override fun logout() {

@@ -21,7 +21,7 @@
 <com.shalzz.attendance.wrapper.MultiSwipeRefreshLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/swipe_refresh_atten"
+    android:id="@+id/layoutSwipeRefresh"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.attendance.AttendanceListFragment">
@@ -31,7 +31,7 @@
         android:layout_height="match_parent">
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/atten_recycler_view"
+            android:id="@+id/recyclerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:dividerHeight="1dp"
@@ -39,7 +39,7 @@
             tools:listitem="@layout/list_attend_card"/>
 
         <com.shalzz.attendance.utils.CircularIndeterminate
-            android:id="@+id/circular_indet_atten"
+            android:id="@+id/progressCircular"
             android:visibility="gone"
             android:layout_width="@dimen/material_progress_indeterminate"
             android:layout_height="@dimen/material_progress_indeterminate"
