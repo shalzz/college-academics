@@ -19,21 +19,16 @@
 
 package com.shalzz.attendance.sync;
 
-import android.Manifest;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import androidx.core.app.ActivityCompat;
 import androidx.preference.PreferenceManager;
-
 import com.shalzz.attendance.BuildConfig;
 import com.shalzz.attendance.R;
-
 import timber.log.Timber;
 
 public class MyAccountManager {
@@ -98,6 +93,14 @@ public class MyAccountManager {
                     settingsBundle,
                     SYNC_INTERVAL);
         }
+    }
+
+    public static boolean isSyncEnabled(Context mContext) {
+        Account mAccount = getSyncAccount(mContext);
+        if (mAccount == null)
+            return false;
+
+        return ContentResolver.getSyncAutomatically(mAccount, AUTHORITY);
     }
 
     public static void toggleAutomaticSync(Context mContext, boolean enable) {

@@ -19,17 +19,14 @@
 
 package com.shalzz.attendance.ui.settings;
 
-import android.Manifest;
 import android.app.Activity;
 import android.app.backup.BackupManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatDelegate;
-import androidx.core.content.ContextCompat;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.preference.*;
 import com.android.billingclient.api.BillingClient;
@@ -109,12 +106,6 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
 
         mBillingProvider = (BillingProvider) mActivity;
 
-        if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.GET_ACCOUNTS) !=
-                PackageManager.PERMISSION_GRANTED) {
-            toggleSync(false);
-            syncPref.setChecked(false);
-        }
-
         PurchaseEventDisposable = mEventBus.filteredObservable(ProKeyPurchaseEvent.class)
                 .subscribe(proKeyPurchaseEvent -> {
                     proModePref.setChecked(true);
@@ -145,7 +136,6 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
             }
         }
         else if (key.equals(getString(R.string.pref_key_sync))) {
-            // TODO: fix default
             toggleSync(sharedPreferences.getBoolean(key,true));
         }
         else if(key.equals(key_sync_interval)) {
@@ -184,6 +174,8 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
     public void onResume() {
         super.onResume();
         getActivity().setTitle(getString(R.string.navigation_item_3));
+
+        syncPref.setChecked(MyAccountManager.isSyncEnabled(mContext));
 
         // Set up a listener whenever a key changes
         getPreferenceScreen().getSharedPreferences()
