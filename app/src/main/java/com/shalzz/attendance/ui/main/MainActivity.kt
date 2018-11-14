@@ -31,7 +31,9 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
+import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
+import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
@@ -40,7 +42,6 @@ import com.android.billingclient.api.BillingClient.BillingResponse
 import com.bugsnag.android.Bugsnag
 import com.github.amlcurran.showcaseview.ShowcaseView
 import com.google.android.material.navigation.NavigationView
-import com.shalzz.attendance.BuildConfig
 import com.shalzz.attendance.R
 import com.shalzz.attendance.billing.BillingManager
 import com.shalzz.attendance.billing.BillingProvider
@@ -83,6 +84,7 @@ class MainActivity : BaseActivity(), MainMvpView, BillingProvider {
 
     private var fragment: Fragment? = null
     private var mBillingManager: BillingManager? = null
+    private lateinit var navController: NavController
 
     /**
      * Reference to fragment positions
@@ -113,7 +115,7 @@ class MainActivity : BaseActivity(), MainMvpView, BillingProvider {
         isTabletLayout = resources.getBoolean(R.bool.tablet_layout)
 
         setSupportActionBar(toolbar)
-        val navController = Navigation.findNavController(this, R.id.nav_main_host_fragment)
+        navController = Navigation.findNavController(this, R.id.nav_main_host_fragment)
         NavigationUI.setupWithNavController(mNavigationView, navController)
 
         if (!isTabletLayout) {
@@ -213,6 +215,14 @@ class MainActivity : BaseActivity(), MainMvpView, BillingProvider {
         mToolbar.subtitle = ""
     }
 
+    override fun onBackPressed() {
+        if (navController.currentDestination!!.id == R.id.attendanceListFragment ||
+            navController.currentDestination!!.id == R.id.timeTablePagerFragment) {
+            ActivityCompat.finishAfterTransition(this)
+        } else
+            super.onBackPressed()
+    }
+
     public override fun onDestroy() {
         if (mBillingManager != null) {
             mBillingManager!!.destroy()
@@ -273,11 +283,5 @@ class MainActivity : BaseActivity(), MainMvpView, BillingProvider {
          * Remember the position of the selected item.
          */
         val PREFERENCE_ACTIVATED_FRAGMENT = "ACTIVATED_FRAGMENT2.2"
-
-        val FRAGMENT_TAG = "MainActivity.FRAGMENT"
-
-        val LAUNCH_FRAGMENT_EXTRA = BuildConfig.APPLICATION_ID + ".MainActivity.LAUNCH_FRAGMENT"
-
-        private val PREVIOUS_FRAGMENT_TAG = "MainActivity.PREVIOUS_FRAGMENT"
     }
 }
