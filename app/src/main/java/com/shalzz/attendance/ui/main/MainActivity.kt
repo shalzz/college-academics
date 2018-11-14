@@ -32,8 +32,10 @@ import android.view.View
 import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
+import androidx.navigation.NavDestination
 import androidx.navigation.Navigation
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
@@ -59,6 +61,7 @@ import kotlinx.android.synthetic.main.include_toolbar.*
 import okhttp3.OkHttpClient
 import timber.log.Timber
 import java.io.IOException
+import java.lang.ref.WeakReference
 import javax.inject.Inject
 
 class MainActivity : BaseActivity(), MainMvpView, BillingProvider {
@@ -116,7 +119,7 @@ class MainActivity : BaseActivity(), MainMvpView, BillingProvider {
 
         setSupportActionBar(toolbar)
         navController = Navigation.findNavController(this, R.id.nav_main_host_fragment)
-        NavigationUI.setupWithNavController(mNavigationView, navController)
+        setupWithNavController(mNavigationView, navController)
 
         if (!isTabletLayout) {
             val appBarConfiguration = AppBarConfiguration(
@@ -154,6 +157,51 @@ class MainActivity : BaseActivity(), MainMvpView, BillingProvider {
         if (mBillingManager != null && mBillingManager!!.billingClientResponseCode == BillingResponse.OK) {
             mBillingManager!!.queryPurchases()
         }
+    }
+
+    private fun setupWithNavController(
+        navigationView: NavigationView,
+        navController: NavController
+    ) {
+        navigationView.setNavigationItemSelectedListener { item ->
+            if (navController.currentDestination!!.id != item.itemId)
+                 NavigationUI.onNavDestinationSelected(item, navController)
+            val parent = navigationView.parent
+            (parent as DrawerLayout).closeDrawer(navigationView)
+            true
+        }
+        val weakReference = WeakReference(navigationView)
+        navController.addOnNavigatedListener(object : NavController.OnNavigatedListener {
+            override fun onNavigated(
+                controller: NavController,
+                destination: NavDestination
+            ) {
+                val view = weakReference.get()
+                if (view == null) {
+                    controller.removeOnNavigatedListener(this)
+                    return
+                }
+                val menu = view.menu
+                var h = 0
+
+                while (h < menu.size()) {
+                    val item = menu.getItem(h)
+                    item.isChecked = matchDestination(destination, item.itemId)
+                    ++h
+                }
+            }
+        })
+    }
+
+    internal fun matchDestination(
+         destination: NavDestination,
+         destId: Int
+    ): Boolean {
+        var currentDestination: NavDestination? = destination
+        while (currentDestination!!.id != destId && currentDestination.parent != null) {
+            currentDestination = currentDestination.parent
+        }
+        return currentDestination.id == destId
     }
 
     private fun showcaseView() {
