@@ -114,11 +114,15 @@ class MainActivity : BaseActivity(), MainMvpView, BillingProvider {
 
         setSupportActionBar(toolbar)
         val navController = Navigation.findNavController(this, R.id.nav_main_host_fragment)
-        val appBarConfiguration = AppBarConfiguration(
-                    setOf(R.id.attendanceListFragment, R.id.timeTablePagerFragment),
-                    drawer_layout)
-        NavigationUI.setupWithNavController(toolbar, navController, appBarConfiguration)
         NavigationUI.setupWithNavController(mNavigationView, navController)
+
+        if (!isTabletLayout) {
+            val appBarConfiguration = AppBarConfiguration(
+                setOf(R.id.attendanceListFragment, R.id.timeTablePagerFragment),
+                drawer_layout
+            )
+            NavigationUI.setupWithNavController(toolbar, navController, appBarConfiguration)
+        }
 
         drawerHeaderVH = DrawerHeaderViewHolder(mNavigationView.getHeaderView(0))
 

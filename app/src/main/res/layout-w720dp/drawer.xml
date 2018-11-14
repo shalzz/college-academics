@@ -28,7 +28,18 @@
     <!-- The navigation drawer -->
     <include layout="@layout/include_drawer_list"/>
 
-    <!-- The main content view -->
-    <include layout="@layout/include_drawer_main_content"/>
+    <androidx.drawerlayout.widget.DrawerLayout
+            android:id="@+id/drawer_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_toRightOf="@+id/list_slidermenu"
+            android:layout_toEndOf="@+id/list_slidermenu"
+            android:fitsSystemWindows="true"
+            tools:context=".ui.main.MainActivity">
+
+        <!-- The main content view -->
+        <include layout="@layout/include_drawer_main_content"/>
+
+    </androidx.drawerlayout.widget.DrawerLayout>
 
 </RelativeLayout>
