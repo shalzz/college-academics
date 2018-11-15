@@ -66,7 +66,7 @@ public class NetworkModule {
 
         final OkHttpClient.Builder okHttpBuilder = new OkHttpClient.Builder()
                 .cache(cache)
-                .addInterceptor(new HeaderInterceptor())
+                .addInterceptor(new HeaderInterceptor(preferences))
                 .addInterceptor(new AuthInterceptor(preferences))
                 .addNetworkInterceptor(new CacheControlInterceptor(context))
                 .addNetworkInterceptor(new LoggingInterceptor());

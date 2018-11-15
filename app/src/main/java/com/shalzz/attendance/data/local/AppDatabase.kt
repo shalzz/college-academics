@@ -17,7 +17,7 @@ import com.shalzz.attendance.injection.ApplicationContext
 import javax.inject.Singleton
 
 @Singleton
-@Database(entities = [User::class, Subject::class, Period::class], version = 12)
+@Database(entities = [User::class, Subject::class, Period::class], version = 14)
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao
@@ -25,29 +25,45 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun periodDao(): PeriodDao
 
     companion object {
+        const val DATABASE_NAME = "academics.db"
+
         fun getInstance(@ApplicationContext context: Context): AppDatabase {
             return Room.databaseBuilder(context,
-                    AppDatabase::class.java, "academics.db")
-                    .allowMainThreadQueries() //TODO: fix and remove this
-                    .fallbackToDestructiveMigrationFrom(10, 11)
+                    AppDatabase::class.java, DATABASE_NAME)
+                    .addMigrations(MIGRATION_12_13)
+                    .fallbackToDestructiveMigration()
                     .build()
         }
 
-        val MIGRATION_10_11: Migration = object : Migration(10, 11) {
+        /**
+         * Migrate from:
+         * version 12 - using Room where the {@link Subject#absent_dates} can be NULL
+         * to
+         * version 13 - using Room where the {@link Subject#absent_dates} is not a NULL with
+         *              default ""
+         */
+        val MIGRATION_12_13: Migration = object : Migration(12, 13) {
             override fun migrate(db: SupportSQLiteDatabase) {
-                val TEMP_TABLE = "user2"
-                db.execSQL("ALTER TABLE user RENAME TO $TEMP_TABLE")
-                db.execSQL("CREATE TABLE user (\n" +
-                        "    id TEXT PRIMARY KEY NOT NULL,\n" +
-                        "    phone TEXT NOT NULL,\n" +
-                        "    roll_number TEXT,\n" +
-                        "    name TEXT,\n" +
-                        "    course TEXT,\n" +
-                        "    email TEXT\n" +
-                        ")")
-                db.execSQL("INSERT INTO user (id, phone, roll_number, name, course, email) " +
-                        "SELECT id, phone, roll_number, name, course, email FROM " + TEMP_TABLE)
-                db.execSQL("DROP TABLE IF EXISTS $TEMP_TABLE")
+                val TABLE_NAME = "Subject"
+                val TEMP_TABLE = "Subject2"
+                // SQLite supports a limited operations for ALTER.
+                // Changing the type of a column is not directly supported, so this is what we need
+                // to do:
+                // Create the new table
+                db.execSQL("CREATE TABLE $TEMP_TABLE \n" +
+                        " (`id` INTEGER NOT NULL,\n" +
+                        " `name` TEXT NOT NULL,\n" +
+                        " `attended` REAL NOT NULL,\n" +
+                        " `held` REAL NOT NULL,\n" +
+                        " `absent_dates` TEXT NOT NULL DEFAULT \"\",\n" +
+                        " PRIMARY KEY(`id`))")
+                // Copy the data
+                db.execSQL("INSERT INTO $TEMP_TABLE (id, name, attended, held, absent_dates) " +
+                        "SELECT id, name, attended, held, absent_dates FROM " + TABLE_NAME)
+                // Remove the old table
+                db.execSQL("DROP TABLE $TABLE_NAME")
+                // Change the table name to the correct one
+                db.execSQL("ALTER TABLE $TEMP_TABLE RENAME TO $TABLE_NAME")
             }
         }
     }

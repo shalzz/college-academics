@@ -14,8 +14,8 @@ interface UserDao {
     @Query("SELECT * FROM user")
     fun getAll(): Observable<User>
 
-    @Query("SELECT * FROM user WHERE id = :id")
-    fun getAllById(id: String): Observable<User>
+    @Query("SELECT * FROM user WHERE phone = :phone")
+    fun getAllByPhone(phone: String): Observable<User>
 
     @Query("SELECT count(*) FROM user")
     fun getCount(): Single<Int>

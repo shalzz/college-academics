@@ -18,70 +18,100 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
 
-    <androidx.preference.PreferenceCategory android:title="General" >
-        <androidx.preference.SwitchPreference
-            android:key="@string/pref_key_pro_mode"
-            android:defaultValue="false"
-            android:title="@string/pref_pro_mode"
-            android:summaryOn="@string/pref_show_pro_mode_on"
-            android:summaryOff="@string/pref_show_pro_mode_off"/>
+    <PreferenceCategory android:title="Support" >
+        <Preference
+                android:key="@string/pref_key_twitter"
+                android:icon="@drawable/ic_twitter_24dp"
+                android:title="Twitter">
+            <intent
+                    android:action="android.intent.action.VIEW"
+                    android:data="https://twitter.com/shalzzj" />
+        </Preference>
+        <Preference
+                android:key="@string/pref_key_play_dev_page"
+                android:icon="@drawable/ic_google_play_24dp"
+                android:title="My other apps">
+            <intent
+                    android:action="android.intent.action.VIEW"
+                    android:data="https://play.google.com/store/apps/dev?id=6362297435335536825" />
+        </Preference>
+        <Preference
+                android:key="@string/pref_key_play_rating"
+                android:icon="@drawable/ic_star_24dp"
+                android:title="Rate College Academics">
+            <intent
+                    android:action="android.intent.action.VIEW"
+                    android:data="https://play.google.com/store/apps/details?id=com.shalzz.attendance" />
+        </Preference>
+        <SwitchPreference
+                android:key="@string/pref_key_pro_mode"
+                android:defaultValue="false"
+                android:title="@string/pref_pro_mode"
+                android:summaryOn="@string/pref_show_pro_mode_on"
+                android:summaryOff="@string/pref_show_pro_mode_off"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="General" >
         <com.shalzz.attendance.wrapper.ProModeListPreference
-            android:key="@string/pref_key_day_night"
-            android:defaultValue="1"
-            android:title="@string/pref_day_night"
-            android:dialogTitle="@string/pref_day_night_dialog"
-            android:summary="@string/pref_day_night_summary"
-            android:entries="@array/pref_day_night_entries"
-            android:entryValues="@array/pref_day_night_values"/>
-    </androidx.preference.PreferenceCategory>
+                android:key="@string/pref_key_day_night"
+                android:defaultValue="1"
+                android:title="@string/pref_day_night"
+                android:dialogTitle="@string/pref_day_night_dialog"
+                android:summary="@string/pref_day_night_summary"
+                android:entries="@array/pref_day_night_entries"
+                android:entryValues="@array/pref_day_night_values"/>
+    </PreferenceCategory>
 
-    <androidx.preference.PreferenceCategory android:title="Timetable" >
-        <androidx.preference.SwitchPreference
-            android:key="@string/pref_key_hide_weekends"
-            android:defaultValue="false"
-            android:title="@string/pref_hide_weekends"
-            android:summary="@string/pref_hide_weekends_summary"/>
-    </androidx.preference.PreferenceCategory>
+    <PreferenceCategory android:title="Timetable" >
+        <SwitchPreference
+                android:key="@string/pref_key_hide_weekends"
+                android:defaultValue="false"
+                android:title="@string/pref_hide_weekends"
+                android:summary="@string/pref_hide_weekends_summary"/>
+    </PreferenceCategory>
 
-    <androidx.preference.PreferenceCategory android:title="Network" >
-        <androidx.preference.SwitchPreference
-            android:key="@string/pref_key_sync"
-            android:defaultValue="true"
-            android:title="@string/pref_sync"
-            android:summary="@string/pref_sync_summary" />
+    <PreferenceCategory android:title="Network" >
+        <SwitchPreference
+                android:key="@string/pref_key_sync"
+                android:defaultValue="true"
+                android:title="@string/pref_sync"
+                android:summary="@string/pref_sync_summary" />
 
-        <androidx.preference.ListPreference
-            android:key="@string/pref_key_sync_interval"
-            android:defaultValue="480"
-            android:title="@string/pref_refresh"
-            android:dialogTitle="@string/pref_refresh"
-            android:dependency="@string/pref_key_sync"
-            android:entries="@array/pref_data_sync_interval_entries"
-            android:entryValues="@array/pref_data_sync_interval_values"/>
-    </androidx.preference.PreferenceCategory>
+        <ListPreference
+                android:key="@string/pref_key_sync_interval"
+                android:defaultValue="480"
+                android:title="@string/pref_refresh"
+                android:dialogTitle="@string/pref_refresh"
+                android:dependency="@string/pref_key_sync"
+                android:entries="@array/pref_data_sync_interval_entries"
+                android:entryValues="@array/pref_data_sync_interval_values"/>
 
-    <androidx.preference.PreferenceCategory android:title="Privacy" >
-        <androidx.preference.SwitchPreference
-            android:key="@string/pref_key_ga_opt_in"
-            android:defaultValue="true"
-            android:title="@string/pref_ga_opt_in"
-            android:summary="@string/pref_ga_opt_in_summary" />
-	<androidx.preference.SwitchPreference
-            android:key="@string/pref_key_bugsnag_opt_in"
-            android:defaultValue="true"
-            android:title="@string/pref_bugsnag_opt_in"
-            android:summary="@string/pref_bugsnag_opt_in_summary" />
-    </androidx.preference.PreferenceCategory>
+        <SwitchPreference
+                android:key="@string/pref_key_ga_opt_in"
+                android:defaultValue="true"
+                android:title="@string/pref_ga_opt_in"
+                android:summary="@string/pref_ga_opt_in_summary" />
+    </PreferenceCategory>
 
-    <androidx.preference.PreferenceCategory
-        android:title="Info" >
+    <PreferenceCategory
+            android:title="About" >
+        <Preference
+                android:key="@string/pref_key_info_notices"
+                android:title="@string/pref_notice"
+                android:summary="@string/pref_notice_summary"
+                android:persistent="false">
+            <intent
+                    android:action="android.intent.action.VIEW"
+                    android:targetPackage="@string/app_id"
+                    android:targetClass="com.google.android.gms.oss.licenses.OssLicensesMenuActivity" />
+        </Preference>
+        <Preference
+                android:key="@string/pref_key_info_version"
+                android:title="@string/pref_version"
+                android:summary="@string/app_version"
+                android:persistent="false"/>
+    </PreferenceCategory>
 
-        <androidx.preference.PreferenceScreen
-            android:key="@string/pref_key_info_about"
-            android:persistent="false"
-            android:title="@string/pref_about" />
-    </androidx.preference.PreferenceCategory>
-
-</androidx.preference.PreferenceScreen>
+</PreferenceScreen>

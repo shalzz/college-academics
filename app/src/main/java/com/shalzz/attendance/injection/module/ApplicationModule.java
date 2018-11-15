@@ -27,9 +27,11 @@ import com.shalzz.attendance.data.local.AppDatabase;
 import com.shalzz.attendance.injection.ApplicationContext;
 
 import javax.inject.Named;
+import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import io.michaelrocks.libphonenumber.android.PhoneNumberUtil;
 
 @Module
 public class ApplicationModule {
@@ -49,6 +51,12 @@ public class ApplicationModule {
     @ApplicationContext
     Context provideContext() {
         return mApplication;
+    }
+
+    @Provides
+    @Singleton
+    PhoneNumberUtil providePhoneNumberUtil(@ApplicationContext Context context) {
+        return PhoneNumberUtil.createInstance(context);
     }
 
     @Provides

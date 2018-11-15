@@ -7,8 +7,11 @@ import com.shalzz.attendance.data.model.entity.User
 import com.shalzz.attendance.wrapper.DateHelper
 import io.reactivex.Observable
 import io.reactivex.Single
-import timber.log.Timber
-import java.util.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import java.util.Date
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -21,9 +24,6 @@ import javax.inject.Singleton
 class DatabaseHelper @Inject
 constructor(private val mDb: AppDatabase) {
 
-    val user: Observable<User>
-        get() = mDb.userDao().getAll()
-
     val listFooter: Observable<ListFooter>
         get() = mDb.subjectDao().getTotalAttendance()
 
@@ -32,6 +32,10 @@ constructor(private val mDb: AppDatabase) {
 
     val userCount: Single<Int>
         get() = mDb.userDao().getCount()
+
+    fun getUser(phone: String): Observable<User> {
+        return mDb.userDao().getAllByPhone(phone)
+    }
 
     fun setSubjects(newSubjects: Collection<Subject>): Observable<Subject> {
         return Observable.create { source ->
@@ -84,7 +88,6 @@ constructor(private val mDb: AppDatabase) {
     fun setUser(user: User): Observable<User> {
         return Observable.create { subscriber ->
             if (subscriber.isDisposed) return@create
-            Timber.d("Running database on: %s", Thread.currentThread().getId())
             mDb.userDao().insert(user)
             subscriber.onNext(user)
             subscriber.onComplete()
@@ -98,9 +101,11 @@ constructor(private val mDb: AppDatabase) {
     /**
      * Delete All Rows
      */
-    fun resetTables() {
-        mDb.subjectDao().deleteAll()
-        mDb.periodDao().deleteAll()
-        mDb.userDao().deleteAll()
+    fun resetTables() : Job  {
+        return GlobalScope.launch (Dispatchers.IO) {
+            mDb.subjectDao().deleteAll()
+            mDb.periodDao().deleteAll()
+            mDb.userDao().deleteAll()
+        }
     }
 }

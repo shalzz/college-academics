@@ -53,6 +53,7 @@ internal constructor(private val mDataManager: DataManager,
                      @param:ApplicationContext private val mContext: Context) : BasePresenter<MainMvpView>() {
 
     private var mDisposable: Disposable? = null
+    private var mSyncDisposable: Disposable? = null
     val updateListener: UpdateListener
 
     // Tracks if we currently own a pro key
@@ -75,9 +76,9 @@ internal constructor(private val mDataManager: DataManager,
         RxUtil.dispose(mDisposable)
     }
 
-    fun loadUser() {
+    fun loadUser(phone: String) {
         RxUtil.dispose(mDisposable)
-        mDisposable = mDataManager.loadUser()
+        mDisposable = mDataManager.loadUser(phone)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(object : DisposableObserver<User>() {
@@ -89,7 +90,7 @@ internal constructor(private val mDataManager: DataManager,
 
                         val sharedPref = PreferenceManager.getDefaultSharedPreferences(mContext)
                         val optIn = sharedPref.getBoolean(mContext.getString(
-                                R.string.pref_key_bugsnag_opt_in), true)
+                                R.string.pref_key_ga_opt_in), true)
                         if (optIn) {
                             Bugsnag.setUser(user.phone, user.email, user.name)
                         }

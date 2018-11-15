@@ -24,7 +24,6 @@ object TestDataFactory {
 
     fun makeUser(uniqueSuffix: String): User {
         return User(
-                id = randomUuid(),
                 phone = "Phone-$uniqueSuffix",
                 roll_number = randomUuid(),
                 name = "Name-$uniqueSuffix",

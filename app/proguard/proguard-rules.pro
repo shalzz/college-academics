@@ -12,10 +12,6 @@
 -keep class com.shalzz.attendance.data.model.** { *; }
 
 -verbose
--dump
--printseeds
--printusage
--printmapping
 
 # Reduce the size of the output some more.
 

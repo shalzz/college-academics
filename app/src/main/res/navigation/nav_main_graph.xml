@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools" android:id="@+id/nav_main_graph.xml"
+            app:startDestination="@id/attendanceListFragment">
+
+    <fragment android:id="@+id/attendanceListFragment"
+              android:name="com.shalzz.attendance.ui.attendance.AttendanceListFragment"
+              android:label="Attendance" tools:layout="@layout/fragment_attendance">
+    </fragment>
+    <fragment android:id="@+id/timeTablePagerFragment"
+              android:name="com.shalzz.attendance.ui.timetable.TimeTablePagerFragment"
+              android:label="fragment_viewpager" tools:layout="@layout/fragment_viewpager">
+    </fragment>
+    <fragment android:id="@+id/settingsFragment"
+              android:name="com.shalzz.attendance.ui.settings.SettingsFragment"
+              android:label="Settings">
+    </fragment>
+</navigation>

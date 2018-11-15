@@ -17,35 +17,40 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-kapt'
-apply plugin: 'com.github.triplet.play'
-apply plugin: 'com.bugsnag.android.gradle'
-apply plugin: 'com.google.gms.oss.licenses.plugin'
+apply plugin: "com.android.application"
+apply plugin: "kotlin-android"
+apply plugin: "kotlin-kapt"
+apply plugin: "kotlin-android-extensions"
+apply plugin: "com.github.triplet.play"
+apply plugin: "com.bugsnag.android.gradle"
+apply plugin: "com.google.gms.oss.licenses.plugin"
 
 bugsnag {
-    apiKey '600a00bfd5bd72e5df7f288f74df8f9b'
+    apiKey "600a00bfd5bd72e5df7f288f74df8f9b"
 }
 
 // query git for the SHA, Tag and commit count. Use these to automate versioning.
-def gitSha = 'git rev-parse --short HEAD'.execute([], project.rootDir).text.trim()
-def gitTag = 'git describe --tags'.execute([], project.rootDir).text.trim()
+def gitSha = "git rev-parse --short HEAD".execute([], project.rootDir).text.trim()
+def gitTag = "git describe --tags".execute([], project.rootDir).text.trim()
 def gitCommitCount = 2007050 +
-        Integer.parseInt('git rev-list --count HEAD --no-merges'.execute([], project.rootDir).text.trim())
+        Integer.parseInt("git rev-list --count HEAD --no-merges".execute([], project.rootDir).text.trim())
 
 android {
     compileSdkVersion 28
 
     defaultConfig {
-        applicationId 'com.shalzz.attendance'
+        applicationId "com.shalzz.attendance"
         minSdkVersion 14
         targetSdkVersion 28
-	    versionCode gitCommitCount
-	    versionName gitTag
+        multiDexEnabled true
+        versionCode gitCommitCount
+        versionName gitTag
 
         resConfigs "en"
+        resValue "string", "app_version", versionName
 
+        testOptions.unitTests.includeAndroidResources = true
+        vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         javaCompileOptions {
             annotationProcessorOptions {
@@ -62,9 +67,9 @@ android {
     }
 
     play {
-        jsonFile = file('../play-service-account-key.json')
+        jsonFile = file("../play-service-account-key.json")
         uploadImages = true
-        track = 'production'
+        track = "beta"
     }
 
     signingConfigs {
@@ -90,19 +95,22 @@ android {
             applicationIdSuffix '.debug'
             versionNameSuffix "-debug"
             ext.enableBugsnag = false
+            resValue "string", "app_id", defaultConfig.applicationId + '.debug'
             resValue "string", "app_name", "College Academics (debug)"
             resValue "string", "contentAuthority", defaultConfig.applicationId + '.debug.provider'
             resValue "string", "account_type", "com.shalzz.debug"
             buildConfigField "String", "ACCOUNT_TYPE", '"com.shalzz.debug"'
+            multiDexKeepProguard file('./proguard/proguard-multidex-rules.pro')
         }
         release {
+            shrinkResources true
             minifyEnabled true
             useProguard true
+            resValue "string", "app_id", defaultConfig.applicationId
             resValue "string", "app_name", "College Academics"
             resValue "string", "contentAuthority", defaultConfig.applicationId + '.provider'
             resValue "string", "account_type", "com.shalzz"
             buildConfigField "String", "ACCOUNT_TYPE", '"com.shalzz"'
-//            FileCollection proGuardFileCollection = files { file('./proguard').listFiles() }
             proguardFiles(file('./proguard').listFiles())
             proguardFile getDefaultProguardFile('proguard-android-optimize.txt')
             signingConfig signingConfigs.release
@@ -110,24 +118,24 @@ android {
     }
 
     sourceSets {
-
-        // Main source set is Kotlin!
-        main.java.srcDirs += 'src/main/kotlin'
+        // used by Room, to test migrations
+        androidTest.assets.srcDirs +=
+                files("$projectDir/schemas".toString())
 
         // Test helps
-        def commonTestDir = 'src/commonTest/java'
+        def commonTestDir = "src/commonTest/java"
         test.java.srcDir commonTestDir
         androidTest.java.srcDir commonTestDir
     }
 
     //Needed because of this https://github.com/square/okio/issues/58
     lintOptions {
-        disable 'InvalidPackage'
+        disable "InvalidPackage"
     }
 
     //Needed because of this https://github.com/ReactiveX/RxJava/issues/4445
     packagingOptions {
-        exclude 'META-INF/rxjava.properties'
+        exclude "META-INF/rxjava.properties"
     }
 
     // Needed because of this https://github.com/robolectric/robolectric/issues/{1399, 3826}
@@ -139,20 +147,29 @@ android {
     }
 
     dependencies {
-        final DAGGER_VERSION = '2.17'
-        final ESPRESSO_VERSION = '3.1.0-alpha1'
-        final RUNNER_VERSION = '0.4'
-        final RETROFIT_VERSION = '2.4.0'
-        final BUTTERKNIFE_VERSION = '9.0.0-SNAPSHOT'
+        final DAGGER_VERSION = "2.17"
+        final ESPRESSO_VERSION = "3.1.0"
+        final RETROFIT_VERSION = "2.4.0"
+        final BUTTERKNIFE_VERSION = "9.0.0-rc1"
         final ROOM_VERSION = "2.0.0"
+        final NAV_VERSION = "1.0.0-alpha07"
+
+        // TODO: revaluate when RxJava is completely replaced with kotlin co-routines
+        implementation "com.android.support:multidex:1.0.3"
 
         implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+        implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.0.0"
+        implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.0.0"
 
-        implementation 'com.google.firebase:firebase-core:16.0.3'
-        implementation 'com.google.firebase:firebase-analytics:16.0.3'
-        implementation 'com.google.firebase:firebase-messaging:17.3.0'
+        implementation "androidx.core:core-ktx:1.0.0"
+        implementation "android.arch.navigation:navigation-fragment-ktx:$NAV_VERSION"
+        implementation "android.arch.navigation:navigation-ui-ktx:$NAV_VERSION"
 
-        implementation 'com.google.android.gms:play-services-oss-licenses:15.0.1'
+        implementation "com.google.firebase:firebase-core:16.0.3"
+        implementation "com.google.firebase:firebase-analytics:16.0.3"
+        implementation "com.google.firebase:firebase-messaging:17.3.0"
+
+        implementation "com.google.android.gms:play-services-oss-licenses:15.0.1"
         implementation "com.google.android.material:material:1.0.0"
 
         implementation "androidx.core:core:1.0.0"
@@ -161,38 +178,39 @@ android {
         implementation "androidx.recyclerview:recyclerview:1.0.0"
         implementation "androidx.preference:preference:1.0.0"
         implementation "androidx.annotation:annotation:1.0.0"
-        implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
-        implementation 'androidx.constraintlayout:constraintlayout-solver:1.1.3'
+        implementation "androidx.constraintlayout:constraintlayout:1.1.3"
+        implementation "androidx.constraintlayout:constraintlayout-solver:1.1.3"
 
-        implementation 'com.android.billingclient:billing:1.0'
+        implementation "com.android.billingclient:billing:1.0"
 
         def daggerCompiler = "com.google.dagger:dagger-compiler:$DAGGER_VERSION"
-        implementation  "com.google.dagger:dagger:$DAGGER_VERSION"
-        compileOnly 'javax.annotation:jsr250-api:1.0'
+        implementation "com.google.dagger:dagger:$DAGGER_VERSION"
+        compileOnly "javax.annotation:jsr250-api:1.0"
         kapt daggerCompiler
         testAnnotationProcessor daggerCompiler
         androidTestAnnotationProcessor daggerCompiler
 
-        implementation 'com.jakewharton.timber:timber:4.7.1'
+        implementation "com.jakewharton.timber:timber:4.7.1"
         implementation "com.jakewharton:butterknife:$BUTTERKNIFE_VERSION"
         kapt "com.jakewharton:butterknife-compiler:$BUTTERKNIFE_VERSION"
 
-        implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
-        implementation 'io.reactivex.rxjava2:rxjava:2.1.10'
+        implementation "io.reactivex.rxjava2:rxandroid:2.0.2"
+        implementation "io.reactivex.rxjava2:rxjava:2.1.10"
 
         implementation "com.squareup.retrofit2:retrofit:$RETROFIT_VERSION"
         implementation "com.squareup.retrofit2:converter-moshi:$RETROFIT_VERSION"
-        implementation 'com.squareup.moshi:moshi:1.7.0'
-        kapt 'com.squareup.moshi:moshi-kotlin-codegen:1.7.0'
-        implementation 'com.squareup.moshi:moshi-adapters:1.7.0'
-        implementation 'com.jakewharton.retrofit:retrofit2-rxjava2-adapter:1.0.0'
+        implementation "com.squareup.moshi:moshi:1.7.0"
+        kapt "com.squareup.moshi:moshi-kotlin-codegen:1.7.0"
+        implementation "com.squareup.moshi:moshi-adapters:1.7.0"
+        implementation "com.jakewharton.retrofit:retrofit2-rxjava2-adapter:1.0.0"
 
-        implementation 'com.malinskiy:materialicons:1.0.2'
-        implementation 'com.github.amlcurran.showcaseview:library:5.4.0'
-        implementation 'com.github.afollestad.material-dialogs:core:0.8.5.5'
+        implementation "com.malinskiy:materialicons:1.0.2"
+        implementation "com.github.amlcurran.showcaseview:library:5.4.0"
+        implementation "com.github.afollestad.material-dialogs:core:0.8.5.5"
+        implementation 'io.michaelrocks:libphonenumber-android:8.9.14'
 
-	    //noinspection GradleDynamicVersion
-        implementation 'com.bugsnag:bugsnag-android:4.+'
+        //noinspection GradleDynamicVersion
+        implementation "com.bugsnag:bugsnag-android:4.+"
 
         // Room Persistence
         implementation "androidx.room:room-runtime:$ROOM_VERSION"
@@ -201,28 +219,53 @@ android {
         testImplementation "androidx.room:room-testing:$ROOM_VERSION"
         androidTestImplementation "androidx.room:room-testing:$ROOM_VERSION"
 
-        def jUnit = "junit:junit:4.12"
+        def jUnit = "androidx.test.ext:junit:1.0.0"
+        def truth = "androidx.test.ext:truth:1.0.0"
         def mockito = "org.mockito:mockito-core:2.8.9"
 
         // Instrumentation test dependencies
-        androidTestImplementation jUnit
         androidTestImplementation mockito
         androidTestImplementation "com.google.code.findbugs:jsr305:3.0.0"
         androidTestImplementation "androidx.annotation:annotation:1.0.0"
 
-        androidTestImplementation "androidx.test:runner:1.1.0-alpha4"
-        androidTestImplementation "androidx.test:rules:1.1.0-alpha4"
+        // Core library
+        androidTestImplementation "androidx.test:core:1.0.0"
+
+        // AndroidJUnitRunner and JUnit Rules
+        androidTestImplementation "androidx.test:runner:1.1.0"
+        androidTestImplementation "androidx.test:rules:1.1.0"
+
+        // Assertions
+        androidTestImplementation jUnit
+        androidTestImplementation truth
+        androidTestImplementation "com.google.truth:truth:0.42"
+
+        // Espresso dependencies
+        androidTestImplementation "androidx.test.espresso:espresso-core:$ESPRESSO_VERSION"
+        androidTestImplementation "androidx.test.espresso:espresso-contrib:$ESPRESSO_VERSION"
+        androidTestImplementation "androidx.test.espresso:espresso-intents:$ESPRESSO_VERSION"
+        androidTestImplementation "androidx.test.espresso:espresso-accessibility:$ESPRESSO_VERSION"
+        androidTestImplementation "androidx.test.espresso:espresso-web:$ESPRESSO_VERSION"
+        androidTestImplementation "androidx.test.espresso.idling:idling-concurrent:$ESPRESSO_VERSION"
 
         androidTestImplementation "androidx.test.espresso:espresso-contrib:$ESPRESSO_VERSION"
         androidTestImplementation "androidx.test.espresso:espresso-core:$ESPRESSO_VERSION"
 
         // Unit tests dependencies
         testImplementation jUnit
+        testImplementation truth
         testImplementation mockito
-        testImplementation "org.robolectric:robolectric:4.0-beta-2-SNAPSHOT"
-        testImplementation "com.google.truth:truth:0.27"
+        testImplementation "androidx.test:core:1.0.0"
+        testImplementation "org.robolectric:robolectric:4.0"
+        testImplementation "org.robolectric:shadows-multidex:4.0"
     }
 }
 
 // ADD THIS AT THE BOTTOM
-apply plugin: 'com.google.gms.google-services'
+apply plugin: "com.google.gms.google-services"
+apply plugin: "kotlin-android-extensions"
+
+// Log out test results to console
+tasks.matching { it instanceof Test }.all {
+    testLogging.events = ["failed", "passed", "skipped"]
+}

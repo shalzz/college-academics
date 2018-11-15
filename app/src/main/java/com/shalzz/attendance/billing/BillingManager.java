@@ -274,8 +274,8 @@ public class BillingManager implements PurchasesUpdatedListener {
     }
 
     public void consumeAsync(final String purchaseToken) {
-        // If we've already scheduled to consume this token - no action is needed (this could happen
-        // if you received the token when querying purchases inside onReceive() and later from
+        // If we've already scheduled to consume this regId - no action is needed (this could happen
+        // if you received the regId when querying purchases inside onReceive() and later from
         // onActivityResult()
         if (mTokensToBeConsumed == null) {
             mTokensToBeConsumed = new HashSet<>();

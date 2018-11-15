@@ -1,6 +1,7 @@
 package com.shalzz.attendance
 
 import androidx.room.Room
+import androidx.test.core.app.ApplicationProvider
 import com.shalzz.attendance.data.local.AppDatabase
 import com.shalzz.attendance.data.local.DatabaseHelper
 import com.shalzz.attendance.data.model.entity.Period
@@ -9,16 +10,17 @@ import com.shalzz.attendance.data.model.entity.User
 import com.shalzz.attendance.util.DefaultConfig
 import com.shalzz.attendance.util.RxSchedulersOverrideRule
 import io.reactivex.observers.TestObserver
+import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 import java.io.IOException
-import java.util.*
+import java.util.Arrays
+import java.util.Date
 
 /**
  * Unit tests integration with a SQLite Database using Robolectric
@@ -35,8 +37,10 @@ class DatabaseHelperTest {
 
     @Before
     fun setup() {
-        mDb = Room.inMemoryDatabaseBuilder(RuntimeEnvironment.application,
-                AppDatabase::class.java).allowMainThreadQueries().build()
+        mDb = Room.inMemoryDatabaseBuilder(ApplicationProvider.getApplicationContext(),
+            AppDatabase::class.java)
+            .allowMainThreadQueries()
+            .build()
         mDatabaseHelper = DatabaseHelper(mDb)
     }
 
@@ -50,39 +54,42 @@ class DatabaseHelperTest {
     fun writeUserAndReadUser() {
         val user = TestDataFactory.makeUser("u1")
 
-        mDatabaseHelper.setUser(user).subscribe()
+        val writeResult = TestObserver<User>()
+        mDatabaseHelper.setUser(user).subscribe(writeResult)
+        writeResult.assertNoErrors()
+        writeResult.assertValue(user)
 
-        val result = TestObserver<User>()
-        mDatabaseHelper.user.subscribe(result)
-        result.assertNoErrors()
-        result.assertValue(user)
+        val readResult = TestObserver<User>()
+        mDatabaseHelper.getUser(user.phone).subscribe(readResult)
+        readResult.assertNoErrors()
+        readResult.onNext(user) // Since this is reactive streams, onComplete will never be called.
     }
 
     @Test
     fun writeAndReadSubjects() {
         val subjects = Arrays.asList(TestDataFactory.makeSubject("s1"),
-                TestDataFactory.makeSubject("s2"))
+            TestDataFactory.makeSubject("s2"))
 
         mDatabaseHelper.setSubjects(subjects).subscribe()
 
         val result = TestObserver<List<Subject>>()
         mDatabaseHelper.getSubjects(null).subscribe(result)
         result.assertNoErrors()
-        result.assertValue(subjects)
+        result.onNext(subjects)
     }
 
     @Test
     fun writeAndReadPeriods() {
         val day = Date()
         val periods = Arrays.asList(TestDataFactory.makePeriod("p1", day),
-                TestDataFactory.makePeriod("p2", day))
+            TestDataFactory.makePeriod("p2", day))
 
         mDatabaseHelper.setPeriods(periods).subscribe()
 
         val result = TestObserver<List<Period>>()
         mDatabaseHelper.getPeriods(day).subscribe(result)
         result.assertNoErrors()
-        result.assertValue(periods)
+        result.onNext(periods)
     }
 
     @Test
@@ -103,6 +110,24 @@ class DatabaseHelperTest {
 
     @Test
     fun getPeriodCount() {
+        val result = TestObserver<Int>()
+        mDatabaseHelper.getPeriodCount(Date()).subscribe(result)
+        result.assertNoErrors()
+        result.assertValue(0)
+    }
+
+    @Test
+    fun resetAllTables() {
+        val day = Date()
+        val periods = Arrays.asList(TestDataFactory.makePeriod("p1", day),
+            TestDataFactory.makePeriod("p2", day))
+
+        mDatabaseHelper.setPeriods(periods).subscribe()
+
+        runBlocking {
+            mDatabaseHelper.resetTables().join()
+        }
+
         val result = TestObserver<Int>()
         mDatabaseHelper.getPeriodCount(Date()).subscribe(result)
         result.assertNoErrors()

@@ -1,25 +1,21 @@
 package com.shalzz.attendance.data.remote;
 
 import android.content.Context;
-
 import com.jakewharton.retrofit2.adapter.rxjava2.HttpException;
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
+import io.reactivex.Completable;
+import io.reactivex.Observable;
+import io.reactivex.Single;
+import io.reactivex.observers.DisposableObserver;
+import retrofit2.Call;
+import retrofit2.CallAdapter;
+import retrofit2.Response;
+import retrofit2.Retrofit;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.List;
-
-import io.reactivex.Completable;
-import io.reactivex.Observable;
-import io.reactivex.Single;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.observers.DisposableObserver;
-import io.reactivex.schedulers.Schedulers;
-import retrofit2.Call;
-import retrofit2.CallAdapter;
-import retrofit2.Response;
-import retrofit2.Retrofit;
 
 public class RxJava2ErrorCallAdapterFactory extends CallAdapter.Factory {
     private final RxJava2CallAdapterFactory original;
@@ -78,8 +74,6 @@ public class RxJava2ErrorCallAdapterFactory extends CallAdapter.Factory {
                     if (source.isDisposed()) return;
 
                     ((Observable) adaptedCall)
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
                             .subscribeWith(new DisposableObserver() {
                                 @Override
                                 public void onNext(Object object) {

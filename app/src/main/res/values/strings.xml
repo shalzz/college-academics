@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (c) 2013-2016 Shaleen Jain <shaleen.jain95@gmail.com>
   ~
   ~ This file is part of UPES Academics.
@@ -23,7 +22,7 @@
     <string name="app_url" translatable="false">http://www.github.com/shalzz/college-academics</string>
     <string name="copyright_year" translatable="false">Copyright © 2013&#8211;2018</string>
     <string name="app_copyright" translatable="false">Shaleen Jain &#60;shaleen.jain95@gmail.com&#62;</string>
-    
+
     <!--API keys-->
     <string name="bugsnag_api" translatable="false">600a00bfd5bd72e5df7f288f74df8f9b</string>
     <string name="onedu_gcmSenderId" translatable="false">3087313396</string>
@@ -31,8 +30,6 @@
     <!--Preference Keys-->
     <string name="pref_key_sync">data_sync</string>
     <string name="pref_key_sync_interval">data_sync_interval</string>
-    <string name="pref_key_info_about">pref_info_about</string>
-    <string name="pref_key_info_author">pref_info_author</string>
     <string name="pref_key_info_notices">pref_info_notices</string>
     <string name="pref_key_info_version">pref_info_version</string>
     <string name="pref_key_use_proxy">pref_key_use_proxy</string>
@@ -41,8 +38,10 @@
     <string name="pref_key_ga_opt_in">ga_opt_in</string>
     <string name="pref_key_hide_weekends">hide_weekends</string>
     <string name="pref_key_day_night">day_night</string>
-    <string name="pref_key_bugsnag_opt_in">bugsnag_opt_in</string>
     <string name="pref_key_pro_mode">pro_mode</string>
+    <string name="pref_key_twitter">key_twitter</string>
+    <string name="pref_key_play_dev_page">key_dev_page</string>
+    <string name="pref_key_play_rating">key_play_rating</string>
 
     <!--////  Actual user visible text ////-->
 
@@ -53,6 +52,7 @@
     <string name="proxy_error">Proxy Authentication failed. Please check your credentials.</string>
     <string name="unexpected_error">An unexpected error occurred</string>
     <string name="form_userid_error">Phone number is invalid.</string>
+    <string name="form_otp_error">Please enter a valid OTP.</string>
     <string name="form_password_error">Password is required.</string>
     <string name="token_error">Phone number not registered. Please use your registered number or
         contact your college IT dept.</string>
@@ -79,10 +79,12 @@
     </string>
     <string name="atten_list_percentage"><xliff:g id="percentage">%.2f</xliff:g>%%</string>
     <string name="atten_list_attended_upon_held"><xliff:g id="attended">%d</xliff:g>/<xliff:g id="held">%d</xliff:g></string>
+    <string name="login_notice">Please use a phone number registered with your University</string>
+    <string name="college_academics_logo">College Academics</string>
 
     <!--Plurals-->
     <plurals name="tv_last_refresh">
-        <item quantity="zero" >Last refreshed few moments ago</item>
+        <item quantity="zero">Last refreshed few moments ago</item>
         <item quantity="one">Last refreshed <xliff:g id="time">%d</xliff:g> hour ago</item>
         <item quantity="other">Last refreshed <xliff:g id="time">%d</xliff:g> hours ago</item>
     </plurals>
@@ -104,8 +106,6 @@
     <string name="pref_sync">Auto Refresh</string>
     <string name="pref_sync_summary">Periodically sync your attendance and timetable</string>
     <string name="pref_refresh">Refresh Interval</string>
-    <string name="pref_about">About</string>
-    <string name="pref_author">Author</string>
     <string name="pref_notice">Open Source Licenses</string>
     <string name="pref_notice_summary">License details for open source softwares</string>
     <string name="pref_version">Build Version</string>
@@ -117,12 +117,9 @@
     <string name="pref_day_night">Day/Night Theme (Pro feature)</string>
     <string name="pref_day_night_dialog">Select Night Mode</string>
     <string name="pref_day_night_summary">Choose a Day or Night Theme</string>
-    <string name="pref_bugsnag_opt_in">Crash Reports</string>
-    <string name="pref_bugsnag_opt_in_summary">Send crash reports with diagnostic
-        information to help debug and improve the app</string>
-    <string name="pref_pro_mode">Upgrade to Pro</string>
+    <string name="pref_pro_mode">Help support app development</string>
     <string name="pref_show_pro_mode_off">Thanks for using College Academics. Consider upgrading
-        to Pro Mode to unlock additional features.</string>
+        to Pro Mode to support development and unlock additional features.</string>
     <string name="pref_show_pro_mode_on">Pro Mode is now unlocked with additional
         features available.</string>
     <string name="pref_dialog_title_donate">Donation Amount</string>
@@ -137,12 +134,13 @@
     <string name="sv_main_activity_content">Press this button or swipe from the left edge to access the navigation bar</string>
 
     <!--EditText Hint's-->
-    <string name="hint_userid">Phone number</string>
+    <string name="hint_userid">Enter Phone Number</string>
     <string name="hint_password">Password</string>
     <string name="hint_search">Search subjects</string>
 
     <!--Buttons-->
-    <string name="log_in">Log In</string>
+    <string name="login_button">Continue</string>
+    <string name="verify_button">Log In</string>
 
     <!--Accessibility-->
     <string name="drawer_open">Navigation drawer opened</string>
@@ -165,5 +163,6 @@
         manage a sync account</string>
     <string name="network_error_message">Network Error</string>
     <string name="default_notification_channel_id">1</string>
+    <string name="account_manager_title">College Academics</string>
 
 </resources>

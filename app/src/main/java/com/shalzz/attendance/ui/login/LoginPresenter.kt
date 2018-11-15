@@ -22,15 +22,12 @@ package com.shalzz.attendance.ui.login
 import android.content.Context
 import com.shalzz.attendance.R
 import com.shalzz.attendance.data.DataManager
-import com.shalzz.attendance.data.local.PreferencesHelper
 import com.shalzz.attendance.data.remote.RetrofitException
 import com.shalzz.attendance.injection.ApplicationContext
 import com.shalzz.attendance.injection.ConfigPersistent
 import com.shalzz.attendance.ui.base.BasePresenter
-import com.shalzz.attendance.ui.splash.SplashPresenter
 import com.shalzz.attendance.utils.NetworkUtil
 import com.shalzz.attendance.utils.RxUtil
-import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
@@ -40,10 +37,8 @@ import javax.inject.Inject
 @ConfigPersistent
 class LoginPresenter @Inject
 internal constructor(private val mDataManager: DataManager,
-                     private val mPreferenceHelper: PreferencesHelper,
-                     @param:ApplicationContext private val mContext: Context,
-                     private val mSplashPresenter: SplashPresenter = SplashPresenter(mPreferenceHelper)
-    ) : BasePresenter<LoginMvpView>() {
+                     @param:ApplicationContext private val mContext: Context
+) : BasePresenter<LoginMvpView>() {
 
     private var mDisposable: Disposable? = null
 
@@ -57,7 +52,7 @@ internal constructor(private val mDataManager: DataManager,
         RxUtil.dispose(mDisposable)
     }
 
-    fun login(username: String) {
+    fun login(phone: String) {
         checkViewAttached()
         if (!NetworkUtil.isNetworkConnected(mContext)) {
             Timber.i("Sync canceled, connection not available")
@@ -72,6 +67,7 @@ internal constructor(private val mDataManager: DataManager,
             else if (isViewAttached) {
                 if (error.kind == RetrofitException.Kind.HTTP) {
                     mvpView.showError(error.message)
+                    // TODO: reset regId
                 } else {
                     mvpView.showError(error.message)
                     Timber.e(error)
@@ -81,17 +77,12 @@ internal constructor(private val mDataManager: DataManager,
 
         mvpView.showProgressDialog()
         RxUtil.dispose(mDisposable)
-        Timber.d("Calling sync user on: %s ", Thread.currentThread().id)
-        val auth = "Bearer $username"
-        if (mPreferenceHelper.token == null) {
-            mSplashPresenter.getToken(mContext.getString(R.string.onedu_gcmSenderId))
-        }
-        mDisposable = mDataManager.sendRegID(token=mPreferenceHelper.token!!, auth=auth)
-                .doOnNext { result-> Timber.d("Sent token to server successfully: %b",
-                        result) }
-                .flatMap { mDataManager.syncUser(auth) }
+        mDisposable = mDataManager.login(phone)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ user -> mvpView.showMainActivity(user) }, onError)
+                .subscribe(
+                        { sender ->
+                            mvpView.showOtpScreen(phone, sender.sender)
+                        }, onError)
     }
 }

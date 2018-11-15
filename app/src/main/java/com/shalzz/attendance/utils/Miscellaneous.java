@@ -36,24 +36,26 @@ public class Miscellaneous {
             public static final String THEME_CHANGE = "theme_change";
             public static final String LOGIN_INITIATED = "login_initiated";
             public static final String IAP_INITIATED = "iap_initiated";
+            public static final String IAP_PURCHASE = "iap_purchase";
         }
 
         public static class Param {
             public static final String THEME = "theme";
             public static final String USER_ID = "login_user_id";
             public static final String PASSWORD = "login_password";
+            public static final String IAP_PRODUCT_ID = "iap_product_id";
         }
     }
 
     /**
      * Shows the default user soft keyboard.
-     * @param mTextView The view to focus the cursor on.
+     * @param editText The view to focus the cursor on.
      */
-    public static void showKeyboard(Context context, EditText mTextView) {
+    public static void showKeyboard(Context context, EditText editText) {
         InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
         if (imm != null) {
             // will trigger it only if no physical keyboard is open
-            imm.showSoftInput(mTextView, 0);
+            imm.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT);
         }
     }
 

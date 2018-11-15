@@ -78,7 +78,7 @@ public class DayFragment extends Fragment implements DayMvpView {
     @BindView(R.id.swiperefresh)
     public MultiSwipeRefreshLayout mSwipeRefreshLayout;
 
-    @BindView(R.id.empty_view)
+    @BindView(R.id.emptyView)
     public View emptyView;
 
     public static class EmptyView {
@@ -141,8 +141,8 @@ public class DayFragment extends Fragment implements DayMvpView {
         mRecyclerView.setHasFixedSize(true);
 
         // use a linear layout manager
-        LinearLayoutManager mLayoutManager = new LinearLayoutManager(mContext);
-        mLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        LinearLayoutManager mLayoutManager = new LinearLayoutManager(mContext,
+                RecyclerView.VERTICAL, false);
         mLayoutManager.setSmoothScrollbarEnabled(true);
         mRecyclerView.setLayoutManager(mLayoutManager);
 

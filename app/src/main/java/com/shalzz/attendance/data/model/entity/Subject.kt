@@ -20,7 +20,6 @@
 package com.shalzz.attendance.data.model.entity
 
 import androidx.room.Entity
-import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import com.shalzz.attendance.wrapper.DateHelper
 import com.squareup.moshi.JsonClass
@@ -34,13 +33,10 @@ data class Subject (
         val name: String,
         val attended: Float,
         val held: Float,
-        val absent_dates: List<Date>? = ArrayList()
+        val absent_dates: List<Date> = ArrayList()
 ) {
     val absentDatesAsString: String
         get() {
-            if (absent_dates == null) {
-                return ""
-            }
             val dayFormat = SimpleDateFormat("d", Locale.US)
             val monthFormat = SimpleDateFormat("MMM", Locale.US)
             val dates = ArrayList<Date>()
