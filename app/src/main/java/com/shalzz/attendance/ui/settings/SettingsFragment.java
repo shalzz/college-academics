@@ -210,7 +210,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
         });
 
         PreferenceCategory prefCategory = (PreferenceCategory) getPreferenceScreen()
-                .getPreference(4);
+                .getPreference(3);
         PreferenceScreen prefScreen =  (PreferenceScreen) prefCategory.getPreference(0);
         prefScreen.setOnPreferenceClickListener(preference -> {
 

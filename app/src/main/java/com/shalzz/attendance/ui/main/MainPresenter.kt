@@ -90,7 +90,7 @@ internal constructor(private val mDataManager: DataManager,
 
                         val sharedPref = PreferenceManager.getDefaultSharedPreferences(mContext)
                         val optIn = sharedPref.getBoolean(mContext.getString(
-                                R.string.pref_key_bugsnag_opt_in), true)
+                                R.string.pref_key_ga_opt_in), true)
                         if (optIn) {
                             Bugsnag.setUser(user.phone, user.email, user.name)
                         }

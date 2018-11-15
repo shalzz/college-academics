@@ -60,19 +60,12 @@
             android:dependency="@string/pref_key_sync"
             android:entries="@array/pref_data_sync_interval_entries"
             android:entryValues="@array/pref_data_sync_interval_values"/>
-    </PreferenceCategory>
 
-    <PreferenceCategory android:title="Privacy" >
         <SwitchPreference
-            android:key="@string/pref_key_ga_opt_in"
-            android:defaultValue="true"
-            android:title="@string/pref_ga_opt_in"
-            android:summary="@string/pref_ga_opt_in_summary" />
-	<SwitchPreference
-            android:key="@string/pref_key_bugsnag_opt_in"
-            android:defaultValue="true"
-            android:title="@string/pref_bugsnag_opt_in"
-            android:summary="@string/pref_bugsnag_opt_in_summary" />
+                android:key="@string/pref_key_ga_opt_in"
+                android:defaultValue="true"
+                android:title="@string/pref_ga_opt_in"
+                android:summary="@string/pref_ga_opt_in_summary" />
     </PreferenceCategory>
 
     <PreferenceCategory
@@ -82,6 +75,7 @@
             android:key="@string/pref_key_info_about"
             android:persistent="false"
             android:title="@string/pref_about" />
+
     </PreferenceCategory>
 
 </PreferenceScreen>
