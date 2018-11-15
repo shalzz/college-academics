@@ -68,7 +68,7 @@ android {
     play {
         jsonFile = file("../play-service-account-key.json")
         uploadImages = true
-        track = "production"
+        track = "beta"
     }
 
     signingConfigs {
