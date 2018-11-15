@@ -1,9 +1,14 @@
 # Privacy Policy
 
-Phone contact permission is needed to provide you a great application experience.  
-We do not collect or store any information about you.
+We collect anonymous analytics information about your usage of the app
+to help us provide an optimal usage experience.
 
+The precise rules governing the collection and storage of the information is
+defined by the [Google Analytics][1] platform and their privacy policy can be found [here][2]
 
-In the rare event of an application crash your username and password are sent along with the crash report to help in debugging.  
+If you wish we rather not collect this information,
+you can opt out of this behaviour by disabling it
+from within the app at `Settings > Network > Usage Reports`
 
-You can opt out of this behaviour by disabling it in `Settings > Privacy > Crash Reports`
+[1]: https://marketingplatform.google.com/about/analytics/
+[2]: https://support.google.com/analytics/answer/6004245?hl=en
