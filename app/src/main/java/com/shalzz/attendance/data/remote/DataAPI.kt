@@ -68,6 +68,7 @@ interface DataAPI {
     fun verifyValidSignature(@Field("data") signedData: String,
                              @Field("sig") signature: String): Observable<Boolean>
 
+    // TODO: add logout api
     companion object {
         val API_VERSION = "/v3/prod/"
         val ENDPOINT = "https://academics.8bitlabs.tech$API_VERSION"

@@ -48,9 +48,10 @@
         <SwitchPreference
                 android:key="@string/pref_key_pro_mode"
                 android:defaultValue="false"
+                android:icon="@drawable/ic_vpn_key_24px"
                 android:title="@string/pref_pro_mode"
                 android:summaryOn="@string/pref_show_pro_mode_on"
-                android:summaryOff="@string/pref_show_pro_mode_off"/>
+                android:summaryOff="@string/pref_show_pro_mode_off" />
     </PreferenceCategory>
 
     <PreferenceCategory android:title="General" >
