@@ -30,8 +30,6 @@
     <!--Preference Keys-->
     <string name="pref_key_sync">data_sync</string>
     <string name="pref_key_sync_interval">data_sync_interval</string>
-    <string name="pref_key_info_about">pref_info_about</string>
-    <string name="pref_key_info_author">pref_info_author</string>
     <string name="pref_key_info_notices">pref_info_notices</string>
     <string name="pref_key_info_version">pref_info_version</string>
     <string name="pref_key_use_proxy">pref_key_use_proxy</string>
@@ -41,6 +39,9 @@
     <string name="pref_key_hide_weekends">hide_weekends</string>
     <string name="pref_key_day_night">day_night</string>
     <string name="pref_key_pro_mode">pro_mode</string>
+    <string name="pref_key_twitter">key_twitter</string>
+    <string name="pref_key_play_dev_page">key_dev_page</string>
+    <string name="pref_key_play_rating">key_play_rating</string>
 
     <!--////  Actual user visible text ////-->
 
@@ -105,8 +106,6 @@
     <string name="pref_sync">Auto Refresh</string>
     <string name="pref_sync_summary">Periodically sync your attendance and timetable</string>
     <string name="pref_refresh">Refresh Interval</string>
-    <string name="pref_about">About</string>
-    <string name="pref_author">Author</string>
     <string name="pref_notice">Open Source Licenses</string>
     <string name="pref_notice_summary">License details for open source softwares</string>
     <string name="pref_version">Build Version</string>
@@ -120,7 +119,7 @@
     <string name="pref_day_night_summary">Choose a Day or Night Theme</string>
     <string name="pref_pro_mode">Upgrade to Pro</string>
     <string name="pref_show_pro_mode_off">Thanks for using College Academics. Consider upgrading
-        to Pro Mode to unlock additional features.</string>
+        to Pro Mode to support development and unlock additional features.</string>
     <string name="pref_show_pro_mode_on">Pro Mode is now unlocked with additional
         features available.</string>
     <string name="pref_dialog_title_donate">Donation Amount</string>

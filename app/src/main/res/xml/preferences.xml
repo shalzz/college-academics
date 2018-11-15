@@ -20,46 +20,70 @@
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
 
-    <PreferenceCategory android:title="General" >
+    <PreferenceCategory android:title="Support" >
+        <Preference
+                android:key="@string/pref_key_twitter"
+                android:title="Twitter">
+            <intent
+                    android:action="android.intent.action.VIEW"
+                    android:data="https://twitter.com/shalzzj" />
+        </Preference>
+        <Preference
+                android:key="@string/pref_key_play_dev_page"
+                android:title="My other apps">
+            <intent
+                    android:action="android.intent.action.VIEW"
+                    android:data="https://twitter.com/shalzzj" />
+        </Preference>
+        <Preference
+                android:key="@string/pref_key_play_rating"
+                android:title="Rate College Academics">
+            <intent
+                    android:action="android.intent.action.VIEW"
+                    android:data="https://play.google.com/store/apps/details?id=com.shalzz.attendance" />
+        </Preference>
         <SwitchPreference
-            android:key="@string/pref_key_pro_mode"
-            android:defaultValue="false"
-            android:title="@string/pref_pro_mode"
-            android:summaryOn="@string/pref_show_pro_mode_on"
-            android:summaryOff="@string/pref_show_pro_mode_off"/>
+                android:key="@string/pref_key_pro_mode"
+                android:defaultValue="false"
+                android:title="@string/pref_pro_mode"
+                android:summaryOn="@string/pref_show_pro_mode_on"
+                android:summaryOff="@string/pref_show_pro_mode_off"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="General" >
         <com.shalzz.attendance.wrapper.ProModeListPreference
-            android:key="@string/pref_key_day_night"
-            android:defaultValue="1"
-            android:title="@string/pref_day_night"
-            android:dialogTitle="@string/pref_day_night_dialog"
-            android:summary="@string/pref_day_night_summary"
-            android:entries="@array/pref_day_night_entries"
-            android:entryValues="@array/pref_day_night_values"/>
+                android:key="@string/pref_key_day_night"
+                android:defaultValue="1"
+                android:title="@string/pref_day_night"
+                android:dialogTitle="@string/pref_day_night_dialog"
+                android:summary="@string/pref_day_night_summary"
+                android:entries="@array/pref_day_night_entries"
+                android:entryValues="@array/pref_day_night_values"/>
     </PreferenceCategory>
 
     <PreferenceCategory android:title="Timetable" >
         <SwitchPreference
-            android:key="@string/pref_key_hide_weekends"
-            android:defaultValue="false"
-            android:title="@string/pref_hide_weekends"
-            android:summary="@string/pref_hide_weekends_summary"/>
+                android:key="@string/pref_key_hide_weekends"
+                android:defaultValue="false"
+                android:title="@string/pref_hide_weekends"
+                android:summary="@string/pref_hide_weekends_summary"/>
     </PreferenceCategory>
 
     <PreferenceCategory android:title="Network" >
         <SwitchPreference
-            android:key="@string/pref_key_sync"
-            android:defaultValue="true"
-            android:title="@string/pref_sync"
-            android:summary="@string/pref_sync_summary" />
+                android:key="@string/pref_key_sync"
+                android:defaultValue="true"
+                android:title="@string/pref_sync"
+                android:summary="@string/pref_sync_summary" />
 
         <ListPreference
-            android:key="@string/pref_key_sync_interval"
-            android:defaultValue="480"
-            android:title="@string/pref_refresh"
-            android:dialogTitle="@string/pref_refresh"
-            android:dependency="@string/pref_key_sync"
-            android:entries="@array/pref_data_sync_interval_entries"
-            android:entryValues="@array/pref_data_sync_interval_values"/>
+                android:key="@string/pref_key_sync_interval"
+                android:defaultValue="480"
+                android:title="@string/pref_refresh"
+                android:dialogTitle="@string/pref_refresh"
+                android:dependency="@string/pref_key_sync"
+                android:entries="@array/pref_data_sync_interval_entries"
+                android:entryValues="@array/pref_data_sync_interval_values"/>
 
         <SwitchPreference
                 android:key="@string/pref_key_ga_opt_in"
@@ -69,13 +93,22 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="Info" >
-
-        <PreferenceScreen
-            android:key="@string/pref_key_info_about"
-            android:persistent="false"
-            android:title="@string/pref_about" />
-
+            android:title="About" >
+        <Preference
+                android:key="@string/pref_key_info_notices"
+                android:title="@string/pref_notice"
+                android:summary="@string/pref_notice_summary"
+                android:persistent="false">
+            <intent
+                    android:action="android.intent.action.VIEW"
+                    android:targetPackage="@string/app_id"
+                    android:targetClass="com.google.android.gms.oss.licenses.OssLicensesMenuActivity" />
+        </Preference>
+        <Preference
+                android:key="@string/pref_key_info_version"
+                android:title="@string/pref_version"
+                android:summary="@string/app_version"
+                android:persistent="false"/>
     </PreferenceCategory>
 
 </PreferenceScreen>

@@ -15,10 +15,5 @@
     <fragment android:id="@+id/settingsFragment"
               android:name="com.shalzz.attendance.ui.settings.SettingsFragment"
               android:label="Settings">
-        <action android:id="@+id/action_settingsFragment_to_aboutSettingsFragment"
-                app:destination="@id/aboutSettingsFragment"/>
     </fragment>
-    <fragment android:id="@+id/aboutSettingsFragment"
-              android:name="com.shalzz.attendance.ui.settings.AboutSettingsFragment"
-              android:label="About"/>
 </navigation>

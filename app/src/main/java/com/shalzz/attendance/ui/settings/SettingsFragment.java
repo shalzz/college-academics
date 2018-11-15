@@ -27,8 +27,9 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatDelegate;
-import androidx.navigation.fragment.NavHostFragment;
-import androidx.preference.*;
+import androidx.preference.ListPreference;
+import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.SwitchPreference;
 import com.android.billingclient.api.BillingClient;
 import com.bugsnag.android.Bugsnag;
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -85,7 +86,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
 
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
-	    Bugsnag.setContext("Settings");
+        Bugsnag.setContext("Settings");
 
         addPreferencesFromResource(R.xml.preferences);
 
@@ -209,21 +210,6 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
             return true;
         });
 
-        PreferenceCategory prefCategory = (PreferenceCategory) getPreferenceScreen()
-                .getPreference(3);
-        PreferenceScreen prefScreen =  (PreferenceScreen) prefCategory.getPreference(0);
-        prefScreen.setOnPreferenceClickListener(preference -> {
-
-            NavHostFragment.findNavController(this)
-                    .navigate(R.id.action_settingsFragment_to_aboutSettingsFragment);
-
-            Bundle bundle = new Bundle();
-            bundle.putString(FirebaseAnalytics.Param.ITEM_ID, getString(R.string.pref_about));
-            bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "About");
-            bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "preference");
-            mTracker.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
-            return true;
-        });
     }
 
     public void requestBackup() {

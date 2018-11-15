@@ -47,6 +47,7 @@ android {
         versionName gitTag
 
         resConfigs "en"
+        resValue "string", "app_version", versionName
 
         testOptions.unitTests.includeAndroidResources = true
         vectorDrawables.useSupportLibrary = true
@@ -94,6 +95,7 @@ android {
             applicationIdSuffix '.debug'
             versionNameSuffix "-debug"
             ext.enableBugsnag = false
+            resValue "string", "app_id", defaultConfig.applicationId + '.debug'
             resValue "string", "app_name", "College Academics (debug)"
             resValue "string", "contentAuthority", defaultConfig.applicationId + '.debug.provider'
             resValue "string", "account_type", "com.shalzz.debug"
@@ -104,6 +106,7 @@ android {
             shrinkResources true
             minifyEnabled true
             useProguard true
+            resValue "string", "app_id", defaultConfig.applicationId
             resValue "string", "app_name", "College Academics"
             resValue "string", "contentAuthority", defaultConfig.applicationId + '.provider'
             resValue "string", "account_type", "com.shalzz"

@@ -8,12 +8,9 @@ import com.shalzz.attendance.ui.login.AuthenticatorActivity;
 import com.shalzz.attendance.ui.login.LoginFragment;
 import com.shalzz.attendance.ui.login.OTPFragment;
 import com.shalzz.attendance.ui.main.MainActivity;
-import com.shalzz.attendance.ui.settings.AboutSettingsFragment;
 import com.shalzz.attendance.ui.settings.SettingsFragment;
 import com.shalzz.attendance.ui.splash.SplashActivity;
 import com.shalzz.attendance.ui.timetable.TimeTablePagerFragment;
-
-import org.jetbrains.annotations.NotNull;
 
 import dagger.Subcomponent;
 
@@ -33,8 +30,6 @@ public interface ActivityComponent {
     void inject(TimeTablePagerFragment timeTablePagerFragment);
 
     void inject(AttendanceListFragment attendanceListFragment);
-
-    void inject(AboutSettingsFragment aboutSettingsFragment);
 
     void inject(SettingsFragment settingsFragment);
 
