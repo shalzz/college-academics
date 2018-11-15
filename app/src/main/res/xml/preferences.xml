@@ -23,6 +23,7 @@
     <PreferenceCategory android:title="Support" >
         <Preference
                 android:key="@string/pref_key_twitter"
+                android:icon="@drawable/ic_twitter_24dp"
                 android:title="Twitter">
             <intent
                     android:action="android.intent.action.VIEW"
@@ -30,13 +31,15 @@
         </Preference>
         <Preference
                 android:key="@string/pref_key_play_dev_page"
+                android:icon="@drawable/ic_google_play_24dp"
                 android:title="My other apps">
             <intent
                     android:action="android.intent.action.VIEW"
-                    android:data="https://twitter.com/shalzzj" />
+                    android:data="https://play.google.com/store/apps/dev?id=6362297435335536825" />
         </Preference>
         <Preference
                 android:key="@string/pref_key_play_rating"
+                android:icon="@drawable/ic_star_24dp"
                 android:title="Rate College Academics">
             <intent
                     android:action="android.intent.action.VIEW"

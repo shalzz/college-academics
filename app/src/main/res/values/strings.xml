@@ -117,7 +117,7 @@
     <string name="pref_day_night">Day/Night Theme (Pro feature)</string>
     <string name="pref_day_night_dialog">Select Night Mode</string>
     <string name="pref_day_night_summary">Choose a Day or Night Theme</string>
-    <string name="pref_pro_mode">Upgrade to Pro</string>
+    <string name="pref_pro_mode">Help support app development</string>
     <string name="pref_show_pro_mode_off">Thanks for using College Academics. Consider upgrading
         to Pro Mode to support development and unlock additional features.</string>
     <string name="pref_show_pro_mode_on">Pro Mode is now unlocked with additional
