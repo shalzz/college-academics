@@ -30,6 +30,8 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import com.afollestad.materialdialogs.MaterialDialog
 import com.bugsnag.android.Bugsnag
+import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.GoogleApiAvailability
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.shalzz.attendance.R
 import com.shalzz.attendance.data.local.PreferencesHelper
@@ -80,8 +82,22 @@ class LoginFragment : Fragment(), LoginMvpView {
         }
         mView.bLogin.setOnClickListener { doLogin() }
 
+        if (GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(mActivity)
+                    != ConnectionResult.SUCCESS) {
+            GoogleApiAvailability.getInstance().makeGooglePlayServicesAvailable(mActivity)
+        }
+
         return mView
     }
+
+    override fun onResume() {
+        super.onResume()
+        if (GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(mActivity)
+            != ConnectionResult.SUCCESS) {
+            GoogleApiAvailability.getInstance().makeGooglePlayServicesAvailable(mActivity)
+        }
+    }
+
 
     private fun showInvalidNumberError() {
         etUserId.requestFocus()
