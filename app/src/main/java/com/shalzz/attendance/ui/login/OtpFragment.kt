@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import androidx.fragment.app.Fragment
 import com.afollestad.materialdialogs.MaterialDialog
 import com.bugsnag.android.Bugsnag
@@ -52,17 +53,29 @@ class OTPFragment : Fragment(), OtpMvpView {
         Bugsnag.setContext("OTP Fragment")
         mOtpPresenter.attachView(this)
 
-        mView.button.setOnClickListener {
-            val otp : String = mView.etOTP.editText!!.text.toString()
-            if (otp.isEmpty() || otp.length !in 4..6  ) {
-                mView.etOTP.requestFocus()
-                mView.etOTP.error = getString(R.string.form_otp_error)
-                Miscellaneous.showKeyboard(mActivity, mView.etOTP.editText)
-            } else {
-                mOtpPresenter.verifyOTP(phone!!, Integer.parseInt(otp))
+        // Attempt to login when user presses 'Done' on keyboard.
+        mView.etOTP!!.editText!!.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                verifyOTP()
+                return@setOnEditorActionListener true
             }
+            false
+        }
+        mView.button.setOnClickListener {
+            verifyOTP()
         }
         return mView
+    }
+
+    private fun verifyOTP() {
+        val otp : String = etOTP.editText!!.text.toString()
+        if (otp.isEmpty() || otp.length !in 4..6  ) {
+            etOTP.requestFocus()
+            etOTP.error = getString(R.string.form_otp_error)
+            Miscellaneous.showKeyboard(mActivity, etOTP.editText)
+        } else {
+            mOtpPresenter.verifyOTP(phone!!, Integer.parseInt(otp))
+        }
     }
 
     override fun onAttach(context: Context) {

@@ -1,6 +1,7 @@
 package com.shalzz.attendance.ui.login
 
 import android.content.Context
+import com.shalzz.attendance.BuildConfig
 import com.shalzz.attendance.R
 import com.shalzz.attendance.data.DataManager
 import com.shalzz.attendance.data.local.PreferencesHelper
@@ -12,7 +13,7 @@ import com.shalzz.attendance.utils.NetworkUtil
 import com.shalzz.attendance.utils.RxExponentialBackoff
 import com.shalzz.attendance.utils.RxUtil
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import org.json.JSONObject
 import timber.log.Timber
@@ -28,7 +29,7 @@ internal constructor(private val mDataManager: DataManager,
     @param:ApplicationContext private val mContext: Context
 ) : BasePresenter<OtpMvpView>() {
 
-    private var mDisposable: Disposable? = null
+    private var mDisposable: CompositeDisposable = CompositeDisposable()
 
     @Suppress("RedundantOverride")
     override fun attachView(mvpView: OtpMvpView) {
@@ -38,6 +39,34 @@ internal constructor(private val mDataManager: DataManager,
     override fun detachView() {
         super.detachView()
         RxUtil.dispose(mDisposable)
+    }
+
+    private fun registerAndSyncUser(token: String) {
+        mDisposable.add(
+            mDataManager.sendRegID(regId=mPreferenceHelper.regId!!)
+            .subscribeOn(Schedulers.io())
+            .doOnNext {result ->
+                Timber.d("Sent regId to server successfully: %b", result)}
+            .flatMap { mDataManager.syncUser() }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .retryWhen(RxExponentialBackoff.maxCount(3))
+            .subscribe( {
+                mPreferenceHelper.setLoggedIn()
+                mvpView.successfulLogin(token)
+            }, {error ->
+                if (error !is RetrofitException) {
+                    mvpView.showError(null)
+                    Timber.e(error)
+                }
+                else if (isViewAttached) {
+                    mvpView.showError(error.message)
+                    if (error.kind != RetrofitException.Kind.HTTP) {
+                        Timber.e(error)
+                    }
+                }
+            } )
+        )
     }
 
     fun verifyOTP(phone: String, otp: Number) {
@@ -64,26 +93,17 @@ internal constructor(private val mDataManager: DataManager,
         }
 
         mvpView.showProgressDialog()
-        RxUtil.dispose(mDisposable)
-        mDisposable = mDataManager.verifyOTP(phone, otp, true)
+        mDisposable.dispose(); mDisposable = CompositeDisposable()
+        mDisposable.add(
+            mDataManager.verifyOTP(phone, otp, BuildConfig.DEBUG /* Bypass actual otp verification by API*/)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { token ->
                     Timber.d("Got auth token: %s", token.token)
                     mPreferenceHelper.saveUser(phone, token.token)
-                    mDataManager.sendRegID(regId=mPreferenceHelper.regId!!)
-                        .subscribeOn(Schedulers.io())
-                        .doOnNext {result ->
-                            Timber.d("Sent regId to server successfully: %b", result)}
-                        .flatMap { mDataManager.syncUser() }
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .retryWhen(RxExponentialBackoff.maxCount(3))
-                        .subscribe( {
-                            mPreferenceHelper.setLoggedIn()
-                            mvpView.successfulLogin(token.token)
-                        }, onError )
+                    registerAndSyncUser(token.token)
                 }, onError)
+        )
     }
 }

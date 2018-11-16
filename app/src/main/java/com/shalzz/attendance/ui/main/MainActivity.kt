@@ -244,18 +244,12 @@ class MainActivity : BaseActivity(), MainMvpView, BillingProvider {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // called by the activity on tablets,
-        // as we do not set a onClick listener
-        // on the toolbar navigation icon
-        // while on a tablet
-        if (item.itemId == android.R.id.home) {
-            onBackPressed()
-            return true
-        } else if (item.itemId == R.id.menu_logout) {
-            mMainPresenter.logout()
-            return true
+        when (item.itemId) {
+            android.R.id.home -> onBackPressed()
+            R.id.menu_logout -> mMainPresenter.logout()
+            else -> return super.onOptionsItemSelected(item)
         }
-        return super.onOptionsItemSelected(item)
+        return true
     }
 
     override fun setTitle(title: CharSequence) {

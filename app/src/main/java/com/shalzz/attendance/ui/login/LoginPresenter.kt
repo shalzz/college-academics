@@ -20,24 +20,33 @@
 package com.shalzz.attendance.ui.login
 
 import android.content.Context
+import com.google.firebase.iid.FirebaseInstanceId
 import com.shalzz.attendance.R
 import com.shalzz.attendance.data.DataManager
+import com.shalzz.attendance.data.local.PreferencesHelper
 import com.shalzz.attendance.data.remote.RetrofitException
 import com.shalzz.attendance.injection.ApplicationContext
 import com.shalzz.attendance.injection.ConfigPersistent
 import com.shalzz.attendance.ui.base.BasePresenter
 import com.shalzz.attendance.utils.NetworkUtil
+import com.shalzz.attendance.utils.RxExponentialBackoff
 import com.shalzz.attendance.utils.RxUtil
+import io.reactivex.Observable
+import io.reactivex.ObservableOnSubscribe
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
 @ConfigPersistent
 class LoginPresenter @Inject
 internal constructor(private val mDataManager: DataManager,
-                     @param:ApplicationContext private val mContext: Context
+    private val mPreferenceHelper: PreferencesHelper,
+    @param:ApplicationContext private val mContext: Context
 ) : BasePresenter<LoginMvpView>() {
 
     private var mDisposable: Disposable? = null
@@ -50,6 +59,21 @@ internal constructor(private val mDataManager: DataManager,
     override fun detachView() {
         super.detachView()
         RxUtil.dispose(mDisposable)
+    }
+
+    // TODO: handle getting and registering regId with multiple users
+    private fun getToken(): Observable<String> {
+        val senderId = mContext.getString(R.string.onedu_gcmSenderId)
+        return Observable.create(ObservableOnSubscribe<String> { source ->
+            if (source.isDisposed) return@ObservableOnSubscribe
+            val token = FirebaseInstanceId.getInstance().getToken(senderId, "FCM")
+            Timber.d("Got new regId: %s", token)
+            if (token != null && !token.isEmpty())
+                source.onNext(token)
+            source.onComplete()
+        }).subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .retryWhen(RxExponentialBackoff.maxCount(3))
     }
 
     fun login(phone: String) {
@@ -65,11 +89,14 @@ internal constructor(private val mDataManager: DataManager,
                 Timber.e(error)
             }
             else if (isViewAttached) {
+                mvpView.showError(error.message)
                 if (error.kind == RetrofitException.Kind.HTTP) {
-                    mvpView.showError(error.message)
-                    // TODO: reset regId
+                    GlobalScope.launch(Dispatchers.Default) {
+                        // Reset FCM instance Id and hence any registration tokens
+                        Timber.d("Resetting FCM instance ID")
+                        FirebaseInstanceId.getInstance().deleteInstanceId()
+                    }
                 } else {
-                    mvpView.showError(error.message)
                     Timber.e(error)
                 }
             }
@@ -77,12 +104,16 @@ internal constructor(private val mDataManager: DataManager,
 
         mvpView.showProgressDialog()
         RxUtil.dispose(mDisposable)
-        mDisposable = mDataManager.login(phone)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        { sender ->
-                            mvpView.showOtpScreen(phone, sender.sender)
-                        }, onError)
+        mDisposable = getToken()
+            .flatMap { token ->
+                mPreferenceHelper.saveRegId(token)
+                mDataManager.login(phone)
+            }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                { sender ->
+                    mvpView.showOtpScreen(phone, sender.sender)
+                }, onError)
     }
 }

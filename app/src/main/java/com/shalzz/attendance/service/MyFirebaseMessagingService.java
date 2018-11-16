@@ -24,22 +24,17 @@ import android.content.Intent;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
-
+import androidx.core.app.NotificationCompat;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.shalzz.attendance.MyApplication;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.data.DataManager;
 import com.shalzz.attendance.ui.main.MainActivity;
-import com.shalzz.attendance.utils.RxUtil;
+import io.reactivex.disposables.Disposable;
+import timber.log.Timber;
 
 import javax.inject.Inject;
-
-import androidx.core.app.NotificationCompat;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.observers.DisposableObserver;
-import io.reactivex.schedulers.Schedulers;
-import timber.log.Timber;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 

@@ -32,7 +32,6 @@ import com.shalzz.attendance.sync.MyAccountManager
 import com.shalzz.attendance.ui.base.BaseActivity
 import com.shalzz.attendance.ui.main.MainActivity
 import timber.log.Timber
-import java.lang.Exception
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -45,22 +44,16 @@ class SplashActivity : BaseActivity() {
     @field:Named("app")
     lateinit var mTracker: FirebaseAnalytics
 
-    @Inject
-    lateinit var mPresenter: SplashPresenter
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         activityComponent().inject(this)
         Bugsnag.setContext("SplashActivity")
         mPreferencesHelper.upgradePrefsIfNecessary(this)
 
-        mPresenter.getToken(getString(R.string.onedu_gcmSenderId))
         val sharedPref = PreferenceManager.getDefaultSharedPreferences(this)
         val optIn = sharedPref.getBoolean(getString(R.string.pref_key_ga_opt_in), true)
         mTracker.setAnalyticsCollectionEnabled(optIn)
         Timber.i("Opted In to Google Analytics: %s", optIn)
-
-        // TODO: check for play services
 
         // Set all default values once for this application
         try {
