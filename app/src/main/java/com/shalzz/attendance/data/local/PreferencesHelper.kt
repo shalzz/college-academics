@@ -103,11 +103,12 @@ constructor(@ApplicationContext context: Context) {
         }
 
         when (version)  {
-            "v3.1.10" -> {
-                if(mPref.getBoolean("update_required", true)) {
+            "v3.1.10",
+            "v3.2.1" -> {
+                if(mPref.getBoolean("update_required-$version", true)) {
                     val editor = mPref.edit()
                     editor.putBoolean("LOGGEDIN", false)
-                    editor.putBoolean("update_required", false)
+                    editor.putBoolean("update_required-$version", false)
                     editor.commit()
 
                     Timber.d("Upgrading preferences to: %s", version)
