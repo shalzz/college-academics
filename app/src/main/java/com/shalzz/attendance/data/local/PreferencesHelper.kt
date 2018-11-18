@@ -25,6 +25,7 @@ import android.content.SharedPreferences
 import android.content.pm.PackageManager
 
 import com.shalzz.attendance.injection.ApplicationContext
+import com.shalzz.attendance.sync.MyAccountManager
 import com.shalzz.attendance.ui.main.MainActivity
 
 import javax.inject.Inject
@@ -111,6 +112,17 @@ constructor(@ApplicationContext context: Context) {
                     editor.putBoolean("update_required-$version", false)
                     editor.commit()
 
+                    MyAccountManager.removeSyncAccount(context)
+                    Timber.d("Upgrading preferences to: %s", version)
+                }
+            }
+            "v3.2.2" -> {
+                if(mPref.getBoolean("update_required-v3.2.1", true)) {
+                    val editor = mPref.edit()
+                    editor.putBoolean("update_required-v3.2.1", false)
+                    editor.commit()
+
+                    MyAccountManager.removeSyncAccount(context)
                     Timber.d("Upgrading preferences to: %s", version)
                 }
             }
