@@ -35,7 +35,7 @@
         <TextView
                 android:id="@+id/IvAppname"
                 android:layout_width="290dp"
-                android:layout_height="108dp"
+                android:layout_height="wrap_content"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -97,6 +97,7 @@
                   android:layout_height="wrap_content"
                   android:text="@string/login_notice"
                   android:layout_marginTop="48dp"
+                  android:lines="1"
                   app:layout_constraintEnd_toEndOf="parent"
                   app:layout_constraintStart_toStartOf="parent"
                   app:layout_constraintTop_toBottomOf="@id/bLogin"

@@ -79,7 +79,7 @@ internal constructor(private val mDataManager: DataManager,
     fun login(phone: String) {
         checkViewAttached()
         if (!NetworkUtil.isNetworkConnected(mContext)) {
-            Timber.i("Sync canceled, connection not available")
+            Timber.i("Login canceled, connection not available")
             mvpView.showError(mContext.getString(R.string.no_internet))
             return
         }

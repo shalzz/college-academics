@@ -22,15 +22,13 @@ package com.shalzz.attendance.data.local
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
-import android.content.pm.PackageManager
-
+import com.shalzz.attendance.data.model.SemVersion
 import com.shalzz.attendance.injection.ApplicationContext
+import com.shalzz.attendance.sync.MyAccountManager
 import com.shalzz.attendance.ui.main.MainActivity
-
+import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
-
-import timber.log.Timber
 
 @SuppressLint("CommitPrefEdits")
 @Singleton
@@ -94,32 +92,33 @@ constructor(@ApplicationContext context: Context) {
     }
 
     fun upgradePrefsIfNecessary(context: Context) {
-        var version = ""
-        try {
-            version = context.packageManager
-                    .getPackageInfo(context.packageName, 0).versionName
-        } catch (e: PackageManager.NameNotFoundException) {
-            e.printStackTrace()
-        }
+        val version = SemVersion(mPref.getString(PREF_VERSION_KEY, "v0.0.0")!!)
 
-        when (version)  {
-            "v3.1.10",
-            "v3.2.1" -> {
-                if(mPref.getBoolean("update_required-$version", true)) {
-                    val editor = mPref.edit()
-                    editor.putBoolean("LOGGEDIN", false)
-                    editor.putBoolean("update_required-$version", false)
-                    editor.commit()
-
-                    Timber.d("Upgrading preferences to: %s", version)
+        when  {
+            upgrade(version, "v3.2.2") -> {
+                mPref.edit().apply{
+                    putBoolean("LOGGEDIN", false)
                 }
+                MyAccountManager.removeSyncAccount(context)
             }
             else -> Timber.d("Preference upgrade not required.")
         }
     }
 
+    private fun upgrade (oldVersion : SemVersion, newVersion: String): Boolean {
+        val version = SemVersion(newVersion)
+        return if (oldVersion < version) {
+            mPref.edit().putString(PREF_VERSION_KEY, version.version).apply()
+            Timber.d("Upgrading preferences to: %s", version)
+            true
+        }
+        else false
+    }
+
     companion object {
 
         private val PREF_FILE_NAME = "attendance_pref_file"
+
+        private val PREF_VERSION_KEY = "prefs-version"
     }
 }
