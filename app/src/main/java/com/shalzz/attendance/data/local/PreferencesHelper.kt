@@ -93,12 +93,11 @@ constructor(@ApplicationContext context: Context) {
 
     fun upgradePrefsIfNecessary(context: Context) {
         val version = SemVersion(mPref.getString(PREF_VERSION_KEY, "v0.0.0")!!)
+        Timber.d("Old preference version: %s", version)
 
         when  {
             upgrade(version, "v3.2.2") -> {
-                mPref.edit().apply{
-                    putBoolean("LOGGEDIN", false)
-                }
+                mPref.edit().putBoolean("LOGGEDIN", false).commit() // Required !!
                 MyAccountManager.removeSyncAccount(context)
             }
             else -> Timber.d("Preference upgrade not required.")

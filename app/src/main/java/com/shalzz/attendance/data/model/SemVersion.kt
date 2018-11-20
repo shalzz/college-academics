@@ -3,12 +3,13 @@ package com.shalzz.attendance.data.model
 /**
  * @author shalzz
  */
-data class SemVersion (val version: String) : Comparable<SemVersion>
+data class SemVersion (
+    val version: String,
+    var major: Int = 0,
+    var minor: Int = 0,
+    var patch: Int = 0
+) : Comparable<SemVersion>
 {
-    private var major: Int? = 0
-    private var minor: Int? = 0
-    private var patch: Int? = 0
-
     init {
         val values = version.removePrefix("v").split(".")
         major = values[0].toInt()

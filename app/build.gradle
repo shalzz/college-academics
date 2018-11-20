@@ -148,7 +148,7 @@ android {
     }
 
     dependencies {
-        final DAGGER_VERSION = "2.17"
+        final DAGGER_VERSION = "2.19"
         final ESPRESSO_VERSION = "3.1.0"
         final RETROFIT_VERSION = "2.4.0"
         final BUTTERKNIFE_VERSION = "9.0.0-rc1"
@@ -198,7 +198,7 @@ android {
         kapt "com.jakewharton:butterknife-compiler:$BUTTERKNIFE_VERSION"
 
         implementation "io.reactivex.rxjava2:rxandroid:2.0.2"
-        implementation "io.reactivex.rxjava2:rxjava:2.1.10"
+        implementation "io.reactivex.rxjava2:rxjava:2.1.14"
 
         implementation "com.squareup.retrofit2:retrofit:$RETROFIT_VERSION"
         implementation "com.squareup.retrofit2:converter-moshi:$RETROFIT_VERSION"
@@ -261,12 +261,20 @@ android {
         testImplementation "androidx.test:core:1.0.0"
         testImplementation "org.robolectric:robolectric:4.0"
         testImplementation "org.robolectric:shadows-multidex:4.0"
+
+        configurations.all {
+            resolutionStrategy.force 'com.google.auto.value:auto-value-annotations:1.6.2'
+            resolutionStrategy.force 'com.google.code.findbugs:jsr305:3.0.2'
+            resolutionStrategy.force 'com.google.guava:guava:26.0-android'
+            resolutionStrategy.force 'com.google.code.gson:gson:2.8.0'
+            resolutionStrategy.force 'com.google.errorprone:error_prone_annotations:2.3.1'
+            resolutionStrategy.force 'org.checkerframework:checker-compat-qual:2.5.3'
+        }
     }
 }
 
 // ADD THIS AT THE BOTTOM
 apply plugin: "com.google.gms.google-services"
-apply plugin: "kotlin-android-extensions"
 
 // Log out test results to console
 tasks.matching { it instanceof Test }.all {
