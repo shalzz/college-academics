@@ -169,7 +169,14 @@ android {
         implementation "com.google.firebase:firebase-core:16.0.5"
         implementation "com.google.firebase:firebase-analytics:16.0.5"
         implementation "com.google.firebase:firebase-messaging:17.3.4"
-        implementation 'com.google.firebase:firebase-inappmessaging-display:17.0.4'
+        implementation ("com.google.firebase:firebase-inappmessaging-display:17.0.4") {
+            exclude group: 'com.google.auto.value'
+            exclude group: 'com.google.code.gson'
+            exclude group: 'com.google.code.findbugs'
+            exclude group: 'com.google.android.gms'
+            exclude group: 'com.google.guava'
+            exclude group: 'com.google.errorprone'
+        }
         implementation 'com.google.firebase:firebase-perf:16.2.0'
 
         implementation "com.google.android.gms:play-services-oss-licenses:16.0.1"
@@ -228,7 +235,7 @@ android {
 
         // Instrumentation test dependencies
         androidTestImplementation mockito
-        androidTestImplementation "com.google.code.findbugs:jsr305:3.0.0"
+        androidTestImplementation "com.google.code.findbugs:jsr305:3.0.2"
         androidTestImplementation "androidx.annotation:annotation:1.0.0"
 
         // Core library
@@ -244,15 +251,15 @@ android {
         androidTestImplementation "com.google.truth:truth:0.42"
 
         // Espresso dependencies
-        androidTestImplementation "androidx.test.espresso:espresso-core:$ESPRESSO_VERSION"
-        androidTestImplementation "androidx.test.espresso:espresso-contrib:$ESPRESSO_VERSION"
-        androidTestImplementation "androidx.test.espresso:espresso-intents:$ESPRESSO_VERSION"
-        androidTestImplementation "androidx.test.espresso:espresso-accessibility:$ESPRESSO_VERSION"
-        androidTestImplementation "androidx.test.espresso:espresso-web:$ESPRESSO_VERSION"
-        androidTestImplementation "androidx.test.espresso.idling:idling-concurrent:$ESPRESSO_VERSION"
-
-        androidTestImplementation "androidx.test.espresso:espresso-contrib:$ESPRESSO_VERSION"
-        androidTestImplementation "androidx.test.espresso:espresso-core:$ESPRESSO_VERSION"
+//        androidTestImplementation "androidx.test.espresso:espresso-core:$ESPRESSO_VERSION"
+//        androidTestImplementation "androidx.test.espresso:espresso-contrib:$ESPRESSO_VERSION"
+//        androidTestImplementation "androidx.test.espresso:espresso-intents:$ESPRESSO_VERSION"
+//        androidTestImplementation "androidx.test.espresso:espresso-accessibility:$ESPRESSO_VERSION"
+//        androidTestImplementation "androidx.test.espresso:espresso-web:$ESPRESSO_VERSION"
+//        androidTestImplementation "androidx.test.espresso.idling:idling-concurrent:$ESPRESSO_VERSION"
+//
+//        androidTestImplementation "androidx.test.espresso:espresso-contrib:$ESPRESSO_VERSION"
+//        androidTestImplementation "androidx.test.espresso:espresso-core:$ESPRESSO_VERSION"
 
         // Unit tests dependencies
         testImplementation jUnit
