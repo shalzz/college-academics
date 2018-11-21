@@ -155,7 +155,7 @@ android {
         final ROOM_VERSION = "2.0.0"
         final NAV_VERSION = "1.0.0-alpha07"
 
-        // TODO: revaluate when RxJava is completely replaced with kotlin co-routines
+        // TODO: re-evaluate when RxJava is completely replaced with kotlin co-routines
         implementation "com.android.support:multidex:1.0.3"
 
         implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"

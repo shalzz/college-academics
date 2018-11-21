@@ -14,7 +14,6 @@ import com.shalzz.attendance.R
 import com.shalzz.attendance.utils.Miscellaneous
 import kotlinx.android.synthetic.main.fragment_otp.*
 import kotlinx.android.synthetic.main.fragment_otp.view.*
-import timber.log.Timber
 import javax.inject.Inject
 
 /**
@@ -75,8 +74,6 @@ class OTPFragment : Fragment(), OtpMvpView {
             etOTP.error = getString(R.string.form_otp_error)
             Miscellaneous.showKeyboard(mActivity, etOTP.editText)
         } else {
-            Timber.e(Exception("OTP exception for phone: $phone and otp: $otp"),
-                "Logging in with otp: %s", otp)
             mOtpPresenter.verifyOTP(phone!!, Integer.parseInt(otp))
         }
     }

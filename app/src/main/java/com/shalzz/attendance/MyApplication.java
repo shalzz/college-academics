@@ -26,6 +26,7 @@ import androidx.multidex.MultiDexApplication;
 import androidx.preference.PreferenceManager;
 import com.bugsnag.android.Bugsnag;
 import com.bugsnag.android.Configuration;
+import com.google.firebase.FirebaseApp;
 import com.shalzz.attendance.injection.component.ApplicationComponent;
 import com.shalzz.attendance.injection.component.DaggerApplicationComponent;
 import com.shalzz.attendance.injection.module.ApplicationModule;
@@ -47,6 +48,8 @@ public class MyApplication extends MultiDexApplication {
         Bugsnag.init(this, config);
         Bugsnag.setNotifyReleaseStages("production", "development", "testing");
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+
+        FirebaseApp.initializeApp(this);
 
         if (BuildConfig.DEBUG) {
             Timber.plant(new Timber.DebugTree());
