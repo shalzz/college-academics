@@ -30,7 +30,7 @@ object RxExponentialBackoff {
             )
                 .flatMap { i ->
                     val backoffDelay = 500 * Math.pow(2.0, i.toDouble())
-                    Timber.d("delay retry by: %d ms", backoffDelay)
+                    Timber.d("delay retry by: %d ms", backoffDelay.toLong())
                     Observable.timer(backoffDelay.toLong(), TimeUnit.MICROSECONDS)
                 }
         }
