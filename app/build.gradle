@@ -17,14 +17,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-apply plugin: "com.android.application"
-apply plugin: "kotlin-android"
-apply plugin: "kotlin-kapt"
-apply plugin: "kotlin-android-extensions"
-apply plugin: "com.github.triplet.play"
-apply plugin: "com.bugsnag.android.gradle"
-apply plugin: 'com.google.firebase.firebase-perf'
-apply plugin: "com.google.gms.oss.licenses.plugin"
+plugins {
+    id("com.android.application")
+    id("com.github.triplet.play") version "2.0.0-rc2"
+    id("kotlin-android")
+    id("kotlin-android-extensions")
+    id("kotlin-kapt")
+    id("com.bugsnag.android.gradle")
+    id("com.google.firebase.firebase-perf")
+    id("com.google.gms.oss.licenses.plugin")
+}
 
 bugsnag {
     apiKey "600a00bfd5bd72e5df7f288f74df8f9b"
@@ -68,8 +70,7 @@ android {
     }
 
     play {
-        jsonFile = file("../play-service-account-key.json")
-        uploadImages = true
+        serviceAccountCredentials = file("../play-service-account-key.json")
         track = "beta"
     }
 
