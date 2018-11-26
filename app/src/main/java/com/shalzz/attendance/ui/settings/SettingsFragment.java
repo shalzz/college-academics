@@ -29,7 +29,6 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.preference.ListPreference;
 import androidx.preference.PreferenceFragmentCompat;
-import androidx.preference.SwitchPreference;
 import com.android.billingclient.api.BillingClient;
 import com.bugsnag.android.Bugsnag;
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -45,6 +44,8 @@ import com.shalzz.attendance.utils.Miscellaneous.Analytics;
 import com.shalzz.attendance.utils.RxEventBus;
 import com.shalzz.attendance.utils.RxUtil;
 import com.shalzz.attendance.wrapper.ProModeListPreference;
+
+import androidx.preference.SwitchPreferenceCompat;
 import io.reactivex.disposables.Disposable;
 import timber.log.Timber;
 
@@ -70,10 +71,10 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
 
     private BillingProvider mBillingProvider;
     private String key_sync_interval;
-    private SwitchPreference syncPref;
-    private SwitchPreference proModePref;
+    private SwitchPreferenceCompat syncPref;
+    private SwitchPreferenceCompat proModePref;
     private ProModeListPreference proThemePref;
-    private SwitchPreference weekendsPref;
+    private SwitchPreferenceCompat weekendsPref;
     private Activity mActivity;
 
     private Disposable PurchaseEventDisposable;
@@ -94,10 +95,10 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
         ListPreference synclistPref = (ListPreference) findPreference(key_sync_interval);
         synclistPref.setSummary(synclistPref.getEntry());
 
-        syncPref = (SwitchPreference) findPreference(getString(R.string.pref_key_sync));
+        syncPref = (SwitchPreferenceCompat) findPreference(getString(R.string.pref_key_sync));
         proThemePref = (ProModeListPreference) findPreference(getString(R.string.pref_key_day_night));
-        weekendsPref = (SwitchPreference) findPreference(getString(R.string.pref_key_hide_weekends));
-        proModePref = (SwitchPreference) findPreference(getString(R.string.pref_key_pro_mode));
+        weekendsPref = (SwitchPreferenceCompat) findPreference(getString(R.string.pref_key_hide_weekends));
+        proModePref = (SwitchPreferenceCompat) findPreference(getString(R.string.pref_key_pro_mode));
     }
 
     @Override

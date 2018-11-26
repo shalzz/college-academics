@@ -49,6 +49,7 @@ public class MyApplication extends MultiDexApplication {
         Bugsnag.setNotifyReleaseStages("production", "development", "testing");
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
 
+        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
         FirebaseApp.initializeApp(this);
 
         if (BuildConfig.DEBUG) {

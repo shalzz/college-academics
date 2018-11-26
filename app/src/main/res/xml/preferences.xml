@@ -18,101 +18,101 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+<androidx.preference.PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <PreferenceCategory android:title="Support" >
+    <PreferenceCategory app:title="Support" app:key="support" >
         <Preference
-                android:key="@string/pref_key_twitter"
-                android:icon="@drawable/ic_twitter_24dp"
-                android:title="Twitter">
+            app:key="@string/pref_key_twitter"
+            app:icon="@drawable/ic_twitter_24dp"
+            app:title="Twitter">
             <intent
-                    android:action="android.intent.action.VIEW"
-                    android:data="https://twitter.com/shalzzj" />
+                android:action="android.intent.action.VIEW"
+                android:data="https://twitter.com/shalzzj" />
         </Preference>
         <Preference
-                android:key="@string/pref_key_play_dev_page"
-                android:icon="@drawable/ic_google_play_24dp"
-                android:title="My other apps">
+            app:key="@string/pref_key_play_dev_page"
+            app:icon="@drawable/ic_google_play_24dp"
+            app:title="My other apps">
             <intent
-                    android:action="android.intent.action.VIEW"
-                    android:data="https://play.google.com/store/apps/dev?id=6362297435335536825" />
+                android:action="android.intent.action.VIEW"
+                android:data="https://play.google.com/store/apps/dev?id=6362297435335536825" />
         </Preference>
         <Preference
-                android:key="@string/pref_key_play_rating"
-                android:icon="@drawable/ic_star_24dp"
-                android:title="Rate College Academics">
+            app:key="@string/pref_key_play_rating"
+            app:icon="@drawable/ic_star_24dp"
+            app:title="Rate College Academics">
             <intent
-                    android:action="android.intent.action.VIEW"
-                    android:data="https://play.google.com/store/apps/details?id=com.shalzz.attendance" />
+                android:action="android.intent.action.VIEW"
+                android:data="https://play.google.com/store/apps/details?id=com.shalzz.attendance" />
         </Preference>
-        <SwitchPreference
-                android:key="@string/pref_key_pro_mode"
-                android:defaultValue="false"
-                android:icon="@drawable/ic_vpn_key_24px"
-                android:title="@string/pref_pro_mode"
-                android:summaryOn="@string/pref_show_pro_mode_on"
-                android:summaryOff="@string/pref_show_pro_mode_off" />
+        <SwitchPreferenceCompat
+            app:key="@string/pref_key_pro_mode"
+            app:defaultValue="false"
+            app:icon="@drawable/ic_vpn_key_24px"
+            app:title="@string/pref_pro_mode"
+            app:summaryOn="@string/pref_show_pro_mode_on"
+            app:summaryOff="@string/pref_show_pro_mode_off" />
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="General" >
+    <PreferenceCategory app:title="General" app:key="general">
         <com.shalzz.attendance.wrapper.ProModeListPreference
-                android:key="@string/pref_key_day_night"
-                android:defaultValue="1"
-                android:title="@string/pref_day_night"
-                android:dialogTitle="@string/pref_day_night_dialog"
-                android:summary="@string/pref_day_night_summary"
-                android:entries="@array/pref_day_night_entries"
-                android:entryValues="@array/pref_day_night_values"/>
+            app:key="@string/pref_key_day_night"
+            app:defaultValue="1"
+            app:title="@string/pref_day_night"
+            app:dialogTitle="@string/pref_day_night_dialog"
+            app:summary="@string/pref_day_night_summary"
+            app:entries="@array/pref_day_night_entries"
+            app:entryValues="@array/pref_day_night_values"/>
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="Timetable" >
-        <SwitchPreference
-                android:key="@string/pref_key_hide_weekends"
-                android:defaultValue="false"
-                android:title="@string/pref_hide_weekends"
-                android:summary="@string/pref_hide_weekends_summary"/>
+    <PreferenceCategory app:title="Timetable" app:key="timetable">
+        <SwitchPreferenceCompat
+            app:key="@string/pref_key_hide_weekends"
+            app:defaultValue="false"
+            app:title="@string/pref_hide_weekends"
+            app:summary="@string/pref_hide_weekends_summary"/>
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="Network" >
-        <SwitchPreference
-                android:key="@string/pref_key_sync"
-                android:defaultValue="true"
-                android:title="@string/pref_sync"
-                android:summary="@string/pref_sync_summary" />
+    <PreferenceCategory app:title="Network" app:key="network">
+        <SwitchPreferenceCompat
+            app:key="@string/pref_key_sync"
+            app:defaultValue="true"
+            app:title="@string/pref_sync"
+            app:summary="@string/pref_sync_summary" />
 
         <ListPreference
-                android:key="@string/pref_key_sync_interval"
-                android:defaultValue="480"
-                android:title="@string/pref_refresh"
-                android:dialogTitle="@string/pref_refresh"
-                android:dependency="@string/pref_key_sync"
-                android:entries="@array/pref_data_sync_interval_entries"
-                android:entryValues="@array/pref_data_sync_interval_values"/>
+            app:key="@string/pref_key_sync_interval"
+            app:defaultValue="480"
+            app:title="@string/pref_refresh"
+            app:dialogTitle="@string/pref_refresh"
+            app:dependency="@string/pref_key_sync"
+            app:entries="@array/pref_data_sync_interval_entries"
+            app:entryValues="@array/pref_data_sync_interval_values"/>
 
-        <SwitchPreference
-                android:key="@string/pref_key_ga_opt_in"
-                android:defaultValue="true"
-                android:title="@string/pref_ga_opt_in"
-                android:summary="@string/pref_ga_opt_in_summary" />
+        <SwitchPreferenceCompat
+            app:key="@string/pref_key_ga_opt_in"
+            app:defaultValue="true"
+            app:title="@string/pref_ga_opt_in"
+            app:summary="@string/pref_ga_opt_in_summary" />
     </PreferenceCategory>
 
-    <PreferenceCategory
-            android:title="About" >
+    <PreferenceCategory app:title="About" app:key="about">
         <Preference
-                android:key="@string/pref_key_info_notices"
-                android:title="@string/pref_notice"
-                android:summary="@string/pref_notice_summary"
-                android:persistent="false">
+            app:key="@string/pref_key_info_notices"
+            app:title="@string/pref_notice"
+            app:summary="@string/pref_notice_summary"
+            app:persistent="false">
             <intent
-                    android:action="android.intent.action.VIEW"
-                    android:targetPackage="@string/app_id"
-                    android:targetClass="com.google.android.gms.oss.licenses.OssLicensesMenuActivity" />
+                android:action="android.intent.action.VIEW"
+                android:targetPackage="@string/app_id"
+                android:targetClass="com.google.android.gms.oss.licenses.OssLicensesMenuActivity" />
         </Preference>
         <Preference
-                android:key="@string/pref_key_info_version"
-                android:title="@string/pref_version"
-                android:summary="@string/app_version"
-                android:persistent="false"/>
+            app:key="@string/pref_key_info_version"
+            app:title="@string/pref_version"
+            app:summary="@string/app_version"
+            app:persistent="false"/>
     </PreferenceCategory>
 
-</PreferenceScreen>
+</androidx.preference.PreferenceScreen>
