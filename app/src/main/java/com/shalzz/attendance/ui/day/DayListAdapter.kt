@@ -26,10 +26,9 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SortedList
 import androidx.recyclerview.widget.SortedListAdapterCallback
-import butterknife.BindView
-import butterknife.ButterKnife
 import com.shalzz.attendance.R
 import com.shalzz.attendance.data.model.entity.Period
+import kotlinx.android.synthetic.main.list_day_item.view.*
 import javax.inject.Inject
 
 class DayListAdapter @Inject
@@ -42,20 +41,11 @@ internal constructor() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     // Complex data items may need more than one view per item, and
     // you provide access to all the views for a data item in a view holder
     class ViewHolder internal constructor(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        @BindView(R.id.tvSubjectName)
-        lateinit var tvSubjectName: TextView
-        @BindView(R.id.tvTime)
-        lateinit var tvTime: TextView
-        @BindView(R.id.tvTeacher)
-        lateinit var tvTeacher: TextView
-        @BindView(R.id.tvRoom)
-        lateinit var tvRoom: TextView
-        @BindView(R.id.tvMarkedAbsent)
-        lateinit var tvMarkedAbsent: TextView
-
-        init {
-            ButterKnife.bind(this, itemView)
-        }
+        var tvSubjectName: TextView = itemView.tvSubjectName
+        var tvTime: TextView = itemView.tvTime
+        var tvTeacher: TextView = itemView.tvTeacher
+        var tvRoom: TextView = itemView.tvRoom
+        var tvMarkedAbsent: TextView = itemView.tvMarkedAbsent
     }
 
     init {
