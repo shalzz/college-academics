@@ -1,5 +1,6 @@
 package com.shalzz.attendance.ui.login
 
+import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.os.Bundle
@@ -15,6 +16,14 @@ import com.shalzz.attendance.utils.Miscellaneous
 import kotlinx.android.synthetic.main.fragment_otp.*
 import kotlinx.android.synthetic.main.fragment_otp.view.*
 import javax.inject.Inject
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import android.content.IntentFilter
+import android.content.Intent
+import android.content.BroadcastReceiver
+import androidx.core.app.ActivityCompat
+import android.content.pm.PackageManager
+import androidx.core.content.ContextCompat
+
 
 /**
  * A simple [Fragment] subclass.
@@ -35,6 +44,15 @@ class OTPFragment : Fragment(), OtpMvpView {
 
     @Inject
     lateinit var mOtpPresenter: OtpPresenter
+
+    private val receiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            if (intent.action!!.equals("otp", ignoreCase = true)) {
+                val message = intent.getStringExtra("code")
+                etOTP.editText!!.setText(message)
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,7 +82,18 @@ class OTPFragment : Fragment(), OtpMvpView {
         mView.button.setOnClickListener {
             verifyOTP()
         }
+
+        requestSmsPermission()
+        mView.smsPermission.setOnClickListener { requestSmsPermission() }
         return mView
+    }
+
+    private fun requestSmsPermission() {
+        val permission = Manifest.permission.RECEIVE_SMS
+        val grant = ContextCompat.checkSelfPermission(mActivity, permission)
+        if (grant != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(mActivity, arrayOf(permission), 1)
+        }
     }
 
     private fun verifyOTP() {
@@ -107,6 +136,16 @@ class OTPFragment : Fragment(), OtpMvpView {
         fun onFragmentInteraction(authToken: String, phone: String)
     }
 
+    override fun onResume() {
+        LocalBroadcastManager.getInstance(mActivity)
+                .registerReceiver(receiver, IntentFilter("otp"))
+        super.onResume()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        LocalBroadcastManager.getInstance(mActivity).unregisterReceiver(receiver)
+    }
 
     /***** MVP View methods implementation  */
 

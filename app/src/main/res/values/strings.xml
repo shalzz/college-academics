@@ -164,5 +164,8 @@
     <string name="network_error_message">Network Error</string>
     <string name="default_notification_channel_id">1</string>
     <string name="account_manager_title">College Academics</string>
+    <string name="sms_permission_reason">
+        <u>Allow SMS permission to automatically enter OTP</u>
+    </string>
 
 </resources>
