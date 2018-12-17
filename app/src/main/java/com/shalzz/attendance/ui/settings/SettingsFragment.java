@@ -25,12 +25,10 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
-import android.widget.Toast;
-import androidx.appcompat.app.AppCompatDelegate;
-import androidx.preference.ListPreference;
-import androidx.preference.PreferenceFragmentCompat;
+
 import com.android.billingclient.api.BillingClient;
 import com.bugsnag.android.Bugsnag;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.shalzz.attendance.R;
 import com.shalzz.attendance.billing.BillingConstants;
@@ -45,12 +43,15 @@ import com.shalzz.attendance.utils.RxEventBus;
 import com.shalzz.attendance.utils.RxUtil;
 import com.shalzz.attendance.wrapper.ProModeListPreference;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.preference.ListPreference;
+import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.SwitchPreferenceCompat;
 import io.reactivex.disposables.Disposable;
 import timber.log.Timber;
-
-import javax.inject.Inject;
-import javax.inject.Named;
 
 public class SettingsFragment extends PreferenceFragmentCompat implements
         OnSharedPreferenceChangeListener {
@@ -132,9 +133,10 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
             mTracker.logEvent(Analytics.Event.THEME_CHANGE, params);
         }
         else if(key.equals(getString(R.string.pref_key_hide_weekends))) {
-            if (!mBillingProvider.isProKeyPurchased()) {
+            if (!mBillingProvider.isProKeyPurchased()
+                    && sharedPreferences.getBoolean(key, false)) {
                 weekendsPref.setChecked(false);
-                Toast.makeText(mContext, "Pro key required!", Toast.LENGTH_SHORT).show();
+                promptForProKey();
             }
         }
         else if (key.equals(getString(R.string.pref_key_sync))) {
@@ -172,6 +174,22 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
         RxUtil.dispose(PurchaseEventDisposable);
     }
 
+    private void promptForProKey() {
+        Snackbar.make(getListView(), "Pro key required for this feature", Snackbar.LENGTH_LONG)
+                .setAction("Unlock", v -> buyProKey())
+                .show();
+    }
+
+    private void buyProKey() {
+        mBillingProvider.getBillingManager()
+                .initiatePurchaseFlow(BillingConstants.SKU_PRO_KEY, BillingClient.SkuType.INAPP);
+
+        // Fire an analytics event
+        Bundle params = new Bundle();
+        params.putString(Analytics.Param.USER_ID, mPreferences.getUserId());
+        mTracker.logEvent(Analytics.Event.IAP_INITIATED, params);
+    }
+
     @Override
     public void onResume() {
         super.onResume();
@@ -191,13 +209,8 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
             proModePref.setChecked(false);
             proModePref.setOnPreferenceClickListener(preference -> {
                 proModePref.setChecked(false);
-                mBillingProvider.getBillingManager()
-                        .initiatePurchaseFlow(BillingConstants.SKU_PRO_KEY, BillingClient.SkuType.INAPP);
+                buyProKey();
 
-                // Fire an analytics event
-                Bundle params = new Bundle();
-                params.putString(Analytics.Param.USER_ID, mPreferences.getUserId());
-                mTracker.logEvent(Analytics.Event.IAP_INITIATED, params);
                 return true;
             });
         }
@@ -206,7 +219,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
             if (mBillingProvider.isProKeyPurchased()) {
                 proThemePref.showDialog();
             } else {
-                Toast.makeText(mContext, "Pro key required!", Toast.LENGTH_SHORT).show();
+                promptForProKey();
             }
             return true;
         });
