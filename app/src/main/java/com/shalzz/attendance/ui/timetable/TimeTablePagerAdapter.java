@@ -86,7 +86,7 @@ public class TimeTablePagerAdapter extends FragmentStatePagerAdapter {
     }
 	@Override
 	public DayFragment getItem(int position) {
-        return DayFragment.newInstance(dates.get(position));
+        return DayFragment.Companion.newInstance(dates.get(position));
 	}
 
     @Override

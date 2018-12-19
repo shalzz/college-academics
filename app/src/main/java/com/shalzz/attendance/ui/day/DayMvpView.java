@@ -9,7 +9,7 @@ import java.util.List;
  * @author shalzz
  */
 
-interface DayMvpView extends MvpView {
+public interface DayMvpView extends MvpView {
 
     void clearDay();
 
