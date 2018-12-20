@@ -32,6 +32,8 @@
     <uses-permission android:name="android.permission.RECEIVE_SMS"/>
     <uses-permission android:name="android.permission.READ_SMS" />
 
+    <uses-feature android:name="android.hardware.telephony" android:required="false"/>
+
     <!-- Get permission for reliable local dispatching on non-Google Play devices. -->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
