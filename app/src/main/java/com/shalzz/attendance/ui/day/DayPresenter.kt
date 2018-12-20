@@ -17,70 +17,71 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.shalzz.attendance.ui.attendance
+package com.shalzz.attendance.ui.day
 
 import android.content.Context
 import com.shalzz.attendance.R
 import com.shalzz.attendance.data.DataManager
-import com.shalzz.attendance.data.model.ListFooter
-import com.shalzz.attendance.data.model.entity.Subject
+import com.shalzz.attendance.data.model.entity.Period
 import com.shalzz.attendance.data.remote.RetrofitException
 import com.shalzz.attendance.injection.ApplicationContext
-import com.shalzz.attendance.injection.ConfigPersistent
 import com.shalzz.attendance.ui.base.BasePresenter
 import com.shalzz.attendance.utils.NetworkUtil
 import com.shalzz.attendance.utils.RxUtil
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.observers.DisposableObserver
+import io.reactivex.observers.DisposableSingleObserver
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
+import java.util.*
 import javax.inject.Inject
 
-@ConfigPersistent
-class AttendancePresenter @Inject
-internal constructor(private val mDataManager: DataManager, @param:ApplicationContext private val mContext: Context) : BasePresenter<AttendanceMvpView>() {
+class DayPresenter @Inject
+internal constructor(private val mDataManager: DataManager,
+                     @param:ApplicationContext private val mContext: Context)
+    : BasePresenter<DayMvpView>() {
 
-    private var mSyncDisposable: Disposable? = null
+    private var mNetworkDisposable: Disposable? = null
     private var mDbDisposable: Disposable? = null
-    private var mFooterDisposable: Disposable? = null
 
-    override fun attachView(mvpView: AttendanceMvpView) {
+    @Suppress("RedundantOverride")
+    override fun attachView(mvpView: DayMvpView) {
         super.attachView(mvpView)
     }
 
     override fun detachView() {
         super.detachView()
-        RxUtil.dispose(mSyncDisposable)
+        RxUtil.dispose(mNetworkDisposable)
         RxUtil.dispose(mDbDisposable)
-        RxUtil.dispose(mFooterDisposable)
     }
 
-    fun syncAttendance() {
+    fun syncDay(day: Date) {
         checkViewAttached()
-        RxUtil.dispose(mSyncDisposable)
-        mSyncDisposable = mDataManager.syncAttendance()
+        RxUtil.dispose(mNetworkDisposable)
+        mNetworkDisposable = mDataManager.syncDay(day)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(object : DisposableObserver<Subject>() {
-                    override fun onNext(subject: Subject) {}
+                .subscribeWith(object : DisposableObserver<Period>() {
+                    override fun onNext(period: Period) {}
 
-                    override fun onError(error: Throwable) {
-                        if (error !is RetrofitException) {
-                            Timber.e(error)
-                        }
-                        else if (!isViewAttached)
+                    override fun onError(throwable: Throwable) {
+                        if (!isViewAttached)
                             return
-                        else if (error.kind == RetrofitException.Kind.UNEXPECTED) {
-                            Timber.e(error)
+                        mvpView.stopRefreshing()
+                        val error = throwable as RetrofitException
+                        if (error.kind == RetrofitException.Kind.UNEXPECTED) {
+                            Timber.e(throwable)
                             mvpView.showError(error.message)
                         } else {
-                            val disposable = mDataManager.subjectCount
+                            val disposable = mDataManager.getPeriodCount(day)
                                     .subscribeOn(Schedulers.io())
                                     .observeOn(AndroidSchedulers.mainThread())
-                                    .subscribe( {count ->
+                                    .subscribeWith(object : DisposableSingleObserver<Int>() {
+                                        override fun onSuccess(count: Int) {
                                             if (!isViewAttached) {
-                                                return@subscribe
+
+                                                return
                                             } else if (!NetworkUtil.isNetworkConnected(mContext)) {
                                                 if (count > 0) {
                                                     mvpView.showRetryError(
@@ -93,45 +94,41 @@ internal constructor(private val mDataManager: DataManager, @param:ApplicationCo
                                             } else if (error.kind == RetrofitException.Kind.HTTP || error.kind == RetrofitException.Kind.NETWORK) {
                                                 mvpView.showNetworkErrorView(error.message)
                                             } else if (error.kind == RetrofitException.Kind.EMPTY_RESPONSE) {
-                                                mvpView.showEmptyErrorView()
+                                                mvpView.clearDay()
                                                 // Prevent recursive calls
                                                 mDbDisposable!!.dispose()
                                             }
-                                        }, {
-                                            Timber.e(it)
                                         }
-                                    )
+
+                                        override fun onError(e: Throwable) {
+                                            Timber.e(e)
+                                        }
+                                    })
                         }
                     }
 
                     override fun onComplete() {
-                        mSyncDisposable!!.dispose()
+                        // close any db observables
+                        mNetworkDisposable!!.dispose()
                     }
                 })
     }
 
-    fun loadAttendance(filter: String?) {
+    internal fun loadDay(day: Date) {
         checkViewAttached()
         RxUtil.dispose(mDbDisposable)
-        mDbDisposable = mDataManager.loadAttendance(filter)
+        mDbDisposable = mDataManager.loadDay(day)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(object : DisposableObserver<List<Subject>>() {
-
-                    override fun onNext(subjects: List<Subject>) {
-                        if (isViewAttached) {
-                            // if data is null
-                            // sync with network
-                            // while showing the loading screen
-                            // otherwise load the attendance
-                            // as well as the listfooter
-                            if (subjects.isEmpty()) {
-                                mvpView.setRefreshing()
-                                syncAttendance()
-                            } else {
-                                mvpView.addSubjects(subjects)
-                                loadListFooter()
-                            }
+                .subscribeWith(object : DisposableObserver<List<Period>>() {
+                    override fun onNext(periods: List<Period>) {
+                        if (!isViewAttached)
+                            return
+                        if (periods.isEmpty()) {
+                            mvpView.setRefreshing()
+                            syncDay(day)
+                        } else {
+                            mvpView.setDay(periods)
                         }
                     }
 
@@ -140,31 +137,6 @@ internal constructor(private val mDataManager: DataManager, @param:ApplicationCo
                     }
 
                     override fun onComplete() {}
-                })
-    }
-
-    private fun loadListFooter() {
-        checkViewAttached()
-        RxUtil.dispose(mFooterDisposable)
-        mFooterDisposable = mDataManager.listFooter
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(object : DisposableObserver<ListFooter>() {
-                    override fun onNext(footer: ListFooter) {
-                        if (isViewAttached) {
-                            mvpView.updateFooter(footer)
-                        }
-                    }
-
-                    override fun onError(e: Throwable) {
-                        Timber.e(e)
-                    }
-
-                    override fun onComplete() {
-                        if (isViewAttached) {
-                            mvpView.showcaseView()
-                        }
-                    }
                 })
     }
 }

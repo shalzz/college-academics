@@ -1,7 +1,7 @@
 /*
- * Copyright (c) 2013-2016 Shaleen Jain <shaleen.jain95@gmail.com>
+ * Copyright (c) 2013-2018 Shaleen Jain <shaleen.jain95@gmail.com>
  *
- * This file is part of UPES Academics.
+ * This file is part of College Academics.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -86,7 +86,7 @@ public class TimeTablePagerAdapter extends FragmentStatePagerAdapter {
     }
 	@Override
 	public DayFragment getItem(int position) {
-        return DayFragment.newInstance(dates.get(position));
+        return DayFragment.Companion.newInstance(dates.get(position));
 	}
 
     @Override
