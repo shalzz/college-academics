@@ -33,7 +33,8 @@ import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Named
 
-class AuthenticatorActivity: AccountAuthenticatorActivity(), OTPFragment.OnFragmentInteractionListener {
+class AuthenticatorActivity: AccountAuthenticatorActivity(),
+        LoginFragment.OnFragmentInteractionListener {
 
     @Inject
     @field:Named("app")
@@ -57,9 +58,10 @@ class AuthenticatorActivity: AccountAuthenticatorActivity(), OTPFragment.OnFragm
         mAuthTokenType = MyAccountManager.AUTHTOKEN_TYPE_READ_ONLY
     }
 
-    override fun onFragmentInteraction(authToken: String, phone: String) {
+    override fun onFragmentInteraction(authToken: String, username: String, password: String) {
         val data = Bundle()
-        data.putString(AccountManager.KEY_ACCOUNT_NAME, phone)
+        data.putString(AccountManager.KEY_ACCOUNT_NAME, username)
+        data.putString(ARG_ACCOUNT_PASSWORD, password)
         data.putString(AccountManager.KEY_ACCOUNT_TYPE, MyAccountManager.ACCOUNT_TYPE)
         data.putString(AccountManager.KEY_AUTHTOKEN, authToken)
         val res = Intent()
@@ -96,6 +98,7 @@ class AuthenticatorActivity: AccountAuthenticatorActivity(), OTPFragment.OnFragm
 
     companion object {
         var ARG_ACCOUNT_TYPE: String = "ACCOUNT_TYPE"
+        var ARG_ACCOUNT_PASSWORD: String = "ACCOUNT_PASSWORD"
         var ARG_AUTH_TYPE: String = "AUTH_TYPE"
         var ARG_IS_ADDING_NEW_ACCOUNT: String = "IS_ADDING_ACCOUNT"
     }

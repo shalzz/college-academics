@@ -38,20 +38,8 @@ constructor(private val preferencesManager: PreferencesHelper) : Interceptor {
             return chain.proceed(originalRequest)
         }
 
-        if (originalRequest.url().encodedPath().startsWith(DataAPI.API_VERSION + "login/")
-           || originalRequest.url().encodedPath().startsWith(DataAPI.API_VERSION + "verify-otp/")) {
-            return chain.proceed(originalRequest)
-        }
-
-        val id = preferencesManager.userId
-        val token = preferencesManager.token
-        val auth = Base64.encodeToString("$id:$token".toByteArray(), Base64.NO_WRAP)
-        if (id == null || token == null || id.isEmpty()) {
-            throw RuntimeException("User Auth regId cannot be empty")
-        }
-
         val newRequest = originalRequest.newBuilder()
-                .header("Authorization", "Basic $auth")
+                .header("Authorization", "Bearer ${preferencesManager.token}")
                 .build()
         return chain.proceed(newRequest)
     }

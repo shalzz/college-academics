@@ -68,4 +68,4 @@ deploy:
     branch: master
     tags: true
     repo: shalzz/college-academics
-after_deploy: "./gradlew publishRelease --no-daemon --stacktrace"
+after_deploy: "./gradlew publishRelease --stacktrace"

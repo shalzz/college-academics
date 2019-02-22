@@ -20,7 +20,6 @@
 package com.shalzz.attendance.data.remote.interceptor
 
 import android.util.Base64
-import com.shalzz.attendance.data.local.PreferencesHelper
 import okhttp3.Interceptor
 import okhttp3.Response
 import java.io.IOException
@@ -28,22 +27,16 @@ import javax.inject.Inject
 import kotlin.experimental.xor
 
 class HeaderInterceptor @Inject
-constructor(private val preferencesManager: PreferencesHelper) : Interceptor {
+constructor() : Interceptor {
 
     @Throws(IOException::class)
     override fun intercept(chain: Interceptor.Chain): Response {
         val originalRequest = chain.request()
 
-        val regId = preferencesManager.regId
-        if (regId == null || regId.isEmpty()) {
-            throw RuntimeException("GCM Registration regId cannot be empty")
-        }
-
         val newRequest = originalRequest.newBuilder()
                 .header("Accept", "application/json")
                 .header("User-Agent", "academics-android-app")
                 .header("x-api-key", useXorStringHiding())
-                .header("x-reg-id", regId)
                 .build()
         return chain.proceed(newRequest)
     }

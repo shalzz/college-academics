@@ -25,7 +25,6 @@ import com.shalzz.attendance.ui.attendance.AttendanceListFragment;
 import com.shalzz.attendance.ui.day.DayFragment;
 import com.shalzz.attendance.ui.login.AuthenticatorActivity;
 import com.shalzz.attendance.ui.login.LoginFragment;
-import com.shalzz.attendance.ui.login.OTPFragment;
 import com.shalzz.attendance.ui.main.MainActivity;
 import com.shalzz.attendance.ui.settings.SettingsFragment;
 import com.shalzz.attendance.ui.splash.SplashActivity;
@@ -55,6 +54,4 @@ public interface ActivityComponent {
     void inject(DayFragment dayFragment);
 
     void inject(LoginFragment loginFragment);
-
-    void inject(OTPFragment otpFragment);
 }

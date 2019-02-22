@@ -207,7 +207,6 @@ android {
         implementation "com.malinskiy:materialicons:1.0.2"
         implementation "com.github.amlcurran.showcaseview:library:5.4.0"
         implementation "com.github.afollestad.material-dialogs:core:0.8.5.5"
-        implementation 'io.michaelrocks:libphonenumber-android:8.9.14'
 
         //noinspection GradleDynamicVersion
         implementation "com.bugsnag:bugsnag-android:4.+"

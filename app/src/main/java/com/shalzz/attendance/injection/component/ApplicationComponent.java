@@ -39,7 +39,6 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Component;
-import io.michaelrocks.libphonenumber.android.PhoneNumberUtil;
 import okhttp3.OkHttpClient;
 
 @Singleton
@@ -57,7 +56,6 @@ public interface ApplicationComponent {
     DataManager dataManager();
     RxEventBus eventBus();
     OkHttpClient okhttpclient();
-    PhoneNumberUtil phonenumber();
 
     void inject(SyncService syncService);
 

@@ -66,18 +66,41 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
-                    android:ems="10"
                     android:hint="@string/hint_userid"
                     android:imeOptions="flagNoExtractUi"
-                    android:inputType="phone|textNoSuggestions"
-                    android:maxLength="13"
+                    android:inputType="text"
                     android:maxLines="1"
-                    android:autofillHints="phone">
+                    android:autofillHints="username">
 
                 <requestFocus
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
             </com.google.android.material.textfield.TextInputEditText>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/etPassword"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:errorEnabled="true"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/etUserId">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:ems="10"
+                android:hint="@string/hint_password"
+                android:imeOptions="flagNoExtractUi"
+                android:inputType="textPassword"
+                android:autofillHints="password" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.button.MaterialButton
@@ -91,17 +114,7 @@
                 app:cornerRadius="1dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/etUserId"/>
-
-        <TextView android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:text="@string/login_notice"
-                  android:layout_marginTop="48dp"
-                  android:lines="1"
-                  app:layout_constraintEnd_toEndOf="parent"
-                  app:layout_constraintStart_toStartOf="parent"
-                  app:layout_constraintTop_toBottomOf="@id/bLogin"
-        />
+                app:layout_constraintTop_toBottomOf="@+id/etPassword"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
