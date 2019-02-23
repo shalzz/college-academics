@@ -133,7 +133,7 @@
     <string name="sv_main_activity_content">Press this button or swipe from the left edge to access the navigation bar</string>
 
     <!--EditText Hint's-->
-    <string name="hint_userid">Enter Username</string>
+    <string name="hint_userid">Username</string>
     <string name="hint_password">Password</string>
     <string name="hint_search">Search subjects</string>
 
