@@ -12,6 +12,7 @@ env:
 android:
   components:
   - tools
+  - tools
   - platform-tools
   - build-tools-28.0.3
   - android-28
@@ -38,10 +39,10 @@ before_install:
     -d; fi
   # Install SDK license so Android Gradle plugin can install deps.
   - mkdir "$ANDROID_HOME/licenses" || true
-  - echo "8933bad161af4178b1185d1a37fbf41ea5269c55" > "$ANDROID_HOME/licenses/android-sdk-license"
-  - echo "d56f5187479451eabf01fb78af6dfcb131a6481e" > "$ANDROID_HOME/licenses/android-sdk-license"
+  - echo "\n8933bad161af4178b1185d1a37fbf41ea5269c55" > "$ANDROID_HOME/licenses/android-sdk-license"
+  - echo "\nd56f5187479451eabf01fb78af6dfcb131a6481e" >> "$ANDROID_HOME/licenses/android-sdk-license"
   # Install the rest of tools (e.g., avdmanager).
-  - sdkmanager tools
+  - echo yes | sdkmanager "tools"
   # Install the system image.
   - sdkmanager "system-images;$ANDROID_TARGET;default;$ANDROID_ABI"
   # Create and start emulator for the script. Meant to race the install task.
