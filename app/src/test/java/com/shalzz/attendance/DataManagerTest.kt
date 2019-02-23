@@ -73,7 +73,7 @@ class DataManagerTest {
     @Before
     fun setUp() {
         MockitoAnnotations.initMocks(this)
-        mDataManager = DataManager(mMockDataAPI, mMockDatabaseHelper, mMockPreferencesHelper)
+        mDataManager = DataManager(mMockDataAPI, mMockDatabaseHelper)
     }
 
     @Test
