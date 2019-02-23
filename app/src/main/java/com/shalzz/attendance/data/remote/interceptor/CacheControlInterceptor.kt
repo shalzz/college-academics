@@ -38,10 +38,8 @@ constructor(@param:ApplicationContext private val mContext: Context) : Intercept
     override fun intercept(chain: Interceptor.Chain): Response {
         var request = chain.request()
         if (NetworkUtil.isNetworkConnected(mContext)) {
-            // Do not cache the '/me' api route
-            return if (request.url().encodedPath().startsWith(DataAPI.API_VERSION + "login/")
-                || request.url().encodedPath().startsWith(DataAPI.API_VERSION + "me/regid")
-                || request.url().encodedPath().startsWith(DataAPI.API_VERSION + "verify-otp/")) {
+            // Do not cache the '/me/login' api route
+            return if (request.url().encodedPath().startsWith(DataAPI.API_VERSION + "me/login")) {
                 val originalResponse = chain.proceed(request)
                 originalResponse.newBuilder()
                         .header("Cache-Control", "public, max-age=0")

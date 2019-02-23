@@ -51,12 +51,11 @@
     <string name="generic_error">Network error occurred.</string>
     <string name="proxy_error">Proxy Authentication failed. Please check your credentials.</string>
     <string name="unexpected_error">An unexpected error occurred</string>
-    <string name="form_userid_error">Phone number is invalid.</string>
+    <string name="form_userid_error">Username is required.</string>
     <string name="form_otp_error">Please enter a valid OTP.</string>
     <string name="form_password_error">Password is required.</string>
-    <string name="token_error">Phone number not registered. Please use your registered number or
-        contact your college IT dept.</string>
-    <string name="auth_error">Unable to authorise your request. Please try to re-login or
+    <string name="auth_error">Username or password incorrect</string>
+    <string name="forbidden_error">Unable to authorise your request. Please try to re-login or
         try again later.</string>
     <string name="no_data_title">Nothing Here</string>
     <string name="no_data_content">No data available on the server right now</string>
@@ -134,7 +133,7 @@
     <string name="sv_main_activity_content">Press this button or swipe from the left edge to access the navigation bar</string>
 
     <!--EditText Hint's-->
-    <string name="hint_userid">Enter Phone Number</string>
+    <string name="hint_userid">Username</string>
     <string name="hint_password">Password</string>
     <string name="hint_search">Search subjects</string>
 

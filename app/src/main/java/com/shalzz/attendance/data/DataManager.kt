@@ -19,11 +19,10 @@
 
 package com.shalzz.attendance.data
 
+import android.util.Base64
 import com.android.billingclient.api.Purchase
 import com.shalzz.attendance.data.local.DatabaseHelper
-import com.shalzz.attendance.data.local.PreferencesHelper
 import com.shalzz.attendance.data.model.ListFooter
-import com.shalzz.attendance.data.model.SenderModel
 import com.shalzz.attendance.data.model.TokenModel
 import com.shalzz.attendance.data.model.entity.Period
 import com.shalzz.attendance.data.model.entity.Subject
@@ -33,15 +32,14 @@ import com.shalzz.attendance.wrapper.DateHelper
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
-import java.util.Date
+import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class DataManager @Inject
 constructor(private val mDataAPI: DataAPI,
-    private val mDatabaseHelper: DatabaseHelper,
-    private val mPreferencesHelper: PreferencesHelper) {
+    private val mDatabaseHelper: DatabaseHelper) {
 
     val listFooter: Observable<ListFooter>
         get() = mDatabaseHelper.listFooter
@@ -55,13 +53,9 @@ constructor(private val mDataAPI: DataAPI,
         get() = mDatabaseHelper.userCount
             .subscribeOn(Schedulers.single())
 
-    fun login(phone: String): Observable<SenderModel> {
-        return mDataAPI.login(phone)
-            .subscribeOn(Schedulers.io())
-    }
-
-    fun verifyOTP(phone: String, otp: Number, bypass: Boolean = false): Observable<TokenModel> {
-        return mDataAPI.verifyOTP(phone, otp, bypass)
+    fun login(username: String, password: String): Observable<TokenModel> {
+        val auth = Base64.encodeToString("$username:$password".toByteArray(), Base64.NO_WRAP)
+        return mDataAPI.login("Basic $auth")
             .subscribeOn(Schedulers.io())
     }
 
@@ -101,11 +95,6 @@ constructor(private val mDataAPI: DataAPI,
     fun loadDay(date: Date): Observable<List<Period>> {
         return mDatabaseHelper.getPeriods(date)
             .subscribeOn(Schedulers.single())
-    }
-
-    fun sendRegID(regId: String): Observable<Boolean> {
-        return mDataAPI.sendRegID(registerationID=regId)
-            .subscribeOn(Schedulers.io())
     }
 
     fun syncUser(): Observable<User> {

@@ -46,9 +46,6 @@ constructor(@ApplicationContext context: Context) {
     val token: String?
         get() = mPref.getString("TOKEN", null)
 
-    val regId: String?
-        get() = mPref.getString("REGID", null)
-
     init {
         mPref = context.getSharedPreferences(PREF_FILE_NAME, Context.MODE_PRIVATE)
     }
@@ -82,12 +79,7 @@ constructor(@ApplicationContext context: Context) {
         editor.remove(MainActivity.PREFERENCE_ACTIVATED_FRAGMENT)
         editor.putBoolean("LOGGEDIN", false)
         editor.remove("USERNAME")
-        editor.commit()
-    }
-
-    fun saveRegId(token: String) {
-        val editor = mPref.edit()
-        editor.putString("REGID", token)
+        editor.remove("TOKEN")
         editor.commit()
     }
 

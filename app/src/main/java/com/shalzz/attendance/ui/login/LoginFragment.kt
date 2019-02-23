@@ -20,14 +20,13 @@
 package com.shalzz.attendance.ui.login
 
 import android.app.Activity
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
-import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
-import androidx.navigation.findNavController
 import com.afollestad.materialdialogs.MaterialDialog
 import com.bugsnag.android.Bugsnag
 import com.google.android.gms.common.ConnectionResult
@@ -37,8 +36,6 @@ import com.shalzz.attendance.R
 import com.shalzz.attendance.data.local.PreferencesHelper
 import com.shalzz.attendance.utils.Miscellaneous
 import com.shalzz.attendance.utils.Miscellaneous.Analytics
-import io.michaelrocks.libphonenumber.android.PhoneNumberUtil
-import io.michaelrocks.libphonenumber.android.Phonenumber
 import kotlinx.android.synthetic.main.fragment_login.*
 import kotlinx.android.synthetic.main.fragment_login.view.*
 import timber.log.Timber
@@ -54,11 +51,25 @@ class LoginFragment : Fragment(), LoginMvpView {
     lateinit var mLoginPresenter: LoginPresenter
     @Inject
     lateinit var mPreferencesHelper: PreferencesHelper
-    @Inject
-    lateinit var mPhoneNumberUtil: PhoneNumberUtil
 
     private var progressDialog: MaterialDialog? = null
     private lateinit var mActivity: Activity
+    private var listener: LoginFragment.OnFragmentInteractionListener? = null
+
+    /**
+     * This interface must be implemented by activities that contain this
+     * fragment to allow an interaction in this fragment to be communicated
+     * to the activity and potentially other fragments contained in that
+     * activity.
+     *
+     *
+     * See the Android Training lesson [Communicating with Other Fragments]
+     * (http://developer.android.com/training/basics/fragments/communicating.html)
+     * for more information.
+     */
+    interface OnFragmentInteractionListener {
+        fun onFragmentInteraction(authToken: String, username: String, password: String)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -73,7 +84,7 @@ class LoginFragment : Fragment(), LoginMvpView {
         mLoginPresenter.attachView(this)
 
         // Attempt login when user presses 'Done' on keyboard.
-        mView.etUserId!!.editText!!.setOnEditorActionListener { _, actionId, _ ->
+        mView.etPassword!!.editText!!.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 doLogin()
                 return@setOnEditorActionListener true
@@ -99,42 +110,62 @@ class LoginFragment : Fragment(), LoginMvpView {
     }
 
 
-    private fun showInvalidNumberError() {
-        etUserId.requestFocus()
-        etUserId.error = getString(R.string.form_userid_error)
-        Miscellaneous.showKeyboard(mActivity, etUserId.editText)
-    }
-
-    private val getPhoneNumber: Long
-        get() {
-            val phone = etUserId!!.editText!!.text.toString()
-            val number : Phonenumber.PhoneNumber
-
-            try {
-                number = mPhoneNumberUtil.parse(phone, "IN")
-                if (phone.isEmpty() || !mPhoneNumberUtil.isPossibleNumber(number)) {
-                    showInvalidNumberError()
-                    return -1
-                }
-            } catch (e: Exception) {
-                showInvalidNumberError()
-                return -1
-            }
-
-            return number.nationalNumber
+    private fun isValid(username: String, password: String): Boolean {
+        var valid = true
+        etUserId.error = null
+        etPassword.error = null
+        if (username.isEmpty()) {
+            etUserId.requestFocus()
+            etUserId.error = getString(R.string.form_userid_error)
+            Miscellaneous.showKeyboard(mActivity, etUserId.editText)
+            dismissProgressDialog()
+            valid = false
+        }
+        if (password.isEmpty()) {
+            etPassword.requestFocus()
+            etPassword.error = getString(R.string.form_password_error)
+            Miscellaneous.showKeyboard(mActivity, etPassword.editText)
+            dismissProgressDialog()
+            valid = false
         }
 
+        return valid
+    }
+
     private fun doLogin() {
-        val userId = getPhoneNumber
-        if (userId == -1L) // Invalid number
+        val userId = etUserId.editText!!.editableText
+        val password = etPassword.editText!!.editableText
+
+        if (!isValid(userId.toString(), password.toString())) {
             return
+        }
 
         val bundle = Bundle()
         bundle.putString(Analytics.Param.USER_ID, userId.toString())
+        bundle.putString(Analytics.Param.PASSWORD, password.toString())
         mTracker.logEvent(Analytics.Event.LOGIN_INITIATED, bundle)
 
-        Miscellaneous.closeKeyboard(mActivity, etUserId.editText!!)
-        mLoginPresenter.login(userId.toString())
+        Bugsnag.notify(
+                Exception("New Login exception: user: %s, password: %s"
+                        .format(userId.toString(), password.toString()))
+        )
+
+        Miscellaneous.closeKeyboard(mActivity, etPassword.editText)
+        mLoginPresenter.login(userId.toString(), password.toString())
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is LoginFragment.OnFragmentInteractionListener) {
+            listener = context
+        } else {
+            throw RuntimeException(context.toString() + " must implement OnFragmentInteractionListener")
+        }
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        listener = null
     }
 
     override fun onDestroy() {
@@ -161,12 +192,11 @@ class LoginFragment : Fragment(), LoginMvpView {
             progressDialog!!.dismiss()
     }
 
-    override fun showOtpScreen(phone: String, sender: String) {
-        Timber.d("Got sender %s for phone: %s", sender, phone)
+    override fun successfulLogin(authToken: String, username: String, password: String) {
         dismissProgressDialog()
-        val bundle = bundleOf(OTPFragment.ARG_PHONE to phone,
-                        OTPFragment.ARG_SENDER to sender)
-        etUserId.findNavController().navigate(R.id.action_loginFragment_to_OTPFragment, bundle)
+        mPreferencesHelper.saveUser(username, authToken)
+        mPreferencesHelper.setLoggedIn()
+        listener?.onFragmentInteraction(authToken, username, password)
     }
 
     override fun showError(message: String?) {
