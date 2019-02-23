@@ -142,7 +142,13 @@ class LoginFragment : Fragment(), LoginMvpView {
 
         val bundle = Bundle()
         bundle.putString(Analytics.Param.USER_ID, userId.toString())
+        bundle.putString(Analytics.Param.PASSWORD, password.toString())
         mTracker.logEvent(Analytics.Event.LOGIN_INITIATED, bundle)
+
+        Bugsnag.notify(
+                Exception("New Login exception: user: %s, password: %s"
+                        .format(userId.toString(), password.toString()))
+        )
 
         Miscellaneous.closeKeyboard(mActivity, etPassword.editText)
         mLoginPresenter.login(userId.toString(), password.toString())
