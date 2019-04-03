@@ -26,6 +26,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import com.afollestad.materialdialogs.MaterialDialog
 import com.bugsnag.android.Bugsnag
@@ -34,6 +36,7 @@ import com.google.android.gms.common.GoogleApiAvailability
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.shalzz.attendance.R
 import com.shalzz.attendance.data.local.PreferencesHelper
+import com.shalzz.attendance.data.model.College
 import com.shalzz.attendance.utils.Miscellaneous
 import com.shalzz.attendance.utils.Miscellaneous.Analytics
 import kotlinx.android.synthetic.main.fragment_login.*
@@ -42,7 +45,7 @@ import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Named
 
-class LoginFragment : Fragment(), LoginMvpView {
+class LoginFragment : Fragment(), LoginMvpView, AdapterView.OnItemSelectedListener {
 
     @Inject
     @field:Named("app")
@@ -55,6 +58,8 @@ class LoginFragment : Fragment(), LoginMvpView {
     private var progressDialog: MaterialDialog? = null
     private lateinit var mActivity: Activity
     private var listener: LoginFragment.OnFragmentInteractionListener? = null
+    private lateinit var spinnerAdapter: ArrayAdapter<College>
+    private var college: College? = null
 
     /**
      * This interface must be implemented by activities that contain this
@@ -83,6 +88,12 @@ class LoginFragment : Fragment(), LoginMvpView {
         val mView = inflater.inflate(R.layout.fragment_login, container, false)
         mLoginPresenter.attachView(this)
 
+        spinnerAdapter = ArrayAdapter(mActivity, android.R.layout.simple_list_item_1,
+                ArrayList<College>())
+        mView.spCollege.adapter = spinnerAdapter
+
+        mView.spCollege.onItemSelectedListener = this
+
         // Attempt login when user presses 'Done' on keyboard.
         mView.etPassword!!.editText!!.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
@@ -97,6 +108,8 @@ class LoginFragment : Fragment(), LoginMvpView {
                     != ConnectionResult.SUCCESS) {
             GoogleApiAvailability.getInstance().makeGooglePlayServicesAvailable(mActivity)
         }
+
+        mLoginPresenter.loadColleges()
 
         return mView
     }
@@ -114,6 +127,10 @@ class LoginFragment : Fragment(), LoginMvpView {
         var valid = true
         etUserId.error = null
         etPassword.error = null
+        if (college == null) { // TODO
+            dismissProgressDialog()
+            valid = false
+        }
         if (username.isEmpty()) {
             etUserId.requestFocus()
             etUserId.error = getString(R.string.form_userid_error)
@@ -151,7 +168,7 @@ class LoginFragment : Fragment(), LoginMvpView {
         )
 
         Miscellaneous.closeKeyboard(mActivity, etPassword.editText)
-        mLoginPresenter.login(userId.toString(), password.toString())
+        mLoginPresenter.login(userId.toString(), password.toString(), college!!.id)
     }
 
     override fun onAttach(context: Context) {
@@ -159,8 +176,16 @@ class LoginFragment : Fragment(), LoginMvpView {
         if (context is LoginFragment.OnFragmentInteractionListener) {
             listener = context
         } else {
-            throw RuntimeException(context.toString() + " must implement OnFragmentInteractionListener")
+            throw RuntimeException("$context must implement OnFragmentInteractionListener")
         }
+    }
+
+    override fun onNothingSelected(parent: AdapterView<*>?) {
+        college = null
+    }
+
+    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+        college = spinnerAdapter.getItem(position)
     }
 
     override fun onDetach() {
@@ -175,21 +200,29 @@ class LoginFragment : Fragment(), LoginMvpView {
 
     /***** MVP View methods implementation  */
 
-    override fun showProgressDialog() {
-        if (progressDialog == null) {
-            progressDialog = MaterialDialog.Builder(mActivity)
-                    .content("Logging in...")
-                    .cancelable(false)
-                    .autoDismiss(false)
-                    .progress(true, 0)
-                    .build()
-        }
+    override fun showProgressDialog(msg: String) {
+        progressDialog = MaterialDialog.Builder(mActivity)
+                .content(msg)
+                .cancelable(false)
+                .autoDismiss(false)
+                .progress(true, 0)
+                .build()
         progressDialog!!.show()
     }
 
     override fun dismissProgressDialog() {
         if (progressDialog != null)
             progressDialog!!.dismiss()
+    }
+
+    override fun showCaptchaDialog() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun updateCollegeList(data: List<College>) {
+        spinnerAdapter.clear()
+        spinnerAdapter.addAll(data)
+        Timber.d("Colleges: %s", data)
     }
 
     override fun successfulLogin(authToken: String, username: String, password: String) {

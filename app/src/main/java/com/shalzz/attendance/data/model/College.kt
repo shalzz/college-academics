@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013-2018 Shaleen Jain <shaleen.jain95@gmail.com>
+ * Copyright (c) 2013-2019 Shaleen Jain <shaleen.jain95@gmail.com>
  *
  * This file is part of College Academics.
  *
@@ -17,25 +17,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.shalzz.attendance.ui.login
+package com.shalzz.attendance.data.model
 
-import com.shalzz.attendance.data.model.College
-import com.shalzz.attendance.ui.base.MvpView
-
-/**
- * @author shalzz
- */
-interface LoginMvpView : MvpView {
-
-    fun successfulLogin(authToken: String, username: String, password: String)
-
-    fun showError(message: String?)
-
-    fun updateCollegeList(data: List<College>)
-
-    fun showProgressDialog(msg: String = "Logging in...")
-
-    fun showCaptchaDialog()
-
-    fun dismissProgressDialog()
+data class College (
+        val id: String,
+        val name: String
+) {
+    override fun toString(): String {
+        return name.capitalize()
+    }
 }

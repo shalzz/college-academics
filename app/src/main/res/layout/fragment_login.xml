@@ -20,6 +20,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    tools:background="@drawable/background"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -48,20 +49,39 @@
             android:lineSpacingExtra="-10sp"
             />
 
+        <androidx.appcompat.widget.AppCompatSpinner
+            android:id="@+id/spCollege"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="72dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:padding="8dp"
+            android:prompt="@string/spinner_title"
+            android:textAlignment="textStart"
+            android:layout_gravity="start"
+            android:backgroundTint="@color/white"
+            android:popupTheme="@android:style/ThemeOverlay.Material.Light"
+            android:spinnerMode="dialog"
+            tools:text="@tools:sample/lorem"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/IvAppname" />
+
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/etUserId"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:errorEnabled="true"
             app:hintTextAppearance="@style/TextAppearance.App.TextInputLayout"
-            android:layout_marginTop="72dp"
+            android:layout_marginTop="18dp"
             android:layout_marginStart="8dp"
             android:layout_marginLeft="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginRight="8dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/IvAppname">
+            app:layout_constraintTop_toBottomOf="@id/spCollege">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
@@ -85,10 +105,10 @@
             android:layout_height="wrap_content"
             app:errorEnabled="true"
             app:hintTextAppearance="@style/TextAppearance.App.TextInputLayout"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="4dp"
             android:layout_marginStart="8dp"
             android:layout_marginLeft="8dp"
-            android:layout_marginEnd="8dp"
+            android:layout_marginEnd="4dp"
             android:layout_marginRight="8dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -111,7 +131,7 @@
             android:layout_height="60dp"
             android:gravity="center"
             android:padding="5dp"
-            android:layout_marginTop="160dp"
+            android:layout_marginTop="140dp"
             android:text="@string/login_button"
             app:cornerRadius="1dp"
             app:layout_constraintEnd_toEndOf="parent"

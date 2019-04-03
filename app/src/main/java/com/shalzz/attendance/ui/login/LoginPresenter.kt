@@ -22,7 +22,6 @@ package com.shalzz.attendance.ui.login
 import android.content.Context
 import com.shalzz.attendance.R
 import com.shalzz.attendance.data.DataManager
-import com.shalzz.attendance.data.local.PreferencesHelper
 import com.shalzz.attendance.data.remote.RetrofitException
 import com.shalzz.attendance.injection.ApplicationContext
 import com.shalzz.attendance.injection.ConfigPersistent
@@ -54,7 +53,7 @@ internal constructor(private val mDataManager: DataManager,
         RxUtil.dispose(mDisposable)
     }
 
-    fun login(username: String, password: String) {
+    fun login(username: String, password: String, college: String, captcha: String = "") {
         checkViewAttached()
         if (!NetworkUtil.isNetworkConnected(mContext)) {
             Timber.i("Login canceled, connection not available")
@@ -67,17 +66,20 @@ internal constructor(private val mDataManager: DataManager,
                 Timber.e(error)
             }
             else if (isViewAttached) {
-                mvpView.showError(error.message)
-                if (error.kind != RetrofitException.Kind.HTTP) {
+                if (error.message == "Invalid Captcha. Please try again.") {
+                    mvpView.showCaptchaDialog()
+                }
+                else if (error.kind != RetrofitException.Kind.HTTP) {
                     Timber.e(error)
                 }
+                mvpView.showError(error.message)
             }
         }
 
         mvpView.showProgressDialog()
         RxUtil.dispose(mDisposable)
 
-       mDisposable = mDataManager.login(username, password)
+       mDisposable = mDataManager.login(username, password, college, captcha)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -86,12 +88,15 @@ internal constructor(private val mDataManager: DataManager,
                         }, onError)
     }
 
-    fun syncUser() {
-        mDisposable = mDataManager.syncUser()
+    fun loadColleges() {
+        checkViewAttached()
+        mvpView.showProgressDialog("Loading...")
+        mDisposable = mDataManager.colleges()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .retryWhen(RxExponentialBackoff.maxCount(3))
                 .subscribe( {
+                    mvpView.updateCollegeList(it)
+                    mvpView.dismissProgressDialog()
                 }, {error ->
                     if (error !is RetrofitException) {
                         mvpView.showError(null)

@@ -138,8 +138,7 @@
     <string name="hint_search">Search subjects</string>
 
     <!--Buttons-->
-    <string name="login_button">Continue</string>
-    <string name="verify_button">Log In</string>
+    <string name="login_button">Log In</string>
 
     <!--Accessibility-->
     <string name="drawer_open">Navigation drawer opened</string>
@@ -163,5 +162,6 @@
     <string name="network_error_message">Network Error</string>
     <string name="default_notification_channel_id">1</string>
     <string name="account_manager_title">College Academics</string>
+    <string name="spinner_title">Select your College</string>
 
 </resources>

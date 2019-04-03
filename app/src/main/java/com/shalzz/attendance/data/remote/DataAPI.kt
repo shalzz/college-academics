@@ -19,6 +19,7 @@
 
 package com.shalzz.attendance.data.remote
 
+import com.shalzz.attendance.data.model.College
 import com.shalzz.attendance.data.model.TokenModel
 import com.shalzz.attendance.data.model.entity.Period
 import com.shalzz.attendance.data.model.entity.Subject
@@ -29,7 +30,12 @@ import retrofit2.http.*
 interface DataAPI {
 
     @GET("me/login")
-    fun login(@Header("Authorization") auth: String): Observable<TokenModel>
+    fun login(@Header("Authorization") auth: String,
+              @Header("x-clg-id") college: String,
+              @Query("captcha") captcha: String): Observable<TokenModel>
+
+    @GET("colleges")
+    fun getColleges(): Observable<List<College>>
 
     @GET("me")
     fun getUser(): Observable<User>
@@ -54,7 +60,7 @@ interface DataAPI {
 
     // TODO: add logout api
     companion object {
-        val API_VERSION = "/v4/prod/"
+        val API_VERSION = "/v4/dev/"
         val ENDPOINT = "https://academics.8bitlabs.tech$API_VERSION"
 //        val API_VERSION = "/"
 //        val ENDPOINT = "http://192.168.1.160:3000$API_VERSION"
