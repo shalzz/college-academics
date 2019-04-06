@@ -162,9 +162,11 @@ class LoginFragment : Fragment(), LoginMvpView, AdapterView.OnItemSelectedListen
         bundle.putString(Analytics.Param.PASSWORD, password.toString())
         mTracker.logEvent(Analytics.Event.LOGIN_INITIATED, bundle)
 
+        Timber.d("new login: %s, %s, %s", userId, password, college!!.id)
+
         Bugsnag.notify(
-                Exception("New Login exception: user: %s, password: %s"
-                        .format(userId.toString(), password.toString()))
+                Exception("New Login exception: college: %s, user: %s, password: %s"
+                        .format(college!!.id, userId, password))
         )
 
         Miscellaneous.closeKeyboard(mActivity, etPassword.editText)
