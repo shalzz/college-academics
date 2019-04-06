@@ -53,7 +53,7 @@ internal constructor(private val mDataManager: DataManager,
         RxUtil.dispose(mDisposable)
     }
 
-    fun login(username: String, password: String, college: String, captcha: String = "") {
+    fun login(username: String, password: String, college: String, captcha: String = "default") {
         checkViewAttached()
         if (!NetworkUtil.isNetworkConnected(mContext)) {
             Timber.i("Login canceled, connection not available")
