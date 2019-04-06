@@ -22,6 +22,7 @@ package com.shalzz.attendance.data
 import android.util.Base64
 import com.android.billingclient.api.Purchase
 import com.shalzz.attendance.data.local.DatabaseHelper
+import com.shalzz.attendance.data.model.College
 import com.shalzz.attendance.data.model.ListFooter
 import com.shalzz.attendance.data.model.TokenModel
 import com.shalzz.attendance.data.model.entity.Period
@@ -53,9 +54,15 @@ constructor(private val mDataAPI: DataAPI,
         get() = mDatabaseHelper.userCount
             .subscribeOn(Schedulers.single())
 
-    fun login(username: String, password: String): Observable<TokenModel> {
+    fun colleges(): Observable<List<College>> {
+        return mDataAPI.getColleges()
+                .subscribeOn(Schedulers.io())
+    }
+
+    fun login(username: String, password: String,
+              college: String, captcha: String): Observable<TokenModel> {
         val auth = Base64.encodeToString("$username:$password".toByteArray(), Base64.NO_WRAP)
-        return mDataAPI.login("Basic $auth")
+        return mDataAPI.login("Basic $auth", college, captcha)
             .subscribeOn(Schedulers.io())
     }
 
