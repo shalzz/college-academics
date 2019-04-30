@@ -84,7 +84,7 @@ internal constructor(private val mDataManager: DataManager,
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         { token ->
-                            mvpView.successfulLogin(token.cookie, username, password)
+                            mvpView.successfulLogin(username, password, token.token, college)
                         }, onError)
     }
 

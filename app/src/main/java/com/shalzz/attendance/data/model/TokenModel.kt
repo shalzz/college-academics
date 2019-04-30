@@ -23,5 +23,5 @@ package com.shalzz.attendance.data.model
  * @author shalzz
  */
 data class TokenModel (
-        val cookie: String
+        val token: String
 )

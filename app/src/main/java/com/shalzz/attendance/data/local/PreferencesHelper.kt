@@ -46,6 +46,9 @@ constructor(@ApplicationContext context: Context) {
     val token: String?
         get() = mPref.getString("TOKEN", null)
 
+    val clg: String?
+        get() = mPref.getString("COLLEGE", null)
+
     init {
         mPref = context.getSharedPreferences(PREF_FILE_NAME, Context.MODE_PRIVATE)
     }
@@ -64,10 +67,12 @@ constructor(@ApplicationContext context: Context) {
      * Saves the user details in shared preferences and sets login status to true.
      * @param username Username
      */
-    fun saveUser(username: String, token: String) {
+    fun saveUser(username: String, password: String, token: String, clg: String) {
         val editor = mPref.edit()
         editor.putString("USERNAME", username)
+        editor.putString("PASSWORD", password)
         editor.putString("TOKEN", token)
+        editor.putString("COLLEGE", clg)
         editor.commit()
     }
 

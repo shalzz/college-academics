@@ -27,7 +27,8 @@ import com.shalzz.attendance.ui.base.MvpView
  */
 interface LoginMvpView : MvpView {
 
-    fun successfulLogin(authToken: String, username: String, password: String)
+    fun successfulLogin(username: String, password: String,
+                        authToken: String, college: String)
 
     fun showError(message: String?)
 

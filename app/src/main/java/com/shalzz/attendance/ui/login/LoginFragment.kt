@@ -22,6 +22,7 @@ package com.shalzz.attendance.ui.login
 import android.app.Activity
 import android.content.Context
 import android.os.Bundle
+import android.util.Base64
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -227,11 +228,13 @@ class LoginFragment : Fragment(), LoginMvpView, AdapterView.OnItemSelectedListen
         Timber.d("Colleges: %s", data)
     }
 
-    override fun successfulLogin(authToken: String, username: String, password: String) {
+    override fun successfulLogin(username: String, password: String,
+                                 authToken: String, college: String) {
         dismissProgressDialog()
-        mPreferencesHelper.saveUser(username, authToken)
+        var token = Base64.encodeToString("$username:$authToken".toByteArray(), Base64.NO_WRAP)
+        mPreferencesHelper.saveUser(username, password, token, college)
         mPreferencesHelper.setLoggedIn()
-        listener?.onFragmentInteraction(authToken, username, password)
+        listener?.onFragmentInteraction(token, username, password)
     }
 
     override fun showError(message: String?) {
