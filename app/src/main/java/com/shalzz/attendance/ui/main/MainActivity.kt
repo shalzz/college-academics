@@ -19,6 +19,7 @@
 
 package com.shalzz.attendance.ui.main
 
+import android.app.Activity
 import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
@@ -145,6 +146,11 @@ class MainActivity : BaseActivity(), MainMvpView, BillingProvider {
         }
 
         mMainPresenter.loadUser(mPreferencesHelper.userId!!)
+
+        if (!mPreferencesHelper.loginStatus) {
+            val ourIntent = Intent(this, AuthenticatorActivity::class.java)
+            startActivityForResult(ourIntent, ACTIVITY_RESULT_CODE_AUTHENTICATION)
+        }
     }
 
     override fun onResume() {
@@ -252,6 +258,11 @@ class MainActivity : BaseActivity(), MainMvpView, BillingProvider {
         return true
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (resultCode == Activity.RESULT_CANCELED)
+            finish()
+    }
+
     override fun setTitle(title: CharSequence) {
         mToolbar.title = title
         mToolbar.subtitle = ""
@@ -325,5 +336,7 @@ class MainActivity : BaseActivity(), MainMvpView, BillingProvider {
          * Remember the position of the selected item.
          */
         val PREFERENCE_ACTIVATED_FRAGMENT = "ACTIVATED_FRAGMENT2.2"
+
+        val ACTIVITY_RESULT_CODE_AUTHENTICATION = 1;
     }
 }

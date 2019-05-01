@@ -22,6 +22,7 @@ package com.shalzz.attendance.ui.login
 import android.app.Activity
 import android.content.Context
 import android.os.Bundle
+import android.util.Base64
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -37,6 +38,7 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import com.shalzz.attendance.R
 import com.shalzz.attendance.data.local.PreferencesHelper
 import com.shalzz.attendance.data.model.College
+import com.shalzz.attendance.data.model.entity.User
 import com.shalzz.attendance.utils.Miscellaneous
 import com.shalzz.attendance.utils.Miscellaneous.Analytics
 import kotlinx.android.synthetic.main.fragment_login.*
@@ -164,11 +166,6 @@ class LoginFragment : Fragment(), LoginMvpView, AdapterView.OnItemSelectedListen
 
         Timber.d("new login: %s, %s, %s", userId, password, college!!.id)
 
-        Bugsnag.notify(
-                Exception("New Login exception: college: %s, user: %s, password: %s"
-                        .format(college!!.id, userId, password))
-        )
-
         Miscellaneous.closeKeyboard(mActivity, etPassword.editText)
         mLoginPresenter.login(userId.toString(), password.toString(), college!!.id)
     }
@@ -227,11 +224,22 @@ class LoginFragment : Fragment(), LoginMvpView, AdapterView.OnItemSelectedListen
         Timber.d("Colleges: %s", data)
     }
 
-    override fun successfulLogin(authToken: String, username: String, password: String) {
+    override fun saveToken(username: String, college: String, authToken: String) {
+        val token = Base64.encodeToString("$username:$authToken".toByteArray(), Base64.NO_WRAP)
+        mPreferencesHelper.saveToken(token)
+        mPreferencesHelper.saveCollege(college)
+    }
+
+    override fun showMainActivity(user: User, password: String) {
+        val bundle = Bundle()
+        bundle.putString(FirebaseAnalytics.Param.METHOD, "manual")
+        mTracker.logEvent(FirebaseAnalytics.Event.LOGIN, bundle)
+
         dismissProgressDialog()
-        mPreferencesHelper.saveUser(username, authToken)
+        val token = mPreferencesHelper.token!!
+        mPreferencesHelper.saveUser(user.username, password, user.college)
+        listener?.onFragmentInteraction(token, user.name, password)
         mPreferencesHelper.setLoggedIn()
-        listener?.onFragmentInteraction(authToken, username, password)
     }
 
     override fun showError(message: String?) {

@@ -33,33 +33,11 @@ data class Subject (
         val name: String,
         val attended: Float,
         val held: Float,
-        val absent_dates: List<Date> = ArrayList()
+        val absent_dates: String
 ) {
     val absentDatesAsString: String
         get() {
-            val dayFormat = SimpleDateFormat("d", Locale.US)
-            val monthFormat = SimpleDateFormat("MMM", Locale.US)
-            val dates = ArrayList<Date>()
-            dates.addAll(absent_dates)
-            if (dates.size == 0)
-                return ""
-
-            val datesStr = StringBuilder()
-            var prevMonth = ""
-            dates.sort()
-            for (date in dates) {
-                val day = Integer.parseInt(dayFormat.format(date))
-                val month = monthFormat.format(date)
-                if (prevMonth.isEmpty()) {
-                    datesStr.append(month).append(": ")
-                    prevMonth = month
-                } else if (prevMonth != month) {
-                    datesStr.append("\n").append(month).append(": ")
-                    prevMonth = month
-                }
-                datesStr.append(day).append(DateHelper.getDayOfMonthSuffix(day)).append(", ")
-            }
-            return datesStr.substring(0, datesStr.length - 2)
+            return absent_dates
         }
 
     fun getPercentage(): Float {

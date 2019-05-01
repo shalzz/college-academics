@@ -2,21 +2,21 @@
   "formatVersion": 1,
   "database": {
     "version": 14,
-    "identityHash": "c8d12991e3c5c5e549a47aa9ef7f0d20",
+    "identityHash": "80e193a429c6a4d3642540c689b21f45",
     "entities": [
       {
         "tableName": "User",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`phone` TEXT NOT NULL, `roll_number` TEXT NOT NULL, `name` TEXT NOT NULL, `course` TEXT NOT NULL, `email` TEXT NOT NULL, PRIMARY KEY(`phone`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`username` TEXT NOT NULL, `college` TEXT NOT NULL, `name` TEXT NOT NULL, `course` TEXT NOT NULL, `roll_number` TEXT NOT NULL, `email` TEXT NOT NULL, PRIMARY KEY(`username`))",
         "fields": [
           {
-            "fieldPath": "phone",
-            "columnName": "phone",
+            "fieldPath": "username",
+            "columnName": "username",
             "affinity": "TEXT",
             "notNull": true
           },
           {
-            "fieldPath": "roll_number",
-            "columnName": "roll_number",
+            "fieldPath": "college",
+            "columnName": "college",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -33,6 +33,12 @@
             "notNull": true
           },
           {
+            "fieldPath": "roll_number",
+            "columnName": "roll_number",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
             "fieldPath": "email",
             "columnName": "email",
             "affinity": "TEXT",
@@ -41,7 +47,7 @@
         ],
         "primaryKey": {
           "columnNames": [
-            "phone"
+            "username"
           ],
           "autoGenerate": false
         },
@@ -170,7 +176,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"c8d12991e3c5c5e549a47aa9ef7f0d20\")"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"80e193a429c6a4d3642540c689b21f45\")"
     ]
   }
 }

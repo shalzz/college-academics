@@ -52,8 +52,8 @@ constructor(private val mDb: AppDatabase) {
     val userCount: Single<Int>
         get() = mDb.userDao().getCount()
 
-    fun getUser(phone: String): Observable<User> {
-        return mDb.userDao().getAllByPhone(phone)
+    fun getUser(username: String): Observable<User> {
+        return mDb.userDao().getAllByUsername(username)
     }
 
     fun setSubjects(newSubjects: Collection<Subject>): Observable<Subject> {

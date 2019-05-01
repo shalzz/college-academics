@@ -19,11 +19,11 @@
 
 package com.shalzz.attendance.data.remote.interceptor
 
-import android.util.Base64
 import com.shalzz.attendance.data.local.PreferencesHelper
 import com.shalzz.attendance.data.remote.DataAPI
 import okhttp3.Interceptor
 import okhttp3.Response
+import timber.log.Timber
 import java.io.IOException
 import javax.inject.Inject
 
@@ -34,12 +34,16 @@ constructor(private val preferencesManager: PreferencesHelper) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val originalRequest = chain.request()
 
-        if (originalRequest.header("Authorization") != null) {
+        if (originalRequest.header("x-auth-token") != null ||
+                originalRequest.url().encodedPath().startsWith(DataAPI.API_VERSION + "me/login") ||
+                !originalRequest.url().encodedPath().startsWith(DataAPI.API_VERSION + "me")) {
+            Timber.d("skipping auth interceptor")
             return chain.proceed(originalRequest)
         }
 
         val newRequest = originalRequest.newBuilder()
-                .header("Authorization", "Bearer ${preferencesManager.token}")
+                .header("x-clg-id", preferencesManager.clg!!)
+                .header("x-auth-token", preferencesManager.token!!)
                 .build()
         return chain.proceed(newRequest)
     }

@@ -76,9 +76,9 @@ internal constructor(private val mDataManager: DataManager,
         RxUtil.dispose(mDisposable)
     }
 
-    fun loadUser(phone: String) {
+    fun loadUser(username: String) {
         RxUtil.dispose(mDisposable)
-        mDisposable = mDataManager.loadUser(phone)
+        mDisposable = mDataManager.loadUser(username)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(object : DisposableObserver<User>() {
@@ -86,16 +86,16 @@ internal constructor(private val mDataManager: DataManager,
                         if (isViewAttached) {
                             mvpView.updateUserDetails(user)
                         }
-                        Bugsnag.setUserId(user.phone)
+                        Bugsnag.setUserId(user.username)
 
                         val sharedPref = PreferenceManager.getDefaultSharedPreferences(mContext)
                         val optIn = sharedPref.getBoolean(mContext.getString(
                                 R.string.pref_key_ga_opt_in), true)
                         if (optIn) {
-                            Bugsnag.setUser(user.phone, user.email, user.name)
+                            Bugsnag.setUser(user.username, user.college, user.name)
                         }
 
-                        mTracker.setUserId(user.phone)
+                        mTracker.setUserId(user.username)
                     }
 
                     override fun onError(e: Throwable) {

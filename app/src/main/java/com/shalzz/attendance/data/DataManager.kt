@@ -111,8 +111,8 @@ constructor(private val mDataAPI: DataAPI,
             .subscribeOn(Schedulers.single())
     }
 
-    fun loadUser(phone: String): Observable<User> {
-        return mDatabaseHelper.getUser(phone)
+    fun loadUser(username: String): Observable<User> {
+        return mDatabaseHelper.getUser(username)
             .subscribeOn(Schedulers.single())
     }
 
