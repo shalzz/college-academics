@@ -72,8 +72,7 @@
         click the scroll to date in the top right corner.</string>
     <string name="day_list_marked_absent">Absent!</string>
     <string name="atten_list_footer_total">Total Attendance:</string>
-    <string name="atten_list_days_absent_null">Days Absent: please see the timetable for
-        dates</string>
+    <string name="atten_list_days_absent_null">No absent days</string>
     <string name="atten_list_days_absent">"Days Absent: <xliff:g id="absent_dates">%s</xliff:g>"
     </string>
     <string name="atten_list_percentage"><xliff:g id="percentage">%.2f</xliff:g>%%</string>
