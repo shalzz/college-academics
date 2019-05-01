@@ -25,7 +25,6 @@ plugins {
     id("kotlin-kapt")
     id("com.bugsnag.android.gradle")
     id("com.google.gms.oss.licenses.plugin")
-    id("org.sonarqube") version "2.7"
 }
 
 bugsnag {

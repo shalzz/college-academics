@@ -78,37 +78,15 @@ script:
 
 # See http://stackoverflow.com/questions/21294945/error-unable-to-find-instrumentation-info-for-componentinfo
 # Instead of this (which doesn't give any output during tests execution):
-# - ./gradlew connectedCheck -PdisablePreDex --continue --stacktrace --debug
+- ./gradlew connectedCheck -PdisablePreDex --continue --stacktrace
 # run:
-- |
-  ./gradlew :app:installDebug :app:installDebugAndroidTest -PtestCoverageEnabled='true'
-  retval=$?
-  if [ $retval -ne 0 ]; then
-    echo "error on install, exit code: "$retval
-    exit $retval
-  fi
-
-# adb doesn't propagate exit code from tests, see https://code.google.com/p/android/issues/detail?id=3254
-# So we need to parse saved terminal log
-- |
-  cat build/adb-test.log | grep "INSTRUMENTATION_STATUS: stack=" | grep -v "org.junit.AssumptionViolatedException"
-  if [ $? -eq 0 ]; then
-    echo "Test failure found"
-    exit 1
-  else
-    cat build/adb-test.log | grep "OK ("
-  fi
-# Copy coverage data from the emulator
-- |
-  adb shell "rm /sdcard/Download/coverage.ec"
-  adb shell "run-as org.andstatus.app cp /data/user/0/org.andstatus.app/files/coverage.ec /sdcard/Download"
-- cd app/build
-# copy to "build" folder, where it will be found by Sonar scanner
-- adb pull "/sdcard/Download/coverage.ec"
-- cd ../..
-
-after_success:
-- ./gradlew sonarqube -Dsonar.host.url=https://sonarqube.com -Dsonar.login=$SONAR_TOKEN -Dsonar.verbose=true
+#- |
+#  ./gradlew :app:installDebug :app:installDebugAndroidTest -PtestCoverageEnabled='true'
+#  retval=$?
+#  if [ $retval -ne 0 ]; then
+#    echo "error on install, exit code: "$retval
+#    exit $retval
+#  fi
 
 deploy:
   provider: releases
