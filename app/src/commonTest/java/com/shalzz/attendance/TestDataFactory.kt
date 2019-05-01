@@ -43,10 +43,11 @@ object TestDataFactory {
 
     fun makeUser(uniqueSuffix: String): User {
         return User(
-                phone = "Phone-$uniqueSuffix",
+                username = "Username-$uniqueSuffix",
                 roll_number = randomUuid(),
                 name = "Name-$uniqueSuffix",
                 course = "Course-$uniqueSuffix",
+                college = "College-$uniqueSuffix",
                 email = "email$uniqueSuffix@gmail.com")
     }
 
@@ -56,7 +57,7 @@ object TestDataFactory {
                 name = "Name-$uniqueSuffix",
                 attended = 1f,
                 held = 2f,
-                absent_dates = ArrayList())
+                absent_dates = "")
     }
 
     fun makePeriod(uniqueSuffix: String, date: Date): Period {
