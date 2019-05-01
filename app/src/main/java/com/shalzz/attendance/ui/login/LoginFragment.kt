@@ -238,7 +238,7 @@ class LoginFragment : Fragment(), LoginMvpView, AdapterView.OnItemSelectedListen
         dismissProgressDialog()
         val token = mPreferencesHelper.token!!
         mPreferencesHelper.saveUser(user.username, password, user.college)
-        listener?.onFragmentInteraction(token, user.username, password)
+        listener?.onFragmentInteraction(token, user.name, password)
         mPreferencesHelper.setLoggedIn()
     }
 
