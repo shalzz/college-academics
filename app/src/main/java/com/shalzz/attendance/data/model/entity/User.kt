@@ -26,9 +26,10 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 @Entity
 data class User (
-    @PrimaryKey val phone: String,
-    val roll_number: String,
+    @PrimaryKey val username: String,
+    val college: String,
     val name: String,
     val course: String,
+    val roll_number: String = "",
     val email: String = ""
 )

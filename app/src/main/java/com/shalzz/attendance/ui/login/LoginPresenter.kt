@@ -80,11 +80,14 @@ internal constructor(private val mDataManager: DataManager,
         RxUtil.dispose(mDisposable)
 
        mDisposable = mDataManager.login(username, password, college, captcha)
+                .doOnNext { token ->
+                    mvpView.saveToken(username, college, token.token) }
+                .flatMap { mDataManager.syncUser() }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        { token ->
-                            mvpView.successfulLogin(username, password, token.token, college)
+                        { user ->
+                            mvpView.showMainActivity(user, password)
                         }, onError)
     }
 

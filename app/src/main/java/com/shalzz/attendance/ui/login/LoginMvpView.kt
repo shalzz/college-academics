@@ -20,6 +20,7 @@
 package com.shalzz.attendance.ui.login
 
 import com.shalzz.attendance.data.model.College
+import com.shalzz.attendance.data.model.entity.User
 import com.shalzz.attendance.ui.base.MvpView
 
 /**
@@ -27,8 +28,9 @@ import com.shalzz.attendance.ui.base.MvpView
  */
 interface LoginMvpView : MvpView {
 
-    fun successfulLogin(username: String, password: String,
-                        authToken: String, college: String)
+    fun saveToken(username: String, college: String, authToken: String)
+
+    fun showMainActivity(user: User, password: String)
 
     fun showError(message: String?)
 
