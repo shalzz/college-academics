@@ -5,30 +5,52 @@ jdk:
 
 env:
   matrix:
-    - ANDROID_TARGET=android-19  ANDROID_ABI=armeabi-v7a
+    - ANDROID_API=28 EMULATOR_API=24
   global:
-    secure: RozpHxszBR0tYycZmR3ekoQIMfRamGC0Jsp8fMLxE0CrLhfomKGs8L7Eb+c8doTTxQp89kL5+NyZ47YYgUM9JfUmzs8J7Kcth+l6W4uaHjVi+dirg/RqZfBW80SCDlDpdFNxEEQ36YnKzTAInhtONrAvtJZveMHM/sBPbdTvrPxaHkS/9TJcGeQFYptmEYB3248PCP+s5ggufU8xqY+BBkDie0Gl/yqVBRFWR5+x5asEVRmcmhehQ1tkxfNVQPL7eDVbvas6GMjq+o7gTCTcT+kenxGpaDBf9vndSfnzDqFOFAD2Gp8sfE2xRX508zyRC14I8NiJdtm4Ro5R3EFE7VnsCoGzd+ObrwJmh5gTrjg1CFbyEIayaHo9wMqNUQoRJkgMuta6JmZZRn4OnzGOfDnH0knFk4DgubNwaPSM/P8xesfF5402/rfOgti72gS5Km1TsDztCeOFuCFMeMIeu+SNb4KTrlxwqoTIdTe1iz7ogSZAMZIzUNigif3/8/+dYhxERgOS586Ee7V9PCOggTMOuZH0+hFhW8uZL8uYwOSWWA+wnukxj5tLDFGKpLJfr36SpLXwhCgUyspEKaP95qXopGl85AELD5EOWEhzKN+QGZC5K/VL9Y8jAxvqmD6oqaPGfwibSXV1785ihWpolRUOyxyoW+ssfoBLy5qIh+U=
+    - ANDROID_BUILD_TOOLS=28.0.3
+    - secure: RozpHxszBR0tYycZmR3ekoQIMfRamGC0Jsp8fMLxE0CrLhfomKGs8L7Eb+c8doTTxQp89kL5+NyZ47YYgUM9JfUmzs8J7Kcth+l6W4uaHjVi+dirg/RqZfBW80SCDlDpdFNxEEQ36YnKzTAInhtONrAvtJZveMHM/sBPbdTvrPxaHkS/9TJcGeQFYptmEYB3248PCP+s5ggufU8xqY+BBkDie0Gl/yqVBRFWR5+x5asEVRmcmhehQ1tkxfNVQPL7eDVbvas6GMjq+o7gTCTcT+kenxGpaDBf9vndSfnzDqFOFAD2Gp8sfE2xRX508zyRC14I8NiJdtm4Ro5R3EFE7VnsCoGzd+ObrwJmh5gTrjg1CFbyEIayaHo9wMqNUQoRJkgMuta6JmZZRn4OnzGOfDnH0knFk4DgubNwaPSM/P8xesfF5402/rfOgti72gS5Km1TsDztCeOFuCFMeMIeu+SNb4KTrlxwqoTIdTe1iz7ogSZAMZIzUNigif3/8/+dYhxERgOS586Ee7V9PCOggTMOuZH0+hFhW8uZL8uYwOSWWA+wnukxj5tLDFGKpLJfr36SpLXwhCgUyspEKaP95qXopGl85AELD5EOWEhzKN+QGZC5K/VL9Y8jAxvqmD6oqaPGfwibSXV1785ihWpolRUOyxyoW+ssfoBLy5qIh+U=
 
 android:
   components:
   - tools
   - tools
+  - android-$EMULATOR_API
   - platform-tools
-  - build-tools-28.0.3
-  - android-28
-  - $ANDROID_TARGET
+  - tools
+  - build-tools-$ANDROID_BUILD_TOOLS
+  - android-$ANDROID_API
   - extra-android-support
   - extra-android-m2repository
+  - extra-google-m2repository
+  - sys-img-armeabi-v7a-android-$EMULATOR_API
   - extra-google-google_play_services
   - extra-google-m2repository
+  licenses:
+  - ".+"
+
+before_script:
+- echo "y" | android update sdk -a --no-ui --filter android-$EMULATOR_API
+- echo "y" | android update sdk -a --no-ui --filter sys-img-armeabi-v7a-android-$EMULATOR_API
+- android list targets | grep -E '^id:' | awk -F '"' '{$1=""; print $2}' # list all targets
+- echo no | android create avd --force -n test -t android-$EMULATOR_API --abi armeabi-v7a
+- emulator -avd test -no-skin -no-window &
+- android-wait-for-emulator
+- adb shell input keyevent 82 &
+- adb wait-for-device get-serialno
+- cd ${TRAVIS_BUILD_DIR}
+- chmod +x gradlew
+- ./gradlew --version
+- ./gradlew clean
 
 before_cache:
 - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
 
 cache:
   directories:
-  - "$HOME/.gradle/caches/"
-  - "$HOME/.gradle/wrapper/"
+  - $HOME/.m2
+  - $HOME/.gradle/caches/
+  - $HOME/.gradle/wrapper/
+  - $HOME/.android/build-cache
 
 before_install:
   # Deep clone so we can get an accurate commit count for version code
@@ -41,24 +63,48 @@ before_install:
   - mkdir "$ANDROID_HOME/licenses" || true
   - echo "\n8933bad161af4178b1185d1a37fbf41ea5269c55" > "$ANDROID_HOME/licenses/android-sdk-license"
   - echo "\nd56f5187479451eabf01fb78af6dfcb131a6481e" >> "$ANDROID_HOME/licenses/android-sdk-license"
-  # Install the rest of tools (e.g., avdmanager).
-  - echo yes | sdkmanager "tools"
   # Install the system image.
-  - sdkmanager "system-images;$ANDROID_TARGET;default;$ANDROID_ABI"
-  # Create and start emulator for the script. Meant to race the install task.
-  - echo no | avdmanager create avd --force -n test -k "system-images;$ANDROID_TARGET;default;$ANDROID_ABI"
-  - $ANDROID_HOME/emulator/emulator -avd test -no-audio -no-window &
+  -  yes | sdkmanager "platforms;android-$ANDROID_API"
 
-install: ./gradlew clean assemble --stacktrace
+script:
+- |
+  ./gradlew build assembleAndroidTest -PtestCoverageEnabled='true' --stacktrace
+  retval=$?
+  if [ $retval -ne 0 ]; then
+    echo "error on assembling, exit code: "$retval
+    exit $retval
+  fi
 
-before_script:
-  - android-wait-for-emulator
-  - adb shell settings put global window_animation_scale 0 &
-  - adb shell settings put global transition_animation_scale 0 &
-  - adb shell settings put global animator_duration_scale 0 &
-  - adb shell input keyevent 82 &
+# See http://stackoverflow.com/questions/21294945/error-unable-to-find-instrumentation-info-for-componentinfo
+# Instead of this (which doesn't give any output during tests execution):
+# - ./gradlew connectedCheck -PdisablePreDex --continue --stacktrace --debug
+# run:
+- |
+  ./gradlew :app:installDebug :app:installDebugAndroidTest -PtestCoverageEnabled='true'
+  retval=$?
+  if [ $retval -ne 0 ]; then
+    echo "error on install, exit code: "$retval
+    exit $retval
+  fi
 
-script: ./gradlew check connectedCheck --stacktrace
+# adb doesn't propagate exit code from tests, see https://code.google.com/p/android/issues/detail?id=3254
+# So we need to parse saved terminal log
+- |
+  cat build/adb-test.log | grep "INSTRUMENTATION_STATUS: stack=" | grep -v "org.junit.AssumptionViolatedException"
+  if [ $? -eq 0 ]; then
+    echo "Test failure found"
+    exit 1
+  else
+    cat build/adb-test.log | grep "OK ("
+  fi
+# Copy coverage data from the emulator
+- |
+  adb shell "rm /sdcard/Download/coverage.ec"
+  adb shell "run-as org.andstatus.app cp /data/user/0/org.andstatus.app/files/coverage.ec /sdcard/Download"
+- cd app/build
+# copy to "build" folder, where it will be found by Sonar scanner
+- adb pull "/sdcard/Download/coverage.ec"
+- cd ../..
 
 deploy:
   provider: releases
