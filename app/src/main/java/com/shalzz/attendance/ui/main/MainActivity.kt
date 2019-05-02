@@ -83,7 +83,6 @@ class MainActivity : BaseActivity(), MainMvpView, BillingProvider {
     @Inject lateinit var mPreferencesHelper: PreferencesHelper
     @Inject lateinit var httpClient: OkHttpClient
 
-    private var mCurrentSelectedPosition = Fragments.ATTENDANCE.value
     private var drawerHeaderVH: DrawerHeaderViewHolder? = null
 
     private var fragment: Fragment? = null
@@ -177,14 +176,14 @@ class MainActivity : BaseActivity(), MainMvpView, BillingProvider {
             true
         }
         val weakReference = WeakReference(navigationView)
-        navController.addOnNavigatedListener(object : NavController.OnNavigatedListener {
-            override fun onNavigated(
-                controller: NavController,
-                destination: NavDestination
-            ) {
+        navController.addOnDestinationChangedListener(object : NavController.OnDestinationChangedListener {
+
+            override fun onDestinationChanged(controller: NavController,
+                                              destination: NavDestination,
+                                              arguments: Bundle?) {
                 val view = weakReference.get()
                 if (view == null) {
-                    controller.removeOnNavigatedListener(this)
+                    controller.removeOnDestinationChangedListener(this)
                     return
                 }
                 val menu = view.menu
@@ -297,9 +296,9 @@ class MainActivity : BaseActivity(), MainMvpView, BillingProvider {
     /******* MVP View methods implementation  */
 
     override fun updateUserDetails(user: User) {
-        if (!user.name.isEmpty())
+        if (user.name.isNotEmpty())
             drawerHeaderVH!!.tvName.text = user.name
-        if (!user.course.isEmpty())
+        if (user.course.isNotEmpty())
             drawerHeaderVH!!.tvCourse.text = user.course
     }
 
@@ -321,8 +320,7 @@ class MainActivity : BaseActivity(), MainMvpView, BillingProvider {
 
         // Destroy current activity and start Login Activity
         val ourIntent = Intent(this, AuthenticatorActivity::class.java)
-        startActivity(ourIntent)
-        finish()
+        startActivityForResult(ourIntent, ACTIVITY_RESULT_CODE_AUTHENTICATION)
     }
 
     companion object {

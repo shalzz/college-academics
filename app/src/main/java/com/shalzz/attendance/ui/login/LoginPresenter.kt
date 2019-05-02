@@ -27,11 +27,11 @@ import com.shalzz.attendance.injection.ApplicationContext
 import com.shalzz.attendance.injection.ConfigPersistent
 import com.shalzz.attendance.ui.base.BasePresenter
 import com.shalzz.attendance.utils.NetworkUtil
-import com.shalzz.attendance.utils.RxExponentialBackoff
 import com.shalzz.attendance.utils.RxUtil
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import org.json.JSONObject
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -66,13 +66,19 @@ internal constructor(private val mDataManager: DataManager,
                 Timber.e(error)
             }
             else if (isViewAttached) {
-                if (error.message == "Invalid Captcha. Please try again.") {
-                    mvpView.showCaptchaDialog()
-                }
-                else if (error.kind != RetrofitException.Kind.HTTP) {
+                if (error.kind != RetrofitException.Kind.HTTP) {
                     Timber.e(error)
+                    mvpView.showError(error.message)
+                } else {
+                    val res = JSONObject(error.response.errorBody()!!.string())
+
+                    Timber.d("checkcaptcha: %s", res.getString("checkcaptcha"))
+                    when {
+                        res.getString("checkcaptcha") == "1" ->
+                            mvpView.showError(res.getString("error"))
+                        else -> mvpView.showError(error.message)
+                    }
                 }
-                mvpView.showError(error.message)
             }
         }
 
