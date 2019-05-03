@@ -72,9 +72,8 @@ internal constructor(private val mDataManager: DataManager,
                 } else {
                     val res = JSONObject(error.response.errorBody()!!.string())
 
-                    Timber.d("checkcaptcha: %s", res.getString("checkcaptcha"))
                     when {
-                        res.getString("checkcaptcha") == "1" ->
+                        !res.isNull("checkcaptcha") && res.getString("checkcaptcha") == "1" ->
                             mvpView.showError(res.getString("error"))
                         else -> mvpView.showError(error.message)
                     }
