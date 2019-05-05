@@ -46,13 +46,6 @@ interface DataAPI {
     @GET("me/timetable/{date}")
     fun getTimetable(@Path("date") date: String): Observable<List<Period>>
 
-    @GET("me/attendance")
-    fun getAttendance(@Header("Authorization") auth: String): Observable<List<Subject>>
-
-    @GET("me/timetable/{date}")
-    fun getTimetable(@Header("Authorization") auth: String,
-                    @Path("date") date: String): Observable<List<Period>>
-
     @FormUrlEncoded
     @POST("me/verify")
     fun verifyValidSignature(@Field("data") signedData: String,

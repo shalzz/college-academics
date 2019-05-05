@@ -26,7 +26,6 @@ import android.content.ContentProviderClient
 import android.content.Context
 import android.content.SyncResult
 import android.os.Bundle
-import android.util.Base64
 import com.bugsnag.android.Bugsnag
 import com.shalzz.attendance.data.DataManager
 import com.shalzz.attendance.data.model.entity.Period
@@ -38,7 +37,7 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.observers.DisposableObserver
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
-import java.util.Calendar
+import java.util.*
 
 class SyncAdapter
 /**
@@ -69,16 +68,8 @@ internal constructor(
     ) {
         Timber.i("Running sync adapter")
 
-        val userId = account.name
-        val token = mAccountManager.blockingGetAuthToken(account,
-                        MyAccountManager.AUTHTOKEN_TYPE_READ_ONLY, true)
-        Timber.d("name: %s token: %s", userId, token)
-        val base64 = Base64.encodeToString("$userId:$token".toByteArray(), Base64.NO_WRAP)
-        val auth = "Basic $base64"
-        Bugsnag.setUserId(userId)
-
         RxUtil.dispose(mAttendanceDisposable)
-        mAttendanceDisposable = mDataManager.syncAttendance(auth)
+        mAttendanceDisposable = mDataManager.syncAttendance()
             .subscribeOn(Schedulers.io())
             .subscribeWith(object : DisposableObserver<Subject>() {
                 override fun onNext(subject: Subject) {}
@@ -103,7 +94,7 @@ internal constructor(
                 calendar.add(Calendar.DATE, offset)
                 Observable.just(calendar.time)
             }
-            .concatMap { date -> mDataManager.syncDay(auth, date) }
+            .concatMap { date -> mDataManager.syncDay(date) }
             .subscribeOn(Schedulers.io())
             .subscribeWith(object : DisposableObserver<Period>() {
                 override fun onNext(period: Period) {}
