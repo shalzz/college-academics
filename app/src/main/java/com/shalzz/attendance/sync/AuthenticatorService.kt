@@ -17,35 +17,43 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.shalzz.attendance.sync;
+package com.shalzz.attendance.sync
 
-import android.app.Service;
-import android.content.Intent;
-import android.os.IBinder;
+import android.app.Service
+import android.content.Intent
+import android.os.IBinder
 
-import com.shalzz.attendance.MyApplication;
+import com.shalzz.attendance.MyApplication
+import com.shalzz.attendance.data.DataManager
+import com.shalzz.attendance.data.local.PreferencesHelper
+
+import javax.inject.Inject
 
 /**
  * A bound Service that instantiates the authenticator
  * when started.
  */
-public class AuthenticatorService extends Service {
+class AuthenticatorService : Service() {
 
     // Instance field that stores the authenticator object
-    private Authenticator mAuthenticator;
+    private var mAuthenticator: Authenticator? = null
 
-    @Override
-    public void onCreate() {
-        MyApplication.get(this).getComponent().inject(this);
-        mAuthenticator = new Authenticator(this);
+    @Inject
+    lateinit var mDataManager: DataManager
+
+    @Inject
+    lateinit var mPreferencesHelper: PreferencesHelper
+
+    override fun onCreate() {
+        MyApplication.get(this).component.inject(this)
+        mAuthenticator = Authenticator(mDataManager, mPreferencesHelper, this)
     }
 
     /*
      * When the system binds to this Service to make the RPC call
      * return the authenticator's IBinder.
      */
-    @Override
-    public IBinder onBind(Intent intent) {
-        return mAuthenticator.getIBinder();
+    override fun onBind(intent: Intent): IBinder? {
+        return mAuthenticator!!.iBinder
     }
 }

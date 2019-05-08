@@ -19,23 +19,22 @@
 
 package com.shalzz.attendance.sync
 
-import android.accounts.AbstractAccountAuthenticator
-import android.accounts.Account
-import android.accounts.AccountAuthenticatorResponse
-import android.accounts.AccountManager
+import android.accounts.*
 import android.accounts.AccountManager.KEY_BOOLEAN_RESULT
-import android.accounts.NetworkErrorException
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.text.TextUtils
-import com.shalzz.attendance.sync.MyAccountManager.AUTHTOKEN_TYPE_FULL_ACCESS
-import com.shalzz.attendance.sync.MyAccountManager.AUTHTOKEN_TYPE_FULL_ACCESS_LABEL
-import com.shalzz.attendance.sync.MyAccountManager.AUTHTOKEN_TYPE_READ_ONLY
-import com.shalzz.attendance.sync.MyAccountManager.AUTHTOKEN_TYPE_READ_ONLY_LABEL
+import com.shalzz.attendance.data.DataManager
+import com.shalzz.attendance.data.local.PreferencesHelper
+import com.shalzz.attendance.sync.MyAccountManager.*
 import com.shalzz.attendance.ui.login.AuthenticatorActivity
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 
-class Authenticator(private val mContext: Context) : AbstractAccountAuthenticator(mContext) {
+class Authenticator(private val mDataManager: DataManager,
+                    private val mPreferences: PreferencesHelper,
+                    private val mContext: Context) : AbstractAccountAuthenticator(mContext) {
 
     @Throws(NetworkErrorException::class)
     override fun addAccount(
@@ -75,7 +74,17 @@ class Authenticator(private val mContext: Context) : AbstractAccountAuthenticato
         // the server for an appropriate AuthToken.
         val am = AccountManager.get(mContext)
 
-        val authToken = am.peekAuthToken(account, authTokenType)
+        var authToken = am.peekAuthToken(account, authTokenType)
+
+        // Lets give another try to authenticate the user
+        if (TextUtils.isEmpty(authToken)) {
+            val password: String = am.getPassword(account)
+            val clg = mPreferences.clg
+            authToken = mDataManager.login(account.name, password, clg!!, "")
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .blockingFirst().token
+        }
 
         // If we get an authToken - we return it
         if (!TextUtils.isEmpty(authToken)) {
