@@ -28,7 +28,7 @@ import com.squareup.moshi.JsonClass
 data class User (
     @PrimaryKey val username: String,
     val college: String,
-    val name: String,
+    val name: String = "Name",
     val course: String,
     val roll_number: String = "",
     val email: String = ""
