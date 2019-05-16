@@ -81,9 +81,7 @@ public class MyAccountManager {
 
         if(sync) {
             Bundle settingsBundle = new Bundle();
-            final long SYNC_INTERVAL =
-                    SYNC_INTERVAL_IN_MINUTES *
-                            SECONDS_PER_MINUTE;
+            final long SYNC_INTERVAL = SYNC_INTERVAL_IN_MINUTES * SECONDS_PER_MINUTE;
 
             ContentResolver.setIsSyncable(account, AUTHORITY, 1);
             ContentResolver.setSyncAutomatically(account, AUTHORITY, true);

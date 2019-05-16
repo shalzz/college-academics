@@ -234,7 +234,7 @@ class MainActivity : BaseActivity(), MainMvpView, BillingProvider {
             .build()
 
         sv.overrideButtonClick {
-            drawer_layout.closeDrawer( mNavigationView as View)
+            drawer_layout.closeDrawer(mNavigationView)
             sv.hide()
             if (fragment is AttendanceListFragment) {
                 (fragment as AttendanceListFragment).showcaseView()
@@ -268,7 +268,10 @@ class MainActivity : BaseActivity(), MainMvpView, BillingProvider {
     }
 
     override fun onBackPressed() {
-        if (navController.currentDestination!!.id == R.id.attendanceListFragment ||
+        if (drawer_layout.isDrawerOpen(mNavigationView)) {
+            drawer_layout.closeDrawer(mNavigationView)
+        }
+        else if (navController.currentDestination!!.id == R.id.attendanceListFragment ||
             navController.currentDestination!!.id == R.id.timeTablePagerFragment) {
             ActivityCompat.finishAfterTransition(this)
         } else
