@@ -311,7 +311,7 @@ class MainActivity : BaseActivity(), MainMvpView, BillingProvider {
 
         // Invalidate the complete network cache
         try {
-            httpClient.cache().evictAll()
+            httpClient.cache()!!.evictAll()
         } catch (e: IOException) {
             Timber.e(e)
         }
