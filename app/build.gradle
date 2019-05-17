@@ -19,7 +19,7 @@
 
 plugins {
     id("com.android.application")
-    id("com.github.triplet.play") version "2.0.0"
+    id("com.github.triplet.play") version "2.2.1"
     id("kotlin-android")
     id("kotlin-android-extensions")
     id("kotlin-kapt")
@@ -70,6 +70,7 @@ android {
 
     play {
         serviceAccountCredentials = file("../play-service-account-key.json")
+        defaultToAppBundles = true
         track = "beta"
     }
 
@@ -77,8 +78,8 @@ android {
         // You must set up an environment var before release signing
         // Run: export APP_KEY={password}
         release {
-            storeFile file("keystore/release.keystore")
-            keyAlias "attendance keystore"
+            storeFile file("keystore/upload.keystore")
+            keyAlias "key0"
             storePassword "$System.env.APP_KEY"
             keyPassword "$System.env.APP_KEY"
         }
