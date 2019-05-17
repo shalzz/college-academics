@@ -19,6 +19,7 @@
 
 package com.shalzz.attendance;
 
+import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import androidx.appcompat.app.AppCompatDelegate;
@@ -33,7 +34,7 @@ import com.shalzz.attendance.injection.module.ApplicationModule;
 import com.shalzz.attendance.utils.BugsnagTree;
 import timber.log.Timber;
 
-public class MyApplication extends MultiDexApplication {
+public class MyApplication extends Application {
 
     private static ApplicationComponent mApplicationComponent;
 
