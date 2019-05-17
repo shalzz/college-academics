@@ -1,4 +1,1 @@
-• Fixed issues with login
-• Now login with username and password
-• New v4 API
 • Bug fixes and improvements
