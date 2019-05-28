@@ -43,6 +43,7 @@ public class Miscellaneous {
             public static final String THEME = "theme";
             public static final String USER_ID = "login_user_id";
             public static final String PASSWORD = "login_password";
+            public static final String COLLEGE = "login_college";
             public static final String IAP_PRODUCT_ID = "iap_product_id";
         }
     }
