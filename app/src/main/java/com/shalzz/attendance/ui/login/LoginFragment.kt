@@ -162,6 +162,7 @@ class LoginFragment : Fragment(), LoginMvpView, AdapterView.OnItemSelectedListen
         val bundle = Bundle()
         bundle.putString(Analytics.Param.USER_ID, userId.toString())
         bundle.putString(Analytics.Param.PASSWORD, password.toString())
+        bundle.putString(Analytics.Param.COLLEGE, college!!.id)
         mTracker.logEvent(Analytics.Event.LOGIN_INITIATED, bundle)
 
         Timber.d("new login: %s, %s, %s", userId, password, college!!.id)
@@ -233,6 +234,8 @@ class LoginFragment : Fragment(), LoginMvpView, AdapterView.OnItemSelectedListen
     override fun showMainActivity(user: User, password: String) {
         val bundle = Bundle()
         bundle.putString(FirebaseAnalytics.Param.METHOD, "manual")
+        bundle.putString(Analytics.Param.USER_ID, user.username)
+        bundle.putString(Analytics.Param.COLLEGE, user.college)
         mTracker.logEvent(FirebaseAnalytics.Event.LOGIN, bundle)
 
         dismissProgressDialog()
