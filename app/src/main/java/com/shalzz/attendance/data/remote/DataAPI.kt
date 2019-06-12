@@ -25,6 +25,7 @@ import com.shalzz.attendance.data.model.entity.Period
 import com.shalzz.attendance.data.model.entity.Subject
 import com.shalzz.attendance.data.model.entity.User
 import io.reactivex.Observable
+import okhttp3.ResponseBody
 import retrofit2.http.*
 
 interface DataAPI {
@@ -32,7 +33,11 @@ interface DataAPI {
     @GET("me/login")
     fun login(@Header("Authorization") auth: String,
               @Header("x-clg-id") college: String,
-              @Query("captcha") captcha: String): Observable<TokenModel>
+              @Query("captcha") captcha: String,
+              @Query("cookie") cookie: String): Observable<TokenModel>
+
+    @GET("me/captcha")
+    fun getCaptcha(@Header("x-clg-id") college: String): Observable<ResponseBody>
 
     @GET("colleges")
     fun getColleges(): Observable<List<College>>
@@ -53,7 +58,7 @@ interface DataAPI {
 
     // TODO: add logout api
     companion object {
-        val API_VERSION = "/v4/prod/"
+        val API_VERSION = "/v4/dev/"
         val ENDPOINT = "https://academics.8bitlabs.tech$API_VERSION"
 //        val API_VERSION = "/"
 //        val ENDPOINT = "http://localhost:3000$API_VERSION"

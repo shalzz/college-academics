@@ -60,9 +60,9 @@ constructor(private val mDataAPI: DataAPI,
     }
 
     fun login(username: String, password: String,
-              college: String, captcha: String): Observable<TokenModel> {
+              college: String, captcha: String, cookie: String): Observable<TokenModel> {
         val auth = Base64.encodeToString("$username:$password".toByteArray(), Base64.NO_WRAP)
-        return mDataAPI.login("Basic $auth", college, captcha)
+        return mDataAPI.login("Basic $auth", college, captcha, cookie)
             .subscribeOn(Schedulers.io())
     }
 

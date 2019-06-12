@@ -53,7 +53,8 @@ internal constructor(private val mDataManager: DataManager,
         RxUtil.dispose(mDisposable)
     }
 
-    fun login(username: String, password: String, college: String, captcha: String = "default") {
+    fun login(username: String, password: String, college: String, captcha: String = "default",
+              cookie: String = "") {
         checkViewAttached()
         if (!NetworkUtil.isNetworkConnected(mContext)) {
             Timber.i("Login canceled, connection not available")
@@ -73,8 +74,13 @@ internal constructor(private val mDataManager: DataManager,
                     val res = JSONObject(error.response.errorBody()!!.string())
 
                     when {
-                        !res.isNull("checkcaptcha") && res.getString("checkcaptcha") == "1" ->
-                            mvpView.showError(res.getString("error"))
+                        !res.isNull("checkcaptcha")
+                                && res.getString("checkcaptcha") == "1" -> {
+                            if (captcha == "default")
+                                mvpView.showCaptchaDialog()
+                            else
+                                mvpView.showError(res.getString("error"))
+                        }
                         else -> mvpView.showError(error.message)
                     }
                 }
@@ -84,7 +90,7 @@ internal constructor(private val mDataManager: DataManager,
         mvpView.showProgressDialog()
         RxUtil.dispose(mDisposable)
 
-       mDisposable = mDataManager.login(username, password, college, captcha)
+       mDisposable = mDataManager.login(username, password, college, captcha, cookie)
                 .doOnNext { token ->
                     mvpView.saveToken(username, college, token.token) }
                 .flatMap { mDataManager.syncUser() }

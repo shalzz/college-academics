@@ -29,6 +29,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.SpinnerAdapter
 import androidx.fragment.app.Fragment
 import com.afollestad.materialdialogs.MaterialDialog
 import com.bugsnag.android.Bugsnag
@@ -47,7 +48,8 @@ import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Named
 
-class LoginFragment : Fragment(), LoginMvpView, AdapterView.OnItemSelectedListener {
+class LoginFragment : Fragment(), LoginMvpView, AdapterView.OnItemSelectedListener,
+        CaptchaDialogFragment.CaptchaDialogListener {
 
     @Inject
     @field:Named("app")
@@ -171,6 +173,10 @@ class LoginFragment : Fragment(), LoginMvpView, AdapterView.OnItemSelectedListen
         mLoginPresenter.login(userId.toString(), password.toString(), college!!.id)
     }
 
+    override fun onDialogPositiveClick(captcha: String) {
+        Timber.d("Got Captcha: %s", captcha)
+    }
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
         if (context is LoginFragment.OnFragmentInteractionListener) {
@@ -216,7 +222,9 @@ class LoginFragment : Fragment(), LoginMvpView, AdapterView.OnItemSelectedListen
     }
 
     override fun showCaptchaDialog() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        dismissProgressDialog()
+        val dialog = CaptchaDialogFragment(this)
+        dialog.show(fragmentManager, "captcha-dialog")
     }
 
     override fun updateCollegeList(data: List<College>) {

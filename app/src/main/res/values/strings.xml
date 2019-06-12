@@ -162,5 +162,8 @@
     <string name="default_notification_channel_id">1</string>
     <string name="account_manager_title">College Academics</string>
     <string name="spinner_title">Select your College</string>
+    <string name="hint_captcha">Enter captcha</string>
+    <string name="refresh_captcha_button">refresh captcha button</string>
+    <string name="captcha_image_view">Captcha Image</string>
 
 </resources>

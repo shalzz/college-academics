@@ -205,6 +205,8 @@ android {
         implementation "com.squareup.moshi:moshi-adapters:$MOSHI_VERSION"
         kapt "com.squareup.moshi:moshi-kotlin-codegen:$MOSHI_VERSION"
 
+        implementation 'com.github.bumptech.glide:glide:4.9.0'
+        annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'
         implementation "com.malinskiy:materialicons:1.0.2"
         implementation "com.github.amlcurran.showcaseview:library:5.4.0"
         implementation "com.github.afollestad.material-dialogs:core:0.8.5.5"
