@@ -22,9 +22,7 @@ package com.shalzz.attendance;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
-import androidx.appcompat.app.AppCompatDelegate;
-import androidx.multidex.MultiDexApplication;
-import androidx.preference.PreferenceManager;
+
 import com.bugsnag.android.Bugsnag;
 import com.bugsnag.android.Configuration;
 import com.google.firebase.FirebaseApp;
@@ -32,9 +30,13 @@ import com.shalzz.attendance.injection.component.ApplicationComponent;
 import com.shalzz.attendance.injection.component.DaggerApplicationComponent;
 import com.shalzz.attendance.injection.module.ApplicationModule;
 import com.shalzz.attendance.utils.BugsnagTree;
+
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.multidex.MultiDexApplication;
+import androidx.preference.PreferenceManager;
 import timber.log.Timber;
 
-public class MyApplication extends Application {
+public class MyApplication extends MultiDexApplication {
 
     private static ApplicationComponent mApplicationComponent;
 
