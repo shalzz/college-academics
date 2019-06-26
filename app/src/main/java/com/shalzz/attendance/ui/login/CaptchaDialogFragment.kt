@@ -20,24 +20,27 @@
 package com.shalzz.attendance.ui.login
 
 import android.app.Dialog
+import android.content.Context
 import android.os.Bundle
 import android.view.inputmethod.EditorInfo
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
+import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.afollestad.materialdialogs.DialogAction
 import com.afollestad.materialdialogs.MaterialDialog
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.model.GlideUrl
 import com.bumptech.glide.load.model.LazyHeaders
 import com.shalzz.attendance.R
 import com.shalzz.attendance.utils.Miscellaneous
 import kotlinx.android.synthetic.main.captcha_dialog.*
 import kotlinx.android.synthetic.main.captcha_dialog.view.*
-import timber.log.Timber
 
 
 class CaptchaDialogFragment(listener: CaptchaDialogListener) : DialogFragment() {
 
+    private lateinit var mContext: Context
     // Use this instance of the interface to deliver action events
     private var mListener: CaptchaDialogListener = listener
 
@@ -47,6 +50,11 @@ class CaptchaDialogFragment(listener: CaptchaDialogListener) : DialogFragment() 
      */
     interface CaptchaDialogListener {
         fun onDialogPositiveClick(captcha: String)
+    }
+
+    override fun onAttach(context: Context?) {
+        super.onAttach(context)
+        mContext = context!!
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -100,12 +108,18 @@ class CaptchaDialogFragment(listener: CaptchaDialogListener) : DialogFragment() 
                 LazyHeaders.Builder()
                 .addHeader("x-clg-id", clg)
                 .build())
-        Timber.d("Loading Image: %s", glideUrl.toURL())
-        Timber.d("ImageView %s", materialDialog.ivCapImg)
+
+        val circularProgressDrawable = CircularProgressDrawable(mContext)
+        circularProgressDrawable.strokeWidth = 8f
+        circularProgressDrawable.centerRadius = 30f
+        val color = mContext.resources.getColor(R.color.accent)
+        circularProgressDrawable.setColorSchemeColors(color)
+        circularProgressDrawable.start()
 
         Glide.with(this)
                 .load(glideUrl)
-                .placeholder(android.R.drawable.progress_indeterminate_horizontal)
+                .placeholder(circularProgressDrawable)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .skipMemoryCache(true)
                 .into(materialDialog.ivCapImg)
     }
