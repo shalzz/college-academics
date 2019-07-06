@@ -37,7 +37,7 @@ interface DataAPI {
               @Query("cookie") cookie: String): Observable<TokenModel>
 
     @GET("me/captcha")
-    fun getCaptcha(@Header("x-clg-id") college: String): Observable<ResponseBody>
+    fun getCaptcha(@Header("x-clg-id") college: String): Observable<retrofit2.Response<ResponseBody>>
 
     @GET("colleges")
     fun getColleges(): Observable<List<College>>

@@ -21,28 +21,32 @@ package com.shalzz.attendance.ui.login
 
 import android.app.Dialog
 import android.content.Context
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.view.inputmethod.EditorInfo
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
-import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.afollestad.materialdialogs.DialogAction
 import com.afollestad.materialdialogs.MaterialDialog
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.load.model.GlideUrl
-import com.bumptech.glide.load.model.LazyHeaders
 import com.shalzz.attendance.R
+import com.shalzz.attendance.data.remote.DataAPI
 import com.shalzz.attendance.utils.Miscellaneous
+import com.shalzz.attendance.utils.RxUtil
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.captcha_dialog.*
 import kotlinx.android.synthetic.main.captcha_dialog.view.*
+import timber.log.Timber
 
-
-class CaptchaDialogFragment(listener: CaptchaDialogListener) : DialogFragment() {
+class CaptchaDialogFragment(listener: CaptchaDialogListener, dataAPI: DataAPI) : DialogFragment() {
 
     private lateinit var mContext: Context
     // Use this instance of the interface to deliver action events
     private var mListener: CaptchaDialogListener = listener
+    private var mDataAPI = dataAPI
+
+    private var mDisposable: Disposable? = null
 
     /** The activity that creates an instance of this dialog fragment must
      * implement this interface in order to receive event callbacks.
@@ -101,26 +105,28 @@ class CaptchaDialogFragment(listener: CaptchaDialogListener) : DialogFragment() 
         super.onStart()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        RxUtil.dispose(mDisposable)
+    }
+
     private fun loadImg(clg: String) {
         val materialDialog = dialog as MaterialDialog
+        val imageView = materialDialog.ivCapImg
 
-        val glideUrl = GlideUrl("https://academics.8bitlabs.tech/v4/dev/me/captcha",
-                LazyHeaders.Builder()
-                .addHeader("x-clg-id", clg)
-                .build())
-
-        val circularProgressDrawable = CircularProgressDrawable(mContext)
-        circularProgressDrawable.strokeWidth = 8f
-        circularProgressDrawable.centerRadius = 30f
-        val color = mContext.resources.getColor(R.color.accent)
-        circularProgressDrawable.setColorSchemeColors(color)
-        circularProgressDrawable.start()
-
-        Glide.with(this)
-                .load(glideUrl)
-                .placeholder(circularProgressDrawable)
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .skipMemoryCache(true)
-                .into(materialDialog.ivCapImg)
+        RxUtil.dispose(mDisposable)
+        mDisposable = mDataAPI.getCaptcha(clg)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe( {response ->
+                    val cookie = response.headers().get("x-cookie")
+                    Timber.d("Cookie: %s", cookie)
+                    if (response.isSuccessful) {
+                        val bmp = BitmapFactory.decodeStream(response.body()!!.byteStream())
+                        imageView.setImageBitmap(bmp)
+                    }
+                }, {error ->
+                    Timber.e(error, "Unable to load captcha image")
+                })
     }
 }

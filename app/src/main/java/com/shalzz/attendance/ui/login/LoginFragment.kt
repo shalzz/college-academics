@@ -29,7 +29,6 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.SpinnerAdapter
 import androidx.fragment.app.Fragment
 import com.afollestad.materialdialogs.MaterialDialog
 import com.bugsnag.android.Bugsnag
@@ -40,6 +39,7 @@ import com.shalzz.attendance.R
 import com.shalzz.attendance.data.local.PreferencesHelper
 import com.shalzz.attendance.data.model.College
 import com.shalzz.attendance.data.model.entity.User
+import com.shalzz.attendance.data.remote.DataAPI
 import com.shalzz.attendance.utils.Miscellaneous
 import com.shalzz.attendance.utils.Miscellaneous.Analytics
 import kotlinx.android.synthetic.main.fragment_login.*
@@ -58,10 +58,12 @@ class LoginFragment : Fragment(), LoginMvpView, AdapterView.OnItemSelectedListen
     lateinit var mLoginPresenter: LoginPresenter
     @Inject
     lateinit var mPreferencesHelper: PreferencesHelper
+    @Inject
+    lateinit var mDataApi: DataAPI
 
     private var progressDialog: MaterialDialog? = null
     private lateinit var mActivity: Activity
-    private var listener: LoginFragment.OnFragmentInteractionListener? = null
+    private var listener: OnFragmentInteractionListener? = null
     private lateinit var spinnerAdapter: ArrayAdapter<College>
     private var college: College? = null
 
@@ -179,7 +181,7 @@ class LoginFragment : Fragment(), LoginMvpView, AdapterView.OnItemSelectedListen
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        if (context is LoginFragment.OnFragmentInteractionListener) {
+        if (context is OnFragmentInteractionListener) {
             listener = context
         } else {
             throw RuntimeException("$context must implement OnFragmentInteractionListener")
@@ -223,7 +225,7 @@ class LoginFragment : Fragment(), LoginMvpView, AdapterView.OnItemSelectedListen
 
     override fun showCaptchaDialog() {
         dismissProgressDialog()
-        val dialog = CaptchaDialogFragment(this)
+        val dialog = CaptchaDialogFragment(this, mDataApi)
         dialog.show(fragmentManager, "captcha-dialog")
     }
 
