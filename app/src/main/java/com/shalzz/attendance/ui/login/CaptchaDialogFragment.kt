@@ -24,8 +24,10 @@ import android.content.Context
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.view.inputmethod.EditorInfo
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
+import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.afollestad.materialdialogs.DialogAction
 import com.afollestad.materialdialogs.MaterialDialog
 import com.shalzz.attendance.R
@@ -114,6 +116,14 @@ class CaptchaDialogFragment(listener: CaptchaDialogListener, dataAPI: DataAPI) :
         val materialDialog = dialog as MaterialDialog
         val imageView = materialDialog.ivCapImg
 
+        val circularProgressDrawable = CircularProgressDrawable(mContext)
+        circularProgressDrawable.strokeWidth = 8f
+        circularProgressDrawable.centerRadius = 30f
+        val color = mContext.resources.getColor(R.color.accent)
+        circularProgressDrawable.setColorSchemeColors(color)
+        circularProgressDrawable.start()
+        imageView.setImageDrawable(circularProgressDrawable)
+
         RxUtil.dispose(mDisposable)
         mDisposable = mDataAPI.getCaptcha(clg)
                 .subscribeOn(Schedulers.io())
@@ -123,9 +133,12 @@ class CaptchaDialogFragment(listener: CaptchaDialogListener, dataAPI: DataAPI) :
                     Timber.d("Cookie: %s", cookie)
                     if (response.isSuccessful) {
                         val bmp = BitmapFactory.decodeStream(response.body()!!.byteStream())
+                        imageView.scaleType = ImageView.ScaleType.FIT_XY
                         imageView.setImageBitmap(bmp)
                     }
                 }, {error ->
+                    imageView.scaleType = ImageView.ScaleType.FIT_CENTER
+                    imageView.setImageResource(R.drawable.ic_error_black)
                     Timber.e(error, "Unable to load captcha image")
                 })
     }
