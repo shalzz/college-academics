@@ -76,10 +76,11 @@ internal constructor(private val mDataManager: DataManager,
                     when {
                         !res.isNull("checkcaptcha")
                                 && res.getString("checkcaptcha") == "1" -> {
-                            if (captcha == "default")
-                                mvpView.showCaptchaDialog()
-                            else
-                                mvpView.showError(res.getString("error"))
+                            when {
+                                captcha == "default" -> mvpView.showCaptchaDialog()
+                                res.has("error") -> mvpView.showError(res.getString("error"))
+                                else -> mvpView.showError(error.message)
+                            }
                         }
                         else -> mvpView.showError(error.message)
                     }

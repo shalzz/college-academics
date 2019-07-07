@@ -36,7 +36,7 @@ interface DataAPI {
               @Query("captcha") captcha: String,
               @Query("cookie") cookie: String): Observable<TokenModel>
 
-    @GET("me/captcha")
+    @GET("captcha")
     fun getCaptcha(@Header("x-clg-id") college: String): Observable<retrofit2.Response<ResponseBody>>
 
     @GET("colleges")
@@ -58,9 +58,9 @@ interface DataAPI {
 
     // TODO: add logout api
     companion object {
-        val API_VERSION = "/v4/dev/"
-        val ENDPOINT = "https://academics.8bitlabs.tech$API_VERSION"
-//        val API_VERSION = "/"
-//        val ENDPOINT = "http://localhost:3000$API_VERSION"
+//        val API_VERSION = "/v4/dev/"
+//        val ENDPOINT = "https://academics.8bitlabs.tech$API_VERSION"
+        val API_VERSION = "/"
+        val ENDPOINT = "http://192.168.1.247:3000$API_VERSION"
     }
 }

@@ -41,7 +41,7 @@ constructor(@param:ApplicationContext private val mContext: Context) : Intercept
             // Do not cache the '/me/login' api route
             return if (
                 request.url().encodedPath().startsWith(DataAPI.API_VERSION + "me/login") ||
-                request.url().encodedPath().startsWith(DataAPI.API_VERSION + "me/captcha")
+                request.url().encodedPath().startsWith(DataAPI.API_VERSION + "captcha")
             ) {
                 val originalResponse = chain.proceed(request)
                 originalResponse.newBuilder()
