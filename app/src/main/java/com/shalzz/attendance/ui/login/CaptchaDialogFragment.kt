@@ -49,13 +49,14 @@ class CaptchaDialogFragment(listener: CaptchaDialogListener, dataAPI: DataAPI) :
     private var mDataAPI = dataAPI
 
     private var mDisposable: Disposable? = null
+    private var mCookie: String = ""
 
     /** The activity that creates an instance of this dialog fragment must
      * implement this interface in order to receive event callbacks.
      * Each method passes the DialogFragment in case the host needs to query it.
      */
     interface CaptchaDialogListener {
-        fun onDialogPositiveClick(captcha: String)
+        fun onDialogPositiveClick(dialog: MaterialDialog, captcha: String, cookie: String)
     }
 
     override fun onAttach(context: Context?) {
@@ -72,8 +73,12 @@ class CaptchaDialogFragment(listener: CaptchaDialogListener, dataAPI: DataAPI) :
                 .negativeText(android.R.string.cancel)
                 .customView(mView, false)
                 .autoDismiss(false)
-                .onPositive { _, _ ->
-                    mListener.onDialogPositiveClick(mView.captchaEditText.text.toString())
+                .onPositive { dialog, _ ->
+                    val captcha = mView.captchaEditText.text.toString()
+                    if (captcha.isEmpty())
+                        mView.captchaEditText.error = "Please enter the captcha text"
+                    else
+                        mListener.onDialogPositiveClick(dialog, captcha, mCookie)
                 }
                 .onNegative { dialog, _ ->
                     dialog.dismiss() }
@@ -130,6 +135,7 @@ class CaptchaDialogFragment(listener: CaptchaDialogListener, dataAPI: DataAPI) :
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe( {response ->
                     val cookie = response.headers().get("x-cookie")
+                    mCookie = cookie!!
                     Timber.d("Cookie: %s", cookie)
                     if (response.isSuccessful) {
                         val bmp = BitmapFactory.decodeStream(response.body()!!.byteStream())
