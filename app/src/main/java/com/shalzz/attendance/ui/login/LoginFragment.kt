@@ -155,7 +155,7 @@ class LoginFragment : Fragment(), LoginMvpView, AdapterView.OnItemSelectedListen
         return valid
     }
 
-    private fun doLogin(captcha: String = "", cookie: String = "") {
+    private fun doLogin(captcha: String? = null, cookie: String? = null) {
         val userId = etUserId.editText!!.editableText
         val password = etPassword.editText!!.editableText
 
@@ -172,11 +172,11 @@ class LoginFragment : Fragment(), LoginMvpView, AdapterView.OnItemSelectedListen
         Timber.d("new login: %s, %s, %s", userId, password, college!!.id)
 
         Miscellaneous.closeKeyboard(mActivity, etPassword.editText)
-        if (cookie.isEmpty() || captcha.isEmpty())
+        if (cookie == null && captcha == null)
             mLoginPresenter.login(userId.toString(), password.toString(), college!!.id)
         else
             mLoginPresenter.login(userId.toString(), password.toString(),
-                    college!!.id, captcha, cookie)
+                    college!!.id, captcha!!, cookie!!)
     }
 
     override fun onDialogPositiveClick(dialog: MaterialDialog, captcha: String, cookie: String) {
@@ -231,7 +231,7 @@ class LoginFragment : Fragment(), LoginMvpView, AdapterView.OnItemSelectedListen
 
     override fun showCaptchaDialog() {
         dismissProgressDialog()
-        val dialog = CaptchaDialogFragment(this, mDataApi)
+        val dialog = CaptchaDialogFragment(this, mDataApi, college!!.id)
         dialog.show(fragmentManager, "captcha-dialog")
     }
 

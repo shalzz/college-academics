@@ -41,12 +41,14 @@ import kotlinx.android.synthetic.main.captcha_dialog.*
 import kotlinx.android.synthetic.main.captcha_dialog.view.*
 import timber.log.Timber
 
-class CaptchaDialogFragment(listener: CaptchaDialogListener, dataAPI: DataAPI) : DialogFragment() {
+class CaptchaDialogFragment(listener: CaptchaDialogListener, dataAPI: DataAPI, collegeId: String) :
+        DialogFragment() {
 
     private lateinit var mContext: Context
     // Use this instance of the interface to deliver action events
     private var mListener: CaptchaDialogListener = listener
     private var mDataAPI = dataAPI
+    private var mCollegeId = collegeId
 
     private var mDisposable: Disposable? = null
     private var mCookie: String = ""
@@ -91,11 +93,11 @@ class CaptchaDialogFragment(listener: CaptchaDialogListener, dataAPI: DataAPI) :
         val positiveButton = materialDialog.getActionButton(DialogAction.POSITIVE)
 
         // Get the Captcha Image
-        loadImg("mecs")
+        loadImg(mCollegeId)
 
         // OnClickListener event for the Reload captcha Button
         materialDialog.refreshButton.setOnClickListener {
-            loadImg("mecs")
+            loadImg(mCollegeId)
             materialDialog.captchaEditText.setText("")
         }
 

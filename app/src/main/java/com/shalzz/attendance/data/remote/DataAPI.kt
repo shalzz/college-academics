@@ -53,14 +53,16 @@ interface DataAPI {
 
     @FormUrlEncoded
     @POST("me/verify")
-    fun verifyValidSignature(@Field("data") signedData: String,
-                             @Field("sig") signature: String): Observable<Boolean>
+    fun verifyValidSignature(
+        @Field("data") signedData: String,
+        @Field("sig") signature: String
+    ): Observable<Boolean>
 
     // TODO: add logout api
     companion object {
-//        val API_VERSION = "/v4/dev/"
-//        val ENDPOINT = "https://academics.8bitlabs.tech$API_VERSION"
-        val API_VERSION = "/"
-        val ENDPOINT = "http://192.168.1.247:3000$API_VERSION"
+        val API_VERSION = "/v4/prod/"
+        val ENDPOINT = "https://academics.8bitlabs.tech$API_VERSION"
+//         val API_VERSION = "/"
+//         val ENDPOINT = "http://192.168.1.247:3000$API_VERSION"
     }
 }
