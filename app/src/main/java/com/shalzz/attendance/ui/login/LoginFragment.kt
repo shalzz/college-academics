@@ -39,6 +39,7 @@ import com.shalzz.attendance.R
 import com.shalzz.attendance.data.local.PreferencesHelper
 import com.shalzz.attendance.data.model.College
 import com.shalzz.attendance.data.model.entity.User
+import com.shalzz.attendance.data.remote.DataAPI
 import com.shalzz.attendance.utils.Miscellaneous
 import com.shalzz.attendance.utils.Miscellaneous.Analytics
 import kotlinx.android.synthetic.main.fragment_login.*
@@ -47,7 +48,8 @@ import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Named
 
-class LoginFragment : Fragment(), LoginMvpView, AdapterView.OnItemSelectedListener {
+class LoginFragment : Fragment(), LoginMvpView, AdapterView.OnItemSelectedListener,
+        CaptchaDialogFragment.CaptchaDialogListener {
 
     @Inject
     @field:Named("app")
@@ -56,10 +58,12 @@ class LoginFragment : Fragment(), LoginMvpView, AdapterView.OnItemSelectedListen
     lateinit var mLoginPresenter: LoginPresenter
     @Inject
     lateinit var mPreferencesHelper: PreferencesHelper
+    @Inject
+    lateinit var mDataApi: DataAPI
 
     private var progressDialog: MaterialDialog? = null
     private lateinit var mActivity: Activity
-    private var listener: LoginFragment.OnFragmentInteractionListener? = null
+    private var listener: OnFragmentInteractionListener? = null
     private lateinit var spinnerAdapter: ArrayAdapter<College>
     private var college: College? = null
 
@@ -151,7 +155,7 @@ class LoginFragment : Fragment(), LoginMvpView, AdapterView.OnItemSelectedListen
         return valid
     }
 
-    private fun doLogin() {
+    private fun doLogin(captcha: String? = null, cookie: String? = null) {
         val userId = etUserId.editText!!.editableText
         val password = etPassword.editText!!.editableText
 
@@ -168,12 +172,22 @@ class LoginFragment : Fragment(), LoginMvpView, AdapterView.OnItemSelectedListen
         Timber.d("new login: %s, %s, %s", userId, password, college!!.id)
 
         Miscellaneous.closeKeyboard(mActivity, etPassword.editText)
-        mLoginPresenter.login(userId.toString(), password.toString(), college!!.id)
+        if (cookie == null && captcha == null)
+            mLoginPresenter.login(userId.toString(), password.toString(), college!!.id)
+        else
+            mLoginPresenter.login(userId.toString(), password.toString(),
+                    college!!.id, captcha!!, cookie!!)
+    }
+
+    override fun onDialogPositiveClick(dialog: MaterialDialog, captcha: String, cookie: String) {
+        dialog.dismiss()
+        doLogin(captcha, cookie)
+        Timber.d("Got Captcha: %s", captcha)
     }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        if (context is LoginFragment.OnFragmentInteractionListener) {
+        if (context is OnFragmentInteractionListener) {
             listener = context
         } else {
             throw RuntimeException("$context must implement OnFragmentInteractionListener")
@@ -216,7 +230,9 @@ class LoginFragment : Fragment(), LoginMvpView, AdapterView.OnItemSelectedListen
     }
 
     override fun showCaptchaDialog() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        dismissProgressDialog()
+        val dialog = CaptchaDialogFragment(this, mDataApi, college!!.id)
+        dialog.show(fragmentManager, "captcha-dialog")
     }
 
     override fun updateCollegeList(data: List<College>) {

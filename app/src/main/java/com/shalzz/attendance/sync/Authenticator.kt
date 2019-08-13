@@ -80,7 +80,7 @@ class Authenticator(private val mDataManager: DataManager,
         if (TextUtils.isEmpty(authToken)) {
             val password: String = am.getPassword(account)
             val clg = mPreferences.clg
-            authToken = mDataManager.login(account.name, password, clg!!, "")
+            authToken = mDataManager.login(account.name, password, clg!!, "", "")
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .blockingFirst().token
