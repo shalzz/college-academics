@@ -60,9 +60,8 @@ interface DataAPI {
 
     // TODO: add logout api
     companion object {
-        val API_VERSION = "/v4/prod/"
+        val API_VERSION = "/api/v5/dev/"
         val ENDPOINT = "https://academics.8bitlabs.tech$API_VERSION"
-//         val API_VERSION = "/"
-//         val ENDPOINT = "http://192.168.1.247:3000$API_VERSION"
+//         val ENDPOINT = "http://192.168.1.248:3000$API_VERSION"
     }
 }

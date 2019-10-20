@@ -242,8 +242,7 @@ class LoginFragment : Fragment(), LoginMvpView, AdapterView.OnItemSelectedListen
     }
 
     override fun saveToken(username: String, college: String, authToken: String) {
-        val token = Base64.encodeToString("$username:$authToken".toByteArray(), Base64.NO_WRAP)
-        mPreferencesHelper.saveToken(token)
+        mPreferencesHelper.saveToken(authToken)
         mPreferencesHelper.saveCollege(college)
     }
 

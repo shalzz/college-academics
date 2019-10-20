@@ -42,7 +42,6 @@ constructor(private val preferencesManager: PreferencesHelper) : Interceptor {
         }
 
         val newRequest = originalRequest.newBuilder()
-                .header("x-clg-id", preferencesManager.clg)
                 .header("x-auth-token", preferencesManager.token)
                 .build()
         return chain.proceed(newRequest)
