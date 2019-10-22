@@ -34,6 +34,7 @@ import retrofit2.Retrofit;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.net.SocketTimeoutException;
 import java.util.List;
 
 public class RxJava2ErrorCallAdapterFactory extends CallAdapter.Factory {
@@ -130,6 +131,10 @@ public class RxJava2ErrorCallAdapterFactory extends CallAdapter.Factory {
                         response, retrofit, context);
             }
             // A network error happened
+            if (throwable instanceof SocketTimeoutException) {
+                return RetrofitException.timeoutError((IOException) throwable, context);
+            }
+
             if (throwable instanceof IOException) {
                 return RetrofitException.networkError((IOException) throwable, context);
             }

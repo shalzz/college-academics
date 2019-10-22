@@ -69,6 +69,11 @@ public class RetrofitException extends RuntimeException {
         return new RetrofitException(message, null, null, Kind.NETWORK, exception, null);
     }
 
+    static RetrofitException timeoutError(IOException exception, Context context) {
+        String message = context.getString(R.string.timeout_error_title);
+        return new RetrofitException(message, null, null, Kind.NETWORK, exception, null);
+    }
+
     static RetrofitException unexpectedError(Throwable exception, Context context) {
         String message = context.getString(R.string.unexpected_error);
         return new RetrofitException(message, null, null, Kind.UNEXPECTED, exception, null);
