@@ -28,6 +28,6 @@ class DataAPITest {
 
     @Test
     fun ApiEndpointIsCorrect() {
-        assertEquals("https://academics.8bitlabs.tech/v4/prod/", DataAPI.ENDPOINT)
+        assertEquals("https://academics.8bitlabs.tech/api/v5/prod/", DataAPI.ENDPOINT)
     }
 }
