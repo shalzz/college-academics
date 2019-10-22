@@ -1,1 +1,4 @@
+• Increase timeout for all requests
+• Fix logins for some colleges
+• Update to a new v5 API served from the edge
 • Bug fixes and improvements
