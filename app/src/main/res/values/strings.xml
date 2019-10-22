@@ -59,6 +59,7 @@
         try again later.</string>
     <string name="no_data_title">Nothing Here</string>
     <string name="no_data_content">No data available on the server right now</string>
+    <string name="timeout_error_title">Request timed out. Please try again.</string>
     <string name="no_connection_title">No connection.</string>
     <string name="no_connection_content">Please try again when you are connected to the internet</string>
     <string name="empty_view_try_again">Try Again</string>

@@ -35,6 +35,7 @@ import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter;
 
 import java.io.File;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Singleton;
 
@@ -66,6 +67,8 @@ public class NetworkModule {
 
         final OkHttpClient.Builder okHttpBuilder = new OkHttpClient.Builder()
                 .cache(cache)
+                .readTimeout(60, TimeUnit.SECONDS)
+                .connectTimeout(60, TimeUnit.SECONDS)
                 .addInterceptor(new HeaderInterceptor())
                 .addInterceptor(new AuthInterceptor(preferences))
                 .addNetworkInterceptor(new CacheControlInterceptor(context))
