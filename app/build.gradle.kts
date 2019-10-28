@@ -31,6 +31,7 @@ plugins {
 }
 
 bugsnag {
+    apiKey = "600a00bfd5bd72e5df7f288f74df8f9b"
     autoProguardConfig = false
     overwrite = true
     retryCount = 3
