@@ -19,22 +19,23 @@
 
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
-    ext.kotlin_version = '1.3.41'
+    val kotlinVersion = "1.3.60-eap-25"
     repositories {
         google()
         jcenter()
         mavenCentral()
-        maven { url "https://kotlin.bintray.com/kotlinx" }
+        maven { url = uri("https://kotlin.bintray.com/kotlinx") }
+        maven { url = uri("https://dl.bintray.com/kotlin/kotlin-eap") }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.4.0'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath 'com.google.gms:google-services:4.2.0'
+        classpath(kotlin("gradle-plugin", kotlinVersion))
+        classpath("com.android.tools.build:gradle:4.0.0-alpha01")
+        classpath("com.google.gms:google-services:4.2.0")
 
-        classpath "com.google.gms:oss-licenses:0.9.2"
+        classpath("com.google.gms:oss-licenses:0.9.2")
 
-	    //noinspection GradleDynamicVersion
-	    classpath 'com.bugsnag:bugsnag-android-gradle-plugin:3.+'
+        //noinspection GradleDynamicVersion
+        classpath("com.bugsnag:bugsnag-android-gradle-plugin:3.+")
     }
 }
 
@@ -43,6 +44,7 @@ allprojects {
         google()
         jcenter()
         mavenCentral()
-        maven{ url 'https://jitpack.io' }
+        maven { url = uri("https://jitpack.io") }
+        maven { url = uri("https://dl.bintray.com/kotlin/kotlin-eap") }
     }
 }
