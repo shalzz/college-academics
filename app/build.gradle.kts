@@ -160,100 +160,101 @@ android {
     packagingOptions {
         exclude("META-INF/rxjava.properties")
     }
+}
 
-    dependencies {
-        val DAGGER_VERSION = "2.19"
-        val ESPRESSO_VERSION = "3.1.0"
-        val RETROFIT_VERSION = "2.5.0"
-        val MOSHI_VERSION = "1.8.0"
-        val ROOM_VERSION = "2.0.0"
-        val NAV_VERSION = "1.0.0"
+dependencies {
+    val DAGGER_VERSION = "2.19"
+    val ESPRESSO_VERSION = "3.1.0"
+    val RETROFIT_VERSION = "2.5.0"
+    val MOSHI_VERSION = "1.8.0"
+    val ROOM_VERSION = "2.2.0"
+    val NAV_VERSION = "1.0.0"
 
-        // TODO: re-evaluate when RxJava is completely replaced with kotlin co-routines
-        implementation("com.android.support:multidex:1.0.3")
+    // TODO: re-evaluate when RxJava is completely replaced with kotlin co-routines
+    implementation("com.android.support:multidex:1.0.3")
 
-        implementation(kotlin("stdlib-jdk7", KotlinCompilerVersion.VERSION))
-        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.0.0")
-        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.0.0")
+    implementation(kotlin("stdlib-jdk7", KotlinCompilerVersion.VERSION))
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.0.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.0.0")
 
-        implementation("androidx.core:core-ktx:1.0.2")
-        implementation("android.arch.navigation:navigation-fragment-ktx:$NAV_VERSION")
-        implementation("android.arch.navigation:navigation-ui-ktx:$NAV_VERSION")
+    implementation("androidx.core:core-ktx:1.0.2")
+    implementation("android.arch.navigation:navigation-fragment-ktx:$NAV_VERSION")
+    implementation("android.arch.navigation:navigation-ui-ktx:$NAV_VERSION")
 
-        implementation("com.google.firebase:firebase-core:16.0.9")
-        implementation("com.google.firebase:firebase-analytics:16.5.0")
-        implementation("com.google.firebase:firebase-inappmessaging-display:17.1.1")
+    implementation("com.google.firebase:firebase-core:16.0.9")
+    implementation("com.google.firebase:firebase-analytics:16.5.0")
+    implementation("com.google.firebase:firebase-inappmessaging-display:17.1.1")
 
-        implementation("com.google.android.gms:play-services-oss-licenses:16.0.2")
-        implementation("com.google.android.material:material:1.0.0")
+    implementation("com.google.android.gms:play-services-oss-licenses:17.0.0")
+    implementation("com.google.android.material:material:1.0.0")
 
-        implementation("androidx.core:core:1.0.2")
-        implementation("androidx.appcompat:appcompat:1.0.2")
-        implementation("androidx.fragment:fragment:1.0.0")
-        implementation("androidx.recyclerview:recyclerview:1.0.0")
-        implementation("androidx.preference:preference:1.0.0")
-        implementation("androidx.annotation:annotation:1.0.2")
-        implementation("androidx.constraintlayout:constraintlayout:1.1.3")
-        implementation("androidx.constraintlayout:constraintlayout-solver:1.1.3")
+    implementation("androidx.core:core:1.0.2")
+    implementation("androidx.appcompat:appcompat:1.0.2")
+    implementation("androidx.fragment:fragment:1.0.0")
+    implementation("androidx.recyclerview:recyclerview:1.0.0")
+    implementation("androidx.preference:preference:1.0.0")
+    implementation("androidx.annotation:annotation:1.0.2")
+    implementation("androidx.constraintlayout:constraintlayout:1.1.3")
+    implementation("androidx.constraintlayout:constraintlayout-solver:1.1.3")
 
-        implementation("com.android.billingclient:billing:1.0")
+    implementation("com.android.billingclient:billing:1.0")
 
-        val daggerCompiler = "com.google.dagger:dagger-compiler:$DAGGER_VERSION"
-        implementation("com.google.dagger:dagger:$DAGGER_VERSION")
-        kapt(daggerCompiler)
-        compileOnly("javax.annotation:jsr250-api:1.0")
-        testAnnotationProcessor(daggerCompiler)
-        androidTestAnnotationProcessor(daggerCompiler)
+    val daggerCompiler = "com.google.dagger:dagger-compiler:$DAGGER_VERSION"
+    implementation("com.google.dagger:dagger:$DAGGER_VERSION")
+    kapt(daggerCompiler)
+    compileOnly("javax.annotation:jsr250-api:1.0")
+    testAnnotationProcessor(daggerCompiler)
+    androidTestAnnotationProcessor(daggerCompiler)
 
-        implementation("com.jakewharton.timber:timber:4.7.1")
+    implementation("com.jakewharton.timber:timber:4.7.1")
 
-        implementation("io.reactivex.rxjava2:rxandroid:2.0.2")
-        implementation("io.reactivex.rxjava2:rxjava:2.1.14")
+    implementation("io.reactivex.rxjava2:rxandroid:2.0.2")
+    implementation("io.reactivex.rxjava2:rxjava:2.1.14")
 
-        implementation("com.squareup.retrofit2:retrofit:$RETROFIT_VERSION")
-        implementation("com.squareup.retrofit2:converter-moshi:$RETROFIT_VERSION")
-        implementation("com.jakewharton.retrofit:retrofit2-rxjava2-adapter:1.0.0")
+    implementation("com.squareup.retrofit2:retrofit:$RETROFIT_VERSION")
+    implementation("com.squareup.retrofit2:converter-moshi:$RETROFIT_VERSION")
+    implementation("com.jakewharton.retrofit:retrofit2-rxjava2-adapter:1.0.0")
 
-        implementation("com.squareup.moshi:moshi:$MOSHI_VERSION")
-        implementation("com.squareup.moshi:moshi-adapters:$MOSHI_VERSION")
-        kapt("com.squareup.moshi:moshi-kotlin-codegen:$MOSHI_VERSION")
+    implementation("com.squareup.moshi:moshi:$MOSHI_VERSION")
+    implementation("com.squareup.moshi:moshi-adapters:$MOSHI_VERSION")
+    kapt("com.squareup.moshi:moshi-kotlin-codegen:$MOSHI_VERSION")
 
-        implementation("com.malinskiy:materialicons:1.0.2")
-        implementation("com.github.amlcurran.showcaseview:library:5.4.0")
-        implementation("com.github.afollestad.material-dialogs:core:0.8.5.5")
+    implementation("com.malinskiy:materialicons:1.0.2")
+    implementation("com.github.amlcurran.showcaseview:library:5.4.0")
+    implementation("com.github.afollestad.material-dialogs:core:0.8.5.5")
 
-        //noinspection GradleDynamicVersion
-        implementation("com.bugsnag:bugsnag-android:4.+")
+    //noinspection GradleDynamicVersion
+    implementation("com.bugsnag:bugsnag-android:4.+")
 
-        // Room Persistence
-        implementation("androidx.room:room-runtime:$ROOM_VERSION")
-        kapt("androidx.room:room-compiler:$ROOM_VERSION")
-        implementation("androidx.room:room-rxjava2:$ROOM_VERSION")
-        testImplementation("androidx.room:room-testing:$ROOM_VERSION")
-        androidTestImplementation("androidx.room:room-testing:$ROOM_VERSION")
+    // Room Persistence
+    implementation("androidx.room:room-runtime:$ROOM_VERSION")
+    kapt("androidx.room:room-compiler:$ROOM_VERSION")
+    implementation("androidx.room:room-rxjava2:$ROOM_VERSION")
+    testImplementation("androidx.room:room-testing:$ROOM_VERSION")
+    androidTestImplementation("androidx.room:room-testing:$ROOM_VERSION")
 
-        val jUnit = "androidx.test.ext:junit:1.0.0"
-        val truth = "androidx.test.ext:truth:1.0.0"
-        val mockito = "org.mockito:mockito-core:2.8.9"
+    val jUnit = "androidx.test.ext:junit:1.0.0"
+    val truth = "androidx.test.ext:truth:1.0.0"
+    val mockito = "org.mockito:mockito-core:2.8.9"
 
-        // Instrumentation test dependencies
-        androidTestImplementation(mockito)
-        androidTestImplementation("com.google.code.findbugs:jsr305:3.0.2")
-        androidTestImplementation("androidx.annotation:annotation:1.0.2")
+    // Instrumentation test dependencies
+    androidTestImplementation(mockito)
+    androidTestImplementation("com.google.code.findbugs:jsr305:3.0.2")
+    androidTestImplementation("androidx.annotation:annotation:1.0.2")
 
-        // Core library
-        androidTestImplementation("androidx.test:core:1.1.0")
+    // Core library
+    androidTestImplementation("androidx.test:core:1.1.0")
 
-        // AndroidJUnitRunner and JUnit Rules
-        androidTestImplementation("androidx.test:runner:1.1.1")
-        androidTestImplementation("androidx.test:rules:1.1.1")
+    // AndroidJUnitRunner and JUnit Rules
+    androidTestImplementation("androidx.test:runner:1.1.1")
+    androidTestImplementation("androidx.test:rules:1.1.1")
 
-        // Assertions
-        androidTestImplementation(jUnit)
-        androidTestImplementation(truth)
-        androidTestImplementation("com.google.truth:truth:0.42")
+    // Assertions
+    androidTestImplementation(jUnit)
+    androidTestImplementation(truth)
+    androidTestImplementation("com.google.truth:truth:0.42")
 
-        // Espresso dependencies
+    // Espresso dependencies
 //        androidTestImplementation("androidx.test.espresso:espresso-core:$ESPRESSO_VERSION"
 //        androidTestImplementation("androidx.test.espresso:espresso-contrib:$ESPRESSO_VERSION"
 //        androidTestImplementation("androidx.test.espresso:espresso-intents:$ESPRESSO_VERSION"
@@ -264,12 +265,11 @@ android {
 //        androidTestImplementation("androidx.test.espresso:espresso-contrib:$ESPRESSO_VERSION"
 //        androidTestImplementation("androidx.test.espresso:espresso-core:$ESPRESSO_VERSION"
 
-        // Unit tests dependencies
-        testImplementation(jUnit)
-        testImplementation(truth)
-        testImplementation(mockito)
-        testImplementation("androidx.test:core:1.1.0")
-        testImplementation("org.robolectric:robolectric:4.0")
-        testImplementation("org.robolectric:shadows-multidex:4.0")
-    }
+    // Unit tests dependencies
+    testImplementation(jUnit)
+    testImplementation(truth)
+    testImplementation(mockito)
+    testImplementation("androidx.test:core:1.1.0")
+    testImplementation("org.robolectric:robolectric:4.0")
+    testImplementation("org.robolectric:shadows-multidex:4.0")
 }

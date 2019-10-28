@@ -60,16 +60,12 @@ constructor(private val mDb: AppDatabase) {
         return Observable.create { source ->
             if (source.isDisposed) return@create
 
-            mDb.beginTransaction()
-            try {
+            mDb.runInTransaction {
                 mDb.subjectDao().deleteAll()
                 for (subject in newSubjects) {
                     mDb.subjectDao().insert(subject)
                     source.onNext(subject)
                 }
-                mDb.setTransactionSuccessful()
-            } finally {
-                mDb.endTransaction()
                 source.onComplete()
             }
         }
@@ -85,16 +81,12 @@ constructor(private val mDb: AppDatabase) {
             if (subscriber.isDisposed) return@create
             if (newPeriods.isEmpty()) return@create
 
-            mDb.beginTransaction()
-            try {
+            mDb.runInTransaction {
                 mDb.periodDao().deleteByDate(newPeriods[0].date)
                 for (period in newPeriods) {
                     mDb.periodDao().insert(period)
                     subscriber.onNext(period)
                 }
-                mDb.setTransactionSuccessful()
-            } finally {
-                mDb.endTransaction()
                 subscriber.onComplete()
             }
         }
