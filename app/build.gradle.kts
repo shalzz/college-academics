@@ -64,7 +64,7 @@ android {
 
         testInstrumentationRunner = "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
-        viewBinding.isEnabled = true
+//        viewBinding.isEnabled = true
 
         resConfig("en")
         resValue("string", "app_version", versionName!!)
@@ -184,9 +184,9 @@ dependencies {
     implementation("android.arch.navigation:navigation-fragment-ktx:$NAV_VERSION")
     implementation("android.arch.navigation:navigation-ui-ktx:$NAV_VERSION")
 
-    implementation("com.google.firebase:firebase-core:16.0.9")
-    implementation("com.google.firebase:firebase-analytics:16.5.0")
-    implementation("com.google.firebase:firebase-inappmessaging-display:17.1.1")
+    implementation("com.google.firebase:firebase-core:17.2.1")
+    implementation("com.google.firebase:firebase-analytics:17.2.1")
+    implementation("com.google.firebase:firebase-inappmessaging-display:19.0.1")
 
     implementation("com.google.android.gms:play-services-oss-licenses:17.0.0")
     implementation("com.google.android.material:material:1.0.0")
@@ -238,24 +238,25 @@ dependencies {
 
     val jUnit = "androidx.test.ext:junit:1.0.0"
     val truth = "androidx.test.ext:truth:1.0.0"
-    val mockito = "org.mockito:mockito-core:2.8.9"
+    val mockito = "org.mockito:mockito-core:3.1.0"
+
+    // Unit tests dependencies
+    testImplementation(jUnit)
+    testImplementation(truth)
+    testImplementation(mockito)
+    testImplementation("androidx.test:core:1.2.0")
+    testImplementation("org.robolectric:robolectric:4.3.1")
+    testImplementation("org.robolectric:shadows-multidex:4.0")
 
     // Instrumentation test dependencies
+    androidTestImplementation(jUnit)
+    androidTestImplementation(truth)
     androidTestImplementation(mockito)
-    androidTestImplementation("com.google.code.findbugs:jsr305:3.0.2")
     androidTestImplementation("androidx.annotation:annotation:1.1.0")
-
-    // Core library
     androidTestImplementation("androidx.test:core:1.2.0")
-
-    // AndroidJUnitRunner and JUnit Rules
     androidTestImplementation("androidx.test:runner:1.2.0")
     androidTestImplementation("androidx.test:rules:1.2.0")
 
-    // Assertions
-    androidTestImplementation(jUnit)
-    androidTestImplementation(truth)
-    androidTestImplementation("com.google.truth:truth:0.42")
 
     // Espresso dependencies
 //        androidTestImplementation("androidx.test.espresso:espresso-core:$ESPRESSO_VERSION"
@@ -268,11 +269,8 @@ dependencies {
 //        androidTestImplementation("androidx.test.espresso:espresso-contrib:$ESPRESSO_VERSION"
 //        androidTestImplementation("androidx.test.espresso:espresso-core:$ESPRESSO_VERSION"
 
-    // Unit tests dependencies
-    testImplementation(jUnit)
-    testImplementation(truth)
-    testImplementation(mockito)
-    testImplementation("androidx.test:core:1.2.0")
-    testImplementation("org.robolectric:robolectric:4.0")
-    testImplementation("org.robolectric:shadows-multidex:4.0")
+    configurations.all {
+        resolutionStrategy.force("com.google.code.gson:gson:2.8.0")
+        resolutionStrategy.force("org.checkerframework:checker-compat-qual:2.5.3")
+    }
 }
