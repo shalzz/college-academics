@@ -107,7 +107,7 @@ android {
             resValue("string", "app_name", "College Academics (debug)")
             resValue("string", "contentAuthority", defaultConfig.applicationId + ".debug.provider")
             resValue("string", "account_type", "com.shalzz.debug")
-            buildConfigField("String", "ACCOUNT_TYPE", "com.shalzz.debug")
+            buildConfigField("String", "ACCOUNT_TYPE", "\"com.shalzz.debug\"")
             multiDexKeepProguard = file("./proguard/proguard-multidex-rules.pro")
             signingConfig = signingConfigs.getByName("debug")
         }
@@ -118,7 +118,7 @@ android {
             resValue("string", "app_name", "College Academics")
             resValue("string", "contentAuthority", defaultConfig.applicationId + ".provider")
             resValue("string", "account_type", "com.shalzz")
-            buildConfigField("String", "ACCOUNT_TYPE", "com.shalzz")
+            buildConfigField("String", "ACCOUNT_TYPE", "\"com.shalzz\"")
             proguardFiles(
                     getDefaultProguardFile("proguard-android-optimize.txt"),
                     file("./proguard")
