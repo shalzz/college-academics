@@ -35,7 +35,7 @@ buildscript {
         classpath("com.google.gms:oss-licenses:0.9.2")
 
         //noinspection GradleDynamicVersion
-        classpath("com.bugsnag:bugsnag-android-gradle-plugin:3.+")
+        classpath("com.bugsnag:bugsnag-android-gradle-plugin:4.+")
     }
 }
 
