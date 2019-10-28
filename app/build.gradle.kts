@@ -23,9 +23,10 @@ plugins {
     kotlin("android")
     kotlin("android.extensions")
     kotlin("kapt")
-    id("com.github.triplet.play") version "2.2.1"
     id("com.bugsnag.android.gradle")
     id("com.google.gms.oss.licenses.plugin")
+    id("com.github.triplet.play") version "2.2.1"
+    id("com.google.gms.google-services") apply false
 }
 
 bugsnag {
@@ -268,6 +269,3 @@ android {
         testImplementation("org.robolectric:shadows-multidex:4.0")
     }
 }
-
-// ADD THIS AT THE BOTTOM
-//apply plugin: "com.google.gms.google-services"
