@@ -128,6 +128,10 @@ android {
     }
 
     compileOptions {
+        // Flag to enable support for the new language APIs
+        setCoreLibraryDesugaringEnabled(true)
+
+        // Sets Java compatibility to Java 8
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
