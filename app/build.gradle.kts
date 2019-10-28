@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+import com.lordcodes.turtle.shellRun
 import org.jetbrains.kotlin.config.KotlinCompilerVersion
 
 plugins {
@@ -42,13 +43,13 @@ play {
 }
 
 // query git for the SHA, Tag and commit count. Use these to automate versioning.
-val gitSha = "asdf"
-val gitTag = "123"
-val gitCommitCount = 12333
-//val gitSha = "git rev-parse --short HEAD".execute([], project.rootDir).text.trim()
-//val gitTag = "git describe --tags".execute([], project.rootDir).text.trim()
-//val gitCommitCount = 2007050 +
-//        Integer.parseInt("git rev-list --count HEAD --no-merges".execute([], project.rootDir).text.trim())
+
+val gitSha = shellRun("git", listOf("rev-parse", "--short", "HEAD"), project.rootDir).trim()
+val gitTag = shellRun("git", listOf("describe", "--tags"), project.rootDir).trim()
+val gitCommitCount = 2007050 + Integer.parseInt(
+        shellRun("git", listOf("rev-list", "--count", "HEAD", "--no-merges"),
+                project.rootDir).trim()
+        )
 
 android {
     compileSdkVersion(28)
@@ -63,6 +64,7 @@ android {
 
         testInstrumentationRunner = "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
+        viewBinding.isEnabled = true
 
         resConfig("en")
         resValue("string", "app_version", versionName!!)
@@ -174,6 +176,7 @@ dependencies {
     implementation("com.android.support:multidex:1.0.3")
 
     implementation(kotlin("stdlib-jdk7", KotlinCompilerVersion.VERSION))
+
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.0.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.0.0")
 
@@ -240,14 +243,14 @@ dependencies {
     // Instrumentation test dependencies
     androidTestImplementation(mockito)
     androidTestImplementation("com.google.code.findbugs:jsr305:3.0.2")
-    androidTestImplementation("androidx.annotation:annotation:1.0.2")
+    androidTestImplementation("androidx.annotation:annotation:1.1.0")
 
     // Core library
-    androidTestImplementation("androidx.test:core:1.1.0")
+    androidTestImplementation("androidx.test:core:1.2.0")
 
     // AndroidJUnitRunner and JUnit Rules
-    androidTestImplementation("androidx.test:runner:1.1.1")
-    androidTestImplementation("androidx.test:rules:1.1.1")
+    androidTestImplementation("androidx.test:runner:1.2.0")
+    androidTestImplementation("androidx.test:rules:1.2.0")
 
     // Assertions
     androidTestImplementation(jUnit)
@@ -269,7 +272,7 @@ dependencies {
     testImplementation(jUnit)
     testImplementation(truth)
     testImplementation(mockito)
-    testImplementation("androidx.test:core:1.1.0")
+    testImplementation("androidx.test:core:1.2.0")
     testImplementation("org.robolectric:robolectric:4.0")
     testImplementation("org.robolectric:shadows-multidex:4.0")
 }

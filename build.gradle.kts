@@ -24,8 +24,8 @@ buildscript {
         google()
         jcenter()
         mavenCentral()
-        maven { url = uri("https://kotlin.bintray.com/kotlinx") }
-        maven { url = uri("https://dl.bintray.com/kotlin/kotlin-eap") }
+        maven("https://kotlin.bintray.com/kotlinx")
+        maven("https://dl.bintray.com/kotlin/kotlin-eap")
     }
     dependencies {
         classpath(kotlin("gradle-plugin", kotlinVersion))
@@ -36,6 +36,7 @@ buildscript {
 
         //noinspection GradleDynamicVersion
         classpath("com.bugsnag:bugsnag-android-gradle-plugin:4.+")
+        classpath("com.lordcodes.turtle:turtle:0.2.0")
     }
 }
 
@@ -44,7 +45,7 @@ allprojects {
         google()
         jcenter()
         mavenCentral()
-        maven { url = uri("https://jitpack.io") }
-        maven { url = uri("https://dl.bintray.com/kotlin/kotlin-eap") }
+        maven("https://jitpack.io")
+        maven("https://dl.bintray.com/kotlin/kotlin-eap")
     }
 }
