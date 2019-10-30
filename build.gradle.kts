@@ -32,7 +32,7 @@ buildscript {
         classpath("com.android.tools.build:gradle:4.0.0-alpha01")
         classpath("com.google.gms:google-services:4.3.2")
 
-        classpath("com.google.gms:oss-licenses:0.9.2")
+        classpath("com.google.android.gms:oss-licenses-plugin:0.10.0")
 
         //noinspection GradleDynamicVersion
         classpath("com.bugsnag:bugsnag-android-gradle-plugin:4.+")
