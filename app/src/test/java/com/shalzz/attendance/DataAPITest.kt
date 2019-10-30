@@ -20,9 +20,8 @@
 package com.shalzz.attendance
 
 import com.shalzz.attendance.data.remote.DataAPI
-
+import org.junit.Assert.assertEquals
 import org.junit.Test
-import junit.framework.Assert.assertEquals
 
 class DataAPITest {
 
