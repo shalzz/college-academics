@@ -19,6 +19,9 @@
 
 package com.shalzz.attendance.data.model
 
+import com.squareup.moshi.JsonClass
+
+@JsonClass(generateAdapter = true)
 data class College (
         val id: String,
         val name: String
