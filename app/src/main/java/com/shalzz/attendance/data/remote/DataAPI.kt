@@ -62,6 +62,6 @@ interface DataAPI {
     companion object {
         val API_VERSION = "/api/v5/prod/"
         val ENDPOINT = "https://academics.8bitlabs.tech$API_VERSION"
-//         val ENDPOINT = "http://192.168.1.248:3000$API_VERSION"
+//         val ENDPOINT = "http://192.168.100.93:3000$API_VERSION"
     }
 }

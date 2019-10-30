@@ -77,7 +77,8 @@
     <string name="atten_list_days_absent">"Days Absent: <xliff:g id="absent_dates">%s</xliff:g>"
     </string>
     <string name="atten_list_percentage"><xliff:g id="percentage">%.2f</xliff:g>%%</string>
-    <string name="atten_list_attended_upon_held"><xliff:g id="attended">%d</xliff:g>/<xliff:g id="held">%d</xliff:g></string>
+    <string name="atten_list_attended_upon_held"><xliff:g id="attended">%1$d</xliff:g>/<xliff:g
+        id="held">%2$d</xliff:g></string>
     <string name="login_notice">Please use a phone number registered with your University</string>
     <string name="college_academics_logo">College Academics</string>
 

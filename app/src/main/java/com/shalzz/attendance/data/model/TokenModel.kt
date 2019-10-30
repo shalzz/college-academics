@@ -19,9 +19,9 @@
 
 package com.shalzz.attendance.data.model
 
-/**
- * @author shalzz
- */
+import com.squareup.moshi.JsonClass
+
+@JsonClass(generateAdapter = true)
 data class TokenModel (
         val token: String
 )

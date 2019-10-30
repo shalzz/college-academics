@@ -35,7 +35,6 @@ public class MyAccountManager {
 
     // Sync interval constants
     private static final long SECONDS_PER_MINUTE = 60L;
-    public static final String AUTHORITY = BuildConfig.APPLICATION_ID + ".provider";
 
     /**
      * Account type id
@@ -79,15 +78,16 @@ public class MyAccountManager {
                 mContext.getString(R.string.pref_key_sync_interval), "480"));
         Timber.i("Sync Interval set to: %d", SYNC_INTERVAL_IN_MINUTES);
 
+        String contentAuthority = mContext.getString(R.string.contentAuthority);
         if(sync) {
             Bundle settingsBundle = new Bundle();
             final long SYNC_INTERVAL = SYNC_INTERVAL_IN_MINUTES * SECONDS_PER_MINUTE;
 
-            ContentResolver.setIsSyncable(account, AUTHORITY, 1);
-            ContentResolver.setSyncAutomatically(account, AUTHORITY, true);
+            ContentResolver.setIsSyncable(account, contentAuthority, 1);
+            ContentResolver.setSyncAutomatically(account, contentAuthority, true);
             ContentResolver.addPeriodicSync(
                     account,
-                    AUTHORITY,
+                    contentAuthority,
                     settingsBundle,
                     SYNC_INTERVAL);
         }
@@ -98,7 +98,9 @@ public class MyAccountManager {
         if (mAccount == null)
             return false;
 
-        return ContentResolver.getSyncAutomatically(mAccount, AUTHORITY);
+        return ContentResolver.getSyncAutomatically(
+                mAccount, mContext.getString(R.string.contentAuthority)
+        );
     }
 
     public static void toggleAutomaticSync(Context mContext, boolean enable) {
@@ -107,6 +109,10 @@ public class MyAccountManager {
         if(mAccount==null)
             return;
 
-        ContentResolver.setSyncAutomatically(mAccount, AUTHORITY, enable);
+        ContentResolver.setSyncAutomatically(
+                mAccount,
+                mContext.getString(R.string.contentAuthority),
+                enable
+        );
     }
 }

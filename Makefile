@@ -1,6 +1,5 @@
 deploy: check-env
 	git checkout dev
-	git push
 	git checkout master
 	git merge dev --no-edit
 	git tag -a $(TAG)
@@ -9,7 +8,6 @@ deploy: check-env
 
 redeploy: check-env
 	git checkout dev
-	git push
 	git checkout master
 	git merge dev --no-edit
 	git tag -d $(TAG)
