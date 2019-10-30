@@ -63,7 +63,7 @@ android {
         versionCode = gitCommitCount
         versionName = gitTag
 
-        testInstrumentationRunner = "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
 //        viewBinding.isEnabled = true
 
