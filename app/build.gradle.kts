@@ -76,7 +76,10 @@ android {
 
         javaCompileOptions {
             annotationProcessorOptions {
-                argument("room.schemaLocation", "$projectDir/schemas")
+                arguments = mapOf(
+                        "room.schemaLocation" to "$projectDir/schemas",
+                        "room.incremental" to "true"
+                )
             }
         }
     }
@@ -170,7 +173,7 @@ dependencies {
     val ESPRESSO_VERSION = "3.1.0"
     val RETROFIT_VERSION = "2.5.0"
     val MOSHI_VERSION = "1.9.0"
-    val ROOM_VERSION = "2.2.0"
+    val ROOM_VERSION = "2.2.1"
     val NAV_VERSION = "1.0.0"
 
     // TODO: re-evaluate when RxJava is completely replaced with kotlin co-routines
@@ -233,6 +236,7 @@ dependencies {
     // Room Persistence
     implementation("androidx.room:room-runtime:$ROOM_VERSION")
     kapt("androidx.room:room-compiler:$ROOM_VERSION")
+    implementation("androidx.room:room-ktx:$ROOM_VERSION")
     implementation("androidx.room:room-rxjava2:$ROOM_VERSION")
     testImplementation("androidx.room:room-testing:$ROOM_VERSION")
     androidTestImplementation("androidx.room:room-testing:$ROOM_VERSION")
