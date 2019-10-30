@@ -169,7 +169,7 @@ dependencies {
     val DAGGER_VERSION = "2.19"
     val ESPRESSO_VERSION = "3.1.0"
     val RETROFIT_VERSION = "2.5.0"
-    val MOSHI_VERSION = "1.8.0"
+    val MOSHI_VERSION = "1.9.0"
     val ROOM_VERSION = "2.2.0"
     val NAV_VERSION = "1.0.0"
 
