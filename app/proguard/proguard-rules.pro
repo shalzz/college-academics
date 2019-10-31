@@ -10,6 +10,7 @@
 
 # Application classes that will be serialized/deserialized over Gson
 -keep class com.shalzz.attendance.data.model.** { *; }
+-keep class com.shalzz.attendance.data.model.entity.** { *; }
 
 -verbose
 
