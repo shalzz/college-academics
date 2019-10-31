@@ -38,9 +38,9 @@ bugsnag {
 }
 
 play {
-    serviceAccountCredentials = file("../play-service-account-key.json")
     defaultToAppBundles = true
     track = "beta"
+    serviceAccountCredentials = file("../play-service-account-key.json")
 }
 
 // query git for the SHA, Tag and commit count. Use these to automate versioning.
@@ -55,25 +55,19 @@ val gitCommitCount = 2007050 + Integer.parseInt(
 android {
     compileSdkVersion(28)
 
-    defaultConfig.apply {
+    defaultConfig {
         applicationId = "com.shalzz.attendance"
         minSdkVersion(16)
         targetSdkVersion(28)
-        multiDexEnabled = true
         versionCode = gitCommitCount
         versionName = gitTag
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        vectorDrawables.useSupportLibrary = true
+        multiDexEnabled = true
 //        viewBinding.isEnabled = true
+        vectorDrawables.useSupportLibrary = true
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         resConfig("en")
         resValue("string", "app_version", versionName!!)
-
-        // Needed because of this https://github.com/robolectric/robolectric/issues/{1399, 3826}
-        testOptions.unitTests.isIncludeAndroidResources = true
-        testOptions.unitTests.isReturnDefaultValues = true
-
         javaCompileOptions {
             annotationProcessorOptions {
                 arguments = mapOf(
@@ -157,15 +151,27 @@ android {
         }
     }
 
-    //Needed because of this https://github.com/square/okio/issues/58
+    // Needed because of this https://github.com/robolectric/robolectric/issues/{1399, 3826}
+    testOptions {
+        unitTests.isReturnDefaultValues = true
+        unitTests.isIncludeAndroidResources = true
+    }
+
     lintOptions {
-        disable("InvalidPackage")
+        textReport = true
+        textOutput("stdout")
+        //Needed because of this https://github.com/square/okio/issues/58
+//        disable("InvalidPackage")
     }
 
     //Needed because of this https://github.com/ReactiveX/RxJava/issues/4445
     packagingOptions {
         exclude("META-INF/rxjava.properties")
     }
+}
+
+kapt {
+    useBuildCache = true
 }
 
 dependencies {
@@ -280,3 +286,6 @@ dependencies {
         resolutionStrategy.force("org.checkerframework:checker-compat-qual:2.5.3")
     }
 }
+
+// Add this at the bottom of your file to actually apply the plugin
+apply(mapOf("plugin" to "com.google.gms.google-services"))
