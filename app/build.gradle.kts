@@ -171,7 +171,7 @@ android {
 dependencies {
     val DAGGER_VERSION = "2.24"
     val ESPRESSO_VERSION = "3.1.0"
-    val RETROFIT_VERSION = "2.5.0"
+    val RETROFIT_VERSION = "2.6.2"
     val MOSHI_VERSION = "1.9.0"
     val ROOM_VERSION = "2.2.1"
     val NAV_VERSION = "1.0.0"
