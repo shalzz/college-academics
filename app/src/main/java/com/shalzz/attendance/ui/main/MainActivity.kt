@@ -148,6 +148,7 @@ class MainActivity : BaseActivity(), MainMvpView, BillingProvider {
 
         if (!mPreferencesHelper.loginStatus) {
             val ourIntent = Intent(this, AuthenticatorActivity::class.java)
+            ourIntent.putExtra(AuthenticatorActivity.ARG_AUTH_TYPE, MyAccountManager.AUTHTOKEN_TYPE_READ_ONLY)
             startActivityForResult(ourIntent, ACTIVITY_RESULT_CODE_AUTHENTICATION)
         }
     }

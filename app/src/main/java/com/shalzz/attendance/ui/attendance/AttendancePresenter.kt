@@ -66,7 +66,6 @@ internal constructor(private val mDataManager: DataManager, @param:ApplicationCo
                     override fun onNext(subject: Subject) {}
 
                     override fun onError(error: Throwable) {
-                        Timber.e(error)
                         if (error !is RetrofitException) {
                             Timber.e(error)
                         }

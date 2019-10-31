@@ -47,7 +47,6 @@ class Authenticator(private val mDataManager: DataManager,
         val intent = Intent(mContext, AuthenticatorActivity::class.java)
         intent.putExtra(AuthenticatorActivity.ARG_ACCOUNT_TYPE, accountType)
         intent.putExtra(AuthenticatorActivity.ARG_AUTH_TYPE, authTokenType)
-        intent.putExtra(AuthenticatorActivity.ARG_IS_ADDING_NEW_ACCOUNT, true)
         intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response)
 
         val bundle = Bundle()
@@ -139,15 +138,5 @@ class Authenticator(private val mDataManager: DataManager,
         val result = Bundle()
         result.putBoolean(KEY_BOOLEAN_RESULT, false)
         return result
-    }
-
-    private fun isAccountAvailable(account: Account, accountManager: AccountManager): Boolean {
-        val availableAccounts = accountManager.getAccountsByType(account.type)
-        for (availableAccount in availableAccounts) {
-            if (account.name == availableAccount.name && account.type == availableAccount.type) {
-                return true
-            }
-        }
-        return false
     }
 }
