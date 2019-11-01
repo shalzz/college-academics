@@ -3,6 +3,9 @@ language: android
 jdk:
   - oraclejdk8
 
+git:
+  depth: false
+
 env:
   matrix:
     - ANDROID_API=28 EMULATOR_API=24
@@ -54,8 +57,6 @@ cache:
   - $HOME/.android/build-cache
 
 before_install:
-  # Deep clone so we can get an accurate commit count for version code
-  - git fetch --unshallow
   # Unencrypt server account key for play publisher
   - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then openssl aes-256-cbc -K $encrypted_3476a8f5fa31_key
     -iv $encrypted_3476a8f5fa31_iv -in play-service-account-key.json.enc -out play-service-account-key.json

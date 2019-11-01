@@ -74,16 +74,20 @@ class AuthenticatorActivity: AccountAuthenticatorActivity(),
         Timber.d( "> finishLogin")
 
         val accountName = intent.getStringExtra(AccountManager.KEY_ACCOUNT_NAME)
+        Timber.d("accountName: %s", accountName)
         val account = Account(accountName, intent.getStringExtra(AccountManager.KEY_ACCOUNT_TYPE))
 
-        if (getIntent().getBooleanExtra(ARG_IS_ADDING_NEW_ACCOUNT, false)) {
+        // In case the user tries to add the same account again.
+        if (!isAccountAvailable(account, mAccountManager)) {
             Timber.d("> finishLogin > addAccountExplicitly")
             val authtoken = intent.getStringExtra(AccountManager.KEY_AUTHTOKEN)
             val authtokenType = mAuthTokenType
 
             // Creating the account on the device and setting the auth regId we got
             // (Not setting the auth regId will cause another call to the server to authenticate the user)
-            mAccountManager.addAccountExplicitly(account, null, null)
+            mAccountManager.addAccountExplicitly(account,
+                    intent.getStringExtra(ARG_ACCOUNT_PASSWORD),
+                    null)
             mAccountManager.setAuthToken(account, authtokenType, authtoken)
 
             // Set up sync
@@ -96,10 +100,19 @@ class AuthenticatorActivity: AccountAuthenticatorActivity(),
         finish()
     }
 
+    private fun isAccountAvailable(account: Account, accountManager: AccountManager): Boolean {
+        val availableAccounts = accountManager.getAccountsByType(account.type)
+        for (availableAccount in availableAccounts) {
+            if (account.name == availableAccount.name && account.type == availableAccount.type) {
+                return true
+            }
+        }
+        return false
+    }
+
     companion object {
         var ARG_ACCOUNT_TYPE: String = "ACCOUNT_TYPE"
         var ARG_ACCOUNT_PASSWORD: String = "ACCOUNT_PASSWORD"
         var ARG_AUTH_TYPE: String = "AUTH_TYPE"
-        var ARG_IS_ADDING_NEW_ACCOUNT: String = "IS_ADDING_ACCOUNT"
     }
 }

@@ -38,9 +38,9 @@ bugsnag {
 }
 
 play {
-    serviceAccountCredentials = file("../play-service-account-key.json")
     defaultToAppBundles = true
     track = "beta"
+    serviceAccountCredentials = file("../play-service-account-key.json")
 }
 
 // query git for the SHA, Tag and commit count. Use these to automate versioning.
@@ -55,25 +55,19 @@ val gitCommitCount = 2007050 + Integer.parseInt(
 android {
     compileSdkVersion(28)
 
-    defaultConfig.apply {
+    defaultConfig {
         applicationId = "com.shalzz.attendance"
         minSdkVersion(16)
         targetSdkVersion(28)
-        multiDexEnabled = true
         versionCode = gitCommitCount
         versionName = gitTag
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        vectorDrawables.useSupportLibrary = true
+        multiDexEnabled = true
 //        viewBinding.isEnabled = true
+        vectorDrawables.useSupportLibrary = true
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         resConfig("en")
         resValue("string", "app_version", versionName!!)
-
-        // Needed because of this https://github.com/robolectric/robolectric/issues/{1399, 3826}
-        testOptions.unitTests.isIncludeAndroidResources = true
-        testOptions.unitTests.isReturnDefaultValues = true
-
         javaCompileOptions {
             annotationProcessorOptions {
                 arguments = mapOf(
@@ -157,9 +151,17 @@ android {
         }
     }
 
-    //Needed because of this https://github.com/square/okio/issues/58
+    // Needed because of this https://github.com/robolectric/robolectric/issues/{1399, 3826}
+    testOptions {
+        unitTests.isReturnDefaultValues = true
+        unitTests.isIncludeAndroidResources = true
+    }
+
     lintOptions {
-        disable("InvalidPackage")
+        textReport = true
+        textOutput("stdout")
+        //Needed because of this https://github.com/square/okio/issues/58
+//        disable("InvalidPackage")
     }
 
     //Needed because of this https://github.com/ReactiveX/RxJava/issues/4445
@@ -168,23 +170,27 @@ android {
     }
 }
 
+kapt {
+    useBuildCache = true
+}
+
 dependencies {
     val DAGGER_VERSION = "2.24"
     val ESPRESSO_VERSION = "3.1.0"
-    val RETROFIT_VERSION = "2.5.0"
-    val MOSHI_VERSION = "1.9.0"
+    val RETROFIT_VERSION = "2.6.2"
+    val MOSHI_VERSION = "1.8.0"
     val ROOM_VERSION = "2.2.1"
     val NAV_VERSION = "1.0.0"
 
     // TODO: re-evaluate when RxJava is completely replaced with kotlin co-routines
-    implementation("com.android.support:multidex:1.0.3")
+    implementation("androidx.multidex:multidex:2.0.1")
 
     implementation(kotlin("stdlib-jdk7", KotlinCompilerVersion.VERSION))
 
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.0.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.0.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.0")
 
-    implementation("androidx.core:core-ktx:1.0.2")
+    implementation("androidx.core:core-ktx:1.1.0")
     implementation("android.arch.navigation:navigation-fragment-ktx:$NAV_VERSION")
     implementation("android.arch.navigation:navigation-ui-ktx:$NAV_VERSION")
 
@@ -225,6 +231,7 @@ dependencies {
     implementation("com.squareup.moshi:moshi:$MOSHI_VERSION")
     implementation("com.squareup.moshi:moshi-adapters:$MOSHI_VERSION")
     kapt("com.squareup.moshi:moshi-kotlin-codegen:$MOSHI_VERSION")
+//    implementation("com.squareup.moshi:moshi-kotlin:1.9.1")
 
     implementation("com.malinskiy:materialicons:1.0.2")
     implementation("com.github.amlcurran.showcaseview:library:5.4.0")
@@ -279,3 +286,6 @@ dependencies {
         resolutionStrategy.force("org.checkerframework:checker-compat-qual:2.5.3")
     }
 }
+
+// Add this at the bottom of your file to actually apply the plugin
+apply(mapOf("plugin" to "com.google.gms.google-services"))
