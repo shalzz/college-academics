@@ -58,13 +58,7 @@ public class MyApplication extends MultiDexApplication {
         FirebaseApp.initializeApp(this);
 
         ZohoDeskPortalSDK.Logger.enableLogs();
-        DeskConfig deskConfig = new DeskConfig.Builder().build();
         deskInstance = ZohoDeskPortalSDK.getInstance(this);
-        deskInstance.setThemeResource(R.style.deskTheme);
-        deskInstance.initDesk(60002896708L,
-                getString(R.string.zoho_app_id),
-                ZohoDeskPortalSDK.DataCenter.IN,
-                deskConfig);
 
         if (BuildConfig.DEBUG) {
             Timber.plant(new Timber.DebugTree());
