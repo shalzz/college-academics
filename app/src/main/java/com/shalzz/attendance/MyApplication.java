@@ -19,7 +19,6 @@
 
 package com.shalzz.attendance;
 
-import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 
@@ -30,6 +29,8 @@ import com.shalzz.attendance.injection.component.ApplicationComponent;
 import com.shalzz.attendance.injection.component.DaggerApplicationComponent;
 import com.shalzz.attendance.injection.module.ApplicationModule;
 import com.shalzz.attendance.utils.BugsnagTree;
+import com.zoho.deskportalsdk.DeskConfig;
+import com.zoho.deskportalsdk.ZohoDeskPortalSDK;
 
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.multidex.MultiDexApplication;
@@ -39,6 +40,7 @@ import timber.log.Timber;
 public class MyApplication extends MultiDexApplication {
 
     private static ApplicationComponent mApplicationComponent;
+    public static ZohoDeskPortalSDK deskInstance;
 
     @Override
     public void onCreate() {
@@ -54,6 +56,9 @@ public class MyApplication extends MultiDexApplication {
 
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
         FirebaseApp.initializeApp(this);
+
+        ZohoDeskPortalSDK.Logger.enableLogs();
+        deskInstance = ZohoDeskPortalSDK.getInstance(this);
 
         if (BuildConfig.DEBUG) {
             Timber.plant(new Timber.DebugTree());

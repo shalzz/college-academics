@@ -107,6 +107,7 @@ android {
             resValue("string", "app_name", "College Academics (debug)")
             resValue("string", "contentAuthority", defaultConfig.applicationId + ".debug.provider")
             resValue("string", "account_type", "com.shalzz.debug")
+            resValue("string", "zoho_app_id", "0cf0e6f11763c00d387ee247ab64aed483f3768859c3ef35")
             buildConfigField("String", "ACCOUNT_TYPE", "\"com.shalzz.debug\"")
             multiDexKeepProguard = file("./proguard/proguard-multidex-rules.pro")
             signingConfig = signingConfigs.getByName("debug")
@@ -118,6 +119,7 @@ android {
             resValue("string", "app_name", "College Academics")
             resValue("string", "contentAuthority", defaultConfig.applicationId + ".provider")
             resValue("string", "account_type", "com.shalzz")
+            resValue("string", "zoho_app_id", "0cf0e6f11763c00d387ee247ab64aed474712349653bbd5b")
             buildConfigField("String", "ACCOUNT_TYPE", "\"com.shalzz\"")
             proguardFiles(
                     getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -196,7 +198,7 @@ dependencies {
 
     implementation("com.google.firebase:firebase-core:17.2.1")
     implementation("com.google.firebase:firebase-analytics:17.2.1")
-    implementation("com.google.firebase:firebase-inappmessaging-display:19.0.1")
+    implementation("com.zoho.desk:asapsdk:1.1.4")
 
     implementation("com.google.android.gms:play-services-oss-licenses:17.0.0")
     implementation("com.google.android.material:material:1.0.0")

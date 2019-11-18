@@ -45,6 +45,7 @@ import com.android.billingclient.api.BillingClient.BillingResponse
 import com.bugsnag.android.Bugsnag
 import com.github.amlcurran.showcaseview.ShowcaseView
 import com.google.android.material.navigation.NavigationView
+import com.shalzz.attendance.MyApplication
 import com.shalzz.attendance.R
 import com.shalzz.attendance.billing.BillingManager
 import com.shalzz.attendance.billing.BillingProvider
@@ -170,14 +171,19 @@ class MainActivity : BaseActivity(), MainMvpView, BillingProvider {
         navController: NavController
     ) {
         navigationView.setNavigationItemSelectedListener { item ->
-            if (navController.currentDestination!!.id != item.itemId)
-                 NavigationUI.onNavDestinationSelected(item, navController)
+            if (navController.currentDestination!!.id != item.itemId) {
+                if (item.itemId == R.id.helpNSupport) {
+                    MyApplication.deskInstance.startDeskHomeScreen(this)
+                } else
+                    NavigationUI.onNavDestinationSelected(item, navController)
+            }
             val parent = navigationView.parent
             (parent as DrawerLayout).closeDrawer(navigationView)
             true
         }
         val weakReference = WeakReference(navigationView)
         navController.addOnDestinationChangedListener(object : NavController.OnDestinationChangedListener {
+
 
             override fun onDestinationChanged(controller: NavController,
                                               destination: NavDestination,
@@ -261,6 +267,8 @@ class MainActivity : BaseActivity(), MainMvpView, BillingProvider {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode == Activity.RESULT_CANCELED)
             finish()
+        else
+            navController.navigate(R.id.attendanceListFragment)
     }
 
     override fun setTitle(title: CharSequence) {
