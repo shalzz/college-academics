@@ -261,6 +261,8 @@ class MainActivity : BaseActivity(), MainMvpView, BillingProvider {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode == Activity.RESULT_CANCELED)
             finish()
+        else
+            navController.navigate(R.id.attendanceListFragment)
     }
 
     override fun setTitle(title: CharSequence) {

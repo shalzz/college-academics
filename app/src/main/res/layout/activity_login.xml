@@ -28,6 +28,16 @@
         android:background="@drawable/login_background"
         tools:context=".ui.login.AuthenticatorActivity">
 
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:minHeight="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:subtitleTextAppearance="@style/MyActionBarSubTitleText"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+
     <fragment
             android:layout_width="match_parent"
             android:layout_height="match_parent"

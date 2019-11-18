@@ -24,11 +24,16 @@ import android.accounts.AccountManager
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatDelegate
 import com.google.firebase.analytics.FirebaseAnalytics
+import com.shalzz.attendance.MyApplication
 import com.shalzz.attendance.R
 import com.shalzz.attendance.sync.AccountAuthenticatorActivity
 import com.shalzz.attendance.sync.MyAccountManager
+import kotlinx.android.synthetic.main.include_toolbar.*
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Named
@@ -56,6 +61,22 @@ class AuthenticatorActivity: AccountAuthenticatorActivity(),
 
         mAccountManager = AccountManager.get(this)
         mAuthTokenType = MyAccountManager.AUTHTOKEN_TYPE_READ_ONLY
+
+        setSupportActionBar(toolbar)
+        setTitle(null)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.login, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        if (item!!.itemId == R.id.menu_help) {
+            MyApplication.deskInstance.startDeskHomeScreen(this)
+            return true
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onFragmentInteraction(authToken: String, username: String, password: String) {

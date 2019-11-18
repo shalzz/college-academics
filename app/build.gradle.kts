@@ -196,7 +196,7 @@ dependencies {
 
     implementation("com.google.firebase:firebase-core:17.2.1")
     implementation("com.google.firebase:firebase-analytics:17.2.1")
-    implementation("com.google.firebase:firebase-inappmessaging-display:19.0.1")
+    implementation("com.zoho.desk:asapsdk:1.1.4")
 
     implementation("com.google.android.gms:play-services-oss-licenses:17.0.0")
     implementation("com.google.android.material:material:1.0.0")
