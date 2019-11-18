@@ -82,6 +82,14 @@
         <item name="android:shadowRadius">3.18</item>
     </style>
 
+    <!-- Zoho Desk Styles -->
+
+    <style name="deskTheme" parent="deskTheme_Light">
+        <item name="colorPrimary">@color/primary </item>
+        <item name="colorPrimaryDark">@color/primary_dark </item>
+        <item name="colorAccent">@color/accent </item>
+    </style>
+
     <!-- Showcase View Styles -->
 
     <style name="ShowcaseTheme" parent="ShowcaseView">

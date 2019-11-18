@@ -60,6 +60,7 @@ public class MyApplication extends MultiDexApplication {
         ZohoDeskPortalSDK.Logger.enableLogs();
         DeskConfig deskConfig = new DeskConfig.Builder().build();
         deskInstance = ZohoDeskPortalSDK.getInstance(this);
+        deskInstance.setThemeResource(R.style.deskTheme);
         deskInstance.initDesk(60002896708L,
                 "0cf0e6f11763c00d387ee247ab64aed483f3768859c3ef35",
                 ZohoDeskPortalSDK.DataCenter.IN,
