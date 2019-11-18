@@ -107,6 +107,7 @@ android {
             resValue("string", "app_name", "College Academics (debug)")
             resValue("string", "contentAuthority", defaultConfig.applicationId + ".debug.provider")
             resValue("string", "account_type", "com.shalzz.debug")
+            resValue("string", "zoho_app_id", "0cf0e6f11763c00d387ee247ab64aed483f3768859c3ef35")
             buildConfigField("String", "ACCOUNT_TYPE", "\"com.shalzz.debug\"")
             multiDexKeepProguard = file("./proguard/proguard-multidex-rules.pro")
             signingConfig = signingConfigs.getByName("debug")
@@ -118,6 +119,7 @@ android {
             resValue("string", "app_name", "College Academics")
             resValue("string", "contentAuthority", defaultConfig.applicationId + ".provider")
             resValue("string", "account_type", "com.shalzz")
+            resValue("string", "zoho_app_id", "0cf0e6f11763c00d387ee247ab64aed474712349653bbd5b")
             buildConfigField("String", "ACCOUNT_TYPE", "\"com.shalzz\"")
             proguardFiles(
                     getDefaultProguardFile("proguard-android-optimize.txt"),
