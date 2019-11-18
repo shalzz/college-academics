@@ -33,6 +33,10 @@
             android:id="@+id/settingsFragment"
             android:orderInCategory="3"
             android:title="@string/navigation_item_3"/>
+        <item
+            android:id="@+id/helpNSupport"
+            android:orderInCategory="4"
+            android:title="@string/navigation_item_4"/>
     </group>
 
 </menu>

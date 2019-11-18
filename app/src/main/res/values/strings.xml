@@ -155,6 +155,7 @@
     <string name="navigation_item_1">Attendance</string>
     <string name="navigation_item_2">Timetable</string>
     <string name="navigation_item_3">Settings</string>
+    <string name="navigation_item_4">Help and Support</string>
     <string name="proxy_settings_title">Proxy</string>
     <string name="about_settings_title">About</string>
 
