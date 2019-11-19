@@ -45,8 +45,8 @@ allprojects {
         google()
         jcenter()
         mavenCentral()
+        mavenLocal()
         maven("https://jitpack.io")
         maven("https://dl.bintray.com/kotlin/kotlin-eap")
-        maven("http://maven.zohodl.com/")
     }
 }

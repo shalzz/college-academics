@@ -26,14 +26,11 @@ import androidx.preference.PreferenceManager
 import com.bugsnag.android.Bugsnag
 import com.bugsnag.android.Severity
 import com.google.firebase.analytics.FirebaseAnalytics
-import com.shalzz.attendance.MyApplication
 import com.shalzz.attendance.R
 import com.shalzz.attendance.data.local.PreferencesHelper
 import com.shalzz.attendance.sync.MyAccountManager
 import com.shalzz.attendance.ui.base.BaseActivity
 import com.shalzz.attendance.ui.main.MainActivity
-import com.zoho.deskportalsdk.DeskConfig.Builder
-import com.zoho.deskportalsdk.ZohoDeskPortalSDK
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Named
@@ -57,13 +54,6 @@ class SplashActivity : BaseActivity() {
         val optIn = sharedPref.getBoolean(getString(R.string.pref_key_ga_opt_in), true)
         mTracker.setAnalyticsCollectionEnabled(optIn)
         Timber.i("Opted In to Google Analytics: %s", optIn)
-
-        val deskConfig = Builder().build()
-        MyApplication.deskInstance.setThemeResource(R.style.deskTheme)
-        MyApplication.deskInstance.initDesk(60002896708L,
-                getString(R.string.zoho_app_id),
-                ZohoDeskPortalSDK.DataCenter.IN,
-                deskConfig)
 
         // Set all default values once for this application
         try {

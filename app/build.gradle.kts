@@ -169,6 +169,9 @@ android {
     //Needed because of this https://github.com/ReactiveX/RxJava/issues/4445
     packagingOptions {
         exclude("META-INF/rxjava.properties")
+        exclude("META-INF/DEPENDENCIES")
+        exclude("META-INF/NOTICE")
+        exclude("META-INF/LICENSE")
     }
 }
 
@@ -198,7 +201,7 @@ dependencies {
 
     implementation("com.google.firebase:firebase-core:17.2.1")
     implementation("com.google.firebase:firebase-analytics:17.2.1")
-    implementation("com.zoho.desk:asapsdk:1.1.4")
+    implementation("com.github.shalzz:helpstack-android:1.3.4")
 
     implementation("com.google.android.gms:play-services-oss-licenses:17.0.0")
     implementation("com.google.android.material:material:1.0.0")
