@@ -201,7 +201,7 @@ dependencies {
 
     implementation("com.google.firebase:firebase-core:17.2.1")
     implementation("com.google.firebase:firebase-analytics:17.2.1")
-    implementation("com.github.shalzz:helpstack-android:1.3.4")
+    implementation("com.github.shalzz:helpstack-android:1.4.0")
 
     implementation("com.google.android.gms:play-services-oss-licenses:17.0.0")
     implementation("com.google.android.material:material:1.0.0")
