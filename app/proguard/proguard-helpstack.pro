@@ -1,0 +1,5 @@
+-dontwarn com.polites.**
+-dontwarn com.tenmiles.helpstack.**
+-dontwarn org.apache.commons.**
+-keep class org.apache.http.** { *; }
+-dontwarn org.apache.http.**
