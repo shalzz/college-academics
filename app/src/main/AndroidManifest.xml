@@ -42,7 +42,6 @@
         android:anyDensity="true" />
 
     <application
-        tools:replace="android:theme, android:supportsRtl, android:allowBackup"
         android:name=".MyApplication"
         android:allowClearUserData="true"
         android:icon="@mipmap/ic_launcher"

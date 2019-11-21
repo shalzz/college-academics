@@ -29,8 +29,8 @@ import com.shalzz.attendance.injection.component.ApplicationComponent;
 import com.shalzz.attendance.injection.component.DaggerApplicationComponent;
 import com.shalzz.attendance.injection.module.ApplicationModule;
 import com.shalzz.attendance.utils.BugsnagTree;
-import com.zoho.deskportalsdk.DeskConfig;
-import com.zoho.deskportalsdk.ZohoDeskPortalSDK;
+import com.tenmiles.helpstack.HSHelpStack;
+import com.tenmiles.helpstack.gears.HSEmailGear;
 
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.multidex.MultiDexApplication;
@@ -40,7 +40,7 @@ import timber.log.Timber;
 public class MyApplication extends MultiDexApplication {
 
     private static ApplicationComponent mApplicationComponent;
-    public static ZohoDeskPortalSDK deskInstance;
+    public static HSHelpStack helpStack;
 
     @Override
     public void onCreate() {
@@ -57,8 +57,9 @@ public class MyApplication extends MultiDexApplication {
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
         FirebaseApp.initializeApp(this);
 
-        ZohoDeskPortalSDK.Logger.enableLogs();
-        deskInstance = ZohoDeskPortalSDK.getInstance(this);
+        helpStack = HSHelpStack.getInstance(this);
+        HSEmailGear gear = new HSEmailGear("support@8bitlabs.tech", R.xml.articles);
+        helpStack.setGear(gear);
 
         if (BuildConfig.DEBUG) {
             Timber.plant(new Timber.DebugTree());

@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2013-2019 Shaleen Jain <shaleen.jain95@gmail.com>
+  ~
+  ~ This file is part of College Academics.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<articles>
+
+    <article subject="How do I login">
+        <![CDATA[<div>
+   To login you need to enter the correct username and password.
+   <br />
+</div>
+<div>
+   These are the same as what you use to login on the winnou.net website and should already be created for you or registered by you on the *.winnou.net website where * is a unique prefix for your college.
+   <br />
+</div>
+<div>
+   <br />
+</div>
+<div>
+   To see the list of supported colleges and URL of the website see the FAQ on "Supported Colleges"
+   <br />
+</div>
+<div>
+   <br />
+</div>
+<div>
+   In case you login incorrectly multiple times, you might see a captcha prompt, entry the captcha text correctly to login successfully.
+   <br />
+</div>
+<div>
+   <br />
+</div>
+<div>
+   In case you are facing any problem or questions, contact us by creating a ticket.
+   <br />
+</div>
+]]>
+    </article>
+
+    <article subject="Which colleges are supported">
+        <![CDATA[There are a limited number of colleges supported by College Academics. We strive to
+         continuously add support for more colleges.
+<div>
+   <br />
+</div>
+<div>
+   Currently supported colleges and their online website are:
+   <br />
+</div>
+<div>
+   • Balaji Group of Colleges -&nbsp;
+   <a rel="noopener noreferrer" href="https://balaji.winnou.net/" target="_blank">
+      https://balaji.winnou.net/
+   </a>
+   <br />
+</div>
+<div>
+   • Geethanjali College of Engineering and Technology -&nbsp;
+   <a rel="noopener noreferrer" href="https://geethanjali.winnou.net/" target="_blank">
+      https://geethanjali.winnou.net
+   </a>
+</div>
+<div>
+   • KG Reddy College of Engineering and Technology
+   -&nbsp;
+   <a rel="noopener noreferrer" href="https://kgrcet.winnou.net/" target="_blank">
+      https://kgrcet.winnou.net
+   </a>
+</div>
+<div>
+   • Matrusri Engineering College
+   -&nbsp;
+   <a rel="noopener noreferrer" href="https://mecs.winnou.net/" target="_blank">
+      https://mecs.winnou.net
+   </a>
+</div>
+<div>
+   • MVSR Engineering College
+   -&nbsp;
+   <a rel="noopener noreferrer" href="https://mvsr.winnou.net/" target="_blank">
+      https://mvsr.winnou.net
+   </a>
+</div>
+<div>
+   • Mahatma Gandhi Institute of Technology
+   -&nbsp;
+   <a rel="noopener noreferrer" href="https://mgit.winnou.net/" target="_blank">
+      https://mgit.winnou.net
+   </a>
+   <br />
+</div>
+<div>
+   • Pearl Academy
+   -&nbsp;
+   <a rel="noopener noreferrer" href="https://pearl.winnou.net/" target="_blank">
+      https://pearl.winnou.net
+   </a>
+</div>
+<div>
+   • St. Francis College for Women
+   -&nbsp;
+   <a rel="noopener noreferrer" href="https://sfc.winnou.net/" target="_blank">
+      https://sfc.winnou.net
+   </a>
+   <br />
+</div>
+<div>
+   • Siva Sivani Institute of Management
+   -&nbsp;
+   <a rel="noopener noreferrer" href="https://ssim.winnou.net/" target="_blank">
+      https://ssim.winnou.net
+   </a>
+   <br />
+</div>
+<div>
+   • The ICFAI University, Tripura
+   -&nbsp;
+   <a rel="noopener noreferrer" href="https://iutripura.winnou.net/" target="_blank">
+      https://iutripura.winnou.net
+   </a>
+</div>
+<div>
+   • Vaagdevi Institute of Technology &amp; Science
+   -&nbsp;
+   <a rel="noopener noreferrer" href="https://vaagdevi.winnou.net/" target="_blank">
+      https://vaagdevi.winnou.net
+   </a>
+</div>
+<div>
+   <br />
+</div>
+<br />
+<div>
+   <br />
+</div>
+]]>
+    </article>
+
+    <article subject="Where can I change my Privacy settings">
+        <![CDATA[<p>You can find privacy related settings in the Settings menu in the drawer
+        under the privacy section.</p>]]>
+    </article>
+
+    <article subject="How do I change my language settings">
+        <![CDATA[To change the language of the app, make sure you have the desired language set
+for the android system in the system settings.<br/> The apps language will change automatically
+ based on your system preferred language.]]>
+    </article>
+
+    <article subject="How do I reset my password">
+        <![CDATA[<p>If you have forgotten your password,<br/> please visit the website of your college
+        providing the attendance info and click the <br/>'Forgot Password' link to reset your password.
+        <br/> You will receive a mail with a confirmation code <br/> which you will need at the time of resetting your
+        password.</p>]]>
+    </article>
+</articles>
