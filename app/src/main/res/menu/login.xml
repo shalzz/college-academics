@@ -23,7 +23,7 @@
     <item
         android:id="@+id/menu_help"
         android:orderInCategory="60"
-        android:icon="@drawable/hs_attachment_icon"
+        android:icon="@drawable/ic_menu_questions"
         app:iconTint="@color/white"
         android:title="@string/menu_help"
         app:showAsAction="ifRoom|collapseActionView"/>
