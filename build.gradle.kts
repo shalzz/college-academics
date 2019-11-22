@@ -29,7 +29,7 @@ buildscript {
     }
     dependencies {
         classpath(kotlin("gradle-plugin", kotlinVersion))
-        classpath("com.android.tools.build:gradle:4.0.0-alpha03")
+        classpath("com.android.tools.build:gradle:4.0.0-alpha04")
         classpath("com.google.gms:google-services:4.3.2")
 
         classpath("com.google.android.gms:oss-licenses-plugin:0.10.0")

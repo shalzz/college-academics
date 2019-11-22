@@ -20,7 +20,7 @@
 
 <articles>
 
-    <article subject="How do I login">
+    <article subject="How do I login?">
         <![CDATA[<div>
    To login you need to enter the correct username and password.
    <br />
@@ -53,7 +53,7 @@
 ]]>
     </article>
 
-    <article subject="Which colleges are supported">
+    <article subject="Which colleges are supported?">
         <![CDATA[There are a limited number of colleges supported by College Academics. We strive to
          continuously add support for more colleges.
 <div>
@@ -152,9 +152,10 @@
 ]]>
     </article>
 
-    <article subject="Where can I change my Privacy settings">
-        <![CDATA[<p>You can find privacy related settings in the Settings menu in the drawer
-        under the privacy section.</p>]]>
+    <article subject="Where can I change my Privacy settings?">
+        <![CDATA[<p>You can find privacy related settings under the privacy section
+        in the Settings menu in the drawer by sliding from the left or by clicking on the
+        hamburger menu icon.</p>]]>
     </article>
 
     <article subject="How do I change my language settings">
@@ -166,7 +167,7 @@ for the android system in the system settings.<br/> The apps language will chang
     <article subject="How do I reset my password">
         <![CDATA[<p>If you have forgotten your password,<br/> please visit the website of your college
         providing the attendance info and click the <br/>'Forgot Password' link to reset your password.
-        <br/> You will receive a mail with a confirmation code <br/> which you will need at the time of resetting your
-        password.</p>]]>
+        <br/> You will receive a mail on your registered email-id with a confirmation code <br/>
+         which you will need at the time of resetting your password.</p>]]>
     </article>
 </articles>
