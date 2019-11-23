@@ -26,7 +26,7 @@ plugins {
     kotlin("kapt")
     id("com.bugsnag.android.gradle")
     id("com.google.android.gms.oss-licenses-plugin")
-    id("com.github.triplet.play") version "2.5.0"
+    id("com.github.triplet.play") version "2.6.1"
     id("com.google.gms.google-services") apply false
 }
 
@@ -201,7 +201,7 @@ dependencies {
 
     implementation("com.google.firebase:firebase-core:17.2.1")
     implementation("com.google.firebase:firebase-analytics:17.2.1")
-    implementation("com.github.shalzz:helpstack-android:1.4.3")
+    implementation("com.github.shalzz:helpstack-android:1.4.4")
 //    implementation("com.github.shalzz:helpstack:1.4.1-debug")
 
     implementation("com.google.android.gms:play-services-oss-licenses:17.0.0")
