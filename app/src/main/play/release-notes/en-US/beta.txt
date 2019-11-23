@@ -1,4 +1,3 @@
-• Increase timeout for all requests
-• Fix logins for some colleges
-• Update to a new v5 API served from the edge
-• Bug fixes and improvements
+• FAQ sections for user support for common queries
+• Contact us by using the "Report an issue" button on the Help Center page
+
