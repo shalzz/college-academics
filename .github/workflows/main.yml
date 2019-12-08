@@ -22,11 +22,11 @@ jobs:
     - name: Check Dependency Versions
       run: ./gradlew :app:dependencies
 
-    - name: Check Lint checks
-      run: ./gradlew lint --continue
-
-    - name: Run Tests
+    - name: Run Unit Tests
       run: ./gradlew test
 
     - name: Build & Test Project
-      run: ./gradlew assemble --continue
+      run: ./gradlew assemble --continue --stacktrace
+
+    - name: Run Lint checks
+      run: ./gradlew lint --continue
