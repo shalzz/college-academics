@@ -37,7 +37,9 @@ jobs:
       run: ./gradlew test
 
     - name: Build & Test Project
-      run: ./gradlew assembleDebug --continue --stacktrace
+      run: ./gradlew assemble --continue --stacktrace
+      env:
+        APP_KEY: ${{ secrets.APP_KEY }}
 
     - name: Run Lint checks
       run: ./gradlew lint --continue
