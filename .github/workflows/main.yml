@@ -37,7 +37,7 @@ jobs:
       run: ./gradlew test
 
     - name: Build & Test Project
-      run: ./gradlew assemble --continue --stacktrace
+      run: ./gradlew assembleDebug --continue --stacktrace
 
     - name: Run Lint checks
       run: ./gradlew lint --continue
