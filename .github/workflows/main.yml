@@ -24,7 +24,7 @@ jobs:
 
     - name: Install required Android tools
       run: |
-        echo "y" | sudo $ANDROID_HOME/tools/bin/sdkmanager "ndk-bundle" > /dev/null
+        echo "y" | sudo $ANDROID_HOME/tools/bin/sdkmanager "ndk;21.0.5935234" --channel=3 > /dev/null
         echo "y" | sudo $ANDROID_HOME/tools/bin/sdkmanager --licenses > /dev/null
 
     - name: Download Dependencies
