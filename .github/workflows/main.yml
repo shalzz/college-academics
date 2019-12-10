@@ -3,9 +3,19 @@ name: Android CI
 # Trigger the workflow on push or pull request
 on: [push, pull_request]
 
+
 jobs:
   build:
     runs-on: ubuntu-latest
+    services:
+      emu:
+        image: shalzz/aemu:android-28-P-x86_64-29.2.12
+        ports:
+          - 5555:5555
+          - 5556:5556
+        env:
+          ADBKEY: $(cat ~/.android/adbkey)
+#       options: --device /dev/kvm
     env:
       ANDROID_SDK_TOOLS:    "4333796"
 
@@ -43,6 +53,12 @@ jobs:
 
     - name: Run Lint checks
       run: ./gradlew lint --continue
+
+    - name: Run Instrumentation tests
+      run: |
+        adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed) ]]; do sleep 1; done;'
+        adb devices
+        ./gradlew connectedCheck
 
 #   - name: Publish
 #     if: contains(github.ref, 'tags')
