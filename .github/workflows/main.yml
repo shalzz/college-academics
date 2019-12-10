@@ -43,3 +43,7 @@ jobs:
 
     - name: Run Lint checks
       run: ./gradlew lint --continue
+
+#   - name: Publish
+#     if: contains(github.ref, 'tags')
+#     run: ./gradlew publishRelease --stacktrace
