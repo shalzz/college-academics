@@ -31,6 +31,7 @@ import com.shalzz.attendance.billing.BillingConstants
 import com.shalzz.attendance.billing.BillingManager.BillingUpdatesListener
 import com.shalzz.attendance.data.DataManager
 import com.shalzz.attendance.data.local.PreferencesHelper
+import com.shalzz.attendance.data.model.LogoutModel
 import com.shalzz.attendance.data.model.entity.User
 import com.shalzz.attendance.event.ProKeyPurchaseEvent
 import com.shalzz.attendance.injection.ApplicationContext
@@ -109,16 +110,31 @@ internal constructor(private val mDataManager: DataManager,
     }
 
     fun logout() {
-        checkViewAttached()
-        MainActivity.LOGGED_OUT = true
+        RxUtil.dispose(mDisposable)
+        mDisposable = mDataManager.logout()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(object : DisposableObserver<LogoutModel>() {
+                    override fun onNext(result: LogoutModel) {
+                        MainActivity.LOGGED_OUT = true
 
-        // Remove User Details from Shared Preferences.
-        mPreferenceHelper.removeUser()
+                        // Remove User Details from Shared Preferences.
+                        mPreferenceHelper.removeUser()
 
-        // Remove user Attendance data from database.
-        mDataManager.resetTables()
+                        // Remove user Attendance data from database.
+                        mDataManager.resetTables()
 
-        mvpView.logout()
+                        if (isViewAttached) {
+                            mvpView.logout()
+                        }
+                    }
+
+                    override fun onError(e: Throwable) {
+                        Timber.e(e)
+                    }
+
+                    override fun onComplete() { }
+                })
     }
 
     /**
