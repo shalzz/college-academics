@@ -38,7 +38,7 @@ import com.shalzz.attendance.event.ProKeyPurchaseEvent;
 import com.shalzz.attendance.injection.ActivityContext;
 import com.shalzz.attendance.sync.MyAccountManager;
 import com.shalzz.attendance.ui.main.MainActivity;
-import com.shalzz.attendance.utils.Miscellaneous.Analytics;
+import com.shalzz.attendance.utils.Utils.Analytics;
 import com.shalzz.attendance.utils.RxEventBus;
 import com.shalzz.attendance.utils.RxUtil;
 import com.shalzz.attendance.wrapper.ProModeListPreference;

@@ -20,6 +20,7 @@
 package com.shalzz.attendance.data.remote
 
 import com.shalzz.attendance.data.model.College
+import com.shalzz.attendance.data.model.LogoutModel
 import com.shalzz.attendance.data.model.TokenModel
 import com.shalzz.attendance.data.model.entity.Period
 import com.shalzz.attendance.data.model.entity.Subject
@@ -35,6 +36,9 @@ interface DataAPI {
               @Header("x-clg-id") college: String,
               @Query("captcha") captcha: String,
               @Query("cookie") cookie: String): Observable<TokenModel>
+
+    @GET("me/logout")
+    fun logout(): Observable<LogoutModel>
 
     @GET("captcha")
     fun getCaptcha(@Header("x-clg-id") college: String): Observable<retrofit2.Response<ResponseBody>>
@@ -60,7 +64,7 @@ interface DataAPI {
 
     // TODO: add logout api
     companion object {
-        val API_VERSION = "/api/v5/prod/"
+        val API_VERSION = "/api/v5/dev/"
         val ENDPOINT = "https://academics.8bitlabs.tech$API_VERSION"
 //         val ENDPOINT = "http://192.168.100.93:3000$API_VERSION"
     }

@@ -32,17 +32,15 @@ import com.bugsnag.android.Bugsnag
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.firebase.analytics.FirebaseAnalytics
-import com.shalzz.attendance.MyApplication
 import com.shalzz.attendance.R
 import com.shalzz.attendance.data.local.PreferencesHelper
 import com.shalzz.attendance.data.model.College
 import com.shalzz.attendance.data.model.entity.User
 import com.shalzz.attendance.data.remote.DataAPI
-import com.shalzz.attendance.utils.Miscellaneous
-import com.shalzz.attendance.utils.Miscellaneous.Analytics
+import com.shalzz.attendance.utils.Utils
+import com.shalzz.attendance.utils.Utils.Analytics
 import kotlinx.android.synthetic.main.fragment_login.*
 import kotlinx.android.synthetic.main.fragment_login.view.*
-import kotlinx.android.synthetic.main.include_toolbar.*
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Named
@@ -139,14 +137,14 @@ class LoginFragment : Fragment(), LoginMvpView, AdapterView.OnItemSelectedListen
         if (username.isEmpty()) {
             etUserId.requestFocus()
             etUserId.error = getString(R.string.form_userid_error)
-            Miscellaneous.showKeyboard(mActivity, etUserId.editText)
+            Utils.showKeyboard(mActivity, etUserId.editText)
             dismissProgressDialog()
             valid = false
         }
         if (password.isEmpty()) {
             etPassword.requestFocus()
             etPassword.error = getString(R.string.form_password_error)
-            Miscellaneous.showKeyboard(mActivity, etPassword.editText)
+            Utils.showKeyboard(mActivity, etPassword.editText)
             dismissProgressDialog()
             valid = false
         }
@@ -170,7 +168,7 @@ class LoginFragment : Fragment(), LoginMvpView, AdapterView.OnItemSelectedListen
 
         Timber.d("new login: %s, %s, %s", userId, password, college!!.id)
 
-        Miscellaneous.closeKeyboard(mActivity, etPassword.editText)
+        Utils.closeKeyboard(mActivity, etPassword.editText)
         if (cookie == null && captcha == null)
             mLoginPresenter.login(userId.toString(), password.toString(), college!!.id)
         else
@@ -262,7 +260,7 @@ class LoginFragment : Fragment(), LoginMvpView, AdapterView.OnItemSelectedListen
     override fun showError(message: String?) {
         dismissProgressDialog()
 
-        Miscellaneous.showSnackBar(etUserId,
+        Utils.showSnackBar(etUserId,
             message ?: getString(R.string.unexpected_error)
         )
     }

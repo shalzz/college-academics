@@ -56,6 +56,7 @@ import com.shalzz.attendance.sync.MyAccountManager
 import com.shalzz.attendance.ui.attendance.AttendanceListFragment
 import com.shalzz.attendance.ui.base.BaseActivity
 import com.shalzz.attendance.ui.login.AuthenticatorActivity
+import com.shalzz.attendance.utils.Utils
 import kotlinx.android.synthetic.main.drawer.*
 import kotlinx.android.synthetic.main.drawer_header.view.*
 import kotlinx.android.synthetic.main.include_drawer_list.*
@@ -258,7 +259,10 @@ class MainActivity : BaseActivity(), MainMvpView, BillingProvider {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             android.R.id.home -> onBackPressed()
-            R.id.menu_logout -> mMainPresenter.logout()
+            R.id.menu_logout -> {
+                Utils.showSnackBar(mToolbar, "Logging out...")
+                mMainPresenter.logout()
+            }
             else -> return super.onOptionsItemSelected(item)
         }
         return true

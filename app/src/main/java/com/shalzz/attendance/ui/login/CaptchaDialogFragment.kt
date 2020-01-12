@@ -32,7 +32,7 @@ import com.afollestad.materialdialogs.DialogAction
 import com.afollestad.materialdialogs.MaterialDialog
 import com.shalzz.attendance.R
 import com.shalzz.attendance.data.remote.DataAPI
-import com.shalzz.attendance.utils.Miscellaneous
+import com.shalzz.attendance.utils.Utils
 import com.shalzz.attendance.utils.RxUtil
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -84,7 +84,7 @@ class CaptchaDialogFragment(listener: CaptchaDialogListener, dataAPI: DataAPI, c
                 }
                 .onNegative { dialog, _ ->
                     dialog.dismiss() }
-                .showListener { Miscellaneous.showKeyboard(context, mView.captchaEditText) }
+                .showListener { Utils.showKeyboard(context, mView.captchaEditText) }
                 .build()
     }
 
