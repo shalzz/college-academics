@@ -41,7 +41,7 @@ import com.shalzz.attendance.R
 import com.shalzz.attendance.data.model.ListFooter
 import com.shalzz.attendance.data.model.entity.Subject
 import com.shalzz.attendance.injection.ApplicationContext
-import com.shalzz.attendance.utils.Miscellaneous
+import com.shalzz.attendance.utils.Utils
 import kotlinx.android.synthetic.main.list_child_item.view.*
 import kotlinx.android.synthetic.main.list_group_item.view.*
 import timber.log.Timber
@@ -447,7 +447,7 @@ internal constructor(@param:ApplicationContext private val mContext: Context) : 
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
         val percent = mSubjects.get(position).getPercentage()
-        holder.subject.text = Miscellaneous.capitalizeString(mSubjects.get(position).name)
+        holder.subject.text = Utils.capitalizeString(mSubjects.get(position).name)
         holder.percentage.text = mResources.getString(R.string.atten_list_percentage,
                 mSubjects.get(position).getPercentage())
         holder.classes.text = mResources.getString(R.string.atten_list_attended_upon_held,

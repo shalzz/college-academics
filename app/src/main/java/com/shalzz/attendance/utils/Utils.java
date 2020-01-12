@@ -21,6 +21,8 @@ package com.shalzz.attendance.utils;
 
 import android.content.Context;
 import androidx.appcompat.widget.SearchView;
+
+import android.os.Build;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
@@ -29,7 +31,7 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.util.Locale;
 
-public class Miscellaneous {
+public class Utils {
 
     public static class Analytics {
         public static class Event {
@@ -109,5 +111,9 @@ public class Miscellaneous {
             }
         }
         return String.valueOf(chars);
+    }
+
+    public static boolean isRoboUnitTest() {
+        return "robolectric".equals(Build.FINGERPRINT);
     }
 }

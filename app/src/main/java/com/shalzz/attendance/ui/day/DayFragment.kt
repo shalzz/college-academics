@@ -39,7 +39,7 @@ import com.shalzz.attendance.data.model.entity.Period
 import com.shalzz.attendance.injection.ActivityContext
 import com.shalzz.attendance.ui.main.MainActivity
 import com.shalzz.attendance.utils.DividerItemDecoration
-import com.shalzz.attendance.utils.Miscellaneous
+import com.shalzz.attendance.utils.Utils
 import com.shalzz.attendance.wrapper.MultiSwipeRefreshLayout
 
 import java.util.Date
@@ -215,7 +215,7 @@ class DayFragment : Fragment(), DayMvpView {
     override fun showError(message: String) {
         Timber.d("Error: %s", message)
         stopRefreshing()
-        Miscellaneous.showSnackBar(mSwipeRefreshLayout, message)
+        Utils.showSnackBar(mSwipeRefreshLayout, message)
     }
 
     override fun showRetryError(message: String) {

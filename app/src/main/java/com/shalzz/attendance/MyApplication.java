@@ -29,6 +29,7 @@ import com.shalzz.attendance.injection.component.ApplicationComponent;
 import com.shalzz.attendance.injection.component.DaggerApplicationComponent;
 import com.shalzz.attendance.injection.module.ApplicationModule;
 import com.shalzz.attendance.utils.BugsnagTree;
+import com.shalzz.attendance.utils.Utils;
 import com.tenmiles.helpstack.HSHelpStack;
 import com.tenmiles.helpstack.gears.HSEmailGear;
 
@@ -50,9 +51,10 @@ public class MyApplication extends MultiDexApplication {
         config.setMaxBreadcrumbs(100);
         config.setAutomaticallyCollectBreadcrumbs(false);
         config.setAutoCaptureSessions(false);
-        Bugsnag.init(this, config);
-        Bugsnag.setNotifyReleaseStages("production", "development", "testing");
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        if (!Utils.isRoboUnitTest()) {
+            Bugsnag.init(this, config);
+            Bugsnag.setNotifyReleaseStages("production", "development", "testing");
+        }
 
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
         FirebaseApp.initializeApp(this);
@@ -67,6 +69,7 @@ public class MyApplication extends MultiDexApplication {
 
         Timber.plant(new BugsnagTree());
 
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         int nightMode = Integer.parseInt(sharedPref.getString(
                 getString(R.string.pref_key_day_night), "1"));
         //noinspection WrongConstant

@@ -52,7 +52,7 @@ import com.shalzz.attendance.data.model.ListFooter
 import com.shalzz.attendance.data.model.entity.Subject
 import com.shalzz.attendance.ui.main.MainActivity
 import com.shalzz.attendance.utils.DividerItemDecoration
-import com.shalzz.attendance.utils.Miscellaneous
+import com.shalzz.attendance.utils.Utils
 import kotlinx.android.synthetic.main.empty_view.*
 import kotlinx.android.synthetic.main.empty_view.view.*
 import kotlinx.android.synthetic.main.fragment_attendance.*
@@ -168,7 +168,7 @@ class AttendanceListFragment : Fragment(), AttendanceMvpView,
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
 
             override fun onQueryTextSubmit(arg0: String): Boolean {
-                Miscellaneous.closeKeyboard(mActivity, searchView)
+                Utils.closeKeyboard(mActivity, searchView)
                 return false
             }
 
@@ -352,7 +352,7 @@ class AttendanceListFragment : Fragment(), AttendanceMvpView,
 
     override fun showError(message: String) {
         stopRefreshing()
-        Miscellaneous.showSnackBar(recyclerView, message)
+        Utils.showSnackBar(recyclerView, message)
     }
 
     override fun showRetryError(message: String) {
