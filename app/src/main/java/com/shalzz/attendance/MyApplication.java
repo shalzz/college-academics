@@ -60,8 +60,7 @@ public class MyApplication extends MultiDexApplication {
         FirebaseApp.initializeApp(this);
 
         helpStack = HSHelpStack.getInstance(this);
-        HSEmailGear gear = new HSEmailGear("support@8bitlabs.tech", R.xml.articles);
-        helpStack.setGear(gear);
+        helpStack.setOptions("support@8bitlabs.tech", R.xml.articles);
 
         if (BuildConfig.DEBUG) {
             Timber.plant(new Timber.DebugTree());
