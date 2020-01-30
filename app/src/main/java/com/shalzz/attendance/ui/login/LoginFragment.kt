@@ -22,13 +22,19 @@ package com.shalzz.attendance.ui.login
 import android.app.Activity
 import android.content.Context
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.MotionEvent
+import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import com.afollestad.materialdialogs.MaterialDialog
 import com.bugsnag.android.Bugsnag
+import com.github.amlcurran.showcaseview.OnShowcaseEventListener
+import com.github.amlcurran.showcaseview.ShowcaseView
+import com.github.amlcurran.showcaseview.targets.ViewTarget
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.firebase.analytics.FirebaseAnalytics
@@ -46,7 +52,7 @@ import javax.inject.Inject
 import javax.inject.Named
 
 class LoginFragment : Fragment(), LoginMvpView, AdapterView.OnItemSelectedListener,
-        CaptchaDialogFragment.CaptchaDialogListener {
+        CaptchaDialogFragment.CaptchaDialogListener, OnShowcaseEventListener {
 
     @Inject
     @field:Named("app")
@@ -117,14 +123,52 @@ class LoginFragment : Fragment(), LoginMvpView, AdapterView.OnItemSelectedListen
         return mView
     }
 
+    private fun showcaseView() {
+        val target = ViewTarget(R.id.menu_help, mActivity)
+
+        ShowcaseView.Builder(mActivity)
+                .setStyle(R.style.ShowcaseTheme)
+                .withMaterialShowcase()
+                .setTarget(target)
+                .singleShot(R.id.menu_help.toLong())
+                .setContentTitle(getString(R.string.sv_main_activity_title))
+                .setContentText(getString(R.string.sv_main_activity_content))
+                .setShowcaseEventListener(this)
+                .build()
+    }
+
+    override fun onShowcaseViewDidHide(showcaseView: ShowcaseView?) {
+        val target = ViewTarget(spCollege)
+
+        ShowcaseView.Builder(mActivity)
+                .setStyle(R.style.ShowcaseTheme)
+                .withMaterialShowcase()
+                .setTarget(target)
+                .singleShot(R.id.spCollege.toLong())
+                .setContentTitle(getString(R.string.sv_main_activity_title))
+                .setContentText(getString(R.string.sv_main_activity_content))
+                .setShowcaseEventListener(this)
+                .build()
+    }
+
+    override fun onShowcaseViewShow(showcaseView: ShowcaseView?) { /* ignore */ }
+
+    override fun onShowcaseViewHide(showcaseView: ShowcaseView?) { /* ignore */ }
+
+    override fun onShowcaseViewTouchBlocked(motionEvent: MotionEvent?) { /* ignore */ }
+
     override fun onResume() {
         super.onResume()
         if (GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(mActivity)
             != ConnectionResult.SUCCESS) {
             GoogleApiAvailability.getInstance().makeGooglePlayServicesAvailable(mActivity)
         }
+        bLogin.post {
+            kotlin.run {
+                showcaseView()
+            }
+        }
     }
-
 
     private fun isValid(username: String, password: String): Boolean {
         var valid = true

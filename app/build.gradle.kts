@@ -240,7 +240,8 @@ dependencies {
 //    implementation("com.squareup.moshi:moshi-kotlin:1.9.1")
 
     implementation("com.malinskiy:materialicons:1.0.2")
-    implementation("com.github.amlcurran.showcaseview:library:5.4.0")
+    implementation("com.github.amlcurran.showcaseview:library:5.4.3")
+    implementation("com.github.deano2390:MaterialShowcaseView:1.3.4")
     implementation("com.github.afollestad.material-dialogs:core:0.8.5.5")
 
     //noinspection GradleDynamicVersion
