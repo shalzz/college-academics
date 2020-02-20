@@ -132,6 +132,11 @@
     <string name="sv_timetable_content">Swipe left or right to switch between days</string>
     <string name="sv_main_activity_title">Navigation bar</string>
     <string name="sv_main_activity_content">Press this button or swipe from the left edge to access the navigation bar</string>
+    <string name="sv_login_activity_faq">Help and Support</string>
+    <string name="sv_login_activity_faq_content">Go here to get help and view FAQ\'s</string>
+    <string name="sv_login_activity_spinner">List of Colleges</string>
+    <string name="sv_login_activity_spinner_content">Select your college from the list of
+        supported colleges before logging in.</string>
 
     <!--EditText Hint's-->
     <string name="hint_userid">Username</string>

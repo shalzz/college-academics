@@ -190,6 +190,7 @@ dependencies {
     // TODO: re-evaluate when RxJava is completely replaced with kotlin co-routines
     implementation("androidx.multidex:multidex:2.0.1")
 
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.0.4")
     implementation(kotlin("stdlib-jdk7", KotlinCompilerVersion.VERSION))
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.0")
@@ -241,7 +242,6 @@ dependencies {
 
     implementation("com.malinskiy:materialicons:1.0.2")
     implementation("com.github.amlcurran.showcaseview:library:5.4.3")
-    implementation("com.github.deano2390:MaterialShowcaseView:1.3.4")
     implementation("com.github.afollestad.material-dialogs:core:0.8.5.5")
 
     //noinspection GradleDynamicVersion

@@ -43,8 +43,10 @@ import com.shalzz.attendance.data.local.PreferencesHelper
 import com.shalzz.attendance.data.model.College
 import com.shalzz.attendance.data.model.entity.User
 import com.shalzz.attendance.data.remote.DataAPI
+import com.shalzz.attendance.ui.attendance.AttendanceListFragment
 import com.shalzz.attendance.utils.Utils
 import com.shalzz.attendance.utils.Utils.Analytics
+import kotlinx.android.synthetic.main.drawer.*
 import kotlinx.android.synthetic.main.fragment_login.*
 import kotlinx.android.synthetic.main.fragment_login.view.*
 import timber.log.Timber
@@ -52,7 +54,7 @@ import javax.inject.Inject
 import javax.inject.Named
 
 class LoginFragment : Fragment(), LoginMvpView, AdapterView.OnItemSelectedListener,
-        CaptchaDialogFragment.CaptchaDialogListener, OnShowcaseEventListener {
+        CaptchaDialogFragment.CaptchaDialogListener {
 
     @Inject
     @field:Named("app")
@@ -126,47 +128,34 @@ class LoginFragment : Fragment(), LoginMvpView, AdapterView.OnItemSelectedListen
     private fun showcaseView() {
         val target = ViewTarget(R.id.menu_help, mActivity)
 
-        ShowcaseView.Builder(mActivity)
+        val sv = ShowcaseView.Builder(mActivity)
                 .setStyle(R.style.ShowcaseTheme)
-                .withMaterialShowcase()
                 .setTarget(target)
                 .singleShot(R.id.menu_help.toLong())
-                .setContentTitle(getString(R.string.sv_main_activity_title))
-                .setContentText(getString(R.string.sv_main_activity_content))
-                .setShowcaseEventListener(this)
+                .blockAllTouches()
+                .setContentTitle(getString(R.string.sv_login_activity_faq))
+                .setContentText(getString(R.string.sv_login_activity_faq_content))
                 .build()
+
+        sv.overrideButtonClick {
+            sv.hide()
+            val secondTarget = ViewTarget(spCollege)
+
+            ShowcaseView.Builder(mActivity)
+                    .setStyle(R.style.ShowcaseTheme)
+                    .setTarget(secondTarget)
+                    .singleShot(R.id.spCollege.toLong())
+                    .setContentTitle(getString(R.string.sv_login_activity_spinner))
+                    .setContentText(getString(R.string.sv_login_activity_spinner_content))
+                    .build()
+        }
     }
-
-    override fun onShowcaseViewDidHide(showcaseView: ShowcaseView?) {
-        val target = ViewTarget(spCollege)
-
-        ShowcaseView.Builder(mActivity)
-                .setStyle(R.style.ShowcaseTheme)
-                .withMaterialShowcase()
-                .setTarget(target)
-                .singleShot(R.id.spCollege.toLong())
-                .setContentTitle(getString(R.string.sv_main_activity_title))
-                .setContentText(getString(R.string.sv_main_activity_content))
-                .setShowcaseEventListener(this)
-                .build()
-    }
-
-    override fun onShowcaseViewShow(showcaseView: ShowcaseView?) { /* ignore */ }
-
-    override fun onShowcaseViewHide(showcaseView: ShowcaseView?) { /* ignore */ }
-
-    override fun onShowcaseViewTouchBlocked(motionEvent: MotionEvent?) { /* ignore */ }
 
     override fun onResume() {
         super.onResume()
         if (GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(mActivity)
             != ConnectionResult.SUCCESS) {
             GoogleApiAvailability.getInstance().makeGooglePlayServicesAvailable(mActivity)
-        }
-        bLogin.post {
-            kotlin.run {
-                showcaseView()
-            }
         }
     }
 
@@ -280,6 +269,12 @@ class LoginFragment : Fragment(), LoginMvpView, AdapterView.OnItemSelectedListen
         spinnerAdapter.clear()
         spinnerAdapter.addAll(data)
         Timber.d("Colleges: %s", data)
+        // showcase when list of colleges is loaded
+        bLogin.post {
+            kotlin.run {
+                showcaseView()
+            }
+        }
     }
 
     override fun saveToken(username: String, college: String, authToken: String) {
