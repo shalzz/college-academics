@@ -36,7 +36,7 @@ import com.shalzz.attendance.injection.ApplicationContext
 import javax.inject.Singleton
 
 @Singleton
-@Database(entities = [User::class, Subject::class, Period::class], version = 14)
+@Database(entities = [User::class, Subject::class, Period::class], version = 15)
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao

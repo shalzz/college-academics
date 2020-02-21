@@ -32,8 +32,6 @@ data class Period(
         val name: String,
         val teacher: String,
         val room: String,
-        val batchid: String,
-        val batch: String?,
         val start: String,
         val end: String,
         val absent: Boolean,
