@@ -1,1 +1,2 @@
+• Re-enabled timetable for some colleges with the old timetable format.
 • Bug fixes and improvements
