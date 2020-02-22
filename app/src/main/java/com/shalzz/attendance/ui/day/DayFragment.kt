@@ -88,7 +88,7 @@ class DayFragment : Fragment(), DayMvpView {
 
         mRecyclerView = mView.time_table_recycler_view
         mSwipeRefreshLayout = mView.swiperefresh
-        mEmptyView = EmptyView(emptyView)
+        mEmptyView = EmptyView(mView.emptyView)
 
         setHasOptionsMenu(true)
         mDayPresenter.attachView(this)

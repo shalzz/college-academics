@@ -22,13 +22,19 @@ package com.shalzz.attendance.ui.login
 import android.app.Activity
 import android.content.Context
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.MotionEvent
+import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import com.afollestad.materialdialogs.MaterialDialog
 import com.bugsnag.android.Bugsnag
+import com.github.amlcurran.showcaseview.OnShowcaseEventListener
+import com.github.amlcurran.showcaseview.ShowcaseView
+import com.github.amlcurran.showcaseview.targets.ViewTarget
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.firebase.analytics.FirebaseAnalytics
@@ -37,8 +43,10 @@ import com.shalzz.attendance.data.local.PreferencesHelper
 import com.shalzz.attendance.data.model.College
 import com.shalzz.attendance.data.model.entity.User
 import com.shalzz.attendance.data.remote.DataAPI
+import com.shalzz.attendance.ui.attendance.AttendanceListFragment
 import com.shalzz.attendance.utils.Utils
 import com.shalzz.attendance.utils.Utils.Analytics
+import kotlinx.android.synthetic.main.drawer.*
 import kotlinx.android.synthetic.main.fragment_login.*
 import kotlinx.android.synthetic.main.fragment_login.view.*
 import timber.log.Timber
@@ -117,6 +125,32 @@ class LoginFragment : Fragment(), LoginMvpView, AdapterView.OnItemSelectedListen
         return mView
     }
 
+    private fun showcaseView() {
+        val target = ViewTarget(R.id.menu_help, mActivity)
+
+        val sv = ShowcaseView.Builder(mActivity)
+                .setStyle(R.style.ShowcaseTheme)
+                .setTarget(target)
+                .singleShot(R.id.menu_help.toLong())
+                .blockAllTouches()
+                .setContentTitle(getString(R.string.sv_login_activity_faq))
+                .setContentText(getString(R.string.sv_login_activity_faq_content))
+                .build()
+
+        sv.overrideButtonClick {
+            sv.hide()
+            val secondTarget = ViewTarget(spCollege)
+
+            ShowcaseView.Builder(mActivity)
+                    .setStyle(R.style.ShowcaseTheme)
+                    .setTarget(secondTarget)
+                    .singleShot(R.id.spCollege.toLong())
+                    .setContentTitle(getString(R.string.sv_login_activity_spinner))
+                    .setContentText(getString(R.string.sv_login_activity_spinner_content))
+                    .build()
+        }
+    }
+
     override fun onResume() {
         super.onResume()
         if (GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(mActivity)
@@ -124,7 +158,6 @@ class LoginFragment : Fragment(), LoginMvpView, AdapterView.OnItemSelectedListen
             GoogleApiAvailability.getInstance().makeGooglePlayServicesAvailable(mActivity)
         }
     }
-
 
     private fun isValid(username: String, password: String): Boolean {
         var valid = true
@@ -236,6 +269,12 @@ class LoginFragment : Fragment(), LoginMvpView, AdapterView.OnItemSelectedListen
         spinnerAdapter.clear()
         spinnerAdapter.addAll(data)
         Timber.d("Colleges: %s", data)
+        // showcase when list of colleges is loaded
+        bLogin.post {
+            kotlin.run {
+                showcaseView()
+            }
+        }
     }
 
     override fun saveToken(username: String, college: String, authToken: String) {

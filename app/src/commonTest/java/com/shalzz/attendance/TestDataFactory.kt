@@ -66,8 +66,6 @@ object TestDataFactory {
                 name = "Name-$uniqueSuffix",
                 teacher = "Teacher-$uniqueSuffix",
                 room = "Room-$uniqueSuffix",
-                batchid = "Batchid-$uniqueSuffix",
-                batch = "Batch-$uniqueSuffix",
                 start = "Start-$uniqueSuffix",
                 end = "End-$uniqueSuffix",
                 absent = uniqueSuffix.length % 2 == 0,

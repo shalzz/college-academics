@@ -25,7 +25,6 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
-import android.view.MenuInflater
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatDelegate
 import com.google.firebase.analytics.FirebaseAnalytics
@@ -37,6 +36,7 @@ import kotlinx.android.synthetic.main.include_toolbar.*
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Named
+
 
 class AuthenticatorActivity: AccountAuthenticatorActivity(),
         LoginFragment.OnFragmentInteractionListener {

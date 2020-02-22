@@ -234,12 +234,12 @@ class MainActivity : BaseActivity(), MainMvpView, BillingProvider {
         }
 
         val sv = ShowcaseView.Builder(this)
-            .setTarget(homeTarget)
-            .setStyle(R.style.ShowcaseTheme)
-            .singleShot(1111)
-            .setContentTitle(getString(R.string.sv_main_activity_title))
-            .setContentText(getString(R.string.sv_main_activity_content))
-            .build()
+                .setTarget(homeTarget)
+                .setStyle(R.style.ShowcaseTheme)
+                .singleShot(1111)
+                .setContentTitle(getString(R.string.sv_main_activity_title))
+                .setContentText(getString(R.string.sv_main_activity_content))
+                .build()
 
         sv.overrideButtonClick {
             drawer_layout.closeDrawer(mNavigationView)

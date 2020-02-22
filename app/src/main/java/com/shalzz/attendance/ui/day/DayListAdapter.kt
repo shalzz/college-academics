@@ -76,9 +76,7 @@ internal constructor() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 if (oldItem.absent != newItem.absent) {
                     return false
                 }
-                return if (oldItem.batch != null && newItem.batch != null && oldItem.batch != newItem.batch) {
-                    false
-                } else oldItem.room == newItem.room
+                return oldItem.room == newItem.room
             }
 
             override fun areItemsTheSame(item1: Period, item2: Period): Boolean {

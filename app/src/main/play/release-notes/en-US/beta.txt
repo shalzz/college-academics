@@ -1,3 +1,2 @@
-• FAQ sections for user support for common queries
-• Contact us by using the "Report an issue" button on the Help Center page
+• Bug fixes and improvements
 

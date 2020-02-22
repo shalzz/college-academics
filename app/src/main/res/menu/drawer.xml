@@ -25,17 +25,17 @@
             android:checked="true"
             android:orderInCategory="1"
             android:title="@string/navigation_item_1"/>
-        <!--<item-->
-            <!--android:id="@+id/timeTablePagerFragment"-->
-            <!--android:orderInCategory="2"-->
-            <!--android:title="@string/navigation_item_2"/>-->
+        <item
+            android:id="@+id/timeTablePagerFragment"
+            android:orderInCategory="2"
+            android:title="@string/navigation_item_2"/>
         <item
             android:id="@+id/settingsFragment"
-            android:orderInCategory="3"
+            android:orderInCategory="4"
             android:title="@string/navigation_item_3"/>
         <item
             android:id="@+id/helpNSupport"
-            android:orderInCategory="4"
+            android:orderInCategory="3"
             android:title="@string/navigation_item_4"/>
     </group>
 
