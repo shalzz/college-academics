@@ -26,7 +26,7 @@ plugins {
     kotlin("kapt")
     id("com.bugsnag.android.gradle")
     id("com.google.android.gms.oss-licenses-plugin")
-    id("com.github.triplet.play") version "2.6.1"
+    id("com.github.triplet.play") version "2.6.2"
     id("com.google.gms.google-services") apply false
 }
 
