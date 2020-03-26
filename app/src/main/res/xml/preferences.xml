@@ -22,6 +22,16 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <PreferenceCategory app:title="Support" app:key="support" >
+        <!-- Note to self: DO NOT REMOVE THIS EVER! -->
+        <Preference
+            app:key="@string/pref_key_twitter"
+            app:icon="@drawable/ic_twitter_24dp"
+            app:title="Twitter">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="https://twitter.com/shalzzj" />
+        </Preference>
+        <!-- End note -->
         <Preference
             app:key="@string/pref_key_play_dev_page"
             app:icon="@drawable/ic_google_play_24dp"
