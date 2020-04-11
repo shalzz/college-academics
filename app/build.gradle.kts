@@ -57,7 +57,7 @@ android {
 
     defaultConfig {
         applicationId = "com.shalzz.attendance"
-        minSdkVersion(16)
+        minSdkVersion(21)
         targetSdkVersion(29)
         versionCode = gitCommitCount
         versionName = gitTag
