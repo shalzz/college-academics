@@ -52,6 +52,10 @@ jobs:
         api-level: 29
         script: ./gradlew connectedCheck --stacktrace
 
-#   - name: Publish
-#     if: contains(github.ref, 'tags')
-#     run: ./gradlew publishRelease --stacktrace
+  deploy:
+    needs: [build, test]
+    if: contains(github.ref, 'tags')
+    runs-on: ubuntu-latest
+    steps:
+    - name: Publish
+      run: ./gradlew publishRelease --stacktrace
