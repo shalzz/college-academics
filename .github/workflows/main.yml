@@ -31,10 +31,8 @@ jobs:
     - name: Run Unit Tests
       run: ./gradlew test
 
-    - name: Build & Test Project
+    - name: Build
       run: ./gradlew assemble --continue --stacktrace
-      env:
-        APP_KEY: ${{ secrets.APP_KEY }}
 
     - name: Run Lint checks
       run: ./gradlew lint --continue
@@ -79,6 +77,8 @@ jobs:
 
     - name: Publish
       run: ./gradlew publishRelease --stacktrace
+      env:
+        APP_KEY: ${{ secrets.APP_KEY }}
 
     - name: Read last commit message
       id: changelog
