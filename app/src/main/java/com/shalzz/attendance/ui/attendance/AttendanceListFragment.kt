@@ -158,7 +158,7 @@ class AttendanceListFragment : Fragment(), AttendanceMvpView,
         (mActivity as MainActivity).setTitle(R.string.navigation_item_1)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?, menuInflater: MenuInflater?) {
+    jjoverride fun onCreateOptionsMenu(menu: Menu?, menuInflater: MenuInflater?) {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater!!.inflate(R.menu.attendance, menu)
         val searchItem = menu!!.findItem(R.id.menu_search)

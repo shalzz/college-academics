@@ -206,7 +206,7 @@ dependencies {
 //    implementation("com.github.shalzz:helpstack:1.4.1-debug")
 
     implementation("com.google.android.gms:play-services-oss-licenses:17.0.0")
-    implementation("com.google.android.material:material:1.0.0")
+    implementation("com.google.android.material:material:1.1.0")
 
     implementation("androidx.core:core:1.0.2")
     implementation("androidx.appcompat:appcompat:1.0.2")

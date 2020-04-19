@@ -35,8 +35,8 @@
         android:minHeight="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
         android:subtitleTextAppearance="@style/MyActionBarSubTitleText"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+        android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.MaterialComponents.Light" />
 
     <fragment
             android:layout_width="match_parent"
