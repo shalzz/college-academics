@@ -61,16 +61,12 @@ class CaptchaDialogFragment(listener: CaptchaDialogListener, dataAPI: DataAPI, c
         fun onDialogPositiveClick(dialog: MaterialDialog, captcha: String, cookie: String)
     }
 
-    override fun onAttach(context: Context?) {
-        super.onAttach(context)
-        mContext = context!!
-    }
-
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val inflater = activity!!.layoutInflater
+        val inflater = requireActivity().layoutInflater
         val mView = inflater.inflate(R.layout.captcha_dialog, null)
 
-        return MaterialDialog.Builder(context!!)
+        mContext = requireContext()
+        return MaterialDialog.Builder(mContext)
                 .positiveText(R.string.login_button)
                 .negativeText(android.R.string.cancel)
                 .customView(mView, false)
@@ -103,7 +99,7 @@ class CaptchaDialogFragment(listener: CaptchaDialogListener, dataAPI: DataAPI, c
 
         // logs in when user press done on keyboard.
         materialDialog.captchaEditText.setOnEditorActionListener(
-                TextView.OnEditorActionListener { view, actionId, event ->
+                TextView.OnEditorActionListener { _, actionId, _ ->
                     if (actionId == EditorInfo.IME_ACTION_DONE) {
                         positiveButton.performClick()
                         return@OnEditorActionListener true

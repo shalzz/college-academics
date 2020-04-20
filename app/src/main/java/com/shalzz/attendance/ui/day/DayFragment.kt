@@ -76,8 +76,8 @@ class DayFragment : Fragment(), DayMvpView {
      * The [androidx.swiperefreshlayout.widget.SwipeRefreshLayout] that detects swipe gestures and
      * triggers callbacks in the app.
      */
-    var mSwipeRefreshLayout: MultiSwipeRefreshLayout? = null
-    var mRecyclerView: RecyclerView? = null
+    private var mSwipeRefreshLayout: MultiSwipeRefreshLayout? = null
+    private var mRecyclerView: RecyclerView? = null
     private lateinit var mDate: Date
     private lateinit var mEmptyView: EmptyView
 
@@ -93,8 +93,8 @@ class DayFragment : Fragment(), DayMvpView {
         setHasOptionsMenu(true)
         mDayPresenter.attachView(this)
 
-        mDate = if (arguments!!.getSerializable(ARG_DATE) != null)
-            arguments!!.getSerializable(ARG_DATE) as Date
+        mDate = if (arguments?.getSerializable(ARG_DATE) != null)
+            requireArguments().getSerializable(ARG_DATE) as Date
         else
             Date()
 
@@ -124,12 +124,12 @@ class DayFragment : Fragment(), DayMvpView {
         return mView
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
-        inflater!!.inflate(R.menu.day, menu)
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.day, menu)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        if (item!!.itemId == R.id.menu_refresh) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.menu_refresh) {
             // We make sure that the SwipeRefreshLayout is displaying it's refreshing indicator
             if (!mSwipeRefreshLayout!!.isRefreshing) {
                 mSwipeRefreshLayout!!.isRefreshing = true
