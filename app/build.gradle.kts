@@ -137,6 +137,10 @@ android {
         targetCompatibility = JavaVersion.VERSION_1_8
     }
 
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8.toString()
+    }
+
     sourceSets {
         val commonTestDir = "src/commonTest/java"
 
@@ -184,7 +188,7 @@ dependencies {
     val RETROFIT_VERSION = "2.8.1"
     val MOSHI_VERSION = "1.9.2"
     val ROOM_VERSION = "2.2.5"
-    val NAV_VERSION = "1.0.0"
+    val NAV_VERSION = "2.2.0"
 
     // TODO: re-evaluate when RxJava is completely replaced with kotlin co-routines
     implementation("androidx.multidex:multidex:2.0.1")
@@ -197,8 +201,8 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.5")
 
     implementation("androidx.core:core-ktx:1.2.0")
-    implementation("android.arch.navigation:navigation-fragment-ktx:$NAV_VERSION")
-    implementation("android.arch.navigation:navigation-ui-ktx:$NAV_VERSION")
+    implementation("androidx.navigation:navigation-fragment-ktx:$NAV_VERSION")
+    implementation("androidx.navigation:navigation-ui-ktx:$NAV_VERSION")
 
     implementation("com.google.firebase:firebase-core:17.3.0")
     implementation("com.google.firebase:firebase-analytics:17.3.0")
