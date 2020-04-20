@@ -308,8 +308,11 @@ class MainActivity : BaseActivity(), MainMvpView, BillingProvider {
     /******* MVP View methods implementation  */
 
     override fun updateUserDetails(user: User) {
+        val name = user.name.split(" ")
+                .joinToString(" ") { s -> s.toLowerCase().capitalize() }
         if (user.name.isNotEmpty())
-            drawerHeaderVH!!.tvName.text = user.name
+            drawerHeaderVH!!.tvName.text = name
+        println(name)
         if (user.course.isNotEmpty())
             drawerHeaderVH!!.tvCourse.text = user.course
     }
