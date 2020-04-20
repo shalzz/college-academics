@@ -1,3 +1,3 @@
-• Re-enabled timetable for some colleges with the old timetable format.
+• Updated Navigation drawer look
+• Updates for Android 10
 • Bug fixes and improvements
-

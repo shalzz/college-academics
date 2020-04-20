@@ -28,17 +28,15 @@
         android:background="@drawable/login_background"
         tools:context=".ui.login.AuthenticatorActivity">
 
-    <androidx.appcompat.widget.Toolbar
+    <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
         android:minHeight="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
-        android:subtitleTextAppearance="@style/MyActionBarSubTitleText"
-        android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar"
-        app:popupTheme="@style/ThemeOverlay.MaterialComponents.Light" />
+        android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar"/>
 
-    <fragment
+    <androidx.fragment.app.FragmentContainerView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/login_nav_host_fragment"
