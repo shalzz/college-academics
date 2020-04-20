@@ -38,6 +38,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.Navigation
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import androidx.recyclerview.widget.RecyclerView
@@ -120,7 +121,9 @@ class MainActivity : BaseActivity(), MainMvpView, BillingProvider {
         isTabletLayout = resources.getBoolean(R.bool.tablet_layout)
 
         setSupportActionBar(toolbar)
-        navController = Navigation.findNavController(this, R.id.nav_main_host_fragment)
+        val navHostFragment = supportFragmentManager
+                .findFragmentById(R.id.nav_main_host_fragment) as NavHostFragment
+        navController = navHostFragment.navController
         setupWithNavController(mNavigationView, navController)
 
         if (!isTabletLayout) {
