@@ -92,7 +92,6 @@ constructor(@ApplicationContext context: Context) {
      */
     fun removeUser() {
         val editor = mPref.edit()
-        editor.remove(MainActivity.PREFERENCE_ACTIVATED_FRAGMENT)
         editor.putBoolean("LOGGEDIN", false)
         editor.remove("USERNAME")
         editor.remove("TOKEN")

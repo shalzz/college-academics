@@ -38,9 +38,9 @@ import com.shalzz.attendance.event.ProKeyPurchaseEvent;
 import com.shalzz.attendance.injection.ActivityContext;
 import com.shalzz.attendance.sync.MyAccountManager;
 import com.shalzz.attendance.ui.main.MainActivity;
-import com.shalzz.attendance.utils.Utils.Analytics;
 import com.shalzz.attendance.utils.RxEventBus;
 import com.shalzz.attendance.utils.RxUtil;
+import com.shalzz.attendance.utils.Utils.Analytics;
 import com.shalzz.attendance.wrapper.ProModeListPreference;
 
 import javax.inject.Inject;
@@ -93,13 +93,13 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
         addPreferencesFromResource(R.xml.preferences);
 
         key_sync_interval = getString(R.string.pref_key_sync_interval);
-        ListPreference synclistPref = (ListPreference) findPreference(key_sync_interval);
+        ListPreference synclistPref = findPreference(key_sync_interval);
         synclistPref.setSummary(synclistPref.getEntry());
 
-        syncPref = (SwitchPreferenceCompat) findPreference(getString(R.string.pref_key_sync));
-        proThemePref = (ProModeListPreference) findPreference(getString(R.string.pref_key_day_night));
-        weekendsPref = (SwitchPreferenceCompat) findPreference(getString(R.string.pref_key_hide_weekends));
-        proModePref = (SwitchPreferenceCompat) findPreference(getString(R.string.pref_key_pro_mode));
+        syncPref = findPreference(getString(R.string.pref_key_sync));
+        proThemePref = findPreference(getString(R.string.pref_key_day_night));
+        weekendsPref = findPreference(getString(R.string.pref_key_hide_weekends));
+        proModePref = findPreference(getString(R.string.pref_key_pro_mode));
     }
 
     @Override

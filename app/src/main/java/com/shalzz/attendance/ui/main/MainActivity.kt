@@ -37,7 +37,7 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
-import androidx.navigation.Navigation
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import androidx.recyclerview.widget.RecyclerView
@@ -91,15 +91,6 @@ class MainActivity : BaseActivity(), MainMvpView, BillingProvider {
     private var mBillingManager: BillingManager? = null
     private lateinit var navController: NavController
 
-    /**
-     * Reference to fragment positions
-     */
-    enum class Fragments(val value: Int) {
-        ATTENDANCE(1),
-        TIMETABLE(2),
-        SETTINGS(3)
-    }
-
     class DrawerHeaderViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val tvName: TextView = itemView.drawer_header_name
         val tvCourse: TextView = itemView.drawer_header_course
@@ -118,9 +109,12 @@ class MainActivity : BaseActivity(), MainMvpView, BillingProvider {
         mNavigationView = list_slidermenu
         mToolbar = toolbar
         isTabletLayout = resources.getBoolean(R.bool.tablet_layout)
-
         setSupportActionBar(toolbar)
-        navController = Navigation.findNavController(this, R.id.nav_main_host_fragment)
+
+        val navHostFragment = supportFragmentManager
+                .findFragmentById(R.id.nav_main_host_fragment) as NavHostFragment
+        navController = navHostFragment.navController
+
         setupWithNavController(mNavigationView, navController)
 
         if (!isTabletLayout) {
@@ -178,13 +172,14 @@ class MainActivity : BaseActivity(), MainMvpView, BillingProvider {
                 } else
                     NavigationUI.onNavDestinationSelected(item, navController)
             }
-            val parent = navigationView.parent
-            (parent as DrawerLayout).closeDrawer(navigationView)
+            if (!isTabletLayout) {
+                val parent = navigationView.parent
+                (parent as DrawerLayout).closeDrawer(navigationView)
+            }
             true
         }
         val weakReference = WeakReference(navigationView)
         navController.addOnDestinationChangedListener(object : NavController.OnDestinationChangedListener {
-
 
             override fun onDestinationChanged(controller: NavController,
                                               destination: NavDestination,
@@ -273,6 +268,7 @@ class MainActivity : BaseActivity(), MainMvpView, BillingProvider {
             finish()
         else
             navController.navigate(R.id.attendanceListFragment)
+        super.onActivityResult(requestCode, resultCode, data)
     }
 
     override fun setTitle(title: CharSequence) {
@@ -346,11 +342,6 @@ class MainActivity : BaseActivity(), MainMvpView, BillingProvider {
          */
         var LOGGED_OUT = false
 
-        /**
-         * Remember the position of the selected item.
-         */
-        val PREFERENCE_ACTIVATED_FRAGMENT = "ACTIVATED_FRAGMENT2.2"
-
-        val ACTIVITY_RESULT_CODE_AUTHENTICATION = 1;
+        const val ACTIVITY_RESULT_CODE_AUTHENTICATION = 1
     }
 }

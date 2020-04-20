@@ -23,7 +23,6 @@ import android.app.Activity
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
@@ -32,7 +31,6 @@ import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import com.afollestad.materialdialogs.MaterialDialog
 import com.bugsnag.android.Bugsnag
-import com.github.amlcurran.showcaseview.OnShowcaseEventListener
 import com.github.amlcurran.showcaseview.ShowcaseView
 import com.github.amlcurran.showcaseview.targets.ViewTarget
 import com.google.android.gms.common.ConnectionResult
@@ -43,10 +41,8 @@ import com.shalzz.attendance.data.local.PreferencesHelper
 import com.shalzz.attendance.data.model.College
 import com.shalzz.attendance.data.model.entity.User
 import com.shalzz.attendance.data.remote.DataAPI
-import com.shalzz.attendance.ui.attendance.AttendanceListFragment
 import com.shalzz.attendance.utils.Utils
 import com.shalzz.attendance.utils.Utils.Analytics
-import kotlinx.android.synthetic.main.drawer.*
 import kotlinx.android.synthetic.main.fragment_login.*
 import kotlinx.android.synthetic.main.fragment_login.view.*
 import timber.log.Timber
@@ -131,7 +127,7 @@ class LoginFragment : Fragment(), LoginMvpView, AdapterView.OnItemSelectedListen
         val sv = ShowcaseView.Builder(mActivity)
                 .setStyle(R.style.ShowcaseTheme)
                 .setTarget(target)
-                .singleShot(R.id.menu_help.toLong())
+                .singleShot(4444)
                 .blockAllTouches()
                 .setContentTitle(getString(R.string.sv_login_activity_faq))
                 .setContentText(getString(R.string.sv_login_activity_faq_content))
@@ -144,7 +140,7 @@ class LoginFragment : Fragment(), LoginMvpView, AdapterView.OnItemSelectedListen
             ShowcaseView.Builder(mActivity)
                     .setStyle(R.style.ShowcaseTheme)
                     .setTarget(secondTarget)
-                    .singleShot(R.id.spCollege.toLong())
+                    .singleShot(5555)
                     .setContentTitle(getString(R.string.sv_login_activity_spinner))
                     .setContentText(getString(R.string.sv_login_activity_spinner_content))
                     .build()
@@ -262,7 +258,7 @@ class LoginFragment : Fragment(), LoginMvpView, AdapterView.OnItemSelectedListen
     override fun showCaptchaDialog() {
         dismissProgressDialog()
         val dialog = CaptchaDialogFragment(this, mDataApi, college!!.id)
-        dialog.show(fragmentManager, "captcha-dialog")
+        dialog.show(parentFragmentManager, "captcha-dialog")
     }
 
     override fun updateCollegeList(data: List<College>) {

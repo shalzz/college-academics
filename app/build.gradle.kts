@@ -17,7 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 import com.lordcodes.turtle.shellRun
-import org.jetbrains.kotlin.config.KotlinCompilerVersion
 
 plugins {
     id("com.android.application")
@@ -138,6 +137,10 @@ android {
         targetCompatibility = JavaVersion.VERSION_1_8
     }
 
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8.toString()
+    }
+
     sourceSets {
         val commonTestDir = "src/commonTest/java"
 
@@ -182,38 +185,40 @@ kapt {
 dependencies {
     val DAGGER_VERSION = "2.24"
     val ESPRESSO_VERSION = "3.1.0"
-    val RETROFIT_VERSION = "2.6.2"
-    val MOSHI_VERSION = "1.8.0"
-    val ROOM_VERSION = "2.2.1"
-    val NAV_VERSION = "1.0.0"
+    val RETROFIT_VERSION = "2.8.1"
+    val MOSHI_VERSION = "1.9.2"
+    val ROOM_VERSION = "2.2.5"
+    val NAV_VERSION = "2.2.0"
 
     // TODO: re-evaluate when RxJava is completely replaced with kotlin co-routines
     implementation("androidx.multidex:multidex:2.0.1")
 
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.0.4")
-    implementation(kotlin("stdlib-jdk7", KotlinCompilerVersion.VERSION))
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.0.5")
+    implementation(kotlin("stdlib-jdk7"))
+    implementation(kotlin("stdlib-jdk8"))
 
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.5")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.5")
 
-    implementation("androidx.core:core-ktx:1.1.0")
-    implementation("android.arch.navigation:navigation-fragment-ktx:$NAV_VERSION")
-    implementation("android.arch.navigation:navigation-ui-ktx:$NAV_VERSION")
+    implementation("androidx.core:core-ktx:1.2.0")
+    implementation("androidx.navigation:navigation-fragment-ktx:$NAV_VERSION")
+    implementation("androidx.navigation:navigation-ui-ktx:$NAV_VERSION")
 
-    implementation("com.google.firebase:firebase-core:17.2.1")
-    implementation("com.google.firebase:firebase-analytics:17.2.1")
+    implementation("com.google.firebase:firebase-core:17.3.0")
+    implementation("com.google.firebase:firebase-analytics:17.3.0")
     implementation("com.github.shalzz:helpstack-android:1.4.6")
 //    implementation("com.github.shalzz:helpstack:1.4.1-debug")
 
     implementation("com.google.android.gms:play-services-oss-licenses:17.0.0")
-    implementation("com.google.android.material:material:1.0.0")
+    implementation("com.google.android.material:material:1.1.0")
 
-    implementation("androidx.core:core:1.0.2")
-    implementation("androidx.appcompat:appcompat:1.0.2")
-    implementation("androidx.fragment:fragment:1.0.0")
-    implementation("androidx.recyclerview:recyclerview:1.0.0")
-    implementation("androidx.preference:preference:1.0.0")
-    implementation("androidx.annotation:annotation:1.0.2")
+    implementation("androidx.core:core:1.2.0")
+    implementation("androidx.appcompat:appcompat:1.1.0")
+    implementation("androidx.fragment:fragment:1.2.4")
+    implementation("androidx.fragment:fragment-ktx:1.2.4")
+    implementation("androidx.recyclerview:recyclerview:1.1.0")
+    implementation("androidx.preference:preference:1.1.1")
+    implementation("androidx.annotation:annotation:1.1.0")
     implementation("androidx.constraintlayout:constraintlayout:1.1.3")
     implementation("androidx.constraintlayout:constraintlayout-solver:1.1.3")
 
@@ -228,8 +233,8 @@ dependencies {
 
     implementation("com.jakewharton.timber:timber:4.7.1")
 
-    implementation("io.reactivex.rxjava2:rxandroid:2.0.2")
-    implementation("io.reactivex.rxjava2:rxjava:2.1.14")
+    implementation("io.reactivex.rxjava2:rxandroid:2.1.1")
+    implementation("io.reactivex.rxjava2:rxjava:2.2.19")
 
     implementation("com.squareup.retrofit2:retrofit:$RETROFIT_VERSION")
     implementation("com.squareup.retrofit2:converter-moshi:$RETROFIT_VERSION")
@@ -255,9 +260,9 @@ dependencies {
     testImplementation("androidx.room:room-testing:$ROOM_VERSION")
     androidTestImplementation("androidx.room:room-testing:$ROOM_VERSION")
 
-    val jUnit = "androidx.test.ext:junit:1.0.0"
+    val jUnit = "androidx.test.ext:junit:1.1.1"
     val truth = "androidx.test.ext:truth:1.0.0"
-    val mockito = "org.mockito:mockito-core:3.1.0"
+    val mockito = "org.mockito:mockito-core:3.3.3"
 
     // Unit tests dependencies
     testImplementation(jUnit)
@@ -265,7 +270,7 @@ dependencies {
     testImplementation(mockito)
     testImplementation("androidx.test:core:1.2.0")
     testImplementation("org.robolectric:robolectric:4.3.1")
-    testImplementation("org.robolectric:shadows-multidex:4.0")
+    testImplementation("org.robolectric:shadows-multidex:4.3.1")
 
     // Instrumentation test dependencies
     androidTestImplementation(jUnit)

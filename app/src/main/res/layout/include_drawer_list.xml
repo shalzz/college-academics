@@ -25,10 +25,8 @@
     android:layout_width="wrap_content"
     android:layout_height="match_parent"
     android:layout_gravity="start"
-    android:theme="@style/Theme.AppCompat.NoActionBar"
     android:soundEffectsEnabled="true"
     android:hapticFeedbackEnabled="true"
     android:fitsSystemWindows="true"
-    app:itemTextColor="@color/list_text"
     app:menu="@menu/drawer"
     app:headerLayout="@layout/drawer_header"/>

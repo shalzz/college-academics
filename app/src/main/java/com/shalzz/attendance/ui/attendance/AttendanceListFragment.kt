@@ -25,13 +25,7 @@ import android.animation.ValueAnimator
 import android.app.Activity
 import android.os.Bundle
 import android.text.TextUtils
-import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
-import android.view.ViewTreeObserver
+import android.view.*
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
@@ -59,6 +53,8 @@ import kotlinx.android.synthetic.main.fragment_attendance.*
 import kotlinx.android.synthetic.main.fragment_attendance.view.*
 import javax.inject.Inject
 import javax.inject.Named
+import kotlin.math.abs
+import kotlin.math.min
 
 class AttendanceListFragment : Fragment(), AttendanceMvpView,
     ExpandableListAdapter.SubjectItemExpandedListener {
@@ -102,7 +98,7 @@ class AttendanceListFragment : Fragment(), AttendanceMvpView,
         useGridLayout = resources.getBoolean(R.bool.use_grid_layout)
         mExpandCollapseDuration = resources.getInteger(R.integer.expand_collapse_duration)
 
-        mActivity = activity!!
+        mActivity = requireActivity()
         (mActivity as MainActivity).activityComponent().inject(this)
         mPresenter.attachView(this)
         setHasOptionsMenu(true)
@@ -158,10 +154,10 @@ class AttendanceListFragment : Fragment(), AttendanceMvpView,
         (mActivity as MainActivity).setTitle(R.string.navigation_item_1)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?, menuInflater: MenuInflater?) {
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        menuInflater!!.inflate(R.menu.attendance, menu)
-        val searchItem = menu!!.findItem(R.id.menu_search)
+        inflater.inflate(R.menu.attendance, menu)
+        val searchItem = menu.findItem(R.id.menu_search)
 
         val searchView = searchItem.actionView as SearchView
         searchView.queryHint = resources.getString(R.string.hint_search)
@@ -184,8 +180,8 @@ class AttendanceListFragment : Fragment(), AttendanceMvpView,
         })
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        if (item!!.itemId == R.id.menu_refresh) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.menu_refresh) {
             // We make sure that the SwipeRefreshLayout is displaying it's refreshing indicator
             if (!layoutSwipeRefresh.isRefreshing) {
                 layoutSwipeRefresh.isRefreshing = true
@@ -197,7 +193,7 @@ class AttendanceListFragment : Fragment(), AttendanceMvpView,
             bundle.putString(FirebaseAnalytics.Param.ITEM_ID, item.title.toString())
             bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "Search")
             bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "menu")
-            mTracker.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle)
+            mTracker.logEvent(FirebaseAnalytics.Event.SELECT_ITEM, bundle)
         }
         return super.onOptionsItemSelected(item)
     }
@@ -217,8 +213,8 @@ class AttendanceListFragment : Fragment(), AttendanceMvpView,
                 }
                 // Calculate some values to help with the animation.
                 val endingHeight = view.height
-                val distance = Math.abs(endingHeight - startingHeight)
-                val baseHeight = Math.min(endingHeight, startingHeight)
+                val distance = abs(endingHeight - startingHeight)
+                val baseHeight = min(endingHeight, startingHeight)
                 val isExpanded = endingHeight > startingHeight
 
                 // Set the views back to the start state of the animation
@@ -267,7 +263,6 @@ class AttendanceListFragment : Fragment(), AttendanceMvpView,
 
     override fun getViewForCallId(callId: Long): View? {
         if (!useGridLayout) {
-            assert(mLinearLayoutManager != null)
             val firstPosition = mLinearLayoutManager!!.findFirstVisibleItemPosition()
             val lastPosition = mLinearLayoutManager!!.findLastVisibleItemPosition()
 
@@ -284,7 +279,6 @@ class AttendanceListFragment : Fragment(), AttendanceMvpView,
         } else {
             val firstPosition = intArrayOf(0, 0)
             val lastPosition = intArrayOf(0, 0)
-            assert(mGridLayoutManager != null)
             mGridLayoutManager!!.findFirstVisibleItemPositions(firstPosition)
             mGridLayoutManager!!.findLastVisibleItemPositions(lastPosition)
 
@@ -329,7 +323,7 @@ class AttendanceListFragment : Fragment(), AttendanceMvpView,
         if (recyclerView.getChildAt(2) != null) {
             val target = ViewTarget(recyclerView.getChildAt(2))
 
-            ShowcaseView.Builder(activity!!)
+            ShowcaseView.Builder(mActivity)
                 .setStyle(R.style.ShowcaseTheme)
                 .setTarget(target)
                 .singleShot(2222)
@@ -358,7 +352,7 @@ class AttendanceListFragment : Fragment(), AttendanceMvpView,
     override fun showRetryError(message: String) {
         stopRefreshing()
         Snackbar.make(recyclerView, message, Snackbar.LENGTH_LONG)
-            .setAction("Retry") { v -> mPresenter.syncAttendance() }
+            .setAction("Retry") { mPresenter.syncAttendance() }
             .show()
     }
 

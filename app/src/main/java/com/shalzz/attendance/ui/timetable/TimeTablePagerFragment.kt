@@ -19,35 +19,26 @@
 
 package com.shalzz.attendance.ui.timetable
 
-import android.app.DatePickerDialog
 import android.content.Context
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
-
+import android.view.*
+import androidx.appcompat.app.ActionBar
+import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import androidx.viewpager.widget.ViewPager
 import com.bugsnag.android.Bugsnag
 import com.github.amlcurran.showcaseview.ShowcaseView
 import com.github.amlcurran.showcaseview.targets.Target
+import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.shalzz.attendance.R
 import com.shalzz.attendance.ui.main.MainActivity
 import com.shalzz.attendance.utils.RxEventBus
 import com.shalzz.attendance.wrapper.DateHelper
-
-import java.util.Calendar
-import java.util.Date
-
+import kotlinx.android.synthetic.main.fragment_viewpager.view.*
+import java.util.*
 import javax.inject.Inject
 import javax.inject.Named
-import androidx.appcompat.app.ActionBar
-import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
-import androidx.viewpager.widget.ViewPager
-import kotlinx.android.synthetic.main.fragment_viewpager.view.*
 
 class TimeTablePagerFragment : Fragment(), TimeTableMvpView {
 
@@ -123,8 +114,8 @@ class TimeTablePagerFragment : Fragment(), TimeTableMvpView {
         showcaseView()
     }
 
-    fun showcaseView() {
-        val sv = ShowcaseView.Builder(activity!!)
+    private fun showcaseView() {
+        val sv = ShowcaseView.Builder(requireActivity())
                 .setStyle(R.style.ShowcaseTheme)
                 .setTarget(Target.NONE)
                 .singleShot(3333)
@@ -133,30 +124,35 @@ class TimeTablePagerFragment : Fragment(), TimeTableMvpView {
                 .setContentText(getString(R.string.sv_timetable_content))
                 .build()
 
-        sv.overrideButtonClick { v -> sv.hide() }
+        sv.overrideButtonClick { sv.hide() }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?, menuInflater: MenuInflater?) {
-        menuInflater!!.inflate(R.menu.time_table, menu)
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.time_table, menu)
     }
 
     /* Called whenever we call invalidateOptionsMenu() */
-    override fun onPrepareOptionsMenu(menu: Menu?) {
+    override fun onPrepareOptionsMenu(menu: Menu) {
         updateTitle(-1)
+        super.onPrepareOptionsMenu(menu)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        if (item!!.itemId == R.id.menu_date) {
-            val today = Calendar.getInstance()
-            today.time = Date()
-            val mDatePickerDialog = DatePickerDialog(mContext!!, onDateSetListener(), today.get(Calendar.YEAR), today.get(Calendar.MONTH), today.get(Calendar.DAY_OF_MONTH))
-            mDatePickerDialog.show()
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.menu_date) {
+            val today = Date()
+            val datePickerBuilder = MaterialDatePicker.Builder.datePicker()
+            datePickerBuilder.setSelection(today.time)
+            val datePicker = datePickerBuilder.build()
+            datePicker.addOnPositiveButtonClickListener { selection: Long? ->
+                setDate(Date(selection!!))
+            }
+            datePicker.show(getParentFragmentManager(), datePickerBuilder.toString())
 
             val bundle = Bundle()
             bundle.putString(FirebaseAnalytics.Param.ITEM_ID, item.title.toString())
             bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "Scroll to Date")
             bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "menu")
-            mTracker.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle)
+            mTracker.logEvent(FirebaseAnalytics.Event.SELECT_ITEM, bundle)
             return true
         } else if (item.itemId == R.id.menu_today) {
             setDate(Date())
@@ -165,7 +161,7 @@ class TimeTablePagerFragment : Fragment(), TimeTableMvpView {
             bundle.putString(FirebaseAnalytics.Param.ITEM_ID, item.title.toString())
             bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "Scroll to Today")
             bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "menu")
-            mTracker.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle)
+            mTracker.logEvent(FirebaseAnalytics.Event.SELECT_ITEM, bundle)
             return true
         }
         return super.onOptionsItemSelected(item)
@@ -176,22 +172,13 @@ class TimeTablePagerFragment : Fragment(), TimeTableMvpView {
      *
      * @param position to update for, -1 for current page
      */
-    fun updateTitle(position: Int) {
+    private fun updateTitle(position: Int) {
         if (position != -1)
             mPreviousPosition = position
         val mDate = mAdapter!!.getDateForPosition(mPreviousPosition)
         if (mDate != null) {
             actionbar!!.title = DateHelper.getProperWeekday(mDate)
             actionbar!!.subtitle = DateHelper.toProperFormat(mDate)
-        }
-    }
-
-    private fun onDateSetListener(): DatePickerDialog.OnDateSetListener {
-        return DatePickerDialog.OnDateSetListener{
-            _, year, monthOfYear, dayOfMonth ->
-                val date = Calendar.getInstance()
-                date.set(year, monthOfYear, dayOfMonth)
-                setDate(date.time)
         }
     }
 
