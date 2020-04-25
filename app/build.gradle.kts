@@ -62,7 +62,6 @@ android {
         versionName = gitTag
         multiDexEnabled = true
 //        viewBinding.isEnabled = true
-        vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         resConfig("en")
@@ -221,6 +220,8 @@ dependencies {
     implementation("androidx.annotation:annotation:1.1.0")
     implementation("androidx.constraintlayout:constraintlayout:1.1.3")
     implementation("androidx.constraintlayout:constraintlayout-solver:1.1.3")
+    implementation("androidx.vectordrawable:vectordrawable:1.1.0")
+    implementation("androidx.vectordrawable:vectordrawable-animated:1.1.0")
 
     implementation("com.android.billingclient:billing:1.0")
 
