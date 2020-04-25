@@ -18,11 +18,11 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools"
-                tools:ignore="RtlHardcoded,HardcodedText"
-                android:id="@+id/child_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="RtlHardcoded,HardcodedText"
+    android:id="@+id/child_view"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
 
     <TextView
         android:id="@+id/tvAbsent"
@@ -31,6 +31,7 @@
         android:layout_marginTop="5dp"
         android:layout_marginRight="5dp"
         android:layout_marginEnd="5dp"
+        android:scrollbars="none"
         android:text="Days Absent:"
         android:textSize="15sp" />
 
@@ -54,6 +55,7 @@
         android:layout_centerHorizontal="true"
         android:gravity="center"
         android:padding="5dp"
+        android:scrollbars="none"
         android:text="Attend x more classes to reach 75%"
         android:textSize="15sp" />
 
