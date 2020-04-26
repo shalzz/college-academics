@@ -25,6 +25,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import android.view.inputmethod.EditorInfo
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -97,6 +98,7 @@ class LoginFragment : Fragment(), LoginMvpView, AdapterView.OnItemSelectedListen
 
         spinnerAdapter = ArrayAdapter(mActivity, android.R.layout.simple_list_item_1,
                 ArrayList<College>())
+        spinnerAdapter.add(College("none", "Select Your College"))
         mView.spCollege.adapter = spinnerAdapter
 
         mView.spCollege.onItemSelectedListener = this
@@ -159,7 +161,9 @@ class LoginFragment : Fragment(), LoginMvpView, AdapterView.OnItemSelectedListen
         var valid = true
         etUserId.error = null
         etPassword.error = null
-        if (college == null) { // TODO
+        if (college == null) {
+            Utils.showSnackBar(etUserId, "Please select your college")
+            spCollege.startAnimation(AnimationUtils.loadAnimation(mActivity, R.anim.wiggle))
             dismissProgressDialog()
             valid = false
         }
@@ -225,7 +229,11 @@ class LoginFragment : Fragment(), LoginMvpView, AdapterView.OnItemSelectedListen
     }
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-        college = spinnerAdapter.getItem(position)
+        val item = spinnerAdapter.getItem(position)
+        college = if (item!!.id == "none")
+            null
+        else
+            item
     }
 
     override fun onDetach() {
@@ -262,7 +270,6 @@ class LoginFragment : Fragment(), LoginMvpView, AdapterView.OnItemSelectedListen
     }
 
     override fun updateCollegeList(data: List<College>) {
-        spinnerAdapter.clear()
         spinnerAdapter.addAll(data)
         Timber.d("Colleges: %s", data)
         // showcase when list of colleges is loaded

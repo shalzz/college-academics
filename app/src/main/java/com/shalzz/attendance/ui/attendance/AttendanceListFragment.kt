@@ -100,7 +100,6 @@ class AttendanceListFragment : Fragment(), AttendanceMvpView,
 
         mActivity = requireActivity()
         (mActivity as MainActivity).activityComponent().inject(this)
-        mPresenter.attachView(this)
         setHasOptionsMenu(true)
 
         mView.layoutSwipeRefresh.setOnRefreshListener { mPresenter.syncAttendance() }
@@ -139,8 +138,6 @@ class AttendanceListFragment : Fragment(), AttendanceMvpView,
 
         mView.recyclerView.adapter = mAdapter
 
-        mPresenter.loadAttendance(null)
-
         return mView
     }
 
@@ -152,6 +149,8 @@ class AttendanceListFragment : Fragment(), AttendanceMvpView,
     override fun onResume() {
         super.onResume()
         (mActivity as MainActivity).setTitle(R.string.navigation_item_1)
+        mPresenter.attachView(this)
+        mPresenter.loadAttendance(null)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

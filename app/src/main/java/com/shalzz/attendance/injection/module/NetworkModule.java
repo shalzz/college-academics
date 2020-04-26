@@ -26,7 +26,6 @@ import com.shalzz.attendance.data.local.PreferencesHelper;
 import com.shalzz.attendance.data.remote.DataAPI;
 import com.shalzz.attendance.data.remote.RxJava2ErrorCallAdapterFactory;
 import com.shalzz.attendance.data.remote.interceptor.AuthInterceptor;
-import com.shalzz.attendance.data.remote.interceptor.CacheControlInterceptor;
 import com.shalzz.attendance.data.remote.interceptor.HeaderInterceptor;
 import com.shalzz.attendance.data.remote.interceptor.LoggingInterceptor;
 import com.shalzz.attendance.injection.ApplicationContext;
@@ -71,7 +70,6 @@ public class NetworkModule {
                 .connectTimeout(60, TimeUnit.SECONDS)
                 .addInterceptor(new HeaderInterceptor())
                 .addInterceptor(new AuthInterceptor(preferences))
-                .addNetworkInterceptor(new CacheControlInterceptor(context))
                 .addNetworkInterceptor(new LoggingInterceptor());
 
         return okHttpBuilder.build();

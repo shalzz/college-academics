@@ -100,8 +100,7 @@ jobs:
         prerelease: false
 
     - run: pwd
-    - run: ls
-    - run: tree ./
+    - run: ls ./app/build/outputs/apk/release/app-release.apk
     - name: Upload Release Asset
       id: upload-release-asset
       uses: actions/upload-release-asset@v1
@@ -111,4 +110,4 @@ jobs:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_path: $HOME/app/build/outputs/apk/release/app-release.apk
         asset_name: college-academics-${{ github.ref }}.apk
-        asset_content_type: application/zip
+        asset_content_type: application/vnd.android.package-archive
