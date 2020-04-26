@@ -264,11 +264,11 @@ class MainActivity : BaseActivity(), MainMvpView, BillingProvider {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_CANCELED)
             finish()
         else
             navController.navigate(R.id.attendanceListFragment)
-        super.onActivityResult(requestCode, resultCode, data)
     }
 
     override fun setTitle(title: CharSequence) {
@@ -312,7 +312,6 @@ class MainActivity : BaseActivity(), MainMvpView, BillingProvider {
                 .joinToString(" ") { s -> s.toLowerCase().capitalize() }
         if (user.name.isNotEmpty())
             drawerHeaderVH!!.tvName.text = name
-        println(name)
         if (user.course.isNotEmpty())
             drawerHeaderVH!!.tvCourse.text = user.course
     }
@@ -333,7 +332,9 @@ class MainActivity : BaseActivity(), MainMvpView, BillingProvider {
             Context.NOTIFICATION_SERVICE) as NotificationManager
         mNotificationManager.cancel(0 /* timetable changed notification id */)
 
-        // Destroy current activity and start Login Activity
+        // Destroy attendance Fragment by navigating to the Settings Fragment
+        // and start the Login Activity
+        navController.navigate(R.id.settingsFragment)
         val ourIntent = Intent(this, AuthenticatorActivity::class.java)
         startActivityForResult(ourIntent, ACTIVITY_RESULT_CODE_AUTHENTICATION)
     }

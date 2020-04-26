@@ -42,10 +42,4 @@ public class NetworkUtil {
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
     }
-
-    public static String getCacheControlHeaders(Context context) {
-        return isNetworkConnected(context) ?
-                "public, max-age=60" :  "public, only-if-cached, max-stale=604800";
-    }
-
 }

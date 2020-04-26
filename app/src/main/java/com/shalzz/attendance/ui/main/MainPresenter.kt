@@ -116,24 +116,24 @@ internal constructor(private val mDataManager: DataManager,
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(object : DisposableObserver<LogoutModel>() {
                     override fun onNext(result: LogoutModel) {
-                        MainActivity.LOGGED_OUT = true
-
                         // Remove User Details from Shared Preferences.
                         mPreferenceHelper.removeUser()
 
                         // Remove user Attendance data from database.
                         mDataManager.resetTables()
 
-                        if (isViewAttached) {
-                            mvpView.logout()
-                        }
+                        MainActivity.LOGGED_OUT = true
                     }
 
                     override fun onError(e: Throwable) {
                         Timber.e(e)
                     }
 
-                    override fun onComplete() { }
+                    override fun onComplete() {
+                        if (isViewAttached) {
+                            mvpView.logout()
+                        }
+                    }
                 })
     }
 
