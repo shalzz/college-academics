@@ -332,9 +332,7 @@ class MainActivity : BaseActivity(), MainMvpView, BillingProvider {
             Context.NOTIFICATION_SERVICE) as NotificationManager
         mNotificationManager.cancel(0 /* timetable changed notification id */)
 
-        // Destroy attendance Fragment by navigating to the Settings Fragment
-        // and start the Login Activity
-        navController.navigate(R.id.settingsFragment)
+        // Start the Login Authenticator Activity flow
         val ourIntent = Intent(this, AuthenticatorActivity::class.java)
         startActivityForResult(ourIntent, ACTIVITY_RESULT_CODE_AUTHENTICATION)
     }
