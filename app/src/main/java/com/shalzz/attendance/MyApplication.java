@@ -31,7 +31,6 @@ import com.shalzz.attendance.injection.module.ApplicationModule;
 import com.shalzz.attendance.utils.BugsnagTree;
 import com.shalzz.attendance.utils.Utils;
 import com.tenmiles.helpstack.HSHelpStack;
-import com.tenmiles.helpstack.gears.HSEmailGear;
 
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.multidex.MultiDexApplication;
@@ -46,6 +45,9 @@ public class MyApplication extends MultiDexApplication {
     @Override
     public void onCreate() {
         super.onCreate();
+        if (BuildConfig.DEBUG) {
+            Timber.plant(new Timber.DebugTree());
+        }
 
         Configuration config = new Configuration(getString(R.string.bugsnag_api));
         config.setMaxBreadcrumbs(100);
@@ -56,17 +58,13 @@ public class MyApplication extends MultiDexApplication {
             Bugsnag.setNotifyReleaseStages("production", "development", "testing");
         }
 
+        Timber.plant(new BugsnagTree());
+
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
         FirebaseApp.initializeApp(this);
 
         helpStack = HSHelpStack.getInstance(this);
         helpStack.setOptions("support@8bitlabs.tech", R.xml.articles);
-
-        if (BuildConfig.DEBUG) {
-            Timber.plant(new Timber.DebugTree());
-        }
-
-        Timber.plant(new BugsnagTree());
 
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         int nightMode = Integer.parseInt(sharedPref.getString(

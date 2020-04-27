@@ -33,12 +33,14 @@ import com.shalzz.attendance.wrapper.DateHelper;
 import java.util.Calendar;
 import java.util.Date;
 
+import androidx.annotation.UiThread;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.preference.PreferenceManager;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
+import kotlinx.coroutines.GlobalScope;
 import timber.log.Timber;
 
 public class TimeTablePagerAdapter extends FragmentStatePagerAdapter {
@@ -64,7 +66,6 @@ public class TimeTablePagerAdapter extends FragmentStatePagerAdapter {
         disposable = mEventBus.filteredObservable(ProKeyPurchaseEvent.class)
                 .subscribe(proKeyPurchaseEvent -> {
                     checkPreferences(activity);
-                    updateDates();
                     scrollToToday();
                 });
 
