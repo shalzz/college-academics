@@ -202,6 +202,7 @@ dependencies {
     implementation("androidx.core:core-ktx:1.2.0")
     implementation("androidx.navigation:navigation-fragment-ktx:$NAV_VERSION")
     implementation("androidx.navigation:navigation-ui-ktx:$NAV_VERSION")
+    implementation("androidx.drawerlayout:drawerlayout:1.1.0-rc01")
 
     implementation("com.google.firebase:firebase-core:17.3.0")
     implementation("com.google.firebase:firebase-analytics:17.3.0")
