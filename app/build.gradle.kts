@@ -21,11 +21,10 @@ import com.lordcodes.turtle.shellRun
 plugins {
     id("com.android.application")
     kotlin("android")
-    kotlin("android.extensions")
     kotlin("kapt")
     id("com.bugsnag.android.gradle")
     id("com.google.android.gms.oss-licenses-plugin")
-    id("com.github.triplet.play") version "2.6.2"
+    id("com.github.triplet.play") version "3.4.0-agp4.2"
     id("com.google.gms.google-services") apply false
 }
 
@@ -37,9 +36,9 @@ bugsnag {
 }
 
 play {
-    defaultToAppBundles = true
-    track = "beta"
-    serviceAccountCredentials = file("../play-service-account-key.json")
+    defaultToAppBundles.set(true)
+    track.set("beta")
+    serviceAccountCredentials.set(file("./play-service-account-key.json"))
 }
 
 // query git for the SHA, Tag and commit count. Use these to automate versioning.
@@ -68,10 +67,10 @@ android {
         resValue("string", "app_version", versionName!!)
         javaCompileOptions {
             annotationProcessorOptions {
-                arguments = mapOf(
+                arguments.plusAssign(mapOf(
                         "room.schemaLocation" to "$projectDir/schemas",
                         "room.incremental" to "true"
-                )
+                ))
             }
         }
     }
@@ -129,7 +128,7 @@ android {
 
     compileOptions {
         // Flag to enable support for the new language APIs
-        setCoreLibraryDesugaringEnabled(true)
+        //setCoreLibraryDesugaringEnabled(true)
 
         // Sets Java compatibility to Java 8
         sourceCompatibility = JavaVersion.VERSION_1_8
@@ -175,6 +174,11 @@ android {
         exclude("META-INF/NOTICE")
         exclude("META-INF/LICENSE")
     }
+
+    buildFeatures {
+        viewBinding = true
+    }
+
 }
 
 kapt {
@@ -188,6 +192,7 @@ dependencies {
     val MOSHI_VERSION = "1.9.2"
     val ROOM_VERSION = "2.2.5"
     val NAV_VERSION = "2.2.0"
+    val BILLING_VERSION = "4.0.0"
 
     // TODO: re-evaluate when RxJava is completely replaced with kotlin co-routines
     implementation("androidx.multidex:multidex:2.0.1")
@@ -199,7 +204,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.5")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.5")
 
-    implementation("androidx.core:core-ktx:1.2.0")
+    implementation("androidx.core:core-ktx:1.5.0")
     implementation("androidx.navigation:navigation-fragment-ktx:$NAV_VERSION")
     implementation("androidx.navigation:navigation-ui-ktx:$NAV_VERSION")
     implementation("androidx.drawerlayout:drawerlayout:1.1.0-rc01")
@@ -224,7 +229,8 @@ dependencies {
     implementation("androidx.vectordrawable:vectordrawable:1.1.0")
     implementation("androidx.vectordrawable:vectordrawable-animated:1.1.0")
 
-    implementation("com.android.billingclient:billing:1.0")
+    implementation("com.android.billingclient:billing:$BILLING_VERSION")
+    implementation("com.android.billingclient:billing-ktx:$BILLING_VERSION")
 
     val daggerCompiler = "com.google.dagger:dagger-compiler:$DAGGER_VERSION"
     implementation("com.google.dagger:dagger:$DAGGER_VERSION")
