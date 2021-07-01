@@ -19,7 +19,7 @@
 
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
-    val kotlinVersion = "1.5.20"
+    val kotlinVersion = "1.4.20"
     repositories {
         google()
         jcenter()
@@ -35,7 +35,7 @@ buildscript {
         classpath("com.google.android.gms:oss-licenses-plugin:0.10.2")
 
         //noinspection GradleDynamicVersion
-        classpath("com.bugsnag:bugsnag-android-gradle-plugin:4.+")
+        classpath("com.bugsnag:bugsnag-android-gradle-plugin:5.+")
         classpath("com.lordcodes.turtle:turtle:0.2.0")
     }
 }
