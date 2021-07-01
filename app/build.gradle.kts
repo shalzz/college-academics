@@ -262,6 +262,9 @@ dependencies {
     testImplementation("androidx.room:room-testing:$ROOM_VERSION")
     androidTestImplementation("androidx.room:room-testing:$ROOM_VERSION")
 
+    //noinspection GradleDynamicVersion
+    implementation("com.bugsnag:bugsnag-android:5.+")
+
     val jUnit = "androidx.test.ext:junit:1.1.1"
     val truth = "androidx.test.ext:truth:1.0.0"
     val mockito = "org.mockito:mockito-core:3.3.3"
