@@ -21,6 +21,7 @@ import com.lordcodes.turtle.shellRun
 plugins {
     id("com.android.application")
     kotlin("android")
+    kotlin("android.extensions")
     kotlin("kapt")
     id("com.bugsnag.android.gradle")
     id("com.google.android.gms.oss-licenses-plugin")
@@ -59,6 +60,7 @@ android {
         versionName = gitTag
         multiDexEnabled = true
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        ndkVersion = "22.1.7171670"
 
         resConfig("en")
         resValue("string", "app_version", versionName!!)
