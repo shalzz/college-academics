@@ -88,7 +88,9 @@ public class BillingManager implements PurchasesUpdatedListener {
         mActivity = activity;
         mDataManager = dataManager;
         mBillingUpdatesListener = updatesListener;
-        mBillingClient = BillingClient.newBuilder(mActivity).setListener(this).build();
+        mBillingClient = BillingClient.newBuilder(mActivity)
+                .enablePendingPurchases()
+                .setListener(this).build();
 
         mConnectionDisposable.add(
                 observePurchasesUpdates().subscribe(mBillingUpdatesListener::onPurchasesUpdated,
@@ -183,6 +185,7 @@ public class BillingManager implements PurchasesUpdatedListener {
      */
     public void initiatePurchaseFlow(final String skuId) {
         SkuDetails sku = skuDetailsMap.get(skuId);
+        Timber.d("SkuDetails: %s", sku);
         Disposable disposable = connect()
                 .subscribe(result -> {
                     if (result.getResponseCode() == BillingResponseCode.OK && sku != null) {
