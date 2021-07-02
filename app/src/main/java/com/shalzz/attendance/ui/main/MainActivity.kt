@@ -41,7 +41,8 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import androidx.recyclerview.widget.RecyclerView
-import com.android.billingclient.api.BillingClient.BillingResponse
+import com.android.billingclient.api.BillingClient
+import com.android.billingclient.api.BillingClient.BillingResponseCode
 import com.bugsnag.android.Bugsnag
 import com.github.amlcurran.showcaseview.ShowcaseView
 import com.google.android.material.navigation.NavigationView
@@ -156,7 +157,8 @@ class MainActivity : BaseActivity(), MainMvpView, BillingProvider {
         // is inactive. For example, this can happen if the activity is destroyed during the
         // purchase flow. This ensures that when the activity is resumed it reflects the user's
         // current purchases.
-        if (mBillingManager != null && mBillingManager!!.billingClientResponseCode == BillingResponse.OK) {
+        if (mBillingManager != null && mBillingManager!!.billingClientResponseCode ==
+            BillingResponseCode.OK) {
             mBillingManager!!.queryPurchases()
         }
     }

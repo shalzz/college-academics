@@ -3,6 +3,9 @@ name: Android CI
 # Trigger the workflow on push or pull request
 on: [push, pull_request]
 
+env:
+  NDK_VERSION: "ndk;21.0.6113669"
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -19,8 +22,7 @@ jobs:
 
     - name: Install required Android tools
       run: |
-        echo "y" | sudo ${ANDROID_HOME}/tools/bin/sdkmanager --install "ndk;21.0.6113669" > /dev/null
-        echo "y" | sudo ${ANDROID_HOME}/tools/bin/sdkmanager --install "ndk-bundle" > /dev/null
+        echo "y" | sudo ${ANDROID_HOME}/tools/bin/sdkmanager --install ${NDK_VERSION} > /dev/null
         echo "y" | sudo $ANDROID_HOME/tools/bin/sdkmanager --licenses > /dev/null
 
     - name: Download Dependencies
@@ -70,7 +72,7 @@ jobs:
 
     - name: Install required Android tools
       run: |
-        echo "y" | sudo ${ANDROID_HOME}/tools/bin/sdkmanager --install "ndk-bundle" > /dev/null
+        echo "y" | sudo ${ANDROID_HOME}/tools/bin/sdkmanager --install ${NDK_VERSION} > /dev/null
         echo "y" | sudo $ANDROID_HOME/tools/bin/sdkmanager --licenses > /dev/null
 
     - name: Decrypt service account key

@@ -25,21 +25,19 @@ plugins {
     kotlin("kapt")
     id("com.bugsnag.android.gradle")
     id("com.google.android.gms.oss-licenses-plugin")
-    id("com.github.triplet.play") version "2.6.2"
+    id("com.github.triplet.play") version "3.4.0-agp4.2"
     id("com.google.gms.google-services") apply false
 }
 
 bugsnag {
-    apiKey = "600a00bfd5bd72e5df7f288f74df8f9b"
-    autoProguardConfig = false
-    overwrite = true
-    retryCount = 3
+    overwrite.set(true)
+    retryCount.set(3)
 }
 
 play {
-    defaultToAppBundles = true
-    track = "beta"
-    serviceAccountCredentials = file("../play-service-account-key.json")
+    defaultToAppBundles.set(true)
+    track.set("beta")
+    serviceAccountCredentials.set(file("./play-service-account-key.json"))
 }
 
 // query git for the SHA, Tag and commit count. Use these to automate versioning.
@@ -61,17 +59,17 @@ android {
         versionCode = gitCommitCount
         versionName = gitTag
         multiDexEnabled = true
-//        viewBinding.isEnabled = true
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        ndkVersion = "22.1.7171670"
 
         resConfig("en")
         resValue("string", "app_version", versionName!!)
         javaCompileOptions {
             annotationProcessorOptions {
-                arguments = mapOf(
+                arguments.plusAssign(mapOf(
                         "room.schemaLocation" to "$projectDir/schemas",
                         "room.incremental" to "true"
-                )
+                ))
             }
         }
     }
@@ -129,7 +127,7 @@ android {
 
     compileOptions {
         // Flag to enable support for the new language APIs
-        setCoreLibraryDesugaringEnabled(true)
+        //setCoreLibraryDesugaringEnabled(true)
 
         // Sets Java compatibility to Java 8
         sourceCompatibility = JavaVersion.VERSION_1_8
@@ -175,6 +173,11 @@ android {
         exclude("META-INF/NOTICE")
         exclude("META-INF/LICENSE")
     }
+
+    buildFeatures {
+        viewBinding = false
+    }
+
 }
 
 kapt {
@@ -188,20 +191,22 @@ dependencies {
     val MOSHI_VERSION = "1.9.2"
     val ROOM_VERSION = "2.2.5"
     val NAV_VERSION = "2.2.0"
+    val BILLING_VERSION = "4.0.0"
 
     // TODO: re-evaluate when RxJava is completely replaced with kotlin co-routines
     implementation("androidx.multidex:multidex:2.0.1")
 
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.0.5")
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.1.5")
     implementation(kotlin("stdlib-jdk7"))
     implementation(kotlin("stdlib-jdk8"))
 
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.5")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.9")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.5")
 
-    implementation("androidx.core:core-ktx:1.2.0")
+    implementation("androidx.core:core-ktx:1.5.0")
     implementation("androidx.navigation:navigation-fragment-ktx:$NAV_VERSION")
     implementation("androidx.navigation:navigation-ui-ktx:$NAV_VERSION")
+    implementation("androidx.drawerlayout:drawerlayout:1.1.0-rc01")
 
     implementation("com.google.firebase:firebase-core:17.3.0")
     implementation("com.google.firebase:firebase-analytics:17.3.0")
@@ -223,7 +228,8 @@ dependencies {
     implementation("androidx.vectordrawable:vectordrawable:1.1.0")
     implementation("androidx.vectordrawable:vectordrawable-animated:1.1.0")
 
-    implementation("com.android.billingclient:billing:1.0")
+    implementation("com.android.billingclient:billing:$BILLING_VERSION")
+    implementation("com.android.billingclient:billing-ktx:$BILLING_VERSION")
 
     val daggerCompiler = "com.google.dagger:dagger-compiler:$DAGGER_VERSION"
     implementation("com.google.dagger:dagger:$DAGGER_VERSION")
@@ -250,9 +256,6 @@ dependencies {
     implementation("com.github.amlcurran.showcaseview:library:5.4.3")
     implementation("com.github.afollestad.material-dialogs:core:0.8.5.5")
 
-    //noinspection GradleDynamicVersion
-    implementation("com.bugsnag:bugsnag-android:4.+")
-
     // Room Persistence
     implementation("androidx.room:room-runtime:$ROOM_VERSION")
     kapt("androidx.room:room-compiler:$ROOM_VERSION")
@@ -260,6 +263,9 @@ dependencies {
     implementation("androidx.room:room-rxjava2:$ROOM_VERSION")
     testImplementation("androidx.room:room-testing:$ROOM_VERSION")
     androidTestImplementation("androidx.room:room-testing:$ROOM_VERSION")
+
+    //noinspection GradleDynamicVersion
+    implementation("com.bugsnag:bugsnag-android:5.+")
 
     val jUnit = "androidx.test.ext:junit:1.1.1"
     val truth = "androidx.test.ext:truth:1.0.0"
@@ -270,8 +276,8 @@ dependencies {
     testImplementation(truth)
     testImplementation(mockito)
     testImplementation("androidx.test:core:1.2.0")
-    testImplementation("org.robolectric:robolectric:4.3.1")
-    testImplementation("org.robolectric:shadows-multidex:4.3.1")
+    testImplementation("org.robolectric:robolectric:4.5.1")
+    testImplementation("org.robolectric:shadows-multidex:4.5.1")
 
     // Instrumentation test dependencies
     androidTestImplementation(jUnit)

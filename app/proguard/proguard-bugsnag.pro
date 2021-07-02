@@ -6,3 +6,4 @@
 -keep class com.bugsnag.android.BreadcrumbType { *; }
 -keep class com.bugsnag.android.Severity { *; }
 -keep class com.bugsnag.android.ndk.BugsnagObserver { *; }
+-keepresourcexmlelements AndroidManifest.xml

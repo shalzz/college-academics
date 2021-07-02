@@ -20,25 +20,29 @@
 package com.shalzz.attendance.billing;
 
 import com.android.billingclient.api.BillingClient;
-import com.android.billingclient.api.BillingClient.BillingResponse;
+import com.android.billingclient.api.BillingClient.BillingResponseCode;
 import com.android.billingclient.api.BillingClient.FeatureType;
 import com.android.billingclient.api.BillingClient.SkuType;
 import com.android.billingclient.api.BillingClientStateListener;
 import com.android.billingclient.api.BillingFlowParams;
+import com.android.billingclient.api.BillingResult;
+import com.android.billingclient.api.ConsumeParams;
 import com.android.billingclient.api.ConsumeResponseListener;
 import com.android.billingclient.api.Purchase;
-import com.android.billingclient.api.Purchase.PurchasesResult;
 import com.android.billingclient.api.PurchasesUpdatedListener;
+import com.android.billingclient.api.SkuDetails;
 import com.android.billingclient.api.SkuDetailsParams;
-import com.android.billingclient.api.SkuDetailsResponseListener;
 import com.shalzz.attendance.data.DataManager;
 import com.shalzz.attendance.utils.RxUtil;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import io.reactivex.Observable;
 import io.reactivex.ObservableOnSubscribe;
@@ -57,22 +61,24 @@ public class BillingManager implements PurchasesUpdatedListener {
     private BillingClient mBillingClient;
 
     private final BillingUpdatesListener mBillingUpdatesListener;
-    private int mBillingClientResponseCode = BILLING_MANAGER_NOT_INITIALIZED;
+    private BillingResult mBillingClientResult =
+            BillingResult.newBuilder().setResponseCode(BILLING_MANAGER_NOT_INITIALIZED).build();
 
-    private Set<String> mTokensToBeConsumed;
+    private Set<ConsumeParams> mTokensToBeConsumed;
+    private final Map<String, SkuDetails> skuDetailsMap = new HashMap<>();
 
-    private AppCompatActivity mActivity;
-    private DataManager mDataManager;
-    private CompositeDisposable mConnectionDisposable = new CompositeDisposable();
-    private PublishSubject<List<Purchase>> publishSubject = PublishSubject.create();
+    private final AppCompatActivity mActivity;
+    private final DataManager mDataManager;
+    private final CompositeDisposable mConnectionDisposable = new CompositeDisposable();
+    private final PublishSubject<List<Purchase>> publishSubject = PublishSubject.create();
 
     /**
      * Listener to the updates that happen when purchases list was updated or consumption of the
      * item was finished
      */
     public interface BillingUpdatesListener {
-        void onBillingClientSetupFinished(int code);
-        void onConsumeFinished(String token, @BillingResponse int result);
+        void onBillingClientSetupFinished(BillingResult result);
+        void onConsumeFinished(String token, @BillingResponseCode int result);
         void onPurchasesUpdated(List<Purchase> purchases);
     }
 
@@ -92,60 +98,61 @@ public class BillingManager implements PurchasesUpdatedListener {
         // Setup all listeners before establishing a connection.
         mConnectionDisposable.add(
                 connect()
-                        .subscribe(code -> {
-                            Timber.d("First Connection. Response code: %d", code);
-                            if (code == BillingResponse.OK) {
+                        .doOnSubscribe(disposable -> querySkuDetailsAsync())
+                        .subscribe(result -> {
+                            Timber.d("First Connection. Response code: %d", result.getResponseCode());
+                            if (result.getResponseCode() == BillingResponseCode.OK) {
                                 // IAB is fully setup. Now get an inventory of stuff the user owns.
                                 queryPurchases();
                             }
                         }));
     }
 
-    private Observable<Integer> connect() {
+    private Observable<BillingResult> connect() {
         // Notify the listener that the billing client is ready.
-        return Observable.create((ObservableOnSubscribe<Integer>) source -> {
+        return Observable.create((ObservableOnSubscribe<BillingResult>) source -> {
             if (source.isDisposed()) return;
             if (mBillingClient.isReady()) {
                 Timber.d("Client already connected. Response code: %d",
-                        mBillingClientResponseCode);
-                source.onNext(mBillingClientResponseCode);
+                        mBillingClientResult.getResponseCode());
+                source.onNext(mBillingClientResult);
                 source.onComplete();
             } else {
                 mBillingClient.startConnection(new BillingClientStateListener() {
-                    @Override
-                    public void onBillingSetupFinished(@BillingResponse int billingResponseCode) {
-                        Timber.d("Setup finished. Response code: %d", billingResponseCode);
-                        mBillingClientResponseCode = billingResponseCode;
-                        source.onNext(mBillingClientResponseCode);
-                        source.onComplete();
-                    }
-
                     @Override
                     public void onBillingServiceDisconnected() {
                         source.tryOnError(new Throwable("Billing Client disconnected!"));
                         Timber.w("onBillingServiceDisconnected()");
                     }
+
+                    @Override
+                    public void onBillingSetupFinished(@NonNull BillingResult billingResult) {
+                        Timber.d("Setup finished. Response code: %d", billingResult.getResponseCode());
+                        mBillingClientResult = billingResult;
+                        source.onNext(billingResult);
+                        source.onComplete();
+                    }
                 });
             }
         })
-        .retry()
-        .subscribeOn(Schedulers.io())
-        .observeOn(AndroidSchedulers.mainThread())
-         // Notify the listener that the billing client is ready.
-        .doOnNext(mBillingUpdatesListener::onBillingClientSetupFinished);
+                .retry()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                // Notify the listener that the billing client is ready.
+                .doOnNext(mBillingUpdatesListener::onBillingClientSetupFinished);
     }
 
     /**
      * Handle a callback that purchases were updated from the Billing library
      */
     @Override
-    public void onPurchasesUpdated(int resultCode, List<Purchase> purchases) {
-        if (resultCode == BillingResponse.OK) {
+    public void onPurchasesUpdated(@NonNull BillingResult billingResult, @Nullable List<Purchase> purchases) {
+        if (billingResult.getResponseCode() == BillingResponseCode.OK && purchases != null) {
             publishSubject.onNext(purchases);
-        } else if (resultCode == BillingResponse.USER_CANCELED) {
+        } else if (billingResult.getResponseCode() == BillingResponseCode.USER_CANCELED) {
             Timber.i("onPurchasesUpdated() - user cancelled the purchase flow - skipping");
         } else {
-            Timber.w("onPurchasesUpdated() got unknown resultCode: %d", resultCode);
+            Timber.w("onPurchasesUpdated() got unknown resultCode: %d", billingResult.getResponseCode());
         }
     }
 
@@ -163,8 +170,8 @@ public class BillingManager implements PurchasesUpdatedListener {
         return Observable.fromIterable(purchases)
                 .flatMap(purchase ->
                         mDataManager.verifyValidSignature(purchase)
-                        .filter(aBoolean -> aBoolean)
-                        .map(aBoolean -> purchase)
+                                .filter(aBoolean -> aBoolean)
+                                .map(aBoolean -> purchase)
                 )
                 .doOnNext(purchase -> Timber.d("Got a verified purchase: %s", purchase))
                 .toList()
@@ -172,25 +179,15 @@ public class BillingManager implements PurchasesUpdatedListener {
     }
 
     /**
-     * Start a purchase flow
-     */
-    public void initiatePurchaseFlow(final String skuId, final @SkuType String billingType) {
-        initiatePurchaseFlow(skuId, null, billingType);
-    }
-
-    /**
      * Start a purchase or subscription replace flow
      */
-    public void initiatePurchaseFlow(final String skuId, final ArrayList<String> oldSkus,
-                                     final @SkuType String billingType) {
-
+    public void initiatePurchaseFlow(final String skuId) {
+        SkuDetails sku = skuDetailsMap.get(skuId);
         Disposable disposable = connect()
-                .subscribe(code -> {
-                    if (code == BillingResponse.OK) {
-                        Timber.d("Launching in-app purchase flow. Replace old SKU? %s",
-                                (oldSkus != null));
-                        BillingFlowParams purchaseParams = BillingFlowParams.newBuilder()
-                                .setSku(skuId).setType(billingType).setOldSkus(oldSkus).build();
+                .subscribe(result -> {
+                    if (result.getResponseCode() == BillingResponseCode.OK && sku != null) {
+                        BillingFlowParams purchaseParams =
+                                BillingFlowParams.newBuilder().setSkuDetails(sku).build();
                         mBillingClient.launchBillingFlow(mActivity, purchaseParams);
                     }
                 });
@@ -202,7 +199,7 @@ public class BillingManager implements PurchasesUpdatedListener {
      * client connection response was not received yet.
      */
     public int getBillingClientResponseCode() {
-        return mBillingClientResponseCode;
+        return mBillingClientResult.getResponseCode();
     }
 
     /**
@@ -213,26 +210,59 @@ public class BillingManager implements PurchasesUpdatedListener {
      * </p>
      */
     private boolean areSubscriptionsSupported() {
-        int responseCode = mBillingClient.isFeatureSupported(FeatureType.SUBSCRIPTIONS);
-        if (responseCode != BillingResponse.OK) {
+        int responseCode = mBillingClient.isFeatureSupported(FeatureType.SUBSCRIPTIONS).getResponseCode();
+        if (responseCode != BillingResponseCode.OK) {
             Timber.w("areSubscriptionsSupported() got an error response: %d", responseCode);
         }
-        return responseCode == BillingResponse.OK;
+        return responseCode == BillingResponseCode.OK;
     }
 
     /**
-     * Handle a result from querying of purchases and report an updated list to the listener
+     * Receives the result from [.querySkuDetailsAsync]}.
+     *
+     * Store the SkuDetails and post them in the [.skuDetailsMap]. This allows other
+     * parts of the app to use the [SkuDetails] to show SKU information and make purchases.
      */
-    private void onQueryPurchasesFinished(PurchasesResult result) {
-        // Have we been disposed of in the meantime? If so, or bad result code, then quit
-        if (mBillingClient == null || result.getResponseCode() != BillingResponse.OK) {
-            Timber.w("Billing client was null or result code (%d) was bad - quitting",
-                    result.getResponseCode());
-            return;
+    private void onSkuDetailsResponse(BillingResult billingResult,
+                                      List<SkuDetails> skuDetailsList) {
+        int responseCode = billingResult.getResponseCode();
+        String debugMessage = billingResult.getDebugMessage();
+        switch (responseCode) {
+            case BillingClient.BillingResponseCode.OK:
+                Timber.i("onSkuDetailsResponse: %d %s",responseCode, debugMessage);
+                if (skuDetailsList == null || skuDetailsList.isEmpty()) {
+                    Timber.e(
+                            "onSkuDetailsResponse: " +
+                                    "Found null or empty SkuDetails. " +
+                                    "Check to see if the SKUs you requested are correctly published " +
+                                    "in the Google Play Console."
+                    );
+                } else {
+                    for (SkuDetails skuDetails: skuDetailsList) {
+                        String sku = skuDetails.getSku();
+                        skuDetailsMap.put(sku, skuDetails);
+                    }
+                }
+                break;
+            case BillingClient.BillingResponseCode.SERVICE_DISCONNECTED:
+            case BillingClient.BillingResponseCode.SERVICE_UNAVAILABLE:
+            case BillingClient.BillingResponseCode.BILLING_UNAVAILABLE:
+            case BillingClient.BillingResponseCode.ITEM_UNAVAILABLE:
+            case BillingClient.BillingResponseCode.DEVELOPER_ERROR:
+            case BillingClient.BillingResponseCode.ERROR:
+                Timber.e("onSkuDetailsResponse: %d %s",responseCode, debugMessage);
+                break;
+            case BillingClient.BillingResponseCode.USER_CANCELED:
+                Timber.i("onSkuDetailsResponse: %d %s",responseCode, debugMessage);
+                break;
+            default:
+                Timber.wtf("onSkuDetailsResponse: %d %s",responseCode, debugMessage);
         }
-
-        Timber.d("Query inventory was successful.");
-        publishSubject.onNext(result.getPurchasesList());
+//        if (responseCode == BillingClient.BillingResponseCode.OK) {
+//            skuDetailsResponseTime = SystemClock.elapsedRealtime();
+//        } else {
+//            skuDetailsResponseTime = -SKU_DETAILS_REQUERY_TIME
+//        }
     }
 
     /**
@@ -241,58 +271,42 @@ public class BillingManager implements PurchasesUpdatedListener {
      */
     public void queryPurchases() {
         Disposable disposable = connect()
-                .subscribe(code -> {
-                    if (code == BillingResponse.OK) {
-                        long time = System.currentTimeMillis();
-                        PurchasesResult purchasesResult = mBillingClient.queryPurchases(SkuType.INAPP);
-                        Timber.i("Querying purchases elapsed time: %s ms",
-                                (System.currentTimeMillis() - time));
+                .subscribe(result -> {
+                    if (result.getResponseCode() == BillingResponseCode.OK) {
+                        mBillingClient.queryPurchasesAsync(SkuType.INAPP, this::onPurchasesUpdated);
                         // If there are subscriptions supported, we add subscription rows as well
                         if (areSubscriptionsSupported()) {
-                            PurchasesResult subscriptionResult
-                                    = mBillingClient.queryPurchases(SkuType.SUBS);
-
-                            if (subscriptionResult!= null && subscriptionResult.getResponseCode()
-                                    == BillingResponse.OK) {
-                                purchasesResult.getPurchasesList().addAll(
-                                        subscriptionResult.getPurchasesList());
-
-                                Timber.i("Querying purchases and subscriptions elapsed time: %s ms",
-                                        (System.currentTimeMillis() - time));
-                                Timber.i( "Querying subscriptions result code: %d res: %d"
-                                        , subscriptionResult.getResponseCode()
-                                        ,  subscriptionResult.getPurchasesList().size());
-                            } else {
-                                Timber.e( "Got an error response trying to query subscription purchases");
-                            }
-                        } else if (purchasesResult.getResponseCode() == BillingResponse.OK) {
-                            Timber.i("Skipped subscription purchases query since they are not supported");
-                        } else {
-                            Timber.w("queryPurchases() got an error response code: %s"
-                                    , purchasesResult.getResponseCode());
+                            mBillingClient.queryPurchasesAsync(SkuType.INAPP, this::onPurchasesUpdated);
                         }
-                        onQueryPurchasesFinished(purchasesResult);
                     }
                 });
         mConnectionDisposable.add(disposable);
     }
 
-    public void querySkuDetailsAsync(@SkuType final String itemType, final List<String> skuList,
-                                     final SkuDetailsResponseListener listener) {
-
+    public void querySkuDetailsAsync() {
         Disposable disposable = connect()
-                .subscribe(code -> {
-                    if (code == BillingResponse.OK) {
-                        // Query the purchase async
-                        SkuDetailsParams.Builder params = SkuDetailsParams.newBuilder();
-                        params.setSkusList(skuList).setType(itemType);
-                        mBillingClient.querySkuDetailsAsync(params.build(), listener);
+                .subscribe(result -> {
+                    if (!BillingConstants.getSkuList(SkuType.INAPP).isEmpty()) {
+                        SkuDetailsParams params =
+                                SkuDetailsParams.newBuilder()
+                                        .setSkusList(BillingConstants.getSkuList(SkuType.INAPP))
+                                        .setType(SkuType.INAPP)
+                                        .build();
+                        mBillingClient.querySkuDetailsAsync(params, this::onSkuDetailsResponse);
+                    }
+                    if (!BillingConstants.getSkuList(SkuType.SUBS).isEmpty()) {
+                        SkuDetailsParams params =
+                                SkuDetailsParams.newBuilder()
+                                        .setSkusList(BillingConstants.getSkuList(SkuType.SUBS))
+                                        .setType(SkuType.SUBS)
+                                        .build();
+                        mBillingClient.querySkuDetailsAsync(params, this::onSkuDetailsResponse);
                     }
                 });
         mConnectionDisposable.add(disposable);
     }
 
-    public void consumeAsync(final String purchaseToken) {
+    public void consumeAsync(final ConsumeParams purchaseToken) {
         // If we've already scheduled to consume this regId - no action is needed (this could happen
         // if you received the regId when querying purchases inside onReceive() and later from
         // onActivityResult()
@@ -306,11 +320,11 @@ public class BillingManager implements PurchasesUpdatedListener {
 
         final ConsumeResponseListener onConsumeListener =
                 (responseCode, purchaseToken1) ->
-                        mBillingUpdatesListener.onConsumeFinished(purchaseToken1, responseCode);
+                        mBillingUpdatesListener.onConsumeFinished(purchaseToken1, responseCode.getResponseCode());
 
         Disposable disposable = connect()
-                .subscribe(code -> {
-                    if (code == BillingResponse.OK) {
+                .subscribe(result -> {
+                    if (result.getResponseCode() == BillingResponseCode.OK) {
                         mBillingClient.consumeAsync(purchaseToken, onConsumeListener);
                     }
                 });

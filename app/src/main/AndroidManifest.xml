@@ -57,7 +57,7 @@
         <!--Bugsnag API Key -->
         <meta-data
             android:name="com.bugsnag.android.API_KEY"
-            android:value="@string/bugsnag_api" />
+            android:value="600a00bfd5bd72e5df7f288f74df8f9b" />
 
         <!--This meta-data tag is required to use Google Play Services.-->
         <meta-data

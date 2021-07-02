@@ -24,6 +24,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.preference.PreferenceManager
 import com.bugsnag.android.Bugsnag
+import com.bugsnag.android.OnErrorCallback
 import com.bugsnag.android.Severity
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.shalzz.attendance.R
@@ -59,7 +60,7 @@ class SplashActivity : BaseActivity() {
         try {
             PreferenceManager.setDefaultValues(this, R.xml.preferences, false)
         } catch (e: ClassCastException) {
-            Bugsnag.notify(e, Severity.INFO)
+            Bugsnag.notify(e)
             PreferenceManager.getDefaultSharedPreferences(this).edit().clear().apply()
             PreferenceManager.setDefaultValues(this, R.xml.preferences, true)
         }

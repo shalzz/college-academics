@@ -22,7 +22,8 @@ package com.shalzz.attendance.ui.main
 import android.content.Context
 import android.preference.PreferenceManager
 import android.widget.Toast
-import com.android.billingclient.api.BillingClient.BillingResponse
+import com.android.billingclient.api.BillingClient.BillingResponseCode
+import com.android.billingclient.api.BillingResult
 import com.android.billingclient.api.Purchase
 import com.bugsnag.android.Bugsnag
 import com.google.firebase.analytics.FirebaseAnalytics
@@ -87,7 +88,7 @@ internal constructor(private val mDataManager: DataManager,
                         if (isViewAttached) {
                             mvpView.updateUserDetails(user)
                         }
-                        Bugsnag.setUserId(user.username)
+                        Bugsnag.setUser(user.username, user.email, user.name)
 
                         val sharedPref = PreferenceManager.getDefaultSharedPreferences(mContext)
                         val optIn = sharedPref.getBoolean(mContext.getString(
@@ -141,18 +142,17 @@ internal constructor(private val mDataManager: DataManager,
      * Handler to billing updates
      */
     inner class UpdateListener : BillingUpdatesListener {
-
-        override fun onBillingClientSetupFinished(billingResponseCode: Int) {
-            Timber.i("Billing response: %d", billingResponseCode)
-            when (billingResponseCode) {
-                BillingResponse.OK ->
+        override fun onBillingClientSetupFinished(result: BillingResult?) {
+            Timber.i("Billing response: %d", result?.responseCode)
+            when (result?.responseCode) {
+                BillingResponseCode.OK ->
                     // If manager was connected successfully, do nothing
-                    Timber.i("Billing response2: %d", billingResponseCode)
-                BillingResponse.BILLING_UNAVAILABLE ->
+                    Timber.i("Billing response2: %d", result?.responseCode)
+                BillingResponseCode.BILLING_UNAVAILABLE ->
                     Toast.makeText(mContext, R.string.error_billing_unavailable, Toast.LENGTH_LONG)
-                            .show()
-                else -> Toast.makeText(mContext, R.string.error_billing_default, Toast.LENGTH_LONG)
                         .show()
+                else -> Toast.makeText(mContext, R.string.error_billing_default, Toast.LENGTH_LONG)
+                    .show()
             }
         }
 
@@ -162,11 +162,13 @@ internal constructor(private val mDataManager: DataManager,
 
         override fun onPurchasesUpdated(purchaseList: List<Purchase>) {
             for (purchase in purchaseList) {
-                when (purchase.sku) {
-                    BillingConstants.SKU_PRO_KEY -> {
-                        Timber.d("You are Premium! Congratulations!!!")
-                        isProKeyPurchased = true
-                        mEventBus.post(ProKeyPurchaseEvent())
+                for (sku in purchase.skus) {
+                    when (sku) {
+                        BillingConstants.SKU_PRO_KEY -> {
+                            Timber.d("You are Premium! Congratulations!!!")
+                            isProKeyPurchased = true
+                            mEventBus.post(ProKeyPurchaseEvent())
+                        }
                     }
                 }
             }

@@ -182,7 +182,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
 
     private void buyProKey() {
         mBillingProvider.getBillingManager()
-                .initiatePurchaseFlow(BillingConstants.SKU_PRO_KEY, BillingClient.SkuType.INAPP);
+                .initiatePurchaseFlow(BillingConstants.SKU_PRO_KEY);
 
         // Fire an analytics event
         Bundle params = new Bundle();
