@@ -37,7 +37,7 @@ bugsnag {
 play {
     defaultToAppBundles.set(true)
     track.set("beta")
-    serviceAccountCredentials.set(file("./play-service-account-key.json"))
+    serviceAccountCredentials.set(file("../play-service-account-key.json"))
 }
 
 // query git for the SHA, Tag and commit count. Use these to automate versioning.
