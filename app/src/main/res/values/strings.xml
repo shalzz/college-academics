@@ -24,7 +24,6 @@
     <string name="app_copyright" translatable="false">Shaleen Jain &#60;shaleen.jain95@gmail.com&#62;</string>
 
     <!--API keys-->
-    <string name="bugsnag_api" translatable="false">600a00bfd5bd72e5df7f288f74df8f9b</string>
     <string name="onedu_gcmSenderId" translatable="false">3087313396</string>
 
     <!--Preference Keys-->
