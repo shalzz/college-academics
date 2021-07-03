@@ -100,11 +100,11 @@ public class BillingManager implements PurchasesUpdatedListener {
         // Setup all listeners before establishing a connection.
         mConnectionDisposable.add(
                 connect()
-                        .doOnSubscribe(disposable -> querySkuDetailsAsync())
                         .subscribe(result -> {
                             Timber.d("First Connection. Response code: %d", result.getResponseCode());
                             if (result.getResponseCode() == BillingResponseCode.OK) {
                                 // IAB is fully setup. Now get an inventory of stuff the user owns.
+                                querySkuDetailsAsync();
                                 queryPurchases();
                             }
                         }));
@@ -261,11 +261,6 @@ public class BillingManager implements PurchasesUpdatedListener {
             default:
                 Timber.wtf("onSkuDetailsResponse: %d %s",responseCode, debugMessage);
         }
-//        if (responseCode == BillingClient.BillingResponseCode.OK) {
-//            skuDetailsResponseTime = SystemClock.elapsedRealtime();
-//        } else {
-//            skuDetailsResponseTime = -SKU_DETAILS_REQUERY_TIME
-//        }
     }
 
     /**
@@ -289,21 +284,23 @@ public class BillingManager implements PurchasesUpdatedListener {
     public void querySkuDetailsAsync() {
         Disposable disposable = connect()
                 .subscribe(result -> {
-                    if (!BillingConstants.getSkuList(SkuType.INAPP).isEmpty()) {
-                        SkuDetailsParams params =
-                                SkuDetailsParams.newBuilder()
-                                        .setSkusList(BillingConstants.getSkuList(SkuType.INAPP))
-                                        .setType(SkuType.INAPP)
-                                        .build();
-                        mBillingClient.querySkuDetailsAsync(params, this::onSkuDetailsResponse);
-                    }
-                    if (!BillingConstants.getSkuList(SkuType.SUBS).isEmpty()) {
-                        SkuDetailsParams params =
-                                SkuDetailsParams.newBuilder()
-                                        .setSkusList(BillingConstants.getSkuList(SkuType.SUBS))
-                                        .setType(SkuType.SUBS)
-                                        .build();
-                        mBillingClient.querySkuDetailsAsync(params, this::onSkuDetailsResponse);
+                    if (result.getResponseCode() == BillingResponseCode.OK) {
+                        if (!BillingConstants.getSkuList(SkuType.INAPP).isEmpty()) {
+                            SkuDetailsParams params =
+                                    SkuDetailsParams.newBuilder()
+                                            .setSkusList(BillingConstants.getSkuList(SkuType.INAPP))
+                                            .setType(SkuType.INAPP)
+                                            .build();
+                            mBillingClient.querySkuDetailsAsync(params, this::onSkuDetailsResponse);
+                        }
+                        if (!BillingConstants.getSkuList(SkuType.SUBS).isEmpty()) {
+                            SkuDetailsParams params =
+                                    SkuDetailsParams.newBuilder()
+                                            .setSkusList(BillingConstants.getSkuList(SkuType.SUBS))
+                                            .setType(SkuType.SUBS)
+                                            .build();
+                            mBillingClient.querySkuDetailsAsync(params, this::onSkuDetailsResponse);
+                        }
                     }
                 });
         mConnectionDisposable.add(disposable);
