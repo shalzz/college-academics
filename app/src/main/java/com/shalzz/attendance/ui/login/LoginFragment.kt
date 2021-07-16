@@ -21,6 +21,7 @@ package com.shalzz.attendance.ui.login
 
 import android.app.Activity
 import android.content.Context
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -29,6 +30,10 @@ import android.view.animation.AnimationUtils
 import android.view.inputmethod.EditorInfo
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import androidx.browser.customtabs.CustomTabColorSchemeParams
+import androidx.browser.customtabs.CustomTabsIntent
+import androidx.browser.trusted.TrustedWebActivityIntentBuilder
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.afollestad.materialdialogs.MaterialDialog
 import com.bugsnag.android.Bugsnag
@@ -36,6 +41,8 @@ import com.github.amlcurran.showcaseview.ShowcaseView
 import com.github.amlcurran.showcaseview.targets.ViewTarget
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
+import com.google.androidbrowserhelper.trusted.QualityEnforcer
+import com.google.androidbrowserhelper.trusted.TwaLauncher
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.shalzz.attendance.R
 import com.shalzz.attendance.data.local.PreferencesHelper
@@ -50,8 +57,9 @@ import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Named
 
+
 class LoginFragment : Fragment(), LoginMvpView, AdapterView.OnItemSelectedListener,
-        CaptchaDialogFragment.CaptchaDialogListener {
+    CaptchaDialogFragment.CaptchaDialogListener {
 
     @Inject
     @field:Named("app")
@@ -68,6 +76,7 @@ class LoginFragment : Fragment(), LoginMvpView, AdapterView.OnItemSelectedListen
     private var listener: OnFragmentInteractionListener? = null
     private lateinit var spinnerAdapter: ArrayAdapter<College>
     private var college: College? = null
+    private lateinit var launcher :TwaLauncher
 
     /**
      * This interface must be implemented by activities that contain this
@@ -97,11 +106,14 @@ class LoginFragment : Fragment(), LoginMvpView, AdapterView.OnItemSelectedListen
         mLoginPresenter.attachView(this)
 
         spinnerAdapter = ArrayAdapter(mActivity, android.R.layout.simple_list_item_1,
-                ArrayList<College>())
+            ArrayList<College>())
         spinnerAdapter.add(College("none", "Select Your College"))
         mView.spCollege.adapter = spinnerAdapter
 
         mView.spCollege.onItemSelectedListener = this
+
+        mView.tvForgotPassword.setOnClickListener { onForgotPassword() }
+        launcher = TwaLauncher(requireContext())
 
         // Attempt login when user presses 'Done' on keyboard.
         mView.etPassword!!.editText!!.setOnEditorActionListener { _, actionId, _ ->
@@ -114,7 +126,7 @@ class LoginFragment : Fragment(), LoginMvpView, AdapterView.OnItemSelectedListen
         mView.bLogin.setOnClickListener { doLogin() }
 
         if (GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(mActivity)
-                    != ConnectionResult.SUCCESS) {
+            != ConnectionResult.SUCCESS) {
             GoogleApiAvailability.getInstance().makeGooglePlayServicesAvailable(mActivity)
         }
 
@@ -127,25 +139,25 @@ class LoginFragment : Fragment(), LoginMvpView, AdapterView.OnItemSelectedListen
         val target = ViewTarget(R.id.menu_help, mActivity)
 
         val sv = ShowcaseView.Builder(mActivity)
-                .setStyle(R.style.ShowcaseTheme)
-                .setTarget(target)
-                .singleShot(4444)
-                .blockAllTouches()
-                .setContentTitle(getString(R.string.sv_login_activity_faq))
-                .setContentText(getString(R.string.sv_login_activity_faq_content))
-                .build()
+            .setStyle(R.style.ShowcaseTheme)
+            .setTarget(target)
+            .singleShot(4444)
+            .blockAllTouches()
+            .setContentTitle(getString(R.string.sv_login_activity_faq))
+            .setContentText(getString(R.string.sv_login_activity_faq_content))
+            .build()
 
         sv.overrideButtonClick {
             sv.hide()
             val secondTarget = ViewTarget(spCollege)
 
             ShowcaseView.Builder(mActivity)
-                    .setStyle(R.style.ShowcaseTheme)
-                    .setTarget(secondTarget)
-                    .singleShot(5555)
-                    .setContentTitle(getString(R.string.sv_login_activity_spinner))
-                    .setContentText(getString(R.string.sv_login_activity_spinner_content))
-                    .build()
+                .setStyle(R.style.ShowcaseTheme)
+                .setTarget(secondTarget)
+                .singleShot(5555)
+                .setContentTitle(getString(R.string.sv_login_activity_spinner))
+                .setContentText(getString(R.string.sv_login_activity_spinner_content))
+                .build()
         }
     }
 
@@ -162,8 +174,7 @@ class LoginFragment : Fragment(), LoginMvpView, AdapterView.OnItemSelectedListen
         etUserId.error = null
         etPassword.error = null
         if (college == null) {
-            Utils.showSnackBar(etUserId, "Please select your college")
-            spCollege.startAnimation(AnimationUtils.loadAnimation(mActivity, R.anim.wiggle))
+            nudgeCollegeSpinner()
             dismissProgressDialog()
             valid = false
         }
@@ -183,6 +194,27 @@ class LoginFragment : Fragment(), LoginMvpView, AdapterView.OnItemSelectedListen
         }
 
         return valid
+    }
+
+    private fun nudgeCollegeSpinner() {
+        Utils.showSnackBar(etUserId, "Please select your college")
+        spCollege.startAnimation(AnimationUtils.loadAnimation(mActivity, R.anim.wiggle))
+    }
+
+    private fun onForgotPassword() {
+        if (college == null) {
+            nudgeCollegeSpinner()
+        } else {
+            Timber.d("College select: %s", college!!.id)
+            val url = "https://${college!!.id}.winnou.net/index.php?option=com_base_forgotpassword"
+
+            val twaIntentBuilder = TrustedWebActivityIntentBuilder(Uri.parse(url))
+                .setDefaultColorSchemeParams(CustomTabColorSchemeParams.Builder()
+                    .setToolbarColor(
+                        ContextCompat.getColor(requireContext(), R.color.primary))
+                    .build())
+            launcher.launch(twaIntentBuilder, QualityEnforcer(), null, null, null)
+        }
     }
 
     private fun doLogin(captcha: String? = null, cookie: String? = null) {
@@ -206,7 +238,7 @@ class LoginFragment : Fragment(), LoginMvpView, AdapterView.OnItemSelectedListen
             mLoginPresenter.login(userId.toString(), password.toString(), college!!.id)
         else
             mLoginPresenter.login(userId.toString(), password.toString(),
-                    college!!.id, captcha!!, cookie!!)
+                college!!.id, captcha!!, cookie!!)
     }
 
     override fun onDialogPositiveClick(dialog: MaterialDialog, captcha: String, cookie: String) {
@@ -243,6 +275,7 @@ class LoginFragment : Fragment(), LoginMvpView, AdapterView.OnItemSelectedListen
 
     override fun onDestroy() {
         super.onDestroy()
+        launcher.destroy()
         mLoginPresenter.detachView()
     }
 
@@ -250,11 +283,11 @@ class LoginFragment : Fragment(), LoginMvpView, AdapterView.OnItemSelectedListen
 
     override fun showProgressDialog(msg: String) {
         progressDialog = MaterialDialog.Builder(mActivity)
-                .content(msg)
-                .cancelable(false)
-                .autoDismiss(false)
-                .progress(true, 0)
-                .build()
+            .content(msg)
+            .cancelable(false)
+            .autoDismiss(false)
+            .progress(true, 0)
+            .build()
         progressDialog!!.show()
     }
 
