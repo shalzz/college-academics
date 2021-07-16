@@ -227,6 +227,8 @@ dependencies {
     implementation("androidx.constraintlayout:constraintlayout-solver:1.1.3")
     implementation("androidx.vectordrawable:vectordrawable:1.1.0")
     implementation("androidx.vectordrawable:vectordrawable-animated:1.1.0")
+    implementation("androidx.browser:browser:1.3.0")
+    implementation ("com.google.androidbrowserhelper:androidbrowserhelper:2.2.2")
 
     implementation("com.android.billingclient:billing:$BILLING_VERSION")
     implementation("com.android.billingclient:billing-ktx:$BILLING_VERSION")

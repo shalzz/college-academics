@@ -80,6 +80,7 @@
         id="held">%2$d</xliff:g></string>
     <string name="login_notice">Please use a phone number registered with your University</string>
     <string name="college_academics_logo">College Academics</string>
+    <string name="forgot_password">Forgot password?</string>
 
     <!--Plurals-->
     <plurals name="tv_last_refresh">
