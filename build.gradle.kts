@@ -19,13 +19,11 @@
 
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
-    val kotlinVersion = "1.4.20"
+    val kotlinVersion = "1.6.10"
     repositories {
         google()
         jcenter()
         mavenCentral()
-        maven("https://kotlin.bintray.com/kotlinx")
-        maven("https://dl.bintray.com/kotlin/kotlin-eap")
     }
     dependencies {
         classpath(kotlin("gradle-plugin", kotlinVersion))
@@ -47,6 +45,5 @@ allprojects {
         mavenCentral()
         mavenLocal()
         maven("https://jitpack.io")
-        maven("https://dl.bintray.com/kotlin/kotlin-eap")
     }
 }
