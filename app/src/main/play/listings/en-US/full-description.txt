@@ -10,7 +10,6 @@ College academics currently supports the following Colleges/Universities:
 • Mahatma Gandhi Institute of Technology
 • The ICFAI University, Tripura
 • St. Francis College for Women
-• The ICFAI University, Tripura
 • Vaagdevi Institute of Technology & Science
 
 Features:
