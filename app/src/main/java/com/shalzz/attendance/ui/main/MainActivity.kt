@@ -170,7 +170,7 @@ class MainActivity : BaseActivity(), MainMvpView, BillingProvider {
         navigationView.setNavigationItemSelectedListener { item ->
             if (navController.currentDestination!!.id != item.itemId) {
                 if (item.itemId == R.id.helpNSupport) {
-                    MyApplication.helpStack.showHelp(this)
+//                    MyApplication.helpStack.showHelp(this)
                 } else
                     NavigationUI.onNavDestinationSelected(item, navController)
             }

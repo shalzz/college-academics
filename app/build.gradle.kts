@@ -16,16 +16,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+import com.android.build.api.dsl.Packaging
 import com.lordcodes.turtle.shellRun
 
 plugins {
     id("com.android.application")
     kotlin("android")
-    kotlin("android.extensions")
     kotlin("kapt")
     id("com.bugsnag.android.gradle")
     id("com.google.android.gms.oss-licenses-plugin")
-    id("com.github.triplet.play") version "3.4.0-agp4.2"
+    id("com.github.triplet.play") version "3.8.4"
     id("com.google.gms.google-services") apply false
 }
 
@@ -50,19 +50,19 @@ val gitCommitCount = 2007050 + Integer.parseInt(
         )
 
 android {
-    compileSdkVersion(29)
+    compileSdkVersion(33)
 
     defaultConfig {
         applicationId = "com.shalzz.attendance"
         minSdkVersion(21)
-        targetSdkVersion(29)
+        targetSdkVersion(33)
         versionCode = gitCommitCount
         versionName = gitTag
         multiDexEnabled = true
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         ndkVersion = "22.1.7171670"
+        resourceConfigurations += setOf("en")
 
-        resConfig("en")
         resValue("string", "app_version", versionName!!)
         javaCompileOptions {
             annotationProcessorOptions {
@@ -139,16 +139,13 @@ android {
     }
 
     sourceSets {
-        val commonTestDir = "src/commonTest/java"
-
         getByName("main") {
             java.srcDirs("src/main/kotlin")
         }
         getByName("test") {
-            java.srcDirs(commonTestDir)
+            java.srcDirs("src/commonTest/java")
         }
         getByName("androidTest") {
-            java.srcDirs(commonTestDir)
             assets.srcDirs("$projectDir/schemas")
         }
     }
@@ -158,25 +155,27 @@ android {
         unitTests.isReturnDefaultValues = true
         unitTests.isIncludeAndroidResources = true
     }
-
-    lintOptions {
-        textReport = true
-        textOutput("stdout")
-        //Needed because of this https://github.com/square/okio/issues/58
-//        disable("InvalidPackage")
+    fun Packaging.() {
+        resources {
+            excludes += setOf(
+                "META-INF/rxjava.properties",
+                "META-INF/DEPENDENCIES",
+                "META-INF/NOTICE",
+                "META-INF/LICENSE"
+            )
+        }
     }
 
     //Needed because of this https://github.com/ReactiveX/RxJava/issues/4445
-    packagingOptions {
-        exclude("META-INF/rxjava.properties")
-        exclude("META-INF/DEPENDENCIES")
-        exclude("META-INF/NOTICE")
-        exclude("META-INF/LICENSE")
-    }
 
     buildFeatures {
-        viewBinding = false
+        viewBinding = true
     }
+    lint {
+        textOutput = file("stdout")
+        textReport = true
+    }
+    namespace = "com.shalzz.attendance"
 
 }
 
@@ -196,33 +195,32 @@ dependencies {
     // TODO: re-evaluate when RxJava is completely replaced with kotlin co-routines
     implementation("androidx.multidex:multidex:2.0.1")
 
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.1.5")
-    implementation(kotlin("stdlib-jdk7"))
-    implementation(kotlin("stdlib-jdk8"))
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.3")
 
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.9")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.5")
+    implementation(platform(kotlin("bom")))
 
-    implementation("androidx.core:core-ktx:1.5.0")
+    implementation("androidx.core:core-ktx:1.10.1")
     implementation("androidx.navigation:navigation-fragment-ktx:$NAV_VERSION")
     implementation("androidx.navigation:navigation-ui-ktx:$NAV_VERSION")
     implementation("androidx.drawerlayout:drawerlayout:1.1.0-rc01")
 
     implementation("com.google.firebase:firebase-core:17.3.0")
     implementation("com.google.firebase:firebase-analytics:17.3.0")
-    implementation("com.github.shalzz:helpstack-android:1.4.6")
+//    implementation("com.github.shalzz:helpstack-android:1.4.6")
 //    implementation("com.github.shalzz:helpstack:1.4.1-debug")
 
-    implementation("com.google.android.gms:play-services-oss-licenses:17.0.0")
+    implementation("com.google.android.gms:play-services-oss-licenses:17.0.1")
     implementation("com.google.android.material:material:1.1.0")
 
-    implementation("androidx.core:core:1.2.0")
+    implementation("androidx.core:core:1.10.1")
     implementation("androidx.appcompat:appcompat:1.1.0")
     implementation("androidx.fragment:fragment:1.2.4")
     implementation("androidx.fragment:fragment-ktx:1.2.4")
     implementation("androidx.recyclerview:recyclerview:1.1.0")
     implementation("androidx.preference:preference:1.1.1")
-    implementation("androidx.annotation:annotation:1.1.0")
+    implementation("androidx.annotation:annotation:1.6.0")
     implementation("androidx.constraintlayout:constraintlayout:1.1.3")
     implementation("androidx.constraintlayout:constraintlayout-solver:1.1.3")
     implementation("androidx.vectordrawable:vectordrawable:1.1.0")
@@ -277,7 +275,7 @@ dependencies {
     testImplementation(jUnit)
     testImplementation(truth)
     testImplementation(mockito)
-    testImplementation("androidx.test:core:1.2.0")
+    testImplementation("androidx.test:core:1.5.0")
     testImplementation("org.robolectric:robolectric:4.5.1")
     testImplementation("org.robolectric:shadows-multidex:4.5.1")
 
@@ -285,10 +283,10 @@ dependencies {
     androidTestImplementation(jUnit)
     androidTestImplementation(truth)
     androidTestImplementation(mockito)
-    androidTestImplementation("androidx.annotation:annotation:1.1.0")
-    androidTestImplementation("androidx.test:core:1.2.0")
-    androidTestImplementation("androidx.test:runner:1.2.0")
-    androidTestImplementation("androidx.test:rules:1.2.0")
+    androidTestImplementation("androidx.annotation:annotation:1.6.0")
+    androidTestImplementation("androidx.test:core:1.5.0")
+    androidTestImplementation("androidx.test:runner:1.5.2")
+    androidTestImplementation("androidx.test:rules:1.5.0")
 
 
     // Espresso dependencies

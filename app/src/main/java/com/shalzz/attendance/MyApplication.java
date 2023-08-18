@@ -30,7 +30,6 @@ import com.shalzz.attendance.injection.component.DaggerApplicationComponent;
 import com.shalzz.attendance.injection.module.ApplicationModule;
 import com.shalzz.attendance.utils.BugsnagTree;
 import com.shalzz.attendance.utils.Utils;
-import com.tenmiles.helpstack.HSHelpStack;
 
 import java.util.HashSet;
 
@@ -42,7 +41,6 @@ import timber.log.Timber;
 public class MyApplication extends MultiDexApplication {
 
     private static ApplicationComponent mApplicationComponent;
-    public static HSHelpStack helpStack;
 
     @Override
     public void onCreate() {
@@ -66,9 +64,6 @@ public class MyApplication extends MultiDexApplication {
 
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
         FirebaseApp.initializeApp(this);
-
-        helpStack = HSHelpStack.getInstance(this);
-        helpStack.setOptions("support@8bitlabs.tech", R.xml.articles);
 
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         int nightMode = Integer.parseInt(sharedPref.getString(
