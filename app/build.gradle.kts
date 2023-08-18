@@ -23,6 +23,7 @@ plugins {
     id("com.android.application")
     kotlin("android")
     kotlin("kapt")
+    id("com.google.devtools.ksp")
     id("com.bugsnag.android.gradle")
     id("com.google.android.gms.oss-licenses-plugin")
     id("com.github.triplet.play") version "3.8.4"
@@ -129,13 +130,13 @@ android {
         // Flag to enable support for the new language APIs
         //setCoreLibraryDesugaringEnabled(true)
 
-        // Sets Java compatibility to Java 8
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        // Sets Java compatibility to Java 17
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_1_8.toString()
+        jvmTarget = "17"
     }
 
     sourceSets {
@@ -184,11 +185,11 @@ kapt {
 }
 
 dependencies {
-    val DAGGER_VERSION = "2.24"
+    val DAGGER_VERSION = "2.28.3"
     val ESPRESSO_VERSION = "3.1.0"
     val RETROFIT_VERSION = "2.8.1"
-    val MOSHI_VERSION = "1.9.2"
-    val ROOM_VERSION = "2.2.5"
+    val MOSHI_VERSION = "1.9.3"
+    val ROOM_VERSION = "2.5.2"
     val NAV_VERSION = "2.2.0"
     val BILLING_VERSION = "4.0.0"
 
@@ -199,7 +200,7 @@ dependencies {
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.5")
-    implementation(platform(kotlin("bom")))
+//    implementation(platform(kotlin("bom")))
 
     implementation("androidx.core:core-ktx:1.10.1")
     implementation("androidx.navigation:navigation-fragment-ktx:$NAV_VERSION")
@@ -233,7 +234,7 @@ dependencies {
 
     val daggerCompiler = "com.google.dagger:dagger-compiler:$DAGGER_VERSION"
     implementation("com.google.dagger:dagger:$DAGGER_VERSION")
-    kapt(daggerCompiler)
+    ksp(daggerCompiler)
     compileOnly("javax.annotation:jsr250-api:1.0")
     testAnnotationProcessor(daggerCompiler)
     androidTestAnnotationProcessor(daggerCompiler)
@@ -249,7 +250,7 @@ dependencies {
 
     implementation("com.squareup.moshi:moshi:$MOSHI_VERSION")
     implementation("com.squareup.moshi:moshi-adapters:$MOSHI_VERSION")
-    kapt("com.squareup.moshi:moshi-kotlin-codegen:$MOSHI_VERSION")
+    ksp("com.squareup.moshi:moshi-kotlin-codegen:$MOSHI_VERSION")
 //    implementation("com.squareup.moshi:moshi-kotlin:1.9.1")
 
     implementation("com.malinskiy:materialicons:1.0.2")
@@ -258,7 +259,7 @@ dependencies {
 
     // Room Persistence
     implementation("androidx.room:room-runtime:$ROOM_VERSION")
-    kapt("androidx.room:room-compiler:$ROOM_VERSION")
+    ksp("androidx.room:room-compiler:$ROOM_VERSION")
     implementation("androidx.room:room-ktx:$ROOM_VERSION")
     implementation("androidx.room:room-rxjava2:$ROOM_VERSION")
     testImplementation("androidx.room:room-testing:$ROOM_VERSION")

@@ -18,8 +18,13 @@
  */
 
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
+
+plugins {
+    id("com.google.devtools.ksp") version "1.8.10-1.0.9" apply false
+}
+
 buildscript {
-    val kotlinVersion = "1.7.0"
+    val kotlinVersion = "1.8.0"
     repositories {
         google()
         jcenter()
@@ -39,6 +44,7 @@ buildscript {
 }
 
 allprojects {
+
     repositories {
         google()
         jcenter()
