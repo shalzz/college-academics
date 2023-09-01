@@ -28,7 +28,6 @@ import androidx.recyclerview.widget.SortedList
 import androidx.recyclerview.widget.SortedListAdapterCallback
 import com.shalzz.attendance.R
 import com.shalzz.attendance.data.model.entity.Period
-import kotlinx.android.synthetic.main.list_day_item.view.*
 import javax.inject.Inject
 
 class DayListAdapter @Inject
@@ -41,11 +40,11 @@ internal constructor() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     // Complex data items may need more than one view per item, and
     // you provide access to all the views for a data item in a view holder
     class ViewHolder internal constructor(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        var tvSubjectName: TextView = itemView.tvSubjectName
-        var tvTime: TextView = itemView.tvTime
-        var tvTeacher: TextView = itemView.tvTeacher
-        var tvRoom: TextView = itemView.tvRoom
-        var tvMarkedAbsent: TextView = itemView.tvMarkedAbsent
+        var tvSubjectName: TextView = itemView.findViewById(R.id.tvSubjectName)
+        var tvTime: TextView = itemView.findViewById(R.id.tvTime)
+        var tvTeacher: TextView = itemView.findViewById(R.id.tvTeacher)
+        var tvRoom: TextView = itemView.findViewById(R.id.tvRoom)
+        var tvMarkedAbsent: TextView = itemView.findViewById(R.id.tvMarkedAbsent)
     }
 
     init {

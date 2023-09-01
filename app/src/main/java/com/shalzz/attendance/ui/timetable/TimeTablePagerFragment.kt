@@ -32,17 +32,17 @@ import com.github.amlcurran.showcaseview.targets.Target
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.shalzz.attendance.R
+import com.shalzz.attendance.databinding.FragmentViewpagerBinding
 import com.shalzz.attendance.ui.main.MainActivity
 import com.shalzz.attendance.utils.RxEventBus
 import com.shalzz.attendance.wrapper.DateHelper
-import kotlinx.android.synthetic.main.fragment_viewpager.view.*
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Named
 
 class TimeTablePagerFragment : Fragment(), TimeTableMvpView {
 
-    lateinit var mViewPager: ViewPager
+    private lateinit var mViewPager: ViewPager
 
     @Inject
     @field:Named("app")
@@ -61,6 +61,11 @@ class TimeTablePagerFragment : Fragment(), TimeTableMvpView {
     private var mAdapter: TimeTablePagerAdapter? = null
     private var mContext: Context? = null
     private var actionbar: ActionBar? = null
+
+    private var _binding: FragmentViewpagerBinding? = null
+    // This property is only valid between onCreateView and
+    // onDestroyView.
+    private val binding get() = _binding!!
 
     private class OnPageChangeListener(private val callback: (position: Int) -> Unit )
         : ViewPager.SimpleOnPageChangeListener() {
@@ -85,9 +90,9 @@ class TimeTablePagerFragment : Fragment(), TimeTableMvpView {
 
         setHasOptionsMenu(true)
         retainInstance = false
-        val view = inflater.inflate(R.layout.fragment_viewpager, container, false)
-        mTimeTablePresenter.attachView(this)
-        mViewPager = view.pager
+        _binding = FragmentViewpagerBinding.inflate(inflater, container, false)
+        val view = binding.root
+        mViewPager = binding.pager
 
         actionbar = (activity as AppCompatActivity).supportActionBar
 

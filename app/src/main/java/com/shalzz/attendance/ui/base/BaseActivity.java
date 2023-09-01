@@ -26,7 +26,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.shalzz.attendance.MyApplication;
 import com.shalzz.attendance.injection.component.ActivityComponent;
 import com.shalzz.attendance.injection.component.ConfigPersistentComponent;
-import com.shalzz.attendance.injection.component.DaggerConfigPersistentComponent;
 import com.shalzz.attendance.injection.module.ActivityModule;
 
 import java.util.HashMap;
@@ -56,20 +55,20 @@ public class BaseActivity extends AppCompatActivity {
 
         // Create the ActivityComponent and reuses cached ConfigPersistentComponent if this is
         // being called after a configuration change.
-        mActivityId = savedInstanceState != null ?
-                savedInstanceState.getLong(KEY_ACTIVITY_ID) : NEXT_ID.getAndIncrement();
-        ConfigPersistentComponent configPersistentComponent;
-        if (!sComponentsMap.containsKey(mActivityId)) {
-            Timber.i("Creating new ConfigPersistentComponent id=%d", mActivityId);
-            configPersistentComponent = DaggerConfigPersistentComponent.builder()
-                    .applicationComponent(MyApplication.get(this).getComponent())
-                    .build();
-            sComponentsMap.put(mActivityId, configPersistentComponent);
-        } else {
-            Timber.i("Reusing ConfigPersistentComponent id=%d", mActivityId);
-            configPersistentComponent = sComponentsMap.get(mActivityId);
-        }
-        mActivityComponent = configPersistentComponent.activityComponent(new ActivityModule(this));
+//        mActivityId = savedInstanceState != null ?
+//                savedInstanceState.getLong(KEY_ACTIVITY_ID) : NEXT_ID.getAndIncrement();
+//        ConfigPersistentComponent configPersistentComponent;
+//        if (!sComponentsMap.containsKey(mActivityId)) {
+//            Timber.i("Creating new ConfigPersistentComponent id=%d", mActivityId);
+//            configPersistentComponent = DaggerConfigPersistentComponent.builder()
+//                    .applicationComponent(MyApplication.get(this).getComponent())
+//                    .build();
+//            sComponentsMap.put(mActivityId, configPersistentComponent);
+//        } else {
+//            Timber.i("Reusing ConfigPersistentComponent id=%d", mActivityId);
+//            configPersistentComponent = sComponentsMap.get(mActivityId);
+//        }
+//        mActivityComponent = configPersistentComponent.activityComponent(new ActivityModule(this));
     }
 
     @Override

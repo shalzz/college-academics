@@ -20,8 +20,7 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:viewBindingIgnore="true"
-    android:id="@+id/relative_layout"
+    android:id="@+id/drawer_root_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     tools:context=".ui.main.MainActivity"

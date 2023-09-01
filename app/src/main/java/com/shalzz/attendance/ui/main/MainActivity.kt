@@ -41,27 +41,26 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import androidx.recyclerview.widget.RecyclerView
-import com.android.billingclient.api.BillingClient
 import com.android.billingclient.api.BillingClient.BillingResponseCode
 import com.bugsnag.android.Bugsnag
 import com.github.amlcurran.showcaseview.ShowcaseView
 import com.google.android.material.navigation.NavigationView
-import com.shalzz.attendance.MyApplication
 import com.shalzz.attendance.R
 import com.shalzz.attendance.billing.BillingManager
 import com.shalzz.attendance.billing.BillingProvider
 import com.shalzz.attendance.data.DataManager
 import com.shalzz.attendance.data.local.PreferencesHelper
 import com.shalzz.attendance.data.model.entity.User
+import com.shalzz.attendance.databinding.DrawerBinding
+import com.shalzz.attendance.databinding.DrawerHeaderBinding
+import com.shalzz.attendance.databinding.IncludeDrawerListBinding
+import com.shalzz.attendance.databinding.IncludeDrawerMainContentBinding
+import com.shalzz.attendance.databinding.IncludeToolbarBinding
 import com.shalzz.attendance.sync.MyAccountManager
 import com.shalzz.attendance.ui.attendance.AttendanceListFragment
 import com.shalzz.attendance.ui.base.BaseActivity
 import com.shalzz.attendance.ui.login.AuthenticatorActivity
 import com.shalzz.attendance.utils.Utils
-import kotlinx.android.synthetic.main.drawer.*
-import kotlinx.android.synthetic.main.drawer_header.view.*
-import kotlinx.android.synthetic.main.include_drawer_list.*
-import kotlinx.android.synthetic.main.include_toolbar.*
 import okhttp3.OkHttpClient
 import timber.log.Timber
 import java.io.IOException
@@ -85,6 +84,12 @@ class MainActivity : BaseActivity(), MainMvpView, BillingProvider {
     @Inject lateinit var mMainPresenter: MainPresenter
     @Inject lateinit var mPreferencesHelper: PreferencesHelper
     @Inject lateinit var httpClient: OkHttpClient
+    private lateinit var drawerMainBinding: IncludeDrawerMainContentBinding
+    private lateinit var drawerBinding: DrawerBinding
+    private lateinit var drawerListBinding: IncludeDrawerListBinding
+    private lateinit var drawerHeaderBinding: DrawerHeaderBinding
+    private lateinit var toolbarBinding: IncludeToolbarBinding
+
 
     private var drawerHeaderVH: DrawerHeaderViewHolder? = null
 
@@ -92,25 +97,32 @@ class MainActivity : BaseActivity(), MainMvpView, BillingProvider {
     private var mBillingManager: BillingManager? = null
     private lateinit var navController: NavController
 
-    class DrawerHeaderViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val tvName: TextView = itemView.drawer_header_name
-        val tvCourse: TextView = itemView.drawer_header_course
-        val lastRefresh: TextView = itemView.last_refreshed
+    class DrawerHeaderViewHolder(drawerHeaderBinding: DrawerHeaderBinding) : RecyclerView.ViewHolder(drawerHeaderBinding.root) {
+        val tvName: TextView = drawerHeaderBinding.drawerHeaderName
+        val tvCourse: TextView = drawerHeaderBinding.drawerHeaderCourse
+        val lastRefresh: TextView = drawerHeaderBinding.lastRefreshed
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.drawer)
+        drawerBinding = DrawerBinding.inflate(layoutInflater)
+        val view = drawerBinding.root
+        setContentView(view)
+
+        drawerListBinding = IncludeDrawerListBinding.inflate(layoutInflater)
+        drawerHeaderBinding = DrawerHeaderBinding.inflate(layoutInflater)
+        toolbarBinding = IncludeToolbarBinding.inflate(layoutInflater, drawerBinding.drawerLayout)
+
         Bugsnag.setContext("MainActivity")
 
         activityComponent().inject(this)
         mMainPresenter.attachView(this)
         mBillingManager = BillingManager(this, mDataManager, mMainPresenter.updateListener)
 
-        mNavigationView = list_slidermenu
-        mToolbar = toolbar
+        mNavigationView = drawerListBinding.listSlidermenu
+        mToolbar = toolbarBinding.toolbar
         isTabletLayout = resources.getBoolean(R.bool.tablet_layout)
-        setSupportActionBar(toolbar)
+        setSupportActionBar(mToolbar)
 
         val navHostFragment = supportFragmentManager
                 .findFragmentById(R.id.nav_main_host_fragment) as NavHostFragment
@@ -121,18 +133,18 @@ class MainActivity : BaseActivity(), MainMvpView, BillingProvider {
         if (!isTabletLayout) {
             val appBarConfiguration = AppBarConfiguration(
                 setOf(R.id.attendanceListFragment, R.id.timeTablePagerFragment),
-                drawer_layout
+                drawerBinding.drawerLayout
             )
-            NavigationUI.setupWithNavController(toolbar, navController, appBarConfiguration)
+            NavigationUI.setupWithNavController(mToolbar, navController, appBarConfiguration)
         }
 
-        drawerHeaderVH = DrawerHeaderViewHolder(mNavigationView.getHeaderView(0))
+        drawerHeaderVH = DrawerHeaderViewHolder(drawerHeaderBinding)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            drawer_layout.setStatusBarBackgroundColor(
+            drawerBinding.drawerLayout.setStatusBarBackgroundColor(
                 resources.getColor(R.color.primary_dark, theme))
         } else {
-            drawer_layout.setStatusBarBackgroundColor(
+            drawerBinding.drawerLayout.setStatusBarBackgroundColor(
                 resources.getColor(R.color.primary_dark))
         }
 
@@ -239,7 +251,7 @@ class MainActivity : BaseActivity(), MainMvpView, BillingProvider {
                 .build()
 
         sv.overrideButtonClick {
-            drawer_layout.closeDrawer(mNavigationView)
+            drawerBinding.drawerLayout.closeDrawer(mNavigationView)
             sv.hide()
             if (fragment is AttendanceListFragment) {
                 (fragment as AttendanceListFragment).showcaseView()
@@ -279,8 +291,8 @@ class MainActivity : BaseActivity(), MainMvpView, BillingProvider {
     }
 
     override fun onBackPressed() {
-        if (drawer_layout.isDrawerOpen(mNavigationView)) {
-            drawer_layout.closeDrawer(mNavigationView)
+        if (drawerBinding.drawerLayout.isDrawerOpen(mNavigationView)) {
+            drawerBinding.drawerLayout.closeDrawer(mNavigationView)
         }
         else if (navController.currentDestination!!.id == R.id.attendanceListFragment ||
             navController.currentDestination!!.id == R.id.timeTablePagerFragment) {

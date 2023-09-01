@@ -24,8 +24,6 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.preference.PreferenceManager
 import com.bugsnag.android.Bugsnag
-import com.bugsnag.android.OnErrorCallback
-import com.bugsnag.android.Severity
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.shalzz.attendance.R
 import com.shalzz.attendance.data.local.PreferencesHelper

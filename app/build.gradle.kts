@@ -147,6 +147,7 @@ android {
             java.srcDirs("src/commonTest/java")
         }
         getByName("androidTest") {
+            java.srcDirs("src/androidTest/java")
             assets.srcDirs("$projectDir/schemas")
         }
     }
@@ -185,7 +186,7 @@ kapt {
 }
 
 dependencies {
-    val DAGGER_VERSION = "2.28.3"
+    val DAGGER_VERSION = "2.47"
     val ESPRESSO_VERSION = "3.1.0"
     val RETROFIT_VERSION = "2.8.1"
     val MOSHI_VERSION = "1.9.3"
@@ -234,7 +235,7 @@ dependencies {
 
     val daggerCompiler = "com.google.dagger:dagger-compiler:$DAGGER_VERSION"
     implementation("com.google.dagger:dagger:$DAGGER_VERSION")
-    ksp(daggerCompiler)
+    kapt(daggerCompiler)
     compileOnly("javax.annotation:jsr250-api:1.0")
     testAnnotationProcessor(daggerCompiler)
     androidTestAnnotationProcessor(daggerCompiler)

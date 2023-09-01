@@ -48,9 +48,8 @@ import javax.inject.Inject
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.empty_view.*
-import kotlinx.android.synthetic.main.empty_view.view.*
-import kotlinx.android.synthetic.main.fragment_day.view.*
+import com.shalzz.attendance.databinding.EmptyViewBinding
+import com.shalzz.attendance.databinding.FragmentDayBinding
 import timber.log.Timber
 
 class DayFragment : Fragment(), DayMvpView {
@@ -65,11 +64,17 @@ class DayFragment : Fragment(), DayMvpView {
     @field:ActivityContext
     lateinit var mContext: Context
 
-    class EmptyView(view: View) {
-        var imageView: ImageView = view.emptyStateImageView
-        var titleTextView: TextView = view.emptyStateTitleTextView
-        var contentTextView: TextView = view.emptyStateContentTextView
-        var button: Button = view.emptyStateButton
+    private lateinit var emptyViewBinding: EmptyViewBinding
+    private var _binding: FragmentDayBinding? = null
+    // This property is only valid between onCreateView and
+    // onDestroyView.
+    private val binding get() = _binding!!
+
+    private class EmptyViewHolder(emptyViewBinding: EmptyViewBinding) {
+        var imageView: ImageView = emptyViewBinding.emptyStateImageView
+        var titleTextView: TextView = emptyViewBinding.emptyStateTitleTextView
+        var contentTextView: TextView = emptyViewBinding.emptyStateContentTextView
+        var button: Button = emptyViewBinding.emptyStateButton
     }
 
     /**
@@ -79,16 +84,18 @@ class DayFragment : Fragment(), DayMvpView {
     private var mSwipeRefreshLayout: MultiSwipeRefreshLayout? = null
     private var mRecyclerView: RecyclerView? = null
     private lateinit var mDate: Date
-    private lateinit var mEmptyView: EmptyView
+    private lateinit var mEmptyView: EmptyViewHolder
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        val mView = inflater.inflate(R.layout.fragment_day, container, false)
+        _binding = FragmentDayBinding.inflate(inflater, container, false)
+        val mView = binding.root
         (activity as MainActivity).activityComponent().inject(this)
 
-        mRecyclerView = mView.time_table_recycler_view
-        mSwipeRefreshLayout = mView.swiperefresh
-        mEmptyView = EmptyView(mView.emptyView)
+        mRecyclerView = binding.timeTableRecyclerView
+        mSwipeRefreshLayout = binding.swiperefresh
+        emptyViewBinding = EmptyViewBinding.bind(mView)
+        mEmptyView = EmptyViewHolder(emptyViewBinding)
 
         setHasOptionsMenu(true)
         mDayPresenter.attachView(this)
@@ -170,9 +177,9 @@ class DayFragment : Fragment(), DayMvpView {
     override fun showEmptyView(show: Boolean) {
         stopRefreshing()
         if (show) {
-            emptyView!!.visibility = View.VISIBLE
+            emptyViewBinding.emptyView.visibility = View.VISIBLE
         } else {
-            emptyView!!.visibility = View.GONE
+            emptyViewBinding.emptyView.visibility = View.GONE
         }
     }
 

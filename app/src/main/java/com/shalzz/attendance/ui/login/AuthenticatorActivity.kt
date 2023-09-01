@@ -30,9 +30,9 @@ import androidx.appcompat.app.AppCompatDelegate
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.shalzz.attendance.MyApplication
 import com.shalzz.attendance.R
+import com.shalzz.attendance.databinding.ActivityLoginBinding
 import com.shalzz.attendance.sync.AccountAuthenticatorActivity
 import com.shalzz.attendance.sync.MyAccountManager
-import kotlinx.android.synthetic.main.include_toolbar.*
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Named
@@ -45,6 +45,7 @@ class AuthenticatorActivity: AccountAuthenticatorActivity(),
     @field:Named("app")
     lateinit var mTracker: FirebaseAnalytics
 
+    private lateinit var binding: ActivityLoginBinding
     private lateinit var mAccountManager: AccountManager
     private var mAuthTokenType: String? = null
 
@@ -57,12 +58,13 @@ class AuthenticatorActivity: AccountAuthenticatorActivity(),
         }
         super.onCreate(icicle)
         activityComponent().inject(this)
-        setContentView(R.layout.activity_login)
+        binding = ActivityLoginBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         mAccountManager = AccountManager.get(this)
         mAuthTokenType = MyAccountManager.AUTHTOKEN_TYPE_READ_ONLY
 
-        setSupportActionBar(toolbar)
+        setSupportActionBar(binding.toolbar)
         setTitle(null)
     }
 
@@ -71,13 +73,6 @@ class AuthenticatorActivity: AccountAuthenticatorActivity(),
         return super.onCreateOptionsMenu(menu)
     }
 
-    fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        if (item!!.itemId == R.id.menu_help) {
-//            MyApplication.helpStack.showHelp(this)
-            return true
-        }
-        return super.onOptionsItemSelected(item)
-    }
 
     override fun onFragmentInteraction(authToken: String, username: String, password: String) {
         val data = Bundle()

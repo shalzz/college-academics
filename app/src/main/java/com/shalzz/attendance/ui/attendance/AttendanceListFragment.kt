@@ -44,13 +44,11 @@ import com.malinskiy.materialicons.Iconify
 import com.shalzz.attendance.R
 import com.shalzz.attendance.data.model.ListFooter
 import com.shalzz.attendance.data.model.entity.Subject
+import com.shalzz.attendance.databinding.EmptyViewBinding
+import com.shalzz.attendance.databinding.FragmentAttendanceBinding
 import com.shalzz.attendance.ui.main.MainActivity
 import com.shalzz.attendance.utils.DividerItemDecoration
 import com.shalzz.attendance.utils.Utils
-import kotlinx.android.synthetic.main.empty_view.*
-import kotlinx.android.synthetic.main.empty_view.view.*
-import kotlinx.android.synthetic.main.fragment_attendance.*
-import kotlinx.android.synthetic.main.fragment_attendance.view.*
 import javax.inject.Inject
 import javax.inject.Named
 import kotlin.math.abs
@@ -71,6 +69,12 @@ class AttendanceListFragment : Fragment(), AttendanceMvpView,
     @field:Named("app")
     lateinit var mTracker: FirebaseAnalytics
 
+    private lateinit var emptyViewBinding: EmptyViewBinding
+    private var _binding: FragmentAttendanceBinding? = null
+    // This property is only valid between onCreateView and
+    // onDestroyView.
+    private val binding get() = _binding!!
+
     private var useGridLayout: Boolean = false
     private var mExpandCollapseDuration: Int = 0
 
@@ -78,21 +82,23 @@ class AttendanceListFragment : Fragment(), AttendanceMvpView,
     private var mGridLayoutManager: StaggeredGridLayoutManager? = null
     private lateinit var mActivity: Activity
 
-    private lateinit var mEmptyView: EmptyView
+    private lateinit var mEmptyView: EmptyViewHolder
 
-    private class EmptyView(view : View) {
-        var imageView: ImageView = view.emptyStateImageView
-        var titleTextView: TextView = view.emptyStateTitleTextView
-        var contentTextView: TextView = view.emptyStateContentTextView
-        var button: Button = view.emptyStateButton
+    private class EmptyViewHolder(emptyViewBinding: EmptyViewBinding) {
+        var imageView: ImageView = emptyViewBinding.emptyStateImageView
+        var titleTextView: TextView = emptyViewBinding.emptyStateTitleTextView
+        var contentTextView: TextView = emptyViewBinding.emptyStateContentTextView
+        var button: Button = emptyViewBinding.emptyStateButton
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val mView = inflater.inflate(R.layout.fragment_attendance, container, false)
-        mEmptyView = EmptyView(mView.emptyView)
+        _binding = FragmentAttendanceBinding.inflate(inflater, container, false)
+        val mView = binding.root
+        emptyViewBinding = EmptyViewBinding.bind(mView)
+        mEmptyView = EmptyViewHolder(emptyViewBinding)
         Bugsnag.setContext("AttendanceList")
 
         useGridLayout = resources.getBoolean(R.bool.use_grid_layout)
@@ -102,11 +108,11 @@ class AttendanceListFragment : Fragment(), AttendanceMvpView,
         (mActivity as MainActivity).activityComponent().inject(this)
         setHasOptionsMenu(true)
 
-        mView.layoutSwipeRefresh.setOnRefreshListener { mPresenter.syncAttendance() }
-        mView.layoutSwipeRefresh.setSwipeableChildren(R.id.recyclerView)
+        binding.layoutSwipeRefresh.setOnRefreshListener { mPresenter.syncAttendance() }
+        binding.layoutSwipeRefresh.setSwipeableChildren(R.id.recyclerView)
 
         // Set the color scheme of the SwipeRefreshLayout by providing 4 color resource ids
-        mView.layoutSwipeRefresh.setColorSchemeResources(
+        binding.layoutSwipeRefresh.setColorSchemeResources(
             R.color.swipe_color_1, R.color.swipe_color_2,
             R.color.swipe_color_3, R.color.swipe_color_4
         )
@@ -126,17 +132,17 @@ class AttendanceListFragment : Fragment(), AttendanceMvpView,
             mLinearLayoutManager!!.stackFromEnd = false
         }
 
-        mView.recyclerView.setLayoutManager(if (useGridLayout) mGridLayoutManager else mLinearLayoutManager)
+        binding.recyclerView.setLayoutManager(if (useGridLayout) mGridLayoutManager else mLinearLayoutManager)
 
         val itemDecoration = DividerItemDecoration(mActivity, DividerItemDecoration.VERTICAL_LIST)
-        mView.recyclerView.addItemDecoration(itemDecoration)
+        binding.recyclerView.addItemDecoration(itemDecoration)
 
-        val mFooter = inflater.inflate(R.layout.list_footer, mView.recyclerView, false)
+        val mFooter = inflater.inflate(R.layout.list_footer, binding.recyclerView, false)
         mFooter.visibility = View.INVISIBLE
         mAdapter.addFooter(mFooter)
         mAdapter.setCallback(this)
 
-        mView.recyclerView.adapter = mAdapter
+        binding.recyclerView.adapter = mAdapter
 
         return mView
     }
@@ -182,8 +188,8 @@ class AttendanceListFragment : Fragment(), AttendanceMvpView,
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.menu_refresh) {
             // We make sure that the SwipeRefreshLayout is displaying it's refreshing indicator
-            if (!layoutSwipeRefresh.isRefreshing) {
-                layoutSwipeRefresh.isRefreshing = true
+            if (!binding.layoutSwipeRefresh.isRefreshing) {
+                binding.layoutSwipeRefresh.isRefreshing = true
                 mPresenter.syncAttendance()
             }
             return true
@@ -203,7 +209,7 @@ class AttendanceListFragment : Fragment(), AttendanceMvpView,
         val childView = viewHolder.childView
         childView!!.measure(spec, spec)
         val startingHeight = view.height
-        val observer = recyclerView.viewTreeObserver
+        val observer = binding.recyclerView.viewTreeObserver
         observer.addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {
             override fun onPreDraw(): Boolean {
                 // We don'mTracker want to continue getting called for every draw.
@@ -229,7 +235,7 @@ class AttendanceListFragment : Fragment(), AttendanceMvpView,
                     ValueAnimator.ofFloat(1f, 0f)
 
                 // scroll to make the view fully visible.
-                recyclerView.smoothScrollToPosition(viewHolder.adapterPosition)
+                binding.recyclerView.smoothScrollToPosition(viewHolder.adapterPosition)
 
                 animator.addUpdateListener { animator1 ->
                     val value = animator1.animatedValue as Float
@@ -266,7 +272,7 @@ class AttendanceListFragment : Fragment(), AttendanceMvpView,
             val lastPosition = mLinearLayoutManager!!.findLastVisibleItemPosition()
 
             for (position in 0..lastPosition - firstPosition) {
-                val view = recyclerView.getChildAt(position)
+                val view = binding.recyclerView.getChildAt(position)
 
                 if (view != null) {
                     val viewHolder = view.tag as ExpandableListAdapter.GenericViewHolder
@@ -283,7 +289,7 @@ class AttendanceListFragment : Fragment(), AttendanceMvpView,
 
             for (i in 0 until GRID_LAYOUT_SPAN_COUNT) {
                 for (position in 0..lastPosition[i] - firstPosition[i]) {
-                    val view = recyclerView.getChildAt(position)
+                    val view = binding.recyclerView.getChildAt(position)
 
                     if (view != null) {
                         val viewHolder = view.tag as ExpandableListAdapter.GenericViewHolder
@@ -319,8 +325,8 @@ class AttendanceListFragment : Fragment(), AttendanceMvpView,
     }
 
     override fun showcaseView() {
-        if (recyclerView.getChildAt(2) != null) {
-            val target = ViewTarget(recyclerView.getChildAt(2))
+        if (binding.recyclerView.getChildAt(2) != null) {
+            val target = ViewTarget(binding.recyclerView.getChildAt(2))
 
             ShowcaseView.Builder(mActivity)
                 .setStyle(R.style.ShowcaseTheme)
@@ -333,24 +339,24 @@ class AttendanceListFragment : Fragment(), AttendanceMvpView,
     }
 
     override fun setRefreshing() {
-        progressCircular.visibility = View.VISIBLE
-        recyclerView.visibility = View.GONE
+        binding.progressCircular.visibility = View.VISIBLE
+        binding.recyclerView.visibility = View.GONE
     }
 
     override fun stopRefreshing() {
-        progressCircular.visibility = View.GONE
-        recyclerView.visibility = View.VISIBLE
-        layoutSwipeRefresh.isRefreshing = false
+        binding.progressCircular.visibility = View.GONE
+        binding.recyclerView.visibility = View.VISIBLE
+        binding.layoutSwipeRefresh.isRefreshing = false
     }
 
     override fun showError(message: String) {
         stopRefreshing()
-        Utils.showSnackBar(recyclerView, message)
+        Utils.showSnackBar(binding.recyclerView, message)
     }
 
     override fun showRetryError(message: String) {
         stopRefreshing()
-        Snackbar.make(recyclerView, message, Snackbar.LENGTH_LONG)
+        Snackbar.make(binding.recyclerView, message, Snackbar.LENGTH_LONG)
             .setAction("Retry") { mPresenter.syncAttendance() }
             .show()
     }
@@ -358,11 +364,11 @@ class AttendanceListFragment : Fragment(), AttendanceMvpView,
     override fun showEmptyView(show: Boolean) {
         stopRefreshing()
         if (show) {
-            emptyView.visibility = View.VISIBLE
-            recyclerView.visibility = View.GONE
+            emptyViewBinding.emptyView.visibility = View.VISIBLE
+            binding.recyclerView.visibility = View.GONE
         } else {
-            emptyView.visibility = View.GONE
-            recyclerView.visibility = View.VISIBLE
+            emptyViewBinding.emptyView.visibility = View.GONE
+            binding.recyclerView.visibility = View.VISIBLE
         }
     }
 

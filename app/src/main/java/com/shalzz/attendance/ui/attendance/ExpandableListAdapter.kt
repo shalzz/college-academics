@@ -40,10 +40,10 @@ import com.shalzz.attendance.BuildConfig
 import com.shalzz.attendance.R
 import com.shalzz.attendance.data.model.ListFooter
 import com.shalzz.attendance.data.model.entity.Subject
+import com.shalzz.attendance.databinding.FragmentDayBinding
+import com.shalzz.attendance.databinding.ListAttendCardBinding
 import com.shalzz.attendance.injection.ApplicationContext
 import com.shalzz.attendance.utils.Utils
-import kotlinx.android.synthetic.main.list_child_item.view.*
-import kotlinx.android.synthetic.main.list_group_item.view.*
 import timber.log.Timber
 import java.util.ArrayList
 import javax.inject.Inject
@@ -151,10 +151,10 @@ internal constructor(@param:ApplicationContext private val mContext: Context) : 
     (itemView) {
         internal var position = -1
 
-        var subject: TextView = itemView.tvSubj
-        var percentage: TextView = itemView.tvPercent
-        var classes: TextView = itemView.tvClasses
-        var percent: ProgressBar = itemView.pbPercent
+        var subject: TextView = itemView.findViewById(R.id.tvSubj)
+        var percentage: TextView = itemView.findViewById(R.id.tvPercent)
+        var classes: TextView = itemView.findViewById(R.id.tvClasses)
+        var percent: ProgressBar = itemView.findViewById(R.id.pbPercent)
 
         //child views
         var childView: RelativeLayout? = null
@@ -219,9 +219,9 @@ internal constructor(@param:ApplicationContext private val mContext: Context) : 
 
         // child view
         val childView = views.childView!!
-        views.tvAbsent = childView.tvAbsent
-        views.tvReach = childView.tvReach
-        views.ivAlert = childView.imageView1
+        views.tvAbsent = childView.findViewById(R.id.tvAbsent)
+        views.tvReach = childView.findViewById(R.id.tvReach)
+        views.ivAlert = childView.findViewById(R.id.imageView1)
 
         bindChildView(views, views.position)
     }

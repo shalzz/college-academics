@@ -31,7 +31,6 @@ import android.view.inputmethod.EditorInfo
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.browser.customtabs.CustomTabColorSchemeParams
-import androidx.browser.customtabs.CustomTabsIntent
 import androidx.browser.trusted.TrustedWebActivityIntentBuilder
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -49,10 +48,9 @@ import com.shalzz.attendance.data.local.PreferencesHelper
 import com.shalzz.attendance.data.model.College
 import com.shalzz.attendance.data.model.entity.User
 import com.shalzz.attendance.data.remote.DataAPI
+import com.shalzz.attendance.databinding.FragmentLoginBinding
 import com.shalzz.attendance.utils.Utils
 import com.shalzz.attendance.utils.Utils.Analytics
-import kotlinx.android.synthetic.main.fragment_login.*
-import kotlinx.android.synthetic.main.fragment_login.view.*
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Named
@@ -78,6 +76,11 @@ class LoginFragment : Fragment(), LoginMvpView, AdapterView.OnItemSelectedListen
     private var college: College? = null
     private lateinit var launcher :TwaLauncher
 
+    private var _binding: FragmentLoginBinding? = null
+    // This property is only valid between onCreateView and
+    // onDestroyView.
+    private val binding get() = _binding!!
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -101,29 +104,30 @@ class LoginFragment : Fragment(), LoginMvpView, AdapterView.OnItemSelectedListen
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
-        val mView = inflater.inflate(R.layout.fragment_login, container, false)
+                              savedInstanceState: Bundle?): View {
+        _binding = FragmentLoginBinding.inflate(inflater, container, false)
+        val mView = binding.root
         mLoginPresenter.attachView(this)
 
         spinnerAdapter = ArrayAdapter(mActivity, android.R.layout.simple_list_item_1,
             ArrayList<College>())
         spinnerAdapter.add(College("none", "Select Your College"))
-        mView.spCollege.adapter = spinnerAdapter
+        binding.spCollege.adapter = spinnerAdapter
 
-        mView.spCollege.onItemSelectedListener = this
+        binding.spCollege.onItemSelectedListener = this
 
-        mView.tvForgotPassword.setOnClickListener { onForgotPassword() }
+        binding.tvForgotPassword.setOnClickListener { onForgotPassword() }
         launcher = TwaLauncher(requireContext())
 
         // Attempt login when user presses 'Done' on keyboard.
-        mView.etPassword!!.editText!!.setOnEditorActionListener { _, actionId, _ ->
+        binding.etPassword.editText!!.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 doLogin()
                 return@setOnEditorActionListener true
             }
             false
         }
-        mView.bLogin.setOnClickListener { doLogin() }
+        binding.bLogin.setOnClickListener { doLogin() }
 
         if (GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(mActivity)
             != ConnectionResult.SUCCESS) {
@@ -149,7 +153,7 @@ class LoginFragment : Fragment(), LoginMvpView, AdapterView.OnItemSelectedListen
 
         sv.overrideButtonClick {
             sv.hide()
-            val secondTarget = ViewTarget(spCollege)
+            val secondTarget = ViewTarget(binding.spCollege)
 
             ShowcaseView.Builder(mActivity)
                 .setStyle(R.style.ShowcaseTheme)
@@ -171,24 +175,24 @@ class LoginFragment : Fragment(), LoginMvpView, AdapterView.OnItemSelectedListen
 
     private fun isValid(username: String, password: String): Boolean {
         var valid = true
-        etUserId.error = null
-        etPassword.error = null
+        binding.etUserId.error = null
+        binding.etPassword.error = null
         if (college == null) {
             nudgeCollegeSpinner()
             dismissProgressDialog()
             valid = false
         }
         if (username.isEmpty()) {
-            etUserId.requestFocus()
-            etUserId.error = getString(R.string.form_userid_error)
-            Utils.showKeyboard(mActivity, etUserId.editText)
+            binding.etUserId.requestFocus()
+            binding.etUserId.error = getString(R.string.form_userid_error)
+            Utils.showKeyboard(mActivity, binding.etUserId.editText)
             dismissProgressDialog()
             valid = false
         }
         if (password.isEmpty()) {
-            etPassword.requestFocus()
-            etPassword.error = getString(R.string.form_password_error)
-            Utils.showKeyboard(mActivity, etPassword.editText)
+            binding.etPassword.requestFocus()
+            binding.etPassword.error = getString(R.string.form_password_error)
+            Utils.showKeyboard(mActivity, binding.etPassword.editText)
             dismissProgressDialog()
             valid = false
         }
@@ -197,8 +201,8 @@ class LoginFragment : Fragment(), LoginMvpView, AdapterView.OnItemSelectedListen
     }
 
     private fun nudgeCollegeSpinner() {
-        Utils.showSnackBar(etUserId, "Please select your college")
-        spCollege.startAnimation(AnimationUtils.loadAnimation(mActivity, R.anim.wiggle))
+        Utils.showSnackBar(binding.etUserId, "Please select your college")
+        binding.spCollege.startAnimation(AnimationUtils.loadAnimation(mActivity, R.anim.wiggle))
     }
 
     private fun onForgotPassword() {
@@ -218,8 +222,8 @@ class LoginFragment : Fragment(), LoginMvpView, AdapterView.OnItemSelectedListen
     }
 
     private fun doLogin(captcha: String? = null, cookie: String? = null) {
-        val userId = etUserId.editText!!.editableText
-        val password = etPassword.editText!!.editableText
+        val userId = binding.etUserId.editText!!.editableText
+        val password = binding.etPassword.editText!!.editableText
 
         if (!isValid(userId.toString(), password.toString())) {
             return
@@ -233,7 +237,7 @@ class LoginFragment : Fragment(), LoginMvpView, AdapterView.OnItemSelectedListen
 
         Timber.d("new login: %s, %s, %s", userId, password, college!!.id)
 
-        Utils.closeKeyboard(mActivity, etPassword.editText)
+        Utils.closeKeyboard(mActivity, binding.etPassword.editText)
         if (cookie == null && captcha == null)
             mLoginPresenter.login(userId.toString(), password.toString(), college!!.id)
         else
@@ -306,7 +310,7 @@ class LoginFragment : Fragment(), LoginMvpView, AdapterView.OnItemSelectedListen
         spinnerAdapter.addAll(data)
         Timber.d("Colleges: %s", data)
         // showcase when list of colleges is loaded
-        bLogin.post {
+        binding.bLogin.post {
             kotlin.run {
                 showcaseView()
             }
@@ -335,7 +339,7 @@ class LoginFragment : Fragment(), LoginMvpView, AdapterView.OnItemSelectedListen
     override fun showError(message: String?) {
         dismissProgressDialog()
 
-        Utils.showSnackBar(etUserId,
+        Utils.showSnackBar(binding.etUserId,
             message ?: getString(R.string.unexpected_error)
         )
     }

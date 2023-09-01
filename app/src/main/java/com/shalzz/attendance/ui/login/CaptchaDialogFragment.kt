@@ -32,13 +32,12 @@ import com.afollestad.materialdialogs.DialogAction
 import com.afollestad.materialdialogs.MaterialDialog
 import com.shalzz.attendance.R
 import com.shalzz.attendance.data.remote.DataAPI
+import com.shalzz.attendance.databinding.CaptchaDialogBinding
 import com.shalzz.attendance.utils.Utils
 import com.shalzz.attendance.utils.RxUtil
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.captcha_dialog.*
-import kotlinx.android.synthetic.main.captcha_dialog.view.*
 import timber.log.Timber
 
 class CaptchaDialogFragment(listener: CaptchaDialogListener, dataAPI: DataAPI, collegeId: String) :
@@ -53,6 +52,11 @@ class CaptchaDialogFragment(listener: CaptchaDialogListener, dataAPI: DataAPI, c
     private var mDisposable: Disposable? = null
     private var mCookie: String = ""
 
+    private var _binding: CaptchaDialogBinding? = null
+    // This property is only valid between onCreateView and
+    // onDestroyView.
+    private val binding get() = _binding!!
+
     /** The activity that creates an instance of this dialog fragment must
      * implement this interface in order to receive event callbacks.
      * Each method passes the DialogFragment in case the host needs to query it.
@@ -62,8 +66,8 @@ class CaptchaDialogFragment(listener: CaptchaDialogListener, dataAPI: DataAPI, c
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val inflater = requireActivity().layoutInflater
-        val mView = inflater.inflate(R.layout.captcha_dialog, null)
+        _binding = CaptchaDialogBinding.inflate(layoutInflater)
+        val mView = binding.root
 
         mContext = requireContext()
         return MaterialDialog.Builder(mContext)
@@ -72,15 +76,15 @@ class CaptchaDialogFragment(listener: CaptchaDialogListener, dataAPI: DataAPI, c
                 .customView(mView, false)
                 .autoDismiss(false)
                 .onPositive { dialog, _ ->
-                    val captcha = mView.captchaEditText.text.toString()
+                    val captcha = binding.captchaEditText.text.toString()
                     if (captcha.isEmpty())
-                        mView.captchaEditText.error = "Please enter the captcha text"
+                        binding.captchaEditText.error = "Please enter the captcha text"
                     else
                         mListener.onDialogPositiveClick(dialog, captcha, mCookie)
                 }
                 .onNegative { dialog, _ ->
                     dialog.dismiss() }
-                .showListener { Utils.showKeyboard(context, mView.captchaEditText) }
+                .showListener { Utils.showKeyboard(context, binding.captchaEditText) }
                 .build()
     }
 
@@ -92,13 +96,13 @@ class CaptchaDialogFragment(listener: CaptchaDialogListener, dataAPI: DataAPI, c
         loadImg(mCollegeId)
 
         // OnClickListener event for the Reload captcha Button
-        materialDialog.refreshButton.setOnClickListener {
+        binding.refreshButton.setOnClickListener {
             loadImg(mCollegeId)
-            materialDialog.captchaEditText.setText("")
+            binding.captchaEditText.setText("")
         }
 
         // logs in when user press done on keyboard.
-        materialDialog.captchaEditText.setOnEditorActionListener(
+        binding.captchaEditText.setOnEditorActionListener(
                 TextView.OnEditorActionListener { _, actionId, _ ->
                     if (actionId == EditorInfo.IME_ACTION_DONE) {
                         positiveButton.performClick()
@@ -116,8 +120,7 @@ class CaptchaDialogFragment(listener: CaptchaDialogListener, dataAPI: DataAPI, c
     }
 
     private fun loadImg(clg: String) {
-        val materialDialog = dialog as MaterialDialog
-        val imageView = materialDialog.ivCapImg
+        val imageView = binding.ivCapImg
 
         val circularProgressDrawable = CircularProgressDrawable(mContext)
         circularProgressDrawable.strokeWidth = 8f
