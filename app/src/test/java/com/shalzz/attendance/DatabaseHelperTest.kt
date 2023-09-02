@@ -86,7 +86,7 @@ class DatabaseHelperTest {
 
     @Test
     fun writeAndReadSubjects() {
-        val subjects = Arrays.asList(TestDataFactory.makeSubject("s1"),
+        val subjects = listOf(TestDataFactory.makeSubject("s1"),
             TestDataFactory.makeSubject("s2"))
 
         mDatabaseHelper.setSubjects(subjects).subscribe()
@@ -100,7 +100,7 @@ class DatabaseHelperTest {
     @Test
     fun writeAndReadPeriods() {
         val day = Date()
-        val periods = Arrays.asList(TestDataFactory.makePeriod("p1", day),
+        val periods = listOf(TestDataFactory.makePeriod("p1", day),
             TestDataFactory.makePeriod("p2", day))
 
         mDatabaseHelper.setPeriods(periods).subscribe()
@@ -138,7 +138,7 @@ class DatabaseHelperTest {
     @Test
     fun resetAllTables() {
         val day = Date()
-        val periods = Arrays.asList(TestDataFactory.makePeriod("p1", day),
+        val periods = listOf(TestDataFactory.makePeriod("p1", day),
             TestDataFactory.makePeriod("p2", day))
 
         mDatabaseHelper.setPeriods(periods).subscribe()

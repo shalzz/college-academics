@@ -271,7 +271,7 @@ dependencies {
 
     val jUnit = "androidx.test.ext:junit:1.1.1"
     val truth = "androidx.test.ext:truth:1.0.0"
-    val mockito = "org.mockito:mockito-core:3.3.3"
+    val mockito = "org.mockito:mockito-core:5.5.0"
 
     // common shared test files as a library module
     testImplementation(project(path = ":commonTest"))
@@ -282,8 +282,8 @@ dependencies {
     testImplementation(truth)
     testImplementation(mockito)
     testImplementation("androidx.test:core:1.5.0")
-    testImplementation("org.robolectric:robolectric:4.5.1")
-    testImplementation("org.robolectric:shadows-multidex:4.5.1")
+    testImplementation("org.robolectric:robolectric:4.10.3")
+    testImplementation("org.robolectric:shadows-multidex:4.10.3")
 
     // Instrumentation test dependencies
     androidTestImplementation(jUnit)
