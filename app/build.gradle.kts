@@ -273,6 +273,10 @@ dependencies {
     val truth = "androidx.test.ext:truth:1.0.0"
     val mockito = "org.mockito:mockito-core:3.3.3"
 
+    // common shared test files as a library module
+    testImplementation(project(path = ":commonTest"))
+    androidTestImplementation(project(path = ":commonTest"))
+
     // Unit tests dependencies
     testImplementation(jUnit)
     testImplementation(truth)

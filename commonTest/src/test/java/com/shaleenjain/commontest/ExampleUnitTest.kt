@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013-2018 Shaleen Jain <shaleen.jain95@gmail.com>
+ * Copyright (c) 2013-2023 Shaleen Jain <shaleen.jain95@gmail.com>
  *
  * This file is part of College Academics.
  *
@@ -17,5 +17,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-include(":app")
-include(":commonTest")
+package com.shaleenjain.commontest
+
+import org.junit.Test
+
+import org.junit.Assert.*
+
+/**
+ * Example local unit test, which will execute on the development machine (host).
+ *
+ * See [testing documentation](http://d.android.com/tools/testing).
+ */
+class ExampleUnitTest {
+    @Test
+    fun addition_isCorrect() {
+        assertEquals(4, 2 + 2)
+    }
+}

@@ -21,6 +21,7 @@
 
 plugins {
     id("com.google.devtools.ksp") version "1.8.10-1.0.9" apply false
+    id("org.jetbrains.kotlin.android") version "1.8.10" apply false
 }
 
 buildscript {
@@ -32,7 +33,7 @@ buildscript {
     }
     dependencies {
         classpath(kotlin("gradle-plugin", kotlinVersion))
-        classpath("com.android.tools.build:gradle:8.1.0")
+        classpath("com.android.tools.build:gradle:8.1.1")
         classpath("com.google.gms:google-services:4.3.15")
 
         classpath("com.google.android.gms:oss-licenses-plugin:0.10.6")

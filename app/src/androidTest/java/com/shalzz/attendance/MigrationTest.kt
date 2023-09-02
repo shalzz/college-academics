@@ -56,7 +56,7 @@ class MigrationTest {
         // You cannot use DAO classes because they expect the latest schema.
         val subjects = Arrays.asList(TestDataFactory.makeSubject("s1"),
                 TestDataFactory.makeSubject("s2"))
-        subjects.forEach { insertSubject(it, db) }
+        subjects.forEach { it: Subject -> insertSubject(it, db) }
 
         // Prepare for the next version.
         db.close()
