@@ -53,7 +53,10 @@ jobs:
       uses: reactivecircus/android-emulator-runner@v2
       with:
         api-level: 29
+        ndk: ${NDK_VERSION}
         script: ./gradlew connectedCheck --stacktrace
+      env:
+        ANDROID_EMULATOR_WAIT_TIME_BEFORE_KILL: 170 # Default is 20
 
   deploy:
     needs: [build, test]

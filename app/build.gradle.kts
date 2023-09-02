@@ -51,12 +51,12 @@ val gitCommitCount = 2007050 + Integer.parseInt(
         )
 
 android {
-    compileSdkVersion(33)
+    compileSdk = 33
 
     defaultConfig {
         applicationId = "com.shalzz.attendance"
-        minSdkVersion(21)
-        targetSdkVersion(33)
+        minSdk = 21
+        targetSdk = 33
         versionCode = gitCommitCount
         versionName = gitTag
         multiDexEnabled = true

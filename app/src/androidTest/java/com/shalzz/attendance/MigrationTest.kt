@@ -22,6 +22,7 @@ package com.shalzz.attendance
 import android.content.ContentValues
 import android.database.sqlite.SQLiteDatabase
 import androidx.room.Room
+import androidx.room.migration.AutoMigrationSpec
 import androidx.room.testing.MigrationTestHelper
 import androidx.sqlite.db.SupportSQLiteDatabase
 import androidx.sqlite.db.framework.FrameworkSQLiteOpenHelperFactory
