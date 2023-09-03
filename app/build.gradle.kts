@@ -196,7 +196,7 @@ dependencies {
     val MOSHI_VERSION = "1.14.0"
     val ROOM_VERSION = "2.5.2"
     val NAV_VERSION = "2.7.1"
-    val BILLING_VERSION = "4.0.0"
+    val BILLING_VERSION = "6.0.1"
 
     // TODO: re-evaluate when RxJava is completely replaced with kotlin co-routines
     implementation("androidx.multidex:multidex:2.0.1")
