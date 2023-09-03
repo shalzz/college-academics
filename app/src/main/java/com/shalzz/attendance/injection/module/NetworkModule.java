@@ -31,6 +31,7 @@ import com.shalzz.attendance.data.remote.interceptor.LoggingInterceptor;
 import com.shalzz.attendance.injection.ApplicationContext;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter;
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory;
 
 import java.io.File;
 import java.util.Date;
@@ -53,6 +54,7 @@ public class NetworkModule {
     static Moshi provideMoshi() {
         return new Moshi.Builder()
                 .add(Date.class, new Rfc3339DateJsonAdapter())
+                .addLast(new KotlinJsonAdapterFactory())
                 .build();
     }
 

@@ -188,8 +188,8 @@ kapt {
 dependencies {
     val DAGGER_VERSION = "2.47"
     val ESPRESSO_VERSION = "3.1.0"
-    val RETROFIT_VERSION = "2.8.1"
-    val MOSHI_VERSION = "1.9.3"
+    val RETROFIT_VERSION = "2.9.0"
+    val MOSHI_VERSION = "1.14.0"
     val ROOM_VERSION = "2.5.2"
     val NAV_VERSION = "2.2.0"
     val BILLING_VERSION = "4.0.0"
@@ -252,7 +252,7 @@ dependencies {
     implementation("com.squareup.moshi:moshi:$MOSHI_VERSION")
     implementation("com.squareup.moshi:moshi-adapters:$MOSHI_VERSION")
     ksp("com.squareup.moshi:moshi-kotlin-codegen:$MOSHI_VERSION")
-//    implementation("com.squareup.moshi:moshi-kotlin:1.9.1")
+    implementation("com.squareup.moshi:moshi-kotlin:$MOSHI_VERSION")
 
     implementation("com.malinskiy:materialicons:1.0.2")
     implementation("com.github.amlcurran.showcaseview:library:5.4.3")
