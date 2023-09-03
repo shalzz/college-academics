@@ -109,8 +109,16 @@ android {
             signingConfig = signingConfigs.getByName("debug")
         }
         getByName("release") {
-            isShrinkResources = false
-            isMinifyEnabled = false
+            isShrinkResources = true
+            isMinifyEnabled = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                // List additional ProGuard rules for the given build type here. By default,
+                // Android Studio creates and includes an empty rules file for you (located
+                // at the root directory of each module).
+                "proguard-rules.pro"
+            )
+
             resValue("string", "app_id", defaultConfig.applicationId!!)
             resValue("string", "app_name", "College Academics")
             resValue("string", "contentAuthority", defaultConfig.applicationId + ".provider")
