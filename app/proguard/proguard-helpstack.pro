@@ -1,2 +1,0 @@
--dontwarn com.polites.**
--dontwarn com.tenmiles.helpstack.**

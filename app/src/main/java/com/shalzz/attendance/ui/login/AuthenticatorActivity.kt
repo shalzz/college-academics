@@ -73,7 +73,6 @@ class AuthenticatorActivity: AccountAuthenticatorActivity(),
         return super.onCreateOptionsMenu(menu)
     }
 
-
     override fun onFragmentInteraction(authToken: String, username: String, password: String) {
         val data = Bundle()
         data.putString(AccountManager.KEY_ACCOUNT_NAME, username)

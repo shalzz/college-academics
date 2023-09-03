@@ -24,6 +24,7 @@ import android.content.Context
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
@@ -334,6 +335,14 @@ class LoginFragment : Fragment(), LoginMvpView, AdapterView.OnItemSelectedListen
         mPreferencesHelper.saveUser(user.username, password, user.college)
         listener?.onFragmentInteraction(token, user.username, password)
         mPreferencesHelper.setLoggedIn()
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.menu_help) {
+//            MyApplication.helpStack.showHelp(this)
+            return true
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     override fun showError(message: String?) {

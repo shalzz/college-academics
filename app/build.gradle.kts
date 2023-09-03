@@ -51,12 +51,12 @@ val gitCommitCount = 2007050 + Integer.parseInt(
         )
 
 android {
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.shalzz.attendance"
         minSdk = 21
-        targetSdk = 33
+        targetSdk = 34
         versionCode = gitCommitCount
         versionName = gitTag
         multiDexEnabled = true
@@ -106,22 +106,18 @@ android {
             resValue("string", "account_type", "com.shalzz.debug")
             resValue("string", "zoho_app_id", "0cf0e6f11763c00d387ee247ab64aed483f3768859c3ef35")
             buildConfigField("String", "ACCOUNT_TYPE", "\"com.shalzz.debug\"")
-            multiDexKeepProguard = file("./proguard/proguard-multidex-rules.pro")
             signingConfig = signingConfigs.getByName("debug")
         }
         getByName("release") {
-            isShrinkResources = true
-            isMinifyEnabled = true
+            isShrinkResources = false
+            isMinifyEnabled = false
             resValue("string", "app_id", defaultConfig.applicationId!!)
             resValue("string", "app_name", "College Academics")
             resValue("string", "contentAuthority", defaultConfig.applicationId + ".provider")
             resValue("string", "account_type", "com.shalzz")
             resValue("string", "zoho_app_id", "0cf0e6f11763c00d387ee247ab64aed474712349653bbd5b")
             buildConfigField("String", "ACCOUNT_TYPE", "\"com.shalzz\"")
-            proguardFiles(
-                    getDefaultProguardFile("proguard-android-optimize.txt"),
-                    file("./proguard")
-            )
+
             signingConfig = signingConfigs.getByName("release")
         }
     }
@@ -191,7 +187,7 @@ dependencies {
     val RETROFIT_VERSION = "2.9.0"
     val MOSHI_VERSION = "1.14.0"
     val ROOM_VERSION = "2.5.2"
-    val NAV_VERSION = "2.2.0"
+    val NAV_VERSION = "2.7.1"
     val BILLING_VERSION = "4.0.0"
 
     // TODO: re-evaluate when RxJava is completely replaced with kotlin co-routines
@@ -199,14 +195,14 @@ dependencies {
 
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.3")
 
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.1")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.5")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
 //    implementation(platform(kotlin("bom")))
 
     implementation("androidx.core:core-ktx:1.10.1")
     implementation("androidx.navigation:navigation-fragment-ktx:$NAV_VERSION")
     implementation("androidx.navigation:navigation-ui-ktx:$NAV_VERSION")
-    implementation("androidx.drawerlayout:drawerlayout:1.1.0-rc01")
+    implementation("androidx.drawerlayout:drawerlayout:1.2.0")
 
     implementation("com.google.firebase:firebase-core:17.3.0")
     implementation("com.google.firebase:firebase-analytics:17.3.0")
@@ -214,21 +210,21 @@ dependencies {
 //    implementation("com.github.shalzz:helpstack:1.4.1-debug")
 
     implementation("com.google.android.gms:play-services-oss-licenses:17.0.1")
-    implementation("com.google.android.material:material:1.1.0")
+    implementation("com.google.android.material:material:1.9.0")
 
     implementation("androidx.core:core:1.10.1")
-    implementation("androidx.appcompat:appcompat:1.1.0")
-    implementation("androidx.fragment:fragment:1.2.4")
-    implementation("androidx.fragment:fragment-ktx:1.2.4")
-    implementation("androidx.recyclerview:recyclerview:1.1.0")
-    implementation("androidx.preference:preference:1.1.1")
+    implementation("androidx.appcompat:appcompat:1.6.1")
+    implementation("androidx.fragment:fragment:1.6.1")
+    implementation("androidx.fragment:fragment-ktx:1.6.1")
+    implementation("androidx.recyclerview:recyclerview:1.3.1")
+    implementation("androidx.preference:preference:1.2.1")
     implementation("androidx.annotation:annotation:1.6.0")
-    implementation("androidx.constraintlayout:constraintlayout:1.1.3")
-    implementation("androidx.constraintlayout:constraintlayout-solver:1.1.3")
+    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+    implementation("androidx.constraintlayout:constraintlayout-solver:2.0.4")
     implementation("androidx.vectordrawable:vectordrawable:1.1.0")
     implementation("androidx.vectordrawable:vectordrawable-animated:1.1.0")
-    implementation("androidx.browser:browser:1.3.0")
-    implementation ("com.google.androidbrowserhelper:androidbrowserhelper:2.2.2")
+    implementation("androidx.browser:browser:1.6.0")
+    implementation ("com.google.androidbrowserhelper:androidbrowserhelper:2.5.0")
 
     implementation("com.android.billingclient:billing:$BILLING_VERSION")
     implementation("com.android.billingclient:billing-ktx:$BILLING_VERSION")
