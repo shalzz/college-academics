@@ -24,6 +24,7 @@ import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.graphics.Point
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.Menu
@@ -32,6 +33,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
+import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.app.ActivityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
@@ -182,7 +184,9 @@ class MainActivity : BaseActivity(), MainMvpView, BillingProvider {
         navigationView.setNavigationItemSelectedListener { item ->
             if (navController.currentDestination!!.id != item.itemId) {
                 if (item.itemId == R.id.helpNSupport) {
-//                    MyApplication.helpStack.showHelp(this)
+                    val url = "https://collegeacademics.8bitlabs.tech/#faq"
+                    val intent = CustomTabsIntent.Builder().build()
+                    intent.launchUrl(this, Uri.parse(url))
                 } else
                     NavigationUI.onNavDestinationSelected(item, navController)
             }

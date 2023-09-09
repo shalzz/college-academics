@@ -23,10 +23,12 @@ import android.accounts.Account
 import android.accounts.AccountManager
 import android.app.Activity
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.browser.customtabs.CustomTabsIntent
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.shalzz.attendance.MyApplication
 import com.shalzz.attendance.R
@@ -71,6 +73,16 @@ class AuthenticatorActivity: AccountAuthenticatorActivity(),
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.login, menu)
         return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.menu_help) {
+            val url = "https://collegeacademics.8bitlabs.tech/#faq"
+            val intent = CustomTabsIntent.Builder().build()
+            intent.launchUrl(this, Uri.parse(url))
+            return true
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onFragmentInteraction(authToken: String, username: String, password: String) {
