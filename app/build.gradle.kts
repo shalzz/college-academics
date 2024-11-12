@@ -59,7 +59,6 @@ android {
         targetSdk = 34
         versionCode = gitCommitCount
         versionName = gitTag
-        multiDexEnabled = true
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         ndkVersion = "22.1.7171670"
         resourceConfigurations += setOf("en")
@@ -198,9 +197,6 @@ dependencies {
     val NAV_VERSION = "2.7.1"
     val BILLING_VERSION = "6.0.1"
 
-    // TODO: re-evaluate when RxJava is completely replaced with kotlin co-routines
-    implementation("androidx.multidex:multidex:2.0.1")
-
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.3")
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
@@ -287,7 +283,6 @@ dependencies {
     testImplementation(mockito)
     testImplementation("androidx.test:core:1.5.0")
     testImplementation("org.robolectric:robolectric:4.10.3")
-    testImplementation("org.robolectric:shadows-multidex:4.10.3")
 
     // Instrumentation test dependencies
     androidTestImplementation(jUnit)

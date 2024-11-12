@@ -19,6 +19,7 @@
 
 package com.shalzz.attendance;
 
+import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 
@@ -34,11 +35,10 @@ import com.shalzz.attendance.utils.Utils;
 import java.util.HashSet;
 
 import androidx.appcompat.app.AppCompatDelegate;
-import androidx.multidex.MultiDexApplication;
 import androidx.preference.PreferenceManager;
 import timber.log.Timber;
 
-public class MyApplication extends MultiDexApplication {
+public class MyApplication extends Application {
 
     private static ApplicationComponent mApplicationComponent;
 
